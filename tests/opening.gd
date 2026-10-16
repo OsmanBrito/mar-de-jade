@@ -50,6 +50,7 @@ func run() -> void:
 			actual_lines.append("**%s:** %s" % [event["speaker"],event["text"]])
 	check(actual_lines == approved_lines and actual_lines.size() == 11, "All eleven lines match approved narrative exactly")
 	check(not game.completed, "First line does not prematurely complete the scene")
+	check(game.child.facing == 3 and game.tome.facing == 3, "Crouched artwork faces the conversation partner")
 	var initial_position: Vector2 = game.child.position
 	var movement_key = InputEventKey.new()
 	movement_key.keycode = KEY_D
@@ -87,6 +88,7 @@ func run() -> void:
 	check(game.completed, "Opening completes after reaching the table")
 	check(game.child.position == game.room.get_node("Staging/ChildAtTable").position, "Child reaches editable arrival marker")
 	check(game.tome.position == game.room.get_node("Staging/TomeAtTable").position, "Tomé reaches editable arrival marker")
+	check(game.child.seat_support and game.tome.seat_support and game.tome.facing == 1, "Table scene restores seated supports and partner-facing pose")
 	check(not game.child.carries_bowl and game.room.get_node("ActorsAndProps/Table/Bowl").visible, "Bowl moves from child's hands to the table")
 	game.advance()
 	check(finished_ids == ["C01-M01/S01"], "Scene completion emits the narrative ID once")
@@ -96,6 +98,7 @@ func run() -> void:
 	game.view.replay_button.pressed.emit()
 	check(not game.completed and game.event_index == 0 and game.body.text == "Estão a chamar para comer.", "Replay returns to the first line")
 	check(game.child.position == initial_position and game.child.carries_bowl and not game.room.get_node("ActorsAndProps/Table/Bowl").visible, "Replay restores actors and bowl without keeping completion state")
+	check(not game.child.seat_support and not game.tome.seat_support and game.tome.facing == 3, "Replay clears seats and restores the crouched facing")
 	var result = {"checks":checks,"failures":failures,"rendered":DisplayServer.get_name() != "headless"}
 	var file = FileAccess.open("res://tests/opening-report.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(result,"\t"))

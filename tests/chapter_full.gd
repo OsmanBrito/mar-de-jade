@@ -11,6 +11,31 @@ func check(ok: bool, message: String) -> void:
 	if not ok: failures.append(message); push_error(message)
 func frames(n: int) -> void:
 	for i in n: await process_frame
+
+func walk_near(target: Vector2, radius: float = 70) -> bool:
+	# Exercise real movement and collisions; never teleport through an obstacle.
+	if game.world.player.position.distance_to(target) <= radius: return true
+	for offset in [Vector2.ZERO,Vector2.LEFT*48,Vector2.RIGHT*48,Vector2.UP*48,Vector2.DOWN*48,Vector2(-48,48),Vector2(48,48)]:
+		var destination: Vector2 = target+offset
+		if not game.world.point_clear(destination): continue
+		game.world.player.destination_path.clear()
+		game.world.walk_to(destination)
+		for step in 600:
+			await physics_frame
+			if game.world.player.position.distance_to(target) <= radius: return true
+			if game.world.player.destination_path.is_empty(): break
+	return false
+
+func press_interact() -> void:
+	# The reveal intentionally rejects carry-over keys for a fraction of a second.
+	for step in 60:
+		if not game.battle_host.ending.running(): break
+		await physics_frame
+	var input := InputEventKey.new()
+	input.keycode = KEY_E; input.physical_keycode = KEY_E; input.pressed = true
+	root.push_input(input)
+	await frames(1)
+	input.pressed = false; root.push_input(input)
 func drive_battle() -> void:
 	var host = game.battle_host
 	var b = host.combat
@@ -60,6 +85,7 @@ func run() -> void:
 	await frames(3)
 	game.block_finished.connect(func(id): scene_ids.append(id))
 	for i in 9000:
+		if not failures.is_empty(): break
 		if game.completed: break
 		await capture_scene()
 		if not game.busy:
@@ -70,21 +96,17 @@ func run() -> void:
 					var event_before: int = game.event_index
 					game.advance()
 					check(game.event_index == event_before,"Dialogue cannot skip task "+game.task_id)
-					var found_route := false
-					for offset in [Vector2.ZERO,Vector2.LEFT*40,Vector2.RIGHT*40,Vector2.UP*40,Vector2.DOWN*40]:
-						var destination: Vector2 = game.props.marker+offset
-						if not game.world.point_clear(destination): continue
-						game.world.walk_to(destination)
-						if not game.world.player.destination_path.is_empty() or game.world.player.position.distance_to(destination) < 72: found_route = true; break
-					check(found_route,"Safe click route reaches interaction "+game.task_id)
-					game.world.player.position = game.props.marker
-					game.interact_task()
+					var reached := await walk_near(game.props.marker)
+					check(reached,"Real physics route reaches interaction "+game.task_id)
+					if not reached: break
+					await press_interact()
+					check(game.event_index != event_before or game.task_step == 1,"E advances the reachable objective "+game.task_id)
 				"battle": drive_battle()
 				"styles": game.choose_style("ES")
 				"styles_result": game.confirm_style()
 				"exploration":
-					game.world.player.position = game.harbor.GATE+Vector2(-55,20)
-					game.harbor.request_boarding()
+					check(await walk_near(game.harbor.GATE,70),"Walk through Lisbon to Duarte's boarding point")
+					await press_interact()
 				"boarding": game.harbor.confirm_boarding()
 		await frames(1)
 	check(game.completed,"Full chapter reaches departure")

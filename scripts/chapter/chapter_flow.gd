@@ -95,6 +95,7 @@ func _load_block(index: int) -> void:
 	events = blocks[index].events.duplicate(true); event_index = -1; current_event = {}
 	phase = "dialogue"; busy = false; completed = false; task_id = ""
 	service_paid_now = false
+	view.status.text = ""; view.speaker.text = ""; view.body.text = ""
 	_clear_options(); view.show(); view.next_button.show(); view.next_button.disabled = false
 	view.replay_button.hide(); view.next_button.text = "Continuar"
 	view.caption_label.text = "Portugal · Presente\n"+blocks[index].title
@@ -129,10 +130,12 @@ func _load_map(kind: String) -> void:
 	if not world.has_node("Spawn"):
 		var spawn := Marker2D.new(); spawn.name = "Spawn"; world.add_child(spawn)
 	world.get_node("Spawn").position = _point("hero")
-	if kind == "deck":
-		var ground = world.get_node("Ground")
-		for cell in ground.get_used_cells(): ground.set_cell(cell,0,Vector2i(1,1))
 	add_child(world)
+	if kind == "deck":
+		for node_name in ["CityGround","PracaDeLisboa"]:
+			var decoration: Node = world.get_node_or_null(node_name)
+			if decoration != null: decoration.free()
+		preload("res://scripts/chapter/departure_deck.gd").install(world)
 	world.player.presentation.identity = "hero"
 	world.player.presentation.posture = "standing"
 	world.player.enabled = false; world.player.set_physics_process(false)
@@ -143,9 +146,15 @@ func _load_map(kind: String) -> void:
 		_add_actor(name,_point(name))
 	props = preload("res://scripts/chapter/stage_props.gd").new()
 	props.map_kind = kind; props.object_position = _point("object"); props.hero = world.player
+	if kind == "courtyard": props.object_position = _point("Criança")+Vector2(-30,30)
 	props.cargo_freed = ChapterProgress.flags.get("cargo_freed",false); props.packed = ChapterProgress.flags.get("packed",false)
 	props.meal_ready = ChapterProgress.flags.get("meal",false)
 	sorted.add_child(props)
+	if kind == "service":
+		var table := preload("res://scenes/chapter_01/table.tscn").instantiate()
+		table.position = _point("object")+Vector2(0,28)
+		table.scale = Vector2.ONE*0.7
+		sorted.add_child(table)
 	_configure_actors()
 	if kind in ["cais","service"]:
 		preload("res://scripts/chapter/portugal_quay_art.gd").apply(world)
@@ -190,13 +199,16 @@ func _configure_actors() -> void:
 			world.player.presentation.posture = "fallen"; world.player.position = Vector2(23,352)
 	elif map_kind == "service":
 		actors["Leonor"].posture = "seated"; world.player.presentation.posture = "seated"
+		actors["Leonor"].facing = 1; world.player.presentation.facing = 3
+		actors["Leonor"].seat_support = true; world.player.presentation.seat_support = true
 	elif map_kind == "room" and ChapterProgress.flags.get("injured",false):
-		world.player.position = Vector2(-70,248); world.player.presentation.posture = "seated"
+		world.player.position = Vector2(-70,205); world.player.presentation.posture = "seated"
 		world.player.presentation.injured = true
 		props.bedside = true
 		props.bedside_point = world.player.position+Vector2(30,5)
 		actors["Duarte"].visible = id != "C01-M03/S07"
 		actors["Tomé"].posture = "seated"
+		actors["Tomé"].seat_support = true
 	for actor in actors.values():
 		actor.get_child(1).process_mode = Node.PROCESS_MODE_PAUSABLE
 		if not actor.visible: actor.get_child(1).get_child(0).set_deferred("disabled",true)
@@ -205,13 +217,15 @@ func _lock_player(lock: bool) -> void:
 	world.player.enabled = not lock; world.player.set_physics_process(not lock)
 	world.player.velocity = Vector2.ZERO; world.player.destination_path.clear(); world.player.presentation.walking = false
 	world.player.camera.offset = Vector2(120,65) if lock and map_kind in ["cais","service","deck"] else Vector2(0,-100)
+	if lock and map_kind == "room":
+		world.player.camera.offset = Vector2(64,250)-world.player.position
 
 func _clear_options() -> void:
 	for child in options_box.get_children():
 		options_box.remove_child(child)
 		child.queue_free()
 	options_box.hide()
-	view.panel.offset_top = -295; view.panel.offset_bottom = -55
+	view.panel.offset_top = -210; view.panel.offset_bottom = -54
 
 func _option(label: String, callback: Callable) -> void:
 	var button := Button.new(); button.text = label; button.custom_minimum_size.y = 36
@@ -291,7 +305,13 @@ func _begin_task(event: Dictionary) -> void:
 	if task_id == "recovery_walk":
 		world.player.position = Vector2(110,365); props.marker = _point("destination")
 	else: props.marker = _point("object")
-	props.marker_active = true; props.marker_label = "E · "+{"lever":"alavanca","fetch_tome":"Tomé","clear_passage":"caixote","meal":"refeição","pack":"sacola","blue_rope":"amarra azul","knot":"último nó","recovery_walk":"caminhar"}.get(task_id,"interagir")
+	# The first adult task is performed beside the child, not at the generic
+	# prop position.  Keeping the marker on the actor makes the instruction
+	# match what the player sees and lets E/A work when approaching the child.
+	if task_id == "knot" and actors.has("Criança"):
+		props.marker = actors["Criança"].position + Vector2(0, 18)
+		props.object_position = props.marker
+	props.marker_active = true; props.marker_label = "E · "+{"lever":"usar a alavanca","fetch_tome":"falar com Tomé","clear_passage":"pegar o caixote","meal":"levar a refeição","pack":"guardar a tigela","blue_rope":"apanhar a amarra","knot":"apertar a correia","recovery_walk":"caminhar"}.get(task_id,"interagir")
 	if task_id == "fetch_tome": props.marker = actors["Tomé"].position+Vector2(-35,25)
 	if task_id == "clear_passage": props.crate_task = true
 	if task_id == "meal": props.carrying = true
@@ -299,20 +319,24 @@ func _begin_task(event: Dictionary) -> void:
 		actors["Tomé"].carries_bowl = false
 		world.player.presentation.carries_bowl = true
 	task_start = world.player.position
-	view.status.text = event.caption; view.hint.text = "WASD / setas / clique · mover     E / A · interagir     Esc · menu"
+	view.status.text = "OBJETIVO  ·  "+event.caption; view.hint.text = "WASD / setas / clique · mover     E / A · executar objetivo     Esc · menu"
 	var focus = get_viewport().gui_get_focus_owner()
 	if focus != null: focus.release_focus()
 	world.rebuild_navigation()
 
 func interact_task() -> void:
-	if paused or phase != "task" or world.player.position.distance_to(props.marker) > 72: return
+	if paused or phase != "task" or world.player.position.distance_to(props.marker) > 92: return
 	if task_id == "recovery_walk" and world.player.position.distance_to(task_start) < 35: return
 	if task_id == "clear_passage" and task_step == 0:
 		task_step = 1; props.carrying = true; props.marker = _point("destination")
 		props.marker_label = "E · pousar no lado seco"; view.status.text = "Leva o caixote para o lado seco."; return
 	var already_done: bool = ChapterProgress.flags.get(task_id,false)
 	ChapterProgress.flags[task_id] = true
-	if task_id == "meal": props.carrying = false; props.meal_ready = true
+	if task_id == "meal":
+		props.carrying = false; props.meal_ready = true
+		world.player.position = _point("hero")
+		world.player.presentation.posture = "seated"
+		world.player.presentation.facing = 3
 	if task_id == "lever": ChapterProgress.flags.cargo_freed = true; props.cargo_freed = true
 	if task_id == "clear_passage": props.object_position = _point("destination"); props.carrying = false
 	if task_id == "clear_passage":
@@ -486,6 +510,16 @@ func load_checkpoint() -> void:
 	player_menu.close()
 	_load_block(ChapterProgress.checkpoint)
 
+func _input(event: InputEvent) -> void:
+	# Task input belongs to the world, before the completed combat viewport can
+	# consume ui_accept (E/A is also registered as dialogue confirmation).
+	if paused or phase not in ["task","exploration"]: return
+	if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept"):
+		get_viewport().set_input_as_handled()
+		if battle_host.ending.running(): return
+		if phase == "task": interact_task()
+		else: harbor.interact()
+
 func _unhandled_input(event: InputEvent) -> void:
 	if view == null or phase == "battle": return
 	if phase == "boarding" and not paused and (event.is_action_pressed("ui_cancel") or (event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B)):
@@ -506,7 +540,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			world.walk_to(world.get_global_transform_with_canvas().affine_inverse()*event.position)
 	elif phase == "task":
 		if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept"): interact_task(); get_viewport().set_input_as_handled()
-		elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT: world.walk_to(world.get_global_mouse_position())
+		elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			get_viewport().set_input_as_handled()
+			world.walk_to(world.get_global_transform_with_canvas().affine_inverse()*event.position)
 	elif event.is_action_pressed("ui_accept"):
 		get_viewport().set_input_as_handled(); advance()
 

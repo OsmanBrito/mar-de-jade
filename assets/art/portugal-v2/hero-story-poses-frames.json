@@ -1,0 +1,57 @@
+{
+  "id": "hero_story",
+  "height": 84,
+  "source": "res://assets/art/portugal-v2/hero-story-poses-v1.png",
+  "west_flip": false,
+  "frames": [
+    [
+      266,
+      65,
+      235,
+      538
+    ],
+    [
+      774,
+      65,
+      263,
+      538
+    ],
+    [
+      239,
+      647,
+      288,
+      546
+    ],
+    [
+      788,
+      647,
+      281,
+      546
+    ]
+  ],
+  "pivots": [
+    [
+      112.56,
+      535
+    ],
+    [
+      119.27,
+      525
+    ],
+    [
+      154.16,
+      543
+    ],
+    [
+      75.57,
+      510
+    ]
+  ],
+  "reference_height": 717.3333333333334,
+  "pose_indices": {
+    "seated": 0,
+    "crouched": 1,
+    "seated_west": 2,
+    "crouched_west": 3
+  }
+}

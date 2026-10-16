@@ -5,6 +5,16 @@ const CLEARANCE := 14.0 # Approved 12px actor radius plus contact margin.
 const STEP := 16.0
 var navigation := AStarGrid2D.new()
 
+func _ready() -> void:
+	super._ready()
+	if map_id == "praca_infancia":
+		preload("res://scripts/chapter/chapter_environment.gd").install(self)
+
+func is_walkable_point(point: Vector2) -> bool:
+	if has_meta("departure_deck"):
+		return preload("res://scripts/chapter/departure_deck.gd").contains(point)
+	return super.is_walkable_point(point)
+
 func rebuild_navigation() -> void:
 	blockers.clear()
 	interactions.clear()

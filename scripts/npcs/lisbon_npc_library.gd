@@ -8,10 +8,16 @@ const FRAMES := "res://assets/art/npcs/lisbon/frames.json"
 static func data() -> Dictionary:
 	if entries.is_empty() and FileAccess.file_exists(FRAMES):
 		entries = JSON.parse_string(FileAccess.get_file_as_string(FRAMES)).entries
+		var child_path := "res://assets/art/portugal-v2/hero-child-frames.json"
+		if FileAccess.file_exists(child_path):
+			entries.hero_child = JSON.parse_string(FileAccess.get_file_as_string(child_path))
+		var poses_path := "res://assets/art/portugal-v2/hero-story-poses-frames.json"
+		if FileAccess.file_exists(poses_path):
+			entries.hero_story = JSON.parse_string(FileAccess.get_file_as_string(poses_path))
 	return entries
 
 static func resolve(id: String) -> String:
-	return {"tome":"tome_adult","leonor":"leonor_child"}.get(id,id)
+	return {"tome":"tome_adult","leonor":"leonor_child","child":"hero_child"}.get(id,id)
 
 static func draw_actor(canvas: Node2D,id: String,facing: int,walking: bool,time: float,posture: String,scale_multiplier: float = 1.0,origin: Vector2 = Vector2.ZERO) -> bool:
 	id = resolve(id)

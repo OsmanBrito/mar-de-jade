@@ -22,6 +22,9 @@ func _ready() -> void:
 	get_node("Abrigo/Ground").z_index = -1
 	data = JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/adult_opening.json"))
 	hero = $Abrigo/ActorsAndProps/Child
+	$Abrigo/ActorsAndProps/Tome.seat_support = true
+	get_node("Camera").enabled = false
+	preload("res://scripts/chapter/chapter_framing.gd").install(self,[hero,$Abrigo/ActorsAndProps/Tome,$Abrigo/ActorsAndProps/Duarte],1.45)
 	view = preload("res://scripts/chapter/dialogue_view.gd").new()
 	view.caption = "Portugal · Presente · 19 anos\nA correia e o prazo"
 	add_child(view)
@@ -102,11 +105,9 @@ func _process(_delta: float) -> void:
 
 func _draw() -> void:
 	if view == null: return
-	draw_rect(Rect2(sack_position-Vector2(15,25),Vector2(30,24)),Color("9b8862"))
-	draw_arc(sack_position+Vector2(0,-25),12,PI,TAU,12,Color("5c4d35"),3)
-	draw_line(sack_position+Vector2(-10,-16),sack_position+Vector2(10,-16),Color("c9b48a") if sack_ready else Color("5c4d35"),2)
+	preload("res://scripts/chapter/story_prop_art.gd").draw_item(self,"PT-Q01",sack_position,43)
 	for offset in [Vector2(-15,30),Vector2(20,35)]:
-		draw_circle($SackAtDoor.position+offset,11,Color("b8aa89"))
+		preload("res://scripts/chapter/story_prop_art.gd").draw_item(self,"PT-T01",$SackAtDoor.position+offset,28)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if view == null: return

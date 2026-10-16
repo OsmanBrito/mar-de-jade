@@ -4,6 +4,10 @@ Projeto editável em Godot 4.5.1 para Windows. O capítulo **A promessa impossí
 
 O projeto fica diretamente na raiz deste repositório: abrir `project.godot`, `Jogar.cmd` ou `Abrir-no-Godot.cmd`. Os atalhos procuram o Godot em `GODOT_EXE`, no PATH ou na pasta padrão de Downloads. [Estrutura e validação local](docs/repositorio.md).
 
+**Revisão dos mapas até ao embarque:** herói infantil com arte e poses próprias, escala adulta coerente com o elenco, praça e pátio integrados à cidade, abrigo com materiais comuns e convés em formato de navio. A interação E/A após o treino foi corrigida e o percurso completo agora é testado com caminhada e física reais. [Capturas, alterações e validação](docs/campaign-map-refinement.md).
+
+**Acabamento do abrigo e da praça:** mobiliário ilustrado, banco à escala das crianças, sala com roupa/louça e tapete, conversas mais próximas e painel de diálogo compacto. [Capturas da segunda passagem](docs/abrigo-praca-acabamento.md).
+
 **Navegação Lisboa → Madeira:** no arranque, escolher **Testar navegação · Lisboa → Madeira**, sem precisar de escrever um nome ou repetir Portugal. O teste tem salvamento próprio; **Continuar teste de navegação** aparece quando houver uma viagem guardada. Também é possível abrir `scenes/navigation/voyage.tscn` com F6. No fim de Portugal, **Navegar para a Madeira** inicia a viagem da campanha. [Controles, conteúdo e validação](docs/navegacao-jogavel.md).
 
 **Abordagem no convés:** escolher **Testar abordagem · combate no convés** no menu. A luta acontece no navio inimigo, com a Botafogo ao lado. NPCs, materiais e objetos usam a arte ilustrada de **Mar de Ferro**; técnicas, passivas, timing, controles e escala seguem Portugal. [Batalha completa com áudio — 26 segundos](docs/boarding-mar-de-ferro.mp4) · [Arte, regras e validação](docs/abordagem-combate-portugal.md).

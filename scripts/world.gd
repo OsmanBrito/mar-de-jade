@@ -26,6 +26,8 @@ func _ready() -> void:
 	terrain = get_node("Ground")
 	sorted_world = get_node("ActorsAndProps")
 	_refresh_ground()
+	if map_id == "abrigo_adulto":
+		preload("res://scripts/chapter/shelter_details.gd").install(self)
 	_collect_authored_nodes(sorted_world)
 	if Engine.is_editor_hint():
 		terrain.changed.connect(_refresh_ground)
@@ -175,7 +177,7 @@ func _draw() -> void:
 		return
 	# Stone quay retaining walls / wooden pier edges, visible on exposed near edges.
 	var city_ground := get_node_or_null("CityGround") as TileMapLayer
-	for cell in cells:
+	for cell in ({} if has_meta("departure_deck") else cells):
 		var pos = terrain.map_to_local(cell)
 		var tile = int(cells[cell])
 		for side in range(2):
@@ -204,6 +206,9 @@ func _draw() -> void:
 		draw_set_transform(Vector2.ZERO)
 
 func _draw_interior_walls() -> void:
+	if map_id == "abrigo_adulto":
+		preload("res://scripts/chapter/shelter_details.gd").draw_walls(self,terrain,Vector2i(8,7))
+		return
 	var size = spec["land_size"]
 	var corner = terrain.map_to_local(Vector2i(0,0))+Vector2(0,-32)
 	var left = terrain.map_to_local(Vector2i(0,int(size[1])-1))+Vector2(-64,0)

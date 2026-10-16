@@ -6,7 +6,7 @@ const NPC_ART = preload("res://scripts/npcs/lisbon_npc_library.gd")
 	set(value):
 		npc_id = value
 		queue_redraw()
-@export_enum("child", "tome", "leonor", "hero", "duarte", "leonor_adult") var identity: String = "child"
+@export_enum("child", "hero_child", "tome", "leonor", "hero", "duarte", "leonor_adult") var identity: String = "child"
 @export_enum("standing", "crouched", "seated", "fallen") var posture: String = "standing":
 	set(value):
 		posture = value
@@ -34,36 +34,45 @@ const NPC_ART = preload("res://scripts/npcs/lisbon_npc_library.gd")
 var walking := false
 var frame_time := 0.0
 var facing := 0
+var seat_support := false
 
 func _process(_delta: float) -> void:
 	if walking:
 		queue_redraw()
 
 func _draw() -> void:
-	if identity=="hero" and npc_id.is_empty() and posture=="fallen":
+	if identity in ["hero", "hero_child"] and npc_id.is_empty() and posture=="fallen":
 		# Reuse the actual defeat silhouette, rather than shrinking a standing walker.
 		preload("res://scripts/combat/portugal_actor_art.gd").draw_actor(self,"hero",Vector2.ZERO,facing!=3,"kneel",0,"PU",true,0,false,Vector2.RIGHT,1.1)
 		return
 	var child = identity not in ["tome", "hero", "duarte", "leonor_adult"]
 	var height = 44.0 if child else 66.0
+	if identity == "hero": height = 84.0
+	if identity == "hero_child": height = 52.0
 	var visual_id: String = NPC_ART.resolve(npc_id if not npc_id.is_empty() else identity)
+	if identity == "hero" and npc_id.is_empty() and posture in ["seated","crouched"]:
+		visual_id = "hero_story"
 	if NPC_ART.data().has(visual_id):
 		height = float(NPC_ART.data()[visual_id].height)
 		child = height<60
-	if posture != "standing":
+	if posture != "standing" and not NPC_ART.data().has(visual_id):
 		height *= 0.75
 	draw_set_transform(Vector2.ZERO,0,Vector2(1,0.4))
 	draw_circle(Vector2.ZERO,17 if child else 21,Color(0.05,0.07,0.06,0.3))
 	draw_set_transform(Vector2.ZERO)
+	if seat_support and posture == "seated":
+		for x in [-11,11]: draw_line(Vector2(x,-23),Vector2(x,0),Color("624a32"),4,true)
+		draw_colored_polygon(PackedVector2Array([Vector2(-17,-24),Vector2(0,-32),Vector2(17,-24),Vector2(0,-16)]),Color("9c7950"))
 	var cloth = Color("6f9996") if child else Color("8b795b")
-	if identity == "hero": cloth = Color("6f9996")
+	if identity in ["hero", "hero_child"]: cloth = Color("6f9996")
 	if identity == "duarte": cloth = Color("866654")
 	if identity in ["leonor", "leonor_adult"]:
 		cloth = Color("a288b6")
 	var eye_offset = Vector2(4 if facing == 3 else -4,-height+7)
 	if NPC_ART.draw_actor(self,visual_id,facing,walking,frame_time,posture):
 		pass
-	elif identity == "hero":
+	elif identity in ["hero", "hero_child"]:
+		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 		var art = preload("res://scripts/chapter/quay_sprite.gd")
 		var info: Dictionary = art.metadata().hero
 		var index := clampi(facing,0,3)*4+(1+int(frame_time)%3 if walking else 0)

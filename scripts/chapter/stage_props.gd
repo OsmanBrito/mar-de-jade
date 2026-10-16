@@ -1,4 +1,5 @@
 extends Node2D
+const Art = preload("res://scripts/chapter/story_prop_art.gd")
 var map_kind := ""
 var object_position := Vector2.ZERO
 var marker := Vector2.ZERO
@@ -28,9 +29,7 @@ func _draw() -> void:
 		draw_line(p-Vector2(13,22),p+Vector2(13,-2),Color("b89a70"),3)
 		draw_line(p+Vector2(13,-22),p+Vector2(-13,-2),Color("b89a70"),3)
 	elif map_kind in ["room","courtyard"]:
-		draw_rect(Rect2(p-Vector2(13,23),Vector2(26,22)),Color("9b8862"))
-		draw_arc(p+Vector2(0,-23),10,PI,TAU,12,Color("5c4d35"),3)
-		if packed: draw_line(p+Vector2(-10,-12),p+Vector2(10,-12),Color("eee5cc"),2)
+		Art.draw_item(self,"PT-Q01",p,42)
 		if bedside:
 			draw_rect(Rect2(bedside_point+Vector2(-5,-10),Vector2(10,10)),Color("c1b699"))
 			draw_set_transform(bedside_point+Vector2(20,0),0,Vector2(1,0.5))
@@ -38,13 +37,10 @@ func _draw() -> void:
 			draw_arc(Vector2.ZERO,9,0,TAU,24,Color("6d634d"),2)
 			draw_set_transform(Vector2.ZERO)
 	elif map_kind == "service":
-		draw_rect(Rect2(object_position+Vector2(-30,-18),Vector2(70,13)),Color("968569"))
 		for offset in ([Vector2(-12,-24),Vector2(20,-24)] if carrying or meal_ready else []):
-			draw_circle(p+offset,7,Color("c1b699"))
-			draw_circle(p+offset+Vector2(0,16),9,Color("ddd2ae"))
-	elif map_kind == "deck":
-		draw_arc(p,23,0,TAU,24,Color("68ABF0"),5)
-		draw_arc(p+Vector2(110,0),23,0,TAU,24,Color("eee5cc"),5)
+			Art.draw_item(self,"PT-Q03",p+offset,16)
+			Art.draw_item(self,"PT-Q02",p+offset+Vector2(0,16),25)
+	# The departure deck draws the actual coils in its timber plane.
 	if green_sight:
 		draw_arc(object_position+Vector2(45,-12),28+sin(clock*5)*2,0,TAU,32,Color(0.4,0.9,0.6,0.65),2)
 	if marker_active:

@@ -45,6 +45,7 @@ func run() -> void:
 	await frames(3)
 	check(game.view.body.text == "Sai desse lado.", "Plaza begins with the approved bank dialogue")
 	check(not game.world.player.enabled, "Dialogue starts with movement locked")
+	check(game.world.player.z_index == 1, "Seated hero draws in front of the bench")
 	check(game.world.player.get_script() == load("res://scripts/chapter/child_player.gd"), "Child presentation reuses the approved controller")
 	check(game.world.player.camera.zoom == Vector2(1.25,1.25), "Approved initial camera zoom")
 	check(game.world.cells.size() == 100, "Plaza ground is serialized in the scene")
@@ -69,6 +70,7 @@ func run() -> void:
 	check(await reach_walk_stage("first"), "Dialogue leads to the first movement objective")
 	await frames(3)
 	check(game.world.player.enabled and not game.view.panel.visible, "Exercise enables movement and hides dialogue")
+	check(game.world.player.z_index == 0, "Exploration restores normal actor depth sorting")
 	check(game.world.get_node("Staging/FirstTarget").active, "Authored target becomes visible")
 	var segment_before: String = game.segment
 	game.advance()

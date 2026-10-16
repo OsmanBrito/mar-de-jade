@@ -1,5 +1,5 @@
 extends "res://scripts/player.gd"
-## Use the approved controller with provisional childhood presentation.
+## Shared controller with the same illustrated protagonist identity used by the adult chapter.
 var presentation: Node2D
 
 func _ready() -> void:

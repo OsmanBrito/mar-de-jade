@@ -30,8 +30,11 @@ func _ready() -> void:
 	room = get_node("Abrigo")
 	child = room.get_node("ActorsAndProps/Child")
 	tome = room.get_node("ActorsAndProps/Tome")
+	child.facing = 3; tome.facing = 3
 	_initial_child = {"position":child.position,"posture":child.posture,"carries_bowl":child.carries_bowl}
 	_initial_tome = {"position":tome.position,"posture":tome.posture}
+	get_node("Camera").enabled = false
+	preload("res://scripts/chapter/chapter_framing.gd").install(self,[child,tome],1.6)
 	_build_interface()
 	advance()
 
@@ -65,6 +68,8 @@ func restart() -> void:
 	child.carries_bowl = _initial_child["carries_bowl"]
 	tome.position = _initial_tome["position"]
 	tome.posture = _initial_tome["posture"]
+	child.facing = 3; tome.facing = 3
+	child.seat_support = false; tome.seat_support = false
 	room.get_node("ActorsAndProps/Table/Bowl").hide()
 	event_index = -1
 	completed = false
@@ -87,6 +92,7 @@ func advance() -> void:
 				return
 			"tome_sits":
 				tome.posture = "seated"
+				tome.facing = 1
 			"to_table":
 				busy = true
 				next_button.disabled = true
@@ -101,6 +107,8 @@ func advance() -> void:
 				child.carries_bowl = false
 				child.posture = "seated"
 				tome.posture = "seated"
+				child.facing = 3; tome.facing = 1
+				child.seat_support = true; tome.seat_support = true
 				room.get_node("ActorsAndProps/Table/Bowl").show()
 				busy = false
 				next_button.disabled = false

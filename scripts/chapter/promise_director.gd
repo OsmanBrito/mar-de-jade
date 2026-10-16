@@ -36,6 +36,8 @@ func _ready() -> void:
 	add_child(view)
 	view.continuation_requested.connect(_continue_pressed)
 	view.replay_requested.connect(restart)
+	world.player.camera.enabled = false
+	preload("res://scripts/chapter/chapter_framing.gd").install(self,[world.player,leonor],1.65)
 	restart()
 
 func restart() -> void:
@@ -46,9 +48,11 @@ func restart() -> void:
 	world.player.position = world.get_node("Staging/ChildInSun").position
 	world.player.velocity = Vector2.ZERO
 	child.posture = "seated"
-	child.position = Vector2(0,-45)
+	world.player.z_index = 1 # The seat is behind the seated body, not in front of it.
+	child.position = Vector2.ZERO
 	child.carries_cup = true
 	child.walking = false
+	child.facing = 3
 	leonor.position = world.get_node("Staging/LeonorSeat").position
 	leonor.posture = "seated"
 	leonor.carries_cup = false

@@ -15,6 +15,7 @@ var paused := false
 var completed := false
 var blocked_hint_seen := false
 var _status_before_pause := ""
+var framing
 
 func _ready() -> void:
 	get_node("Praca").player.set_physics_process(false)
@@ -38,13 +39,22 @@ func _ready() -> void:
 		else:
 			advance())
 	view.replay_requested.connect(restart)
+	framing = preload("res://scripts/chapter/chapter_framing.gd").install(self,[world.player,leonor],1.65)
 	_set_staged(true)
 	world.player.presentation.posture = "seated"
-	world.player.presentation.position.y = -45
+	world.player.z_index = 1 # Seated body overlaps the bench's front edge.
+	world.player.presentation.position.y = 0
 	world.player.camera.reset_smoothing()
 	advance()
 
 func _set_staged(staged: bool) -> void:
+	if staged:
+		world.player.presentation.facing = 3 if leonor.position.x>world.player.position.x else 1
+		leonor.facing = 1 if leonor.position.x>world.player.position.x else 3
+	if framing != null:
+		framing.activate(staged)
+		world.player.camera.enabled = not staged
+		if not staged: world.player.camera.make_current()
 	world.player.enabled = not staged
 	world.player.set_physics_process(not staged)
 	world.player.destination_path.clear()
@@ -117,6 +127,7 @@ func _stage(action: String) -> void:
 			leonor.posture = "standing"
 			leonor.position = world.get_node("Staging/LeonorStanding").position
 		"first_positions":
+			world.player.z_index = 0 # Restore normal depth sorting for exploration.
 			world.player.presentation.posture = "standing"
 			world.player.presentation.position = Vector2.ZERO
 			world.player.position = world.get_node("Staging/FirstStart").position
@@ -178,7 +189,8 @@ func restart() -> void:
 	world.get_node("ActorsAndProps/Bench/Cups").hide()
 	world.player.position = world.get_node("Spawn").position
 	world.player.presentation.posture = "seated"
-	world.player.presentation.position.y = -45
+	world.player.z_index = 1
+	world.player.presentation.position.y = 0
 	leonor.position = world.get_node("Staging/LeonorArrival").position
 	leonor.posture = "standing"
 	world.player.camera.reset_smoothing()

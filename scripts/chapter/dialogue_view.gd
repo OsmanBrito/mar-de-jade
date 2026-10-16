@@ -40,31 +40,32 @@ func _ready() -> void:
 	control.add_child(status)
 	panel = PanelContainer.new()
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
-	panel.position = Vector2(-435,-236)
-	panel.size = Vector2(870,200)
+	panel.position = Vector2(-480,-210)
+	panel.size = Vector2(960,156)
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.065,0.12,0.13,0.96)
 	style.border_color = Color("8b805e")
 	style.set_border_width_all(1)
-	style.set_content_margin_all(20)
+	style.set_content_margin_all(16)
 	panel.add_theme_stylebox_override("panel",style)
 	control.add_child(panel)
 	var box = VBoxContainer.new()
-	box.add_theme_constant_override("separation",12)
+	box.add_theme_constant_override("separation",8)
 	panel.add_child(box)
 	speaker = _label("",22)
 	speaker.add_theme_color_override("font_color",Color("e5c787"))
 	box.add_child(speaker)
 	body = _label("",23)
-	body.custom_minimum_size = Vector2(830,48)
+	body.custom_minimum_size = Vector2(920,32)
 	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(body)
 	var buttons = HBoxContainer.new()
+	buttons.alignment = BoxContainer.ALIGNMENT_END
 	box.add_child(buttons)
 	next_button = Button.new()
 	next_button.text = "Continuar"
-	next_button.custom_minimum_size.y = 40
-	next_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	next_button.custom_minimum_size = Vector2(142,34)
+	next_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 	next_button.pressed.connect(func(): continuation_requested.emit())
 	buttons.add_child(next_button)
 	replay_button = Button.new()
@@ -84,6 +85,22 @@ func _ready() -> void:
 	hint.size.x = 1040
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	control.add_child(hint)
+	var theme := Theme.new(); theme.default_font_size = 17
+	for state in ["normal","hover","pressed","focus"]:
+		var button_style := StyleBoxFlat.new()
+		button_style.bg_color = Color("23433d") if state in ["hover","pressed"] else Color("122d2e")
+		button_style.border_color = Color("d4ba7f") if state == "focus" else Color("647d68")
+		button_style.set_border_width_all(1); button_style.set_corner_radius_all(3)
+		button_style.set_content_margin_all(7)
+		theme.set_stylebox(state,"Button",button_style)
+	control.theme = theme
+
+func _process(_delta: float) -> void:
+	if panel == null or not panel.is_visible_in_tree() or panel.offset_top < -310: return
+	var content: Control = body.get_parent()
+	var height := maxf(148,content.get_combined_minimum_size().y+32)
+	panel.offset_bottom = -54
+	panel.offset_top = -54-height
 
 func _label(value: String, font_size: int) -> Label:
 	var label = Label.new()

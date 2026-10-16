@@ -62,7 +62,7 @@ collision_mask = 0
 polygon = PackedVector2Array(10, 0, 8.660254, 5, 4.9999995, 8.6602545, -4.371139e-07, 10, -5.0000005, 8.660254, -8.660254, 5.0000005, -10, -8.742278e-07, -8.660254, -4.9999995, -4.999999, -8.6602545, 1.1924881e-07, -10, 4.999999, -8.6602545, 8.660254, -5.000002)
 
 [node name="Spawn" type="Marker2D" parent="."]
-position = Vector2(88, 352)
+position = Vector2(88, 359)
 
 [node name="Acompanhante" type="Node2D" parent="ActorsAndProps"]
 position = Vector2(300, 215)
@@ -79,10 +79,10 @@ polygon = PackedVector2Array(-12, 0, -8, -8, 0, -12, 8, -8, 12, 0, 8, 8, 0, 12, 
 [node name="Staging" type="Node2D" parent="."]
 
 [node name="ChildInSun" type="Marker2D" parent="Staging"]
-position = Vector2(23, 352)
+position = Vector2(23, 344)
 
 [node name="LeonorSeat" type="Marker2D" parent="Staging"]
-position = Vector2(96, 352)
+position = Vector2(96, 361)
 
 [node name="LeonorArrival" type="Marker2D" parent="Staging"]
 position = Vector2(190, 352)

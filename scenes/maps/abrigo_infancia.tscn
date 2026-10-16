@@ -43,7 +43,7 @@ posture = "crouched"
 [node name="Staging" type="Node2D" parent="."]
 
 [node name="ChildAtTable" type="Marker2D" parent="Staging"]
-position = Vector2(120, 330)
+position = Vector2(120, 305)
 
 [node name="TomeAtTable" type="Marker2D" parent="Staging"]
 position = Vector2(220, 315)

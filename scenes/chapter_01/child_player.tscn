@@ -8,4 +8,4 @@ script = ExtResource("player")
 
 [node name="Presentation" type="Node2D" parent="."]
 script = ExtResource("art")
-identity = "child"
+identity = "hero_child"
