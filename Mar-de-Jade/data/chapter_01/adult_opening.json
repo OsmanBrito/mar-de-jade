@@ -1,0 +1,30 @@
+{
+  "id": "C01-M01/S07",
+  "segments": {
+    "common": [
+      {"speaker":"Tomé","text":"A que procuras é esta."},
+      {"speaker":"Herói","text":"Essa estava rasgada."},
+      {"speaker":"Tomé","text":"Estava. Põe os sacos pequenos em cima. A farinha não gosta de peixe."},
+      {"speaker":"Herói","text":"Podemos levar tudo de uma vez se o Duarte carregar metade."},
+      {"speaker":"Duarte","text":"Estou a carregar metade. É essa metade que ainda está no chão."},
+      {"speaker":"Herói","text":"Eu ia buscar a outra correia."},
+      {"speaker":"Duarte","text":"Para a sacola que ele está a remendar à tua frente?"},
+      {"speaker":"Tomé","text":"Experimenta agora."},
+      {"speaker":"Herói","text":"Aguenta."},
+      {"speaker":"Tomé","text":"Então vais saber onde a deixaste amanhã."},
+      {"speaker":"Herói","text":"Também posso agradecer o remendo sem levar uma lição."},
+      {"speaker":"Tomé","text":"Podes. Não ouvi ainda nenhuma das duas coisas."},
+      {"speaker":"Herói","text":"Obrigado."},
+      {"speaker":"Tomé","text":"De nada. Vai."}
+    ],
+    "assumir": [
+      {"speaker":"Herói","text":"Atrasei-me. Termino a entrega e volto para o treino."},
+      {"speaker":"Duarte","text":"Espero-te no pátio. Não venhas com a história de que o cais mudou de lugar."}
+    ],
+    "desculpar": [
+      {"speaker":"Herói","text":"Se a carroça tivesse chegado a horas…"},
+      {"speaker":"Tomé","text":"Eu vi-te passar pela carroça e ir sentar-te à sombra. Podes começar a frase de novo."},
+      {"speaker":"Herói","text":"Está bem. Volto para o treino."}
+    ]
+  }
+}

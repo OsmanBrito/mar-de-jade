@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/interaction.gd" id="1_s11rm"]
+
+[ext_resource type="Texture2D" path="res://assets/art/traveller_walk.png" id="npc_texture"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7gxlt"]
+
+[node name="Npc" type="Node2D"]
+script = ExtResource("1_s11rm")
+definition = {
+"kind": "npc"
+}
+
+[node name="Body" type="StaticBody2D" parent="."]
+
+[node name="Collision" type="CollisionShape2D" parent="Body"]
+shape = SubResource("CircleShape2D_7gxlt")
+
+[node name="Presentation" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -32)
+scale = Vector2(0.23, 0.23)
+modulate = Color(0.82, 0.87, 0.75, 1)
+texture = ExtResource("npc_texture")
+hframes = 4
+vframes = 4

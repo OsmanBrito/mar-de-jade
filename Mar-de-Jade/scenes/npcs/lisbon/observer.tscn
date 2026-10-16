@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/chapter/actor_proxy.gd" id="actor"]
+[node name="NPC" type="Node2D"]
+script = ExtResource("actor")
+identity = "hero"
+npc_id = "observer"
+[node name="Body" type="StaticBody2D" parent="."]
+collision_mask = 0
+[node name="Footprint" type="CollisionPolygon2D" parent="Body"]
+polygon = PackedVector2Array(-12, 0, -8, -8, 0, -12, 8, -8, 12, 0, 8, 8, 0, 12, -8, 8)

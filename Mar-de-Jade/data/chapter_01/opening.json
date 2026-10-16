@@ -1,0 +1,70 @@
+{
+  "events": [
+    {
+      "type": "line",
+      "text": "Estão a chamar para comer.",
+      "speaker": "Tomé"
+    },
+    {
+      "type": "line",
+      "text": "Já tenho esta.",
+      "speaker": "Herói criança"
+    },
+    {
+      "type": "line",
+      "text": "Então podes trazê-la.",
+      "speaker": "Tomé"
+    },
+    {
+      "type": "line",
+      "text": "E se amanhã não houver?",
+      "speaker": "Herói criança"
+    },
+    {
+      "type": "line",
+      "text": "Guardar uma tigela vazia não resolve isso.",
+      "speaker": "Tomé"
+    },
+    {
+      "type": "line",
+      "text": "O meu pai vem buscar-me?",
+      "speaker": "Herói criança"
+    },
+    {
+      "type": "tome_sits"
+    },
+    {
+      "type": "line",
+      "text": "Hoje não veio.",
+      "speaker": "Tomé"
+    },
+    {
+      "type": "line",
+      "text": "Tu vais sair?",
+      "speaker": "Herói criança"
+    },
+    {
+      "type": "line",
+      "text": "Vou à mesa. Quero que venhas comigo.",
+      "speaker": "Tomé"
+    },
+    {
+      "type": "line",
+      "text": "E amanhã?",
+      "speaker": "Herói criança"
+    },
+    {
+      "type": "line",
+      "text": "Amanhã também estarei aqui.",
+      "speaker": "Tomé"
+    },
+    {
+      "type": "to_table"
+    },
+    {
+      "type": "end"
+    }
+  ],
+  "id": "C01-M01/S01",
+  "title": "Um lugar à mesa"
+}

@@ -1,0 +1,885 @@
+[gd_scene load_steps=82 format=3]
+
+[ext_resource type="Script" path="res://scripts/map_prop.gd" id="prop_script"]
+
+[ext_resource type="Texture2D" path="res://assets/art/port_props.png" id="1_gh3y0"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_guvol"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(0, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_crk4c"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(8, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4neci"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(16, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pvevx"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(24, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_opop3"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(32, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4d7pr"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(40, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_axua5"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(48, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_51njj"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(56, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6xi5t"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(64, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uv61p"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(72, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gnscr"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(80, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jeprc"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(88, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ibh0f"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(96, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e03pj"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(104, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7sv6m"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(112, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2hqo7"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(120, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_17p3h"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(128, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fvdbs"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(136, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nbsr0"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(144, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jlcqk"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(152, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pt8ds"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(160, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3fqxb"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(168, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7kbgu"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(176, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1bpyj"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(184, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a8u03"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(192, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pcryn"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(200, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gmg2j"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(208, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qc7fh"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(216, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_78nyp"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(224, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u7fp4"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(232, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cgttx"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(240, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d0weq"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(248, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kntuf"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(256, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v03sv"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(264, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_begpt"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(272, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7sylu"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(280, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j023s"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(288, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xqg6h"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(296, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5sjba"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(304, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c6m1h"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(312, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eg1aj"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(320, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gk334"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(328, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5836j"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(336, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e1r7s"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(344, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_io760"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(352, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ih0gl"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(360, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2f2tk"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(368, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mr5g5"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(376, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3gsdj"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(384, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q5ni1"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(392, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hfuw1"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(400, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s7dx3"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(408, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gterc"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(416, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_umltf"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(424, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eas0s"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(432, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ps0gp"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(440, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ebxih"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(448, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xnqhc"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(456, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vg8lm"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(464, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b5yyt"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(472, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qe5g1"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(480, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jqadl"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(488, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lj2wn"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(496, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_esb7v"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(504, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ti5bt"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(512, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xbo8e"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(520, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5a37o"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(528, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_52h0n"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(536, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5d38n"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(544, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8l83b"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(552, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bq8g3"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(560, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_at6cf"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(568, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k3qio"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(576, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2rs5l"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(584, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p3bse"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(592, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ikix"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(600, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ww08t"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(608, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j2m16"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(616, 0, 8, 627)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_en530"]
+atlas = ExtResource("1_gh3y0")
+region = Rect2(624, 0, 3, 627)
+
+[node name="House" type="Node2D"]
+script = ExtResource("prop_script")
+sloped_depth = true
+y_sort_enabled = true
+
+[node name="Visual_01" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-362.48438, -110.70469)
+texture = SubResource("AtlasTexture_guvol")
+centered = false
+offset = Vector2(0, -467.31094)
+
+[node name="Visual_02" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-354.48438, -110.70469)
+texture = SubResource("AtlasTexture_crk4c")
+centered = false
+offset = Vector2(0, -467.31094)
+
+[node name="Visual_03" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-346.48438, -110.70469)
+texture = SubResource("AtlasTexture_4neci")
+centered = false
+offset = Vector2(0, -467.31094)
+
+[node name="Visual_04" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-338.48438, -110.70469)
+texture = SubResource("AtlasTexture_pvevx")
+centered = false
+offset = Vector2(0, -467.31094)
+
+[node name="Visual_05" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-330.48438, -110.70469)
+texture = SubResource("AtlasTexture_opop3")
+centered = false
+offset = Vector2(0, -467.31094)
+
+[node name="Visual_06" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-322.48438, -107.4524)
+texture = SubResource("AtlasTexture_4d7pr")
+centered = false
+offset = Vector2(0, -470.56323)
+
+[node name="Visual_07" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-314.48438, -103.61029)
+texture = SubResource("AtlasTexture_axua5")
+centered = false
+offset = Vector2(0, -474.40533)
+
+[node name="Visual_08" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-306.48438, -99.76819)
+texture = SubResource("AtlasTexture_51njj")
+centered = false
+offset = Vector2(0, -478.24744)
+
+[node name="Visual_09" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-298.48438, -95.92608)
+texture = SubResource("AtlasTexture_6xi5t")
+centered = false
+offset = Vector2(0, -482.08954)
+
+[node name="Visual_10" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-290.48438, -92.08398)
+texture = SubResource("AtlasTexture_uv61p")
+centered = false
+offset = Vector2(0, -485.93164)
+
+[node name="Visual_11" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-282.48438, -88.241875)
+texture = SubResource("AtlasTexture_gnscr")
+centered = false
+offset = Vector2(0, -489.77374)
+
+[node name="Visual_12" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-274.48438, -84.399765)
+texture = SubResource("AtlasTexture_jeprc")
+centered = false
+offset = Vector2(0, -493.61584)
+
+[node name="Visual_13" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-266.48438, -80.55766)
+texture = SubResource("AtlasTexture_ibh0f")
+centered = false
+offset = Vector2(0, -497.45795)
+
+[node name="Visual_14" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-258.48438, -76.71556)
+texture = SubResource("AtlasTexture_e03pj")
+centered = false
+offset = Vector2(0, -501.30008)
+
+[node name="Visual_15" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-250.48438, -72.87345)
+texture = SubResource("AtlasTexture_7sv6m")
+centered = false
+offset = Vector2(0, -505.14218)
+
+[node name="Visual_16" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-242.48438, -69.03135)
+texture = SubResource("AtlasTexture_2hqo7")
+centered = false
+offset = Vector2(0, -508.98428)
+
+[node name="Visual_17" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-234.48438, -65.18925)
+texture = SubResource("AtlasTexture_17p3h")
+centered = false
+offset = Vector2(0, -512.82635)
+
+[node name="Visual_18" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-226.48438, -61.34714)
+texture = SubResource("AtlasTexture_fvdbs")
+centered = false
+offset = Vector2(0, -516.66846)
+
+[node name="Visual_19" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-218.48438, -57.505035)
+texture = SubResource("AtlasTexture_nbsr0")
+centered = false
+offset = Vector2(0, -520.5106)
+
+[node name="Visual_20" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-210.48438, -53.66293)
+texture = SubResource("AtlasTexture_jlcqk")
+centered = false
+offset = Vector2(0, -524.3527)
+
+[node name="Visual_21" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-202.48438, -49.820824)
+texture = SubResource("AtlasTexture_pt8ds")
+centered = false
+offset = Vector2(0, -528.1948)
+
+[node name="Visual_22" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-194.48438, -45.97872)
+texture = SubResource("AtlasTexture_3fqxb")
+centered = false
+offset = Vector2(0, -532.0369)
+
+[node name="Visual_23" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-186.48438, -42.136616)
+texture = SubResource("AtlasTexture_7kbgu")
+centered = false
+offset = Vector2(0, -535.879)
+
+[node name="Visual_24" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-178.48438, -39.93125)
+texture = SubResource("AtlasTexture_1bpyj")
+centered = false
+offset = Vector2(0, -538.08435)
+
+[node name="Visual_25" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-170.48438, -43.13125)
+texture = SubResource("AtlasTexture_a8u03")
+centered = false
+offset = Vector2(0, -534.8844)
+
+[node name="Visual_26" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-162.48438, -46.33125)
+texture = SubResource("AtlasTexture_pcryn")
+centered = false
+offset = Vector2(0, -531.6844)
+
+[node name="Visual_27" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-154.48438, -46.25)
+texture = SubResource("AtlasTexture_gmg2j")
+centered = false
+offset = Vector2(0, -531.7656)
+
+[node name="Visual_28" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-146.48438, -30.25)
+texture = SubResource("AtlasTexture_qc7fh")
+centered = false
+offset = Vector2(0, -547.7656)
+
+[node name="Visual_29" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-138.48438, -29.390625)
+texture = SubResource("AtlasTexture_78nyp")
+centered = false
+offset = Vector2(0, -548.625)
+
+[node name="Visual_30" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-130.48438, -29.390625)
+texture = SubResource("AtlasTexture_u7fp4")
+centered = false
+offset = Vector2(0, -548.625)
+
+[node name="Visual_31" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-122.484375, -29.390625)
+texture = SubResource("AtlasTexture_cgttx")
+centered = false
+offset = Vector2(0, -548.625)
+
+[node name="Visual_32" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-114.484375, -29.390625)
+texture = SubResource("AtlasTexture_d0weq")
+centered = false
+offset = Vector2(0, -548.625)
+
+[node name="Visual_33" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-106.484375, -20.412497)
+texture = SubResource("AtlasTexture_kntuf")
+centered = false
+offset = Vector2(0, -557.60315)
+
+[node name="Visual_34" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-98.484375, -12.73593)
+texture = SubResource("AtlasTexture_v03sv")
+centered = false
+offset = Vector2(0, -565.2797)
+
+[node name="Visual_35" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-90.484375, -12.73593)
+texture = SubResource("AtlasTexture_begpt")
+centered = false
+offset = Vector2(0, -565.2797)
+
+[node name="Visual_36" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-82.484375, -12.73593)
+texture = SubResource("AtlasTexture_7sylu")
+centered = false
+offset = Vector2(0, -565.2797)
+
+[node name="Visual_37" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-74.484375, -12.73593)
+texture = SubResource("AtlasTexture_j023s")
+centered = false
+offset = Vector2(0, -565.2797)
+
+[node name="Visual_38" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-66.484375, -18.82968)
+texture = SubResource("AtlasTexture_xqg6h")
+centered = false
+offset = Vector2(0, -559.186)
+
+[node name="Visual_39" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-58.484375, -26.82968)
+texture = SubResource("AtlasTexture_5sjba")
+centered = false
+offset = Vector2(0, -551.186)
+
+[node name="Visual_40" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-50.484375, -23.664766)
+texture = SubResource("AtlasTexture_c6m1h")
+centered = false
+offset = Vector2(0, -554.3508)
+
+[node name="Visual_41" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-42.484375, -19.59204)
+texture = SubResource("AtlasTexture_eg1aj")
+centered = false
+offset = Vector2(0, -558.4236)
+
+[node name="Visual_42" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-34.484375, -15.519314)
+texture = SubResource("AtlasTexture_gk334")
+centered = false
+offset = Vector2(0, -562.49634)
+
+[node name="Visual_43" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-26.484375, -11.446588)
+texture = SubResource("AtlasTexture_5836j")
+centered = false
+offset = Vector2(0, -566.56903)
+
+[node name="Visual_44" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-18.484375, -7.3738613)
+texture = SubResource("AtlasTexture_e1r7s")
+centered = false
+offset = Vector2(0, -570.6418)
+
+[node name="Visual_45" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-10.484375, -3.3011353)
+texture = SubResource("AtlasTexture_io760")
+centered = false
+offset = Vector2(0, -574.7145)
+
+[node name="Visual_46" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-2.484375, -0.5791414)
+texture = SubResource("AtlasTexture_ih0gl")
+centered = false
+offset = Vector2(0, -577.43646)
+
+[node name="Visual_47" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(5.515625, -3.6360526)
+texture = SubResource("AtlasTexture_2f2tk")
+centered = false
+offset = Vector2(0, -574.3796)
+
+[node name="Visual_48" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(13.515625, -6.6929636)
+texture = SubResource("AtlasTexture_mr5g5")
+centered = false
+offset = Vector2(0, -571.32263)
+
+[node name="Visual_49" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(21.515625, -9.749875)
+texture = SubResource("AtlasTexture_3gsdj")
+centered = false
+offset = Vector2(0, -568.26575)
+
+[node name="Visual_50" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(29.515625, -12.806786)
+texture = SubResource("AtlasTexture_q5ni1")
+centered = false
+offset = Vector2(0, -565.20886)
+
+[node name="Visual_51" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(37.515625, -15.863697)
+texture = SubResource("AtlasTexture_hfuw1")
+centered = false
+offset = Vector2(0, -562.1519)
+
+[node name="Visual_52" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(45.515625, -18.920609)
+texture = SubResource("AtlasTexture_s7dx3")
+centered = false
+offset = Vector2(0, -559.09503)
+
+[node name="Visual_53" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(53.515625, -21.97752)
+texture = SubResource("AtlasTexture_gterc")
+centered = false
+offset = Vector2(0, -556.0381)
+
+[node name="Visual_54" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(61.515625, -25.03443)
+texture = SubResource("AtlasTexture_umltf")
+centered = false
+offset = Vector2(0, -552.9812)
+
+[node name="Visual_55" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(69.515625, -28.091341)
+texture = SubResource("AtlasTexture_eas0s")
+centered = false
+offset = Vector2(0, -549.92426)
+
+[node name="Visual_56" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(77.515625, -31.148252)
+texture = SubResource("AtlasTexture_ps0gp")
+centered = false
+offset = Vector2(0, -546.8674)
+
+[node name="Visual_57" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(85.515625, -34.205162)
+texture = SubResource("AtlasTexture_ebxih")
+centered = false
+offset = Vector2(0, -543.8105)
+
+[node name="Visual_58" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(93.515625, -37.262074)
+texture = SubResource("AtlasTexture_xnqhc")
+centered = false
+offset = Vector2(0, -540.75354)
+
+[node name="Visual_59" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(101.515625, -40.318985)
+texture = SubResource("AtlasTexture_vg8lm")
+centered = false
+offset = Vector2(0, -537.69666)
+
+[node name="Visual_60" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(109.515625, -43.375896)
+texture = SubResource("AtlasTexture_b5yyt")
+centered = false
+offset = Vector2(0, -534.6397)
+
+[node name="Visual_61" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(117.515625, -46.432808)
+texture = SubResource("AtlasTexture_qe5g1")
+centered = false
+offset = Vector2(0, -531.5828)
+
+[node name="Visual_62" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(125.515625, -49.48972)
+texture = SubResource("AtlasTexture_jqadl")
+centered = false
+offset = Vector2(0, -528.5259)
+
+[node name="Visual_63" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(133.51563, -52.54663)
+texture = SubResource("AtlasTexture_lj2wn")
+centered = false
+offset = Vector2(0, -525.469)
+
+[node name="Visual_64" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(141.51563, -55.603542)
+texture = SubResource("AtlasTexture_esb7v")
+centered = false
+offset = Vector2(0, -522.4121)
+
+[node name="Visual_65" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(149.51563, -58.660454)
+texture = SubResource("AtlasTexture_ti5bt")
+centered = false
+offset = Vector2(0, -519.35516)
+
+[node name="Visual_66" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(157.51563, -61.717365)
+texture = SubResource("AtlasTexture_xbo8e")
+centered = false
+offset = Vector2(0, -516.2983)
+
+[node name="Visual_67" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(165.51563, -64.77428)
+texture = SubResource("AtlasTexture_5a37o")
+centered = false
+offset = Vector2(0, -513.24133)
+
+[node name="Visual_68" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(173.51563, -67.831184)
+texture = SubResource("AtlasTexture_52h0n")
+centered = false
+offset = Vector2(0, -510.18445)
+
+[node name="Visual_69" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(181.51563, -70.8881)
+texture = SubResource("AtlasTexture_5d38n")
+centered = false
+offset = Vector2(0, -507.12753)
+
+[node name="Visual_70" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(189.51563, -73.94501)
+texture = SubResource("AtlasTexture_8l83b")
+centered = false
+offset = Vector2(0, -504.07062)
+
+[node name="Visual_71" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(197.51563, -77.00192)
+texture = SubResource("AtlasTexture_bq8g3")
+centered = false
+offset = Vector2(0, -501.0137)
+
+[node name="Visual_72" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(205.51563, -80.05883)
+texture = SubResource("AtlasTexture_at6cf")
+centered = false
+offset = Vector2(0, -497.9568)
+
+[node name="Visual_73" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(213.51563, -83.115746)
+texture = SubResource("AtlasTexture_k3qio")
+centered = false
+offset = Vector2(0, -494.89987)
+
+[node name="Visual_74" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(221.51563, -86.17265)
+texture = SubResource("AtlasTexture_2rs5l")
+centered = false
+offset = Vector2(0, -491.843)
+
+[node name="Visual_75" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(229.51563, -89.22956)
+texture = SubResource("AtlasTexture_p3bse")
+centered = false
+offset = Vector2(0, -488.78607)
+
+[node name="Visual_76" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(237.51563, -110.70469)
+texture = SubResource("AtlasTexture_7ikix")
+centered = false
+offset = Vector2(0, -467.31094)
+
+[node name="Visual_77" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(245.51563, -110.70469)
+texture = SubResource("AtlasTexture_ww08t")
+centered = false
+offset = Vector2(0, -467.31094)
+
+[node name="Visual_78" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(253.51563, -110.70469)
+texture = SubResource("AtlasTexture_j2m16")
+centered = false
+offset = Vector2(0, -467.31094)
+
+[node name="Visual_79" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(261.51563, -110.70469)
+texture = SubResource("AtlasTexture_en530")
+centered = false
+offset = Vector2(0, -467.31094)
+
+[node name="Body" type="StaticBody2D" parent="."]
+collision_mask = 0
+
+[node name="Footprint" type="CollisionPolygon2D" parent="Body"]
+polygon = PackedVector2Array(-325.25626, -110.70468, -176.34375, -39.1875, -151.85156, -48.984375, -142.05469, -29.390625, -107.765625, -29.390625, -97.96875, -12.73593, -68.578125, -12.73593, -53.882813, -27.431242, 0, 0, 241.00311, -92.09064, -84.25313, -225.32813)

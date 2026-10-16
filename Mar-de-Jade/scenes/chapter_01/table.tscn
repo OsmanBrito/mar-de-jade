@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/chapter/furniture_proxy.gd" id="1"]
+
+[node name="Table" type="Node2D"]
+script = ExtResource("1")
+furniture = "table"
+
+[node name="Body" type="StaticBody2D" parent="."]
+collision_mask = 0
+
+[node name="Footprint" type="CollisionPolygon2D" parent="Body"]
+polygon = PackedVector2Array(-65, -25, 0, -57, 65, -25, 0, 7)
+
+[node name="Bowl" type="Polygon2D" parent="."]
+visible = false
+position = Vector2(-14, -45)
+polygon = PackedVector2Array(-9, 0, -6, -5, 0, -7, 6, -5, 9, 0, 6, 5, 0, 7, -6, 5)
+color = Color(0.75, 0.71, 0.6, 1)

@@ -1,0 +1,8 @@
+{
+  "clerk_first": {"speaker":"Escrivão do cais","text":"Cada marca nestas caixas corresponde a um nome no registo. O problema é que deixaram o registo lá dentro.\n\nSe passares pelo armazém, vê se ficou sobre a mesa.","choices":[{"text":"Eu vou procurar.","action":"accept_errand"},{"text":"Por agora, vou conhecer o cais.","action":"leave"}]},
+  "clerk_waiting":{"speaker":"Escrivão do cais","text":"A porta azul, junto à passagem de pedra. O registo deve estar sobre a mesa. Não precisas de mexer na carga.","choices":[{"text":"Vou dar uma vista de olhos.","action":"leave"}]},
+  "manifest":{"speaker":"Registo de carga","text":"O livro está aberto na entrega da manhã. As marcas da madeira e dos tecidos estão legíveis; uma nota confirma que a carga foi conferida.\n\nO escrivão vai querer saber onde ficou.","choices":[{"text":"Tomar nota e voltar ao cais.","action":"read_manifest"}]},
+  "clerk_return":{"speaker":"Escrivão do cais","text":"Ficou aberto na entrega da manhã? Então está tudo certo.\n\nObrigado. Há quem passe pelo cais sem reparar no trabalho que o mantém de pé.","choices":[{"text":"O registo continua na mesa.","action":"finish_errand"}]},
+  "clerk_done":{"speaker":"Escrivão do cais","text":"Agora já sabes o caminho. Se te perderes em Lisboa, procura o cheiro da maré.","choices":[{"text":"Até à próxima.","action":"leave"}]},
+  "river":{"speaker":"À beira do Tejo","text":"A água bate devagar nos pilares. Além dos telhados e das velas, o rio abre-se para um mundo que ainda não conheces.","choices":[{"text":"Ficar um instante, depois voltar.","action":"leave"}]}
+}

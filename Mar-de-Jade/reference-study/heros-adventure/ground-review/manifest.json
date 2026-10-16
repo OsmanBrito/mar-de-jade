@@ -1,0 +1,426 @@
+{
+  "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\WulinSH\\Wulin_Data\\StreamingAssets\\aa\\StandaloneWindows64\\map_assets_all.bundle",
+  "source_sha256": "8de06f564798a510c1dbcb6b1939f815601c8cab41b126be2def976e2c247818",
+  "tool": "UnityPy 1.25.4",
+  "scope": "local visual study",
+  "source_unchanged": true,
+  "sprites": [
+    {
+      "id": -9206652930402675824,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan53.2_C_0",
+      "path": "sprites/-9206652930402675824.png",
+      "width": 66,
+      "height": 43,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.41860464215278625
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -9169589682554103143,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan25.1_gm_L_2",
+      "path": "sprites/-9169589682554103143.png",
+      "width": 32,
+      "height": 75,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.4098360538482666
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -8767726743846430467,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan57.2_C_0",
+      "path": "sprites/-8767726743846430467.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -8446267480897507206,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan32_C_0",
+      "path": "sprites/-8446267480897507206.png",
+      "width": 66,
+      "height": 41,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5609756112098694
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -8403032190937637706,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan26_gm_C_0",
+      "path": "sprites/-8403032190937637706.png",
+      "width": 64,
+      "height": 93,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.05376344174146652
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -8086545990515419760,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan43.2_C_0",
+      "path": "sprites/-8086545990515419760.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -7758254145104606123,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan51_R_1",
+      "path": "sprites/-7758254145104606123.png",
+      "width": 32,
+      "height": 228,
+      "pivot": {
+        "x": 0.0,
+        "y": 0.13076923787593842
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -7672272959428707307,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan35.1_mj_C_0",
+      "path": "sprites/-7672272959428707307.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -7601354866408584107,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan51_L_5",
+      "path": "sprites/-7601354866408584107.png",
+      "width": 32,
+      "height": 100,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.3769230842590332
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -7585277830959437944,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan55.2_C_0",
+      "path": "sprites/-7585277830959437944.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -7031469898475760066,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan54_C_0",
+      "path": "sprites/-7031469898475760066.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6853100782507069145,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan45_R_2",
+      "path": "sprites/-6853100782507069145.png",
+      "width": 32,
+      "height": 236,
+      "pivot": {
+        "x": 0.0,
+        "y": 0.06343283504247665
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6811801008111049639,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan27_by_C_0",
+      "path": "sprites/-6811801008111049639.png",
+      "width": 66,
+      "height": 43,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.41860464215278625
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6746165554656313713,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan38.2_gdd_C_0",
+      "path": "sprites/-6746165554656313713.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6436701819515899609,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan45_R_1",
+      "path": "sprites/-6436701819515899609.png",
+      "width": 32,
+      "height": 236,
+      "pivot": {
+        "x": 0.0,
+        "y": 0.0037313431967049837
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6246859213317303745,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan58.2_C_0",
+      "path": "sprites/-6246859213317303745.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6209891955869518781,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan43.2_gm_C_0",
+      "path": "sprites/-6209891955869518781.png",
+      "width": 66,
+      "height": 43,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.41860464215278625
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6042367853342069184,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan58.1_C_0",
+      "path": "sprites/-6042367853342069184.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -5924055896190840606,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan43.1_C_0",
+      "path": "sprites/-5924055896190840606.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -5729460606249771850,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan26_gm_L_1",
+      "path": "sprites/-5729460606249771850.png",
+      "width": 32,
+      "height": 77,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.22580644488334656
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -5615102637186839467,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan51_L_1",
+      "path": "sprites/-5615102637186839467.png",
+      "width": 32,
+      "height": 228,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.13076923787593842
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -5466319941100106400,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan34.1_mjp_C_0",
+      "path": "sprites/-5466319941100106400.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -5347640450511146713,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan45_L_2",
+      "path": "sprites/-5347640450511146713.png",
+      "width": 32,
+      "height": 204,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.06343283504247665
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -5212246445827952345,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan45_L_6",
+      "path": "sprites/-5212246445827952345.png",
+      "width": 32,
+      "height": 76,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.302238792181015
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -5188882442422128345,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan45_R_8",
+      "path": "sprites/-5188882442422128345.png",
+      "width": 1,
+      "height": 268,
+      "pivot": {
+        "x": 0.0,
+        "y": 0.4216417968273163
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -4737607651720258919,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan25.1_gm_L_1",
+      "path": "sprites/-4737607651720258919.png",
+      "width": 32,
+      "height": 106,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.2786885201931
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -4576508099130167001,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan45_L_5",
+      "path": "sprites/-4576508099130167001.png",
+      "width": 32,
+      "height": 108,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.24253731966018677
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -4248753516418989819,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan46.1_C_0",
+      "path": "sprites/-4248753516418989819.png",
+      "width": 50,
+      "height": 32,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.46875
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -4202559166541225089,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan22.2_zmf_C_0",
+      "path": "sprites/-4202559166541225089.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -4200040991892643314,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan43.1_gm_C_0",
+      "path": "sprites/-4200040991892643314.png",
+      "width": 66,
+      "height": 43,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.41860464215278625
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -4031147678542997992,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan22.1_zmf_C_0",
+      "path": "sprites/-4031147678542997992.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -3995084818683270011,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan30.1_dh_C_0",
+      "path": "sprites/-3995084818683270011.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/chapter/bench_proxy.gd" id="art"]
+
+[node name="Bench" type="Node2D"]
+script = ExtResource("art")
+
+[node name="Body" type="StaticBody2D" parent="."]
+collision_mask = 0
+
+[node name="Footprint" type="CollisionPolygon2D" parent="Body"]
+polygon = PackedVector2Array(-110, -25, -50, -55, 110, 25, 50, 55)
+
+[node name="Cups" type="Polygon2D" parent="."]
+visible = false
+position = Vector2(22, -22)
+polygon = PackedVector2Array(-4, -3, 4, -3, 4, 3, -4, 3)
+color = Color(0.75, 0.71, 0.6, 1)

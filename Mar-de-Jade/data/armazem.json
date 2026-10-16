@@ -1,0 +1,10 @@
+{
+  "id": "armazem",
+  "region": "Lisboa",
+  "title": "Armazém do cais",
+  "exterior": false,
+  "land_size": [
+    8,
+    7
+  ]
+}

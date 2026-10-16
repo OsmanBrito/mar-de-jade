@@ -1,0 +1,88 @@
+{
+  "id": "C01-M01/S06",
+  "events": [
+    {
+      "type": "give_water"
+    },
+    {
+      "text": "Gostava de ficar contigo.",
+      "speaker": "Herói criança",
+      "type": "line"
+    },
+    {
+      "text": "Estás aqui.",
+      "speaker": "Leonor criança",
+      "type": "line"
+    },
+    {
+      "text": "Não só hoje. Quando crescermos também.",
+      "speaker": "Herói criança",
+      "type": "line"
+    },
+    {
+      "type": "put_cup_down"
+    },
+    {
+      "text": "Viver contigo. Para sempre.",
+      "speaker": "Herói criança",
+      "type": "line"
+    },
+    {
+      "text": "Não consegues acompanhar-me nem nesta praça.",
+      "speaker": "Leonor criança",
+      "type": "line"
+    },
+    {
+      "text": "Ainda.",
+      "speaker": "Herói criança",
+      "type": "line"
+    },
+    {
+      "text": "És fraco. E isto custa-te mais do que aos outros.",
+      "speaker": "Leonor criança",
+      "type": "line"
+    },
+    {
+      "text": "Posso aprender.",
+      "speaker": "Herói criança",
+      "type": "line"
+    },
+    {
+      "text": "Vais ter de trabalhar mais. Dizer não chega.",
+      "speaker": "Leonor criança",
+      "type": "line"
+    },
+    {
+      "text": "Então trabalho.",
+      "speaker": "Herói criança",
+      "type": "line"
+    },
+    {
+      "type": "reserve_tools"
+    },
+    {
+      "text": "Esse fica?",
+      "speaker": "Herói criança",
+      "type": "line"
+    },
+    {
+      "text": "Para amanhã.",
+      "speaker": "Leonor criança",
+      "type": "line"
+    },
+    {
+      "text": "Vais estar aqui?",
+      "speaker": "Herói criança",
+      "type": "line"
+    },
+    {
+      "text": "Não me faças esperar.",
+      "speaker": "Leonor criança",
+      "type": "line"
+    },
+    {
+      "type": "leave"
+    }
+  ],
+  "title": "A primeira promessa"
+}

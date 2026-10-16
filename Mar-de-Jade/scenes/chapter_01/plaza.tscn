@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/chapter/plaza_director.gd" id="director"]
+[ext_resource type="PackedScene" path="res://scenes/maps/praca_infancia.tscn" id="world"]
+
+[node name="OBancoDaPraca" type="Node2D"]
+process_mode = 3
+script = ExtResource("director")
+
+[node name="Praca" parent="." instance=ExtResource("world")]
+process_mode = 1

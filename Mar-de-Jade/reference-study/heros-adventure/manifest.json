@@ -1,0 +1,491 @@
+{
+  "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\WulinSH\\Wulin_Data\\StreamingAssets\\aa\\StandaloneWindows64\\map_assets_all.bundle",
+  "source_sha256": "8de06f564798a510c1dbcb6b1939f815601c8cab41b126be2def976e2c247818",
+  "tool": "UnityPy 1.25.4",
+  "scope": "local visual study",
+  "source_unchanged": true,
+  "sprites": [
+    {
+      "id": -8420482549958340169,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "shitou1_C_0",
+      "path": "sprites/-8420482549958340169.png",
+      "width": 16,
+      "height": 13,
+      "pivot": {
+        "x": 0.5625,
+        "y": 0.38461539149284363
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -7659784830847247818,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "shengsuo2_C_0",
+      "path": "sprites/-7659784830847247818.png",
+      "width": 65,
+      "height": 25,
+      "pivot": {
+        "x": 0.4923076927661896,
+        "y": 0.009389671497046947
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -7206904978213774820,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "tudi3_C_0",
+      "path": "sprites/-7206904978213774820.png",
+      "width": 64,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6696543262551970666,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "matou1_R_1",
+      "path": "sprites/-6696543262551970666.png",
+      "width": 32,
+      "height": 93,
+      "pivot": {
+        "x": 0.0,
+        "y": 0.44262295961380005
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6233669055240055723,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "caodi2_C_0",
+      "path": "sprites/-6233669055240055723.png",
+      "width": 64,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -5854212205467597777,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "matou3_C_0",
+      "path": "sprites/-5854212205467597777.png",
+      "width": 55,
+      "height": 60,
+      "pivot": {
+        "x": 0.41818180680274963,
+        "y": 0.23333333432674408
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -4562805144115311904,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "caodi1_C_0",
+      "path": "sprites/-4562805144115311904.png",
+      "width": 64,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -4080058905341119046,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "xiangzi5_C_0",
+      "path": "sprites/-4080058905341119046.png",
+      "width": 28,
+      "height": 29,
+      "pivot": {
+        "x": 0.4285714328289032,
+        "y": 0.3448275923728943
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -3951572839755789580,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "shitou2_C_0",
+      "path": "sprites/-3951572839755789580.png",
+      "width": 57,
+      "height": 53,
+      "pivot": {
+        "x": 0.5438596606254578,
+        "y": 0.2641509473323822
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -3875483193943651655,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "xiangzi1_C_0",
+      "path": "sprites/-3875483193943651655.png",
+      "width": 40,
+      "height": 40,
+      "pivot": {
+        "x": 0.4749999940395355,
+        "y": 0.30000001192092896
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -3849035304319980962,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "matou2_C_0",
+      "path": "sprites/-3849035304319980962.png",
+      "width": 64,
+      "height": 96,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.19672131538391113
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -3269677401412193339,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "xiangzi4_C_0",
+      "path": "sprites/-3269677401412193339.png",
+      "width": 60,
+      "height": 56,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.2857142984867096
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -3231275566240576021,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "caodi3_C_0",
+      "path": "sprites/-3231275566240576021.png",
+      "width": 64,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -3037234966406630649,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "tudi1_C_0",
+      "path": "sprites/-3037234966406630649.png",
+      "width": 64,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -2060225738605926597,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan13_yg_C_0",
+      "path": "sprites/-2060225738605926597.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -1142310306753957116,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "xiangzi2_C_0",
+      "path": "sprites/-1142310306753957116.png",
+      "width": 63,
+      "height": 52,
+      "pivot": {
+        "x": 0.5079365372657776,
+        "y": 0.3461538553237915
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -1005934852321845138,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "xiangzi6_C_0",
+      "path": "sprites/-1005934852321845138.png",
+      "width": 64,
+      "height": 102,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.14705882966518402
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -489424315773885309,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "shengsuo3_C_0",
+      "path": "sprites/-489424315773885309.png",
+      "width": 63,
+      "height": 26,
+      "pivot": {
+        "x": 0.5079365372657776,
+        "y": 0.02222222276031971
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -89172406617815043,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan1.1_tj_C_0",
+      "path": "sprites/-89172406617815043.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 50312329120690416,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "matou4_C_0",
+      "path": "sprites/50312329120690416.png",
+      "width": 64,
+      "height": 70,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.2142857164144516
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 578371465627393532,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "matou5_C_0",
+      "path": "sprites/578371465627393532.png",
+      "width": 64,
+      "height": 116,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.32786884903907776
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 1910057883246587030,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "matou1_L_1",
+      "path": "sprites/1910057883246587030.png",
+      "width": 27,
+      "height": 122,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.44262295961380005
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 2444536404993936592,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "tudi4_C_0",
+      "path": "sprites/2444536404993936592.png",
+      "width": 66,
+      "height": 43,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5581395626068115
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 3885482452986854129,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "shitou3_C_0",
+      "path": "sprites/3885482452986854129.png",
+      "width": 46,
+      "height": 35,
+      "pivot": {
+        "x": 0.43478259444236755,
+        "y": 0.3142857253551483
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 3920823173175356789,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan1.3_tj_C_0",
+      "path": "sprites/3920823173175356789.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 4139862843518789581,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "tudi2_C_0",
+      "path": "sprites/4139862843518789581.png",
+      "width": 64,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 5214533667611639037,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan14_yg_C_0",
+      "path": "sprites/5214533667611639037.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 5320782342117202407,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "shitou1_C_0",
+      "path": "sprites/5320782342117202407.png",
+      "width": 66,
+      "height": 62,
+      "pivot": {
+        "x": 0.469696968793869,
+        "y": 0.33870968222618103
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 6622760670007882655,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan1.2_tj_C_0",
+      "path": "sprites/6622760670007882655.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 6785391481311785567,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan1.4_tj_C_0",
+      "path": "sprites/6785391481311785567.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 6991000243178368150,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "matou1_C_0",
+      "path": "sprites/6991000243178368150.png",
+      "width": 64,
+      "height": 116,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.31147539615631104
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 7098137383909689278,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "dizhuan12_C_0",
+      "path": "sprites/7098137383909689278.png",
+      "width": 66,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 7559622593755807015,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "xiangzi1_C_0",
+      "path": "sprites/7559622593755807015.png",
+      "width": 54,
+      "height": 52,
+      "pivot": {
+        "x": 0.5370370149612427,
+        "y": 0.26923078298568726
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 7923581534898614793,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "shengsuo1_C_0",
+      "path": "sprites/7923581534898614793.png",
+      "width": 47,
+      "height": 25,
+      "pivot": {
+        "x": 0.5744680762290955,
+        "y": 0.4399999976158142
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 8157597502513062162,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "shitou4_C_0",
+      "path": "sprites/8157597502513062162.png",
+      "width": 55,
+      "height": 61,
+      "pivot": {
+        "x": 0.5090909004211426,
+        "y": 0.2295081913471222
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 8500776690832486408,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "caodi4_C_0",
+      "path": "sprites/8500776690832486408.png",
+      "width": 64,
+      "height": 36,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": 8984772596877355725,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "xiangzi3_C_0",
+      "path": "sprites/8984772596877355725.png",
+      "width": 54,
+      "height": 52,
+      "pivot": {
+        "x": 0.5555555820465088,
+        "y": 0.26923078298568726
+      },
+      "pixels_per_unit": 64.0
+    }
+  ],
+  "errors": []
+}

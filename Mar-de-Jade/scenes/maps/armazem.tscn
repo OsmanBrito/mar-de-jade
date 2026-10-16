@@ -1,0 +1,67 @@
+[gd_scene load_steps=7 format=4]
+
+[ext_resource type="Script" path="res://scripts/world.gd" id="1_plgdf"]
+[ext_resource type="TileSet" path="res://data/terrain/ground.tres" id="2_i8s48"]
+[ext_resource type="PackedScene" path="res://scenes/props/crates.tscn" id="3_384nh"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/ledger.tscn" id="4_26f0h"]
+[ext_resource type="Script" path="res://scripts/interaction.gd" id="5_67ioy"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/door.tscn" id="6_v07t2"]
+
+[node name="Armazem" type="Node2D"]
+script = ExtResource("1_plgdf")
+map_id = "armazem"
+
+[node name="Ground" type="TileMapLayer" parent="."]
+texture_filter = 1
+tile_map_data = PackedByteArray("AAAAAAAAAAABAAEAAAAAAAEAAAABAAEAAAAAAAIAAAABAAEAAAAAAAMAAAABAAEAAAAAAAQAAAABAAEAAAAAAAUAAAABAAEAAAAAAAYAAAABAAEAAAABAAAAAAABAAEAAAABAAEAAAABAAEAAAABAAIAAAABAAEAAAABAAMAAAABAAEAAAABAAQAAAABAAEAAAABAAUAAAABAAEAAAABAAYAAAABAAEAAAACAAAAAAABAAEAAAACAAEAAAABAAEAAAACAAIAAAABAAEAAAACAAMAAAABAAEAAAACAAQAAAABAAEAAAACAAUAAAABAAEAAAACAAYAAAABAAEAAAADAAAAAAABAAEAAAADAAEAAAABAAEAAAADAAIAAAABAAEAAAADAAMAAAABAAEAAAADAAQAAAABAAEAAAADAAUAAAABAAEAAAADAAYAAAABAAEAAAAEAAAAAAABAAEAAAAEAAEAAAABAAEAAAAEAAIAAAABAAEAAAAEAAMAAAABAAEAAAAEAAQAAAABAAEAAAAEAAUAAAABAAEAAAAEAAYAAAABAAEAAAAFAAAAAAABAAEAAAAFAAEAAAABAAEAAAAFAAIAAAABAAEAAAAFAAMAAAABAAEAAAAFAAQAAAABAAEAAAAFAAUAAAABAAEAAAAFAAYAAAABAAEAAAAGAAAAAAABAAEAAAAGAAEAAAABAAEAAAAGAAIAAAABAAEAAAAGAAMAAAABAAEAAAAGAAQAAAABAAEAAAAGAAUAAAABAAEAAAAGAAYAAAABAAEAAAAHAAAAAAABAAEAAAAHAAEAAAABAAEAAAAHAAIAAAABAAEAAAAHAAMAAAABAAEAAAAHAAQAAAABAAEAAAAHAAUAAAABAAEAAAAHAAYAAAABAAEAAAA=")
+tile_set = ExtResource("2_i8s48")
+collision_enabled = false
+navigation_enabled = false
+
+[node name="ActorsAndProps" type="Node2D" parent="."]
+z_index = 2
+y_sort_enabled = true
+
+[node name="crates_00" type="Node2D" parent="ActorsAndProps" instance=ExtResource("3_384nh")]
+object_id = &"armazem/crates_00"
+position = Vector2(64, 96)
+scale = Vector2(0.3, 0.3)
+
+[node name="crates_01" type="Node2D" parent="ActorsAndProps" instance=ExtResource("3_384nh")]
+object_id = &"armazem/crates_01"
+position = Vector2(128, 128)
+scale = Vector2(0.25, 0.25)
+
+[node name="crates_02" type="Node2D" parent="ActorsAndProps" instance=ExtResource("3_384nh")]
+object_id = &"armazem/crates_02"
+position = Vector2(-128, 192)
+scale = Vector2(0.27, 0.27)
+
+[node name="crates_03" type="Node2D" parent="ActorsAndProps" instance=ExtResource("3_384nh")]
+object_id = &"armazem/crates_03"
+position = Vector2(320, 224)
+scale = Vector2(0.25, 0.25)
+
+[node name="manifest" type="Node2D" parent="ActorsAndProps" instance=ExtResource("4_26f0h")]
+position = Vector2(128, 256)
+script = ExtResource("5_67ioy")
+definition = {
+"cell": [4.0, 3.0],
+"id": "manifest",
+"kind": "ledger",
+"title": "Consultar o registo de carga"
+}
+
+[node name="exit" type="Node2D" parent="ActorsAndProps" instance=ExtResource("6_v07t2")]
+position = Vector2(192, 416)
+script = ExtResource("5_67ioy")
+definition = {
+"cell": [7.0, 5.0],
+"destination": "cais",
+"id": "exit",
+"kind": "door",
+"title": "Voltar ao cais"
+}
+
+[node name="Spawn" type="Marker2D" parent="."]
+position = Vector2(128, 384)

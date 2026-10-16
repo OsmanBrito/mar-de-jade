@@ -1,0 +1,6 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/chapter/composed_quay_study.gd" id="study"]
+[ext_resource type="PackedScene" path="res://scenes/maps/cais_vivo.tscn" id="map"]
+[node name="CaisComposto" type="Node2D"]
+script = ExtResource("study")
+map_scene = ExtResource("map")

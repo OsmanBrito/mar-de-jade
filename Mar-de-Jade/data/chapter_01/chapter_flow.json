@@ -1,0 +1,1971 @@
+{
+  "schema_version": 1,
+  "scenes": [
+    {
+      "id": "C01-M01/S08",
+      "title": "Uma repetição, não outra estreia",
+      "events": [
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "O apoio saiu antes do golpe.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Eu sei.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Então não precisas que eu explique. Precisas repetir.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "battle",
+          "mode": "adult_basic"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Assim?",
+          "tag": "Herói [primeiro acerto]"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Assim.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Agora vais dizer “outra vez”.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Já sabes.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "battle",
+          "mode": "adult_defense"
+        },
+        {
+          "type": "stage",
+          "action": "child_arrives"
+        },
+        {
+          "type": "line",
+          "speaker": "Criança",
+          "text": "Está muito apertada?",
+          "tag": "Criança"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Deixa-me fazer o último nó. Depois mostro-te.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Ela aprende e eu espero?",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "É um nó.",
+          "tag": "Herói"
+        },
+        {
+          "type": "task",
+          "id": "knot",
+          "caption": "Conclui o nó da sacola junto da criança."
+        },
+        {
+          "type": "line",
+          "speaker": "Trabalhador",
+          "text": "Precisamos de mãos. Caiu uma carga!",
+          "tag": "Trabalhador"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Já vamos.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Deixa a sacola aqui.",
+          "tag": "Duarte"
+        }
+      ],
+      "directions": [
+        "[No pátio, exercício adulto curto com Duarte: confirmar movimento, básico e defesa simples com o corpo/arma provisórios desta etapa. Não repetir toda a explicação infantil nem conceder Defesa Perfeita antes de M04.]",
+        "[Uma criança do abrigo se aproxima da sacola e tenta apertar uma correia.]",
+        "[Ele conclui sem prolongar uma desculpa. Um trabalhador chama do cais.]",
+        "[Partir para socorro. A familiaridade de Leonor não resolveu por ele a baixa aptidão ou o hábito de adiar.]"
+      ],
+      "map": "courtyard"
+    },
+    {
+      "id": "C01-M02/S01",
+      "title": "Uma mão livre",
+      "events": [
+        {
+          "type": "line",
+          "speaker": "Trabalhador ferido",
+          "text": "O braço… não puxes pelo braço.",
+          "tag": "Trabalhador ferido"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Ouvi. Duarte, a madeira primeiro.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Eu seguro. Conta comigo, não com a tua pressa.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Um. Dois… agora.",
+          "tag": "Herói"
+        },
+        {
+          "type": "task",
+          "id": "lever",
+          "caption": "Usa a alavanca para levantar a madeira com Duarte."
+        },
+        {
+          "type": "stage",
+          "action": "green_sight"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Há qualquer coisa a apagar-se aqui.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Trabalhador",
+          "text": "Se estás a ver sangue, eu também estou.",
+          "tag": "Trabalhador"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Não é… desculpa. Precisamos do curativo.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Mulher do cais",
+          "text": "O pano está comigo. Mantenham-no deitado.",
+          "tag": "Mulher do cais"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Vai buscar Tomé. Eu fico.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Posso ajudar a levantar…",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Agora preciso do frei.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "task",
+          "id": "fetch_tome",
+          "caption": "Vai buscar Tomé ao abrigo.",
+          "map": "room"
+        }
+      ],
+      "directions": [
+        "[Executar alavanca e retirada. O verde evidencia pulsação sob o ferimento; ele perde o foco por um instante.]",
+        "[Ele vai; atender a necessidade real não exige saber o que o olho mostra.]"
+      ],
+      "map": "cais"
+    },
+    {
+      "id": "C01-M02/S02",
+      "title": "A suspeita e a ordem ignorada",
+      "events": [
+        {
+          "type": "stage",
+          "action": "treatment"
+        },
+        {
+          "type": "line",
+          "speaker": "Observador",
+          "text": "Não ponhas essa luz nele. Sabes ao menos o que é?",
+          "tag": "Observador"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Não estou a pôr nada.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Ele soltou a madeira. Eu trato a ferida. Se queres ser útil, pede água limpa.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Observador",
+          "text": "Eu só disse…",
+          "tag": "Observador"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Ouvi. A água.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "stage",
+          "action": "leonor_arrives"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "O que caiu?",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "A amarra de uma carga.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "A que mandei substituir?",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Trabalhador",
+          "text": "O encarregado disse que aguentava mais uma semana.",
+          "tag": "Trabalhador"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Onde está?",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Mulher do cais",
+          "text": "No armazém.",
+          "tag": "Mulher do cais"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Fala com ele depois.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Ele está a ouvir-te. Já viu que estás zangada.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Não é com ele.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Eu sei. Ele precisa de ouvir isso.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Vais receber atendimento. Não vais pagar pela amarra que deviam ter trocado.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Dá-me esse pano.",
+          "tag": "Tomé"
+        }
+      ],
+      "directions": [
+        "[Tomé chega e trata por meios comuns. Um observador recua ao ver o olho.]",
+        "[Leonor chega de uma inspeção no cais. Não é primeira apresentação nem cena de enamoramento imediato.]",
+        "[Ela o encara. Ele continua sustentando o apoio do paciente.]",
+        "[Ela muda de posição e se dirige ao trabalhador, sem tom doce.]",
+        "[Ela entrega. O herói não a vence numa discussão pública; traz uma informação humana que ela não estava priorizando.]"
+      ],
+      "map": "cais"
+    },
+    {
+      "id": "C01-M02/S03",
+      "title": "Ficar até terminar",
+      "events": [
+        {
+          "type": "line",
+          "speaker": "Mulher do cais",
+          "text": "A cadeira passa se tirarem aquele caixote.",
+          "tag": "Mulher do cais"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Duarte, pelo teu lado.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Já estou.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "O encarregado virá aqui. Quero o registro da substituição e o pagamento do trabalhador.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "E quero esta passagem livre.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "task",
+          "id": "clear_passage",
+          "caption": "Retira o caixote e leva-o para o lado seco."
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Essa caixa vai para o lado seco.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Tem alguma coisa que não possas dizer sem começar por mandar?",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Acabaste de pedir três coisas a um homem que ainda nem chegou.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Isto termina antes do anoitecer.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Essa era a minha esperança.",
+          "tag": "Herói"
+        },
+        {
+          "type": "stage",
+          "action": "patient_departure"
+        }
+      ],
+      "directions": [
+        "[Paciente já estável. A família e os trabalhadores participam da retirada. Tarefa curta jogável: conduzir passagem livre e organizar materiais, não simular uma consulta médica completa.]",
+        "[Leonor recolhe da passagem o material que estava diante de si. Não manifestação espetacular para mostrar que poderia fazer tudo sozinha.]",
+        "[Ela olha a caixa e a põe no lugar indicado.]",
+        "[Os dois cumprem tarefas diferentes. Ela poderia partir após dar a ordem, mas permanece para conferir seu cumprimento; ele continua ajudando sem esperar elogio.]"
+      ],
+      "map": "cais"
+    },
+    {
+      "id": "C01-M02/S04",
+      "title": "Uma pausa conhecida",
+      "events": [
+        {
+          "type": "task",
+          "id": "meal",
+          "caption": "Leva água e as duas porções à mesa."
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Não pedi.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "A cozinha mandou levar para quem ficou.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Tu ficaste.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Tu também.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Se leres tudo outra vez, vai esfriar.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Já está frio.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Então já não há razão para esperar.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Já tinhas comido?",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Um pouco.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Não parece.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Hoje disseram-me isso duas vezes.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Esse lado ainda está sujo.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Vi.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Continuavas a esfregar com o mesmo.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Vais voltar amanhã?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "À praça. Há coisas que quero ver antes de partir.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Partir para onde?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Ainda não escolhi a ordem.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "A corte escolheu por ti?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Estou a dizer-te que ainda não escolhi.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Que sítios?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Os de que todos falam como se os conhecessem. Quero ver o que é verdade. Conhecer gente que não tenha preparado uma resposta antes de eu chegar.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Vão reconhecer-te.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Alguns. Isso não lhes diz tudo.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Vais levar uma comitiva?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Vou levar o que a viagem exigir. Não vou decidir a vida inteira nesta mesa.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "stage",
+          "action": "clean_cloth"
+        }
+      ],
+      "directions": [
+        "[Depois do atendimento e da conferência, pequeno pátio de serviço. Ele traz água e duas porções da refeição reservada pela cozinha. Não encenar jantar romântico: roupas de trabalho, gente passando e pouco tempo.]",
+        "[Ele põe a porção ao alcance dela e se senta a uma distância familiar. Ela demora a deixar o registro; não sorri.]",
+        "[Ela pousa o registro e come. O herói abre a própria porção.]",
+        "[Ele tenta limpar uma pequena raspadura no punho. Ela desloca o pano limpo para perto dele.]",
+        "[Ele usa o pano. O gesto não é comentado por Duarte nem seguido de agradecimento romântico.]",
+        "[Ele entende a correção e não insiste em supor que ela só executa planos do pai.]",
+        "[Ela recolhe o registro; ainda deixa a refeição junto de si, sem se levantar para fugir da conversa.]"
+      ],
+      "map": "service"
+    },
+    {
+      "id": "C01-M02/S05",
+      "title": "O que ele não quer perguntar",
+      "events": [
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Há quanto tempo pensas nisso?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Tempo suficiente.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Achei que ias continuar aqui.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Porque tu continuaste?",
+          "tag": "Leonor"
+        },
+        {
+          "type": "choice",
+          "options": [
+            {
+              "id": "admitir",
+              "label": "Admitir",
+              "events": [
+                {
+                  "type": "line",
+                  "speaker": "Herói",
+                  "text": "Talvez. Habituei-me a encontrar-te.",
+                  "tag": "Herói [admitir]"
+                },
+                {
+                  "type": "line",
+                  "speaker": "Leonor",
+                  "text": "E habituaste-te a não sair do mesmo exercício.",
+                  "tag": "Leonor"
+                }
+              ]
+            },
+            {
+              "id": "ironia defensiva",
+              "label": "Ironia defensiva",
+              "events": [
+                {
+                  "type": "line",
+                  "speaker": "Herói",
+                  "text": "Não sabes como é difícil arranjar quem reclame tão bem.",
+                  "tag": "Herói [ironia defensiva]"
+                },
+                {
+                  "type": "line",
+                  "speaker": "Leonor",
+                  "text": "Duarte parece competente.",
+                  "tag": "Leonor"
+                }
+              ]
+            }
+          ],
+          "flag": "departure_response"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Traz amanhã aquilo com que tens treinado.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Para quê?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Quero ver o que sabes agora.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Já sabes.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Sei o que fazias. Mostras-me o resto.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "E se não houver muito?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Não inventes. Vem.",
+          "tag": "Leonor"
+        }
+      ],
+      "directions": [
+        "[Ele olha para o pano nas mãos. Não pedir ao jogador uma resposta “correta” para ganhar romance.]",
+        "[Ele tenta encerrar o assunto; ela não permite que a graça substitua tudo.]",
+        "[Ela não o convida a acompanhá-la na viagem nem lhe promete lugar ao lado. O duelo vem no dia seguinte; a pausa mostra o que tornou a possibilidade de separação concreta.]"
+      ],
+      "map": "service"
+    },
+    {
+      "id": "C01-M03/S01",
+      "title": "Uma força que ele ainda não compreende",
+      "events": [
+        {
+          "type": "stage",
+          "action": "morning"
+        },
+        {
+          "type": "stage",
+          "action": "master_demonstration"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Conheces aquele homem?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Já o vi lutar.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "E?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Nunca contra ela.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "stage",
+          "action": "leonor_demonstration"
+        },
+        {
+          "type": "line",
+          "speaker": "Mestre",
+          "text": "Outra vez.",
+          "tag": "Mestre"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "A tua mão.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Trouxeste.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Disseste para trazer.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Ao fim da tarde. Junto do banco.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Não é agora?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Tenho coisas para terminar.",
+          "tag": "Leonor"
+        }
+      ],
+      "directions": [
+        "[Manhã. Praça pública. O jogador apenas assiste. O herói chega com Duarte. Um mestre visitante termina um confronto de treino contra um combatente experiente: desarma-o com rapidez, deixando-o a recuperar o fôlego. O nome do mestre permanece em aberto.]",
+        "[Leonor entra no espaço de treino. O mestre cumprimenta-a e assume a guarda. Ela espera. Ele avança com velocidade; Leonor desvia a arma num movimento curto. Ele recua, recompõe-se e tenta outra técnica. Ela desarma-o e coloca a ponta do instrumento junto ao peito dele antes de recuperar o equilíbrio. Expressão e respiração dela permanecem tranquilas: vitória extremamente fácil, sem esforço.]",
+        "[Ele vê os dedos a tremer e aceita o fim. Ao sair, Leonor encontra o herói com a arma de treino.]",
+        "[Ela segue caminho. O herói olha novamente para o mestre, ainda a tentar firmar a mão.]"
+      ],
+      "map": "plaza"
+    },
+    {
+      "id": "C01-M03/S02",
+      "title": "O mesmo banco",
+      "events": [
+        {
+          "type": "stage",
+          "action": "afternoon"
+        },
+        {
+          "type": "stage",
+          "action": "two_cups"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "É essa que usas?",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Estava a pensar pedir uma menos gasta ao Duarte.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "A tua mão vai continuar a ser a mesma.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "O homem desta manhã… há quanto tempo luta?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Não lhe perguntei.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "O Duarte conhecia-o.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "E tu passaste o dia a pensar nele?",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Passei o dia a pensar no que ia fazer aqui.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Quando éramos pequenos, dizias-me onde estava a errar.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Ainda te digo.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Antes de acertares.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Hoje quero ver o que sabes sem isso.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Não sou a mesma criança.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Então mostra-me.",
+          "tag": "Leonor"
+        }
+      ],
+      "directions": [
+        "[Fim da tarde, separado da luta pública por um intervalo. Praça da infância quase vazia; área afastada da passagem. Tomé e Duarte não assistem ao duelo. O herói trouxe água e duas canecas e coloca-as na sombra. Leonor chega sozinha.]",
+        "[Ele pousa a sacola junto do banco.]",
+        "[Ela espera que se coloque diante dela.]",
+        "[Ele ajusta a mão, observa o banco e calcula o espaço.]"
+      ],
+      "map": "plaza"
+    },
+    {
+      "id": "C01-M03/S03",
+      "title": "A distância — combate jogável",
+      "events": [
+        {
+          "type": "battle",
+          "mode": "duel"
+        },
+        {
+          "type": "stage",
+          "action": "fallen"
+        }
+      ],
+      "directions": [
+        "[Começa o sistema de combate do jogo. O jogador controla o protagonista: escolhe ações, ataca e defende. Não é uma sequência cinematográfica de golpes predeterminados. A derrota é obrigatória pela diferença real de poder; desempenho correto permite pequenas ações bem executadas, mas não vitória. Leonor vence sem esforço. Não introduzir imunidade arbitrária à Defesa Perfeita, que ainda não foi ensinada. Implementação e balanceamento ficam para a integração posterior do combate.]",
+        "[Após a derrota, regressar à cena narrativa. Ele está magoado, sem fôlego e não consegue sustentar as pernas. Não consegue levantar-se para continuar. Não fixar fraturas, sequelas ou lesões permanentes. Leonor encerra o confronto; não agride o herói caído.]"
+      ],
+      "map": "plaza"
+    },
+    {
+      "id": "C01-M03/S04",
+      "title": "A palavra é dela",
+      "events": [
+        {
+          "type": "stage",
+          "action": "fallen"
+        },
+        {
+          "type": "stage",
+          "action": "cup_in_reach"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Agora vais mandar-me repetir?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Hoje não.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Aqui disseste que querias viver comigo.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Lembro-me.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Para sempre.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Ainda me lembro.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "E ainda não consegues acompanhar-me.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Nem todos nasceram com os teus dons.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Eu sei. Disseste-o muitas vezes.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Porque é verdade.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Também é verdade que deixas de tentar antes de alguém te dizer que falhaste.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Vou partir.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Disseste ontem.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Quero conhecer o mundo. Quero fazer o meu nome. Não ouvir sempre o nome do meu pai antes do meu.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Mesmo já sendo tão forte?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Não conheço um porto porque consigo vencer a guarda dele.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Dez anos.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Para a tua viagem?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Para nos encontrarmos aqui outra vez. No mesmo dia.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "E até lá?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Vais trabalhar. Vais aprender o que te falta. Quando voltares, tens de conseguir superar-me.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Vais continuar a treinar também.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Evidentemente.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Então não estás a dar-me uma vantagem.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Estou a dar-te tempo. Não uma vitória.",
+          "tag": "Leonor"
+        }
+      ],
+      "directions": [
+        "[O herói fica sentado no chão, encostado ao banco. Leonor guarda a arma e permanece de pé, com a respiração tranquila.]",
+        "[Ela pousa uma caneca ao alcance da mão que ele ainda consegue usar.]",
+        "[Ele olha para a arma junto da sacola.]",
+        "[Ela olha o rio.]"
+      ],
+      "map": "plaza"
+    },
+    {
+      "id": "C01-M03/S05",
+      "title": "Dez anos, aqui",
+      "events": [
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Durante esses dez anos, não me procures.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "E se nos cruzarmos?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Não venhas ao meu encontro.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Estás a falar a sério?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Se vieres antes do dia combinado, mato-te.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "E tu?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Também não vou procurar-te.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Dez anos. Aqui.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Neste dia.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Eu venho.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Então faz alguma coisa com o tempo até lá.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "choice",
+          "options": [
+            {
+              "id": "franqueza",
+              "label": "Franqueza",
+              "events": [
+                {
+                  "type": "line",
+                  "speaker": "Herói",
+                  "text": "Não sei quanto vou conseguir. Mas não vou ficar aqui a imaginar.",
+                  "tag": "Herói [franqueza]"
+                },
+                {
+                  "type": "line",
+                  "speaker": "Leonor",
+                  "text": "Começa.",
+                  "tag": "Leonor"
+                }
+              ]
+            },
+            {
+              "id": "desafio",
+              "label": "Desafio",
+              "events": [
+                {
+                  "type": "line",
+                  "speaker": "Herói",
+                  "text": "Não vou voltar só para repetir esta luta.",
+                  "tag": "Herói [desafio]"
+                },
+                {
+                  "type": "line",
+                  "speaker": "Leonor",
+                  "text": "É o que estou a exigir.",
+                  "tag": "Leonor"
+                }
+              ]
+            }
+          ],
+          "flag": "promise_response"
+        },
+        {
+          "type": "stage",
+          "action": "leonor_leaves"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Leonor…",
+          "tag": "Herói"
+        },
+        {
+          "type": "stage",
+          "action": "cannot_stand"
+        },
+        {
+          "type": "stage",
+          "action": "silence"
+        }
+      ],
+      "directions": [
+        "[Ela sustenta o olhar, sem sinal de brincadeira.]",
+        "[Ele fica em silêncio e considera a ameaça crível.]",
+        "[Leonor vira-se e parte.]",
+        "[Ele tenta levantar-se, mas o braço falha e as pernas não o sustentam. Volta a cair sentado. Ela continua a andar e não olha para trás. Não acrescentar gesto secreto ou explicação que tranquilize o jogador sobre os sentimentos dela. O herói permanece com as duas canecas e a arma. Deixar silêncio antes da chegada de Duarte.]"
+      ],
+      "map": "plaza"
+    },
+    {
+      "id": "C01-M03/S06",
+      "title": "Quem fica",
+      "events": [
+        {
+          "type": "stage",
+          "action": "duarte_arrives"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Estava à tua espera no abrigo.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Não te mexas.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Consegues levantar-te?",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Já tentei.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Onde dói?",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Agora? Em todo o lado.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Está bem. Esperamos pelo Tomé.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Ela foi embora.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Eu vi-a passar.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Disse para voltar aqui daqui a dez anos.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Aqui?",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Neste dia.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Tenho de conseguir vencê-la.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Foi isso que ela disse?",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Foi.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Viste o homem desta manhã.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Vi.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Eu achei que podia… Não sei o que achei.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Falamos disso no abrigo.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Não consigo chegar lá.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Vais ter ajuda.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "stage",
+          "action": "tome_assistance"
+        }
+      ],
+      "directions": [
+        "[Duarte chega e vê o herói junto do banco.]",
+        "[O herói tenta endireitar-se.]",
+        "[Duarte agacha-se.]",
+        "[Duarte tenta ajudar, mas para ao vê-lo contrair-se de dor.]",
+        "[Chama um trabalhador para buscar o frei e permanece ali.]",
+        "[Duarte olha para o banco.]",
+        "[Pausa.]",
+        "[Duarte recolhe a arma e guarda-a junto da sacola.]",
+        "[Duarte fica até Tomé chegar. O regresso requer auxílio.]"
+      ],
+      "map": "plaza"
+    },
+    {
+      "id": "C01-M03/S07",
+      "title": "A porta continua aberta",
+      "events": [
+        {
+          "type": "stage",
+          "action": "treated_in_bed"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Não te levantes sem chamar.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Quanto tempo vou ficar assim?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Vamos ver como estás amanhã.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Tenho de treinar.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Hoje tens de conseguir beber essa água.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Ela deu-me dez anos.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "O Duarte contou-me.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Não contou tudo.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Disse que me mata se eu a procurar antes.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "E tu acreditaste?",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Estiveste com ela desde pequena. Diz-me tu.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Não posso responder por uma intenção que não é minha.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Então o que faço?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Primeiro, recuperas. Depois decides para onde queres ir.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Dei a minha palavra.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Ouvi. Mas a viagem que fizeres vai ser tua.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "E se eu voltar antes?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Voltas.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Ela disse…",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Estou a falar desta casa. A porta continua aberta.",
+          "tag": "Tomé"
+        }
+      ],
+      "directions": [
+        "[Tomé examina o herói antes de o mover. Com ajuda, levam-no ao abrigo. Mais tarde, o braço foi tratado e levantar-se ainda provoca dor. Tomé coloca água junto da cama.]",
+        "[Ajuda-o a sentar-se para beber.]",
+        "[Pausa.]",
+        "[Tomé pousa o pano.]",
+        "[Tomé senta-se junto dele.]",
+        "[O herói olha a tigela junto da água.]",
+        "[Tomé permanece mais algum tempo. O treino e a partida só se retomam após recuperação.]"
+      ],
+      "map": "room"
+    },
+    {
+      "id": "C01-M04/S01",
+      "title": "Voltar ao pátio",
+      "events": [
+        {
+          "type": "stage",
+          "action": "time_passes"
+        },
+        {
+          "type": "task",
+          "id": "recovery_walk",
+          "caption": "Caminha até à mesa quando o corpo o permitir.",
+          "map": "room"
+        },
+        {
+          "type": "stage",
+          "action": "recovered"
+        },
+        {
+          "type": "stage",
+          "action": "return_courtyard"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Hoje?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Hoje começamos devagar.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Com isto não consegui fazer nada.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "A mão era tua. A arma também. Vamos trabalhar nas duas.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "E se escolher outra?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Experimenta. Depois escolhes pelo que consegues aprender com ela.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "styles",
+          "options": [
+            {
+              "id": "espada",
+              "label": "Espada",
+              "events": [
+                {
+                  "type": "line",
+                  "speaker": "Herói",
+                  "text": "Quero conseguir responder antes de perder a posição.",
+                  "tag": "Herói [espada]"
+                },
+                {
+                  "type": "line",
+                  "speaker": "Tomé",
+                  "text": "Guarda-a perto do corpo. Vais descobrir que responder não é só bater.",
+                  "tag": "Tomé"
+                }
+              ],
+              "style": "ES"
+            },
+            {
+              "id": "lança",
+              "label": "Lança",
+              "events": [
+                {
+                  "type": "line",
+                  "speaker": "Herói",
+                  "text": "Se eu puder manter alguém mais longe…",
+                  "tag": "Herói [lança]"
+                },
+                {
+                  "type": "line",
+                  "speaker": "Tomé",
+                  "text": "Saberás quando deixá-lo chegar. Alcance sem apoio acaba depressa.",
+                  "tag": "Tomé"
+                }
+              ],
+              "style": "LA"
+            },
+            {
+              "id": "machado",
+              "label": "Machado",
+              "events": [
+                {
+                  "type": "line",
+                  "speaker": "Herói",
+                  "text": "Quero que o golpe conte.",
+                  "tag": "Herói [machado]"
+                },
+                {
+                  "type": "line",
+                  "speaker": "Tomé",
+                  "text": "Conta também o que deixas aberto depois dele.",
+                  "tag": "Tomé"
+                }
+              ],
+              "style": "MC"
+            },
+            {
+              "id": "arma de fogo",
+              "label": "Arma de fogo",
+              "events": [
+                {
+                  "type": "line",
+                  "speaker": "Herói",
+                  "text": "Prefiro ver antes de estar perto.",
+                  "tag": "Herói [arma de fogo]"
+                },
+                {
+                  "type": "line",
+                  "speaker": "Tomé",
+                  "text": "Então não confundas distância com segurança. Prepara cada disparo.",
+                  "tag": "Tomé"
+                }
+              ],
+              "style": "FO"
+            },
+            {
+              "id": "desarmado",
+              "label": "Desarmado",
+              "events": [
+                {
+                  "type": "line",
+                  "speaker": "Herói",
+                  "text": "Quero começar com o corpo que tenho.",
+                  "tag": "Herói [desarmado]"
+                },
+                {
+                  "type": "line",
+                  "speaker": "Tomé",
+                  "text": "Não precisarás de fingir que é outro. Precisarás de o conhecer.",
+                  "tag": "Tomé"
+                }
+              ],
+              "style": "PU"
+            }
+          ]
+        }
+      ],
+      "directions": [
+        "[Passagem de tempo: primeiro caminhar no abrigo, depois pequenas tarefas. O treino regressa quando consegue mover-se sem a dor o interromper. Tomé prepara as armas no pátio.]",
+        "[O herói pega no instrumento que usou contra Leonor.]",
+        "[O jogador pode testar os cinco estilos.]"
+      ],
+      "map": "room"
+    },
+    {
+      "id": "C01-M04/S02",
+      "title": "Defesa Perfeita",
+      "events": [
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Não sigas a ponta. Vê o movimento que a traz.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "battle",
+          "mode": "perfect_defense",
+          "on_failure": [
+            {
+              "type": "line",
+              "speaker": "Herói",
+              "text": "Fiz força.",
+              "tag": "Herói [defesa cedo]"
+            },
+            {
+              "type": "line",
+              "speaker": "Tomé",
+              "text": "Fizeste cedo. Já estavas a resistir antes de haver o que resistir.",
+              "tag": "Tomé"
+            },
+            {
+              "type": "line",
+              "speaker": "Herói",
+              "text": "Outra vez.",
+              "tag": "Herói"
+            },
+            {
+              "type": "line",
+              "speaker": "Tomé",
+              "text": "Pés no mesmo lugar?",
+              "tag": "Tomé"
+            },
+            {
+              "type": "line",
+              "speaker": "Herói",
+              "text": "Agora sim.",
+              "tag": "Herói"
+            }
+          ]
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Não senti o impacto.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Sentiste. Não o deixaste continuar.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Se tivesse sabido antes de lutar com ela…",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Terias aprendido uma coisa antes de lutar com ela. Leonor saberia outras.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Quero fazê-lo outra vez.",
+          "tag": "Herói"
+        }
+      ],
+      "directions": [
+        "[Tomé demonstra o movimento com instrumento de treino, devagar e com contacto legível. Exercício jogável seguro e repetível, integrado ao sistema de combate posteriormente.]",
+        "[Execução correta bloqueia o golpe.]",
+        "[Ele olha para a guarda.]",
+        "[Ele recompõe a posição.]",
+        "[Feedback nas repetições: «Espera pelo contacto.» / «Apoio primeiro.» / «Desta vez mantiveste-o.»]"
+      ],
+      "map": "courtyard"
+    },
+    {
+      "id": "C01-M04/S03",
+      "title": "Uma missão antes de uma ambição",
+      "events": [
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "A Botafogo parte com mantimentos para Duas Águas. Uma caravela da rota não chegou. A Ordem pede escolta na busca.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Vais?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Fui nomeado. Tu vais como aprendiz, se o capitão aceitar.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "E se disser que sou um risco?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Não vou mentir-lhe. Posso dizer que acabaste o treino.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Quando parte?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Ainda tens tempo de preparar as tuas coisas. Depois vamos falar com o capitão.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "stage",
+          "action": "give_bowl"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "A bagagem não precisa de levar dez anos. Precisa de levar o próximo dia.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Vais guardar a outra?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Para quando voltares.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Dez anos.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Tomé",
+          "text": "Para comer, não para discutir a princesa. Podes voltar antes. A palavra que deste a ela não me tranca a porta.",
+          "tag": "Tomé"
+        },
+        {
+          "type": "task",
+          "id": "pack",
+          "caption": "Guarda a tigela, a água e as provisões na sacola."
+        },
+        {
+          "type": "stage",
+          "action": "packed"
+        }
+      ],
+      "directions": [
+        "[Duarte encontra o herói no abrigo depois do treino. Tomé prepara mantimentos.]",
+        "[O herói olha para a sacola remendada.]",
+        "[Tomé entrega uma tigela embrulhada em pano.]",
+        "[Ele segura a tigela antes de a guardar.]"
+      ],
+      "map": "room"
+    },
+    {
+      "id": "C01-M04/S04",
+      "title": "A bordo",
+      "events": [
+        {
+          "type": "line",
+          "speaker": "Rodrigo",
+          "text": "Dizem-me que sabes fazer perguntas.",
+          "tag": "Rodrigo"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Depende de quem diz.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Rodrigo",
+          "text": "Aqui fazes primeiro o que o piloto mandar. Perguntas quando não souberes como, não quando não gostares.",
+          "tag": "Rodrigo"
+        },
+        {
+          "type": "line",
+          "speaker": "Beatriz",
+          "text": "Começa pela amarra azul. A branca é a minha.",
+          "tag": "Beatriz"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Não vejo diferença.",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Beatriz",
+          "text": "Então pergunta.",
+          "tag": "Beatriz"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Qual delas?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Beatriz",
+          "text": "Essa. Já estás a melhorar.",
+          "tag": "Beatriz"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Eu fico junto de ti na primeira manobra.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Para ajudar ou impedir?",
+          "tag": "Herói"
+        },
+        {
+          "type": "line",
+          "speaker": "Duarte",
+          "text": "Se trabalharmos bem, não vais notar.",
+          "tag": "Duarte"
+        },
+        {
+          "type": "task",
+          "id": "blue_rope",
+          "caption": "Trabalha na amarra azul com Duarte. A branca é de Beatriz."
+        },
+        {
+          "type": "stage",
+          "action": "ship_departs"
+        }
+      ],
+      "directions": [
+        "[Fecho do capítulo preservado da versão anterior; aprovado com a continuidade até ao embarque. Rodrigo recebe o herói como aprendiz.]",
+        "[A Botafogo parte. Portugal fica para trás. O capítulo termina no início de uma responsabilidade própria, como aprendiz, e não na aquisição imediata do comando. Até C08, não mostrar Leonor em novo enquadramento, memória visual nova ou correspondência; notícias públicas permanecem possíveis conforme o corpus.]"
+      ],
+      "map": "deck"
+    }
+  ]
+}

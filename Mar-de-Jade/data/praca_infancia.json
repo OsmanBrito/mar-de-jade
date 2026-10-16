@@ -1,0 +1,10 @@
+{
+  "region": "Lisboa",
+  "land_size": [
+    10,
+    10
+  ],
+  "title": "Praça junto ao Tejo",
+  "id": "praca_infancia",
+  "exterior": true
+}

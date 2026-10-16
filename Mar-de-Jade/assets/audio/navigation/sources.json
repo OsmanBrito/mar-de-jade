@@ -1,0 +1,66 @@
+{
+  "source": "Original procedural synthesis; tools/build_navigation_audio.py",
+  "sample_rate": 22050,
+  "assets": {
+    "sea": {
+      "seconds": 12.0,
+      "peak": 0.5195,
+      "seam": 0.0,
+      "loop": true
+    },
+    "wind": {
+      "seconds": 12.0,
+      "peak": 0.3138,
+      "seam": 0.0,
+      "loop": true
+    },
+    "bow_wash": {
+      "seconds": 12.0,
+      "peak": 0.2597,
+      "seam": 0.0,
+      "loop": true
+    },
+    "rigging": {
+      "seconds": 12.0,
+      "peak": 0.051,
+      "seam": 0.0,
+      "loop": true
+    },
+    "hull_wave_l": {
+      "seconds": 2.25,
+      "peak": 0.4058,
+      "seam": 0.0,
+      "loop": false
+    },
+    "hull_wave_r": {
+      "seconds": 2.65,
+      "peak": 0.451,
+      "seam": 0.0,
+      "loop": false
+    },
+    "sail_flap": {
+      "seconds": 1.4,
+      "peak": 0.2274,
+      "seam": 0.0,
+      "loop": false
+    },
+    "gull": {
+      "seconds": 0.85,
+      "peak": 0.2091,
+      "seam": 0.0,
+      "loop": false
+    },
+    "creak": {
+      "seconds": 0.65,
+      "peak": 0.14,
+      "seam": 0.0,
+      "loop": false
+    },
+    "discovery": {
+      "seconds": 1.1,
+      "peak": 0.2921,
+      "seam": 0.0,
+      "loop": false
+    }
+  }
+}

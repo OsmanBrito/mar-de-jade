@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/chapter/child_player.gd" id="player"]
+[ext_resource type="Script" path="res://scripts/chapter/actor_proxy.gd" id="art"]
+
+[node name="ChildPlayer" type="CharacterBody2D"]
+script = ExtResource("player")
+
+[node name="Presentation" type="Node2D" parent="."]
+script = ExtResource("art")
+identity = "child"

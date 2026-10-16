@@ -1,0 +1,6 @@
+{
+  "id": "ES01-alternative",
+  "prompt": "Use case: stylized-concept. Asset type: individual square RPG skill icon for Mar de Jade, Portugal arc, early Portuguese maritime fantasy. Style: polished hand-painted game inventory icon, restrained detailed brushwork, bold readable silhouette at 64px. Palette: warm ivory steel, worn bronze, teal jade accents and dark navy. Composition: one centered symbol occupying 75% canvas, isolated on genuinely transparent background, no frame, no lettering, no numbers, no watermark, no scenery, no gore. Depict practical physical technique; subtle short motion strokes, no magical elemental powers. Skill ES01 Corte de Precisão: single European straight sword delivering one precise diagonal cut, small clean ivory slash crossing a bronze target notch. Emphasize accuracy, one sword, no shield.",
+  "path": "res://assets/art/skills/sources/ES01-generated-v1.png",
+  "tool": "imagegen integrado"
+}

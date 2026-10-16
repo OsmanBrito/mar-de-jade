@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/chapter/training_tools_proxy.gd" id="art"]
+
+[node name="TrainingTools" type="Node2D"]
+script = ExtResource("art")

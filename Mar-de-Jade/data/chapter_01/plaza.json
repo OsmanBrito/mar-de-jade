@@ -1,0 +1,167 @@
+{
+  "id": "C01-M01/S02-S03",
+  "segments": {
+    "bank": [
+      {
+        "text": "Sai desse lado.",
+        "type": "line",
+        "speaker": "Leonor criança"
+      },
+      {
+        "text": "Cabe mais uma.",
+        "type": "line",
+        "speaker": "Herói criança"
+      },
+      {
+        "text": "Eu quero a sombra.",
+        "type": "line",
+        "speaker": "Leonor criança"
+      },
+      {
+        "type": "share_bench"
+      },
+      {
+        "text": "Trouxe água.",
+        "type": "line",
+        "speaker": "Herói criança"
+      },
+      {
+        "text": "Para ti?",
+        "type": "line",
+        "speaker": "Leonor criança"
+      },
+      {
+        "text": "Também para ti.",
+        "type": "line",
+        "speaker": "Herói criança"
+      },
+      {
+        "text": "Bebeste dela?",
+        "type": "line",
+        "speaker": "Leonor criança"
+      },
+      {
+        "text": "Há outra caneca.",
+        "type": "line",
+        "speaker": "Herói criança"
+      },
+      {
+        "type": "cups"
+      },
+      {
+        "text": "O frei disse que não acabaste o exercício.",
+        "type": "line",
+        "speaker": "Leonor criança"
+      },
+      {
+        "text": "Disse mais coisas?",
+        "type": "line",
+        "speaker": "Herói criança"
+      },
+      {
+        "text": "Acabaste?",
+        "type": "line",
+        "speaker": "Leonor criança"
+      },
+      {
+        "text": "Não.",
+        "type": "line",
+        "speaker": "Herói criança"
+      },
+      {
+        "text": "Então levanta.",
+        "type": "line",
+        "speaker": "Leonor criança"
+      },
+      {
+        "text": "Agora?",
+        "type": "line",
+        "speaker": "Herói criança"
+      },
+      {
+        "type": "stand"
+      },
+      {
+        "text": "Não vou passar a tarde a perguntar.",
+        "type": "line",
+        "speaker": "Leonor criança"
+      },
+      {
+        "type": "first_positions"
+      }
+    ],
+    "instruction": [
+      {
+        "text": "Vem até aqui.",
+        "type": "line",
+        "speaker": "Leonor criança"
+      },
+      {
+        "text": "Se te tocar, acaba?",
+        "type": "line",
+        "speaker": "Herói criança"
+      },
+      {
+        "text": "Primeiro chega.",
+        "type": "line",
+        "speaker": "Leonor criança"
+      }
+    ],
+    "blocked": [
+      {
+        "text": "O banco não vai sair da frente.",
+        "type": "line",
+        "speaker": "Leonor criança"
+      },
+      {
+        "text": "Podias ter escolhido o outro lado.",
+        "type": "line",
+        "speaker": "Herói criança"
+      },
+      {
+        "text": "Tu também.",
+        "type": "line",
+        "speaker": "Leonor criança"
+      }
+    ],
+    "arrival": [
+      {
+        "text": "Cheguei.",
+        "type": "line",
+        "speaker": "Herói criança"
+      },
+      {
+        "text": "E perdeste-me de vista.",
+        "type": "line",
+        "speaker": "Leonor criança"
+      },
+      {
+        "text": "Porque tive de olhar para o banco.",
+        "type": "line",
+        "speaker": "Herói criança"
+      }
+    ],
+    "repeat": [
+      {
+        "type": "second_positions"
+      },
+      {
+        "text": "Faz outra vez daqui.",
+        "type": "line",
+        "speaker": "Leonor criança"
+      }
+    ],
+    "finish": [
+      {
+        "text": "Agora vi.",
+        "type": "line",
+        "speaker": "Herói criança"
+      },
+      {
+        "text": "Agora.",
+        "type": "line",
+        "speaker": "Leonor criança"
+      }
+    ]
+  }
+}

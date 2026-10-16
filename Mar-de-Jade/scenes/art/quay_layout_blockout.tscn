@@ -1,0 +1,4 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/chapter/quay_layout_blockout.gd" id="layout"]
+[node name="PlantaDoCais" type="Node2D"]
+script = ExtResource("layout")

@@ -1,0 +1,38 @@
+{
+  "title": "A primeira derrota · Lisboa — Madeira",
+  "size": [36000, 29000],
+  "start": [29500, 4000],
+  "route": [[29500,4000],[24800,7800],[18500,12600],[12500,17200],[8800,20800]],
+  "land": [
+    {"name":"Portugal", "color":"8b9b74", "points":[[30000,-2000],[39000,-2000],[39000,14500],[34800,14500],[33900,12300],[33200,9800],[31900,8600],[31300,6100],[30000,4900],[30060,4380],[30000,3900],[30070,3350],[30030,2400],[30100,1400]]},
+    {"name":"Madeira", "color":"778f68", "points":[[4600,20000],[5100,19000],[6500,18800],[7900,19300],[8500,20200],[7600,20800],[6000,21000],[4800,20600]]},
+    {"name":"Porto Santo", "color":"b5aa79", "points":[[10800,17400],[11200,17000],[11900,17200],[12200,17700],[11700,18000],[11000,17900]]},
+    {"name":"Desertas", "color":"9d9977", "points":[[10000,23200],[10200,22600],[10500,22800],[10600,23900],[10300,24400],[10000,24000]]}
+  ],
+  "signals": [
+    {"id":"departing_birds","kind":"birds","pos":[28300,5100],"leads_to":"cargo","report":"Beatriz aponta as aves pela proa. Seguem uma faixa de madeira à deriva: vale a pena olhar mais adiante."},
+    {"id":"cargo_trail","kind":"drift","pos":[27400,5950],"leads_to":"cargo","report":"Madeira solta e corda na água. A corrente traz mais restos de sudoeste."},
+    {"id":"trade_current","kind":"current","pos":[24700,8100],"leads_to":"merchant","report":"Uma vela clara cruza a faixa de corrente calma. O mercante parece disposto a aproximar-se."},
+    {"id":"distant_gulls","kind":"birds","pos":[21400,10600],"leads_to":"castaway","report":"O bando desce sobre alguma coisa, para sudoeste. Duarte pede que mantenhas os olhos na água."},
+    {"id":"rescue_trail","kind":"drift","pos":[19500,12100],"leads_to":"castaway","report":"Uma prancha, um pano preso à corda… Há movimento entre os restos, mais adiante."},
+    {"id":"crossing_sails","kind":"current","pos":[16200,14800],"leads_to":"patrol","report":"Uma vela escura atravessa a corrente. Mantém espaço para mudar de rumo se ela se aproximar."},
+    {"id":"porto_gulls","kind":"birds","pos":[12800,17300],"leads_to":"porto_santo","report":"As aves regressam para leste. O perfil baixo de Porto Santo começa a distinguir-se no horizonte."},
+    {"id":"madeira_swell","kind":"current","pos":[10100,19500],"leads_to":"madeira","report":"O mar abranda a sotavento. A costa verde da Madeira está próxima; reduz a vela para procurar o ancoradouro."}
+  ],
+  "places": [
+    {"id":"lisboa","name":"Lisboa","kind":"port","pos":[29500,4000],"known":true,"detail":"A Botafogo parte como escolta. Madeira é a primeira escala antes de Duas Águas."},
+    {"id":"madeira","name":"Madeira · ancoradouro","kind":"port","pos":[8800,20800],"known":true,"detail":"Abrigo, provisões e notícias das rotas para sul. Aproxima-te para desembarcar."},
+    {"id":"porto_santo","name":"Porto Santo","kind":"port","pos":[11800,18400],"rumor":true,"detail":"Um porto menor, fora da derrota direta. Pode oferecer abrigo e informações."},
+    {"id":"desertas","name":"Desertas","kind":"island","pos":[10900,23600],"detail":"Costa rochosa e uma pequena enseada. Há marcas de passagem entre os recifes."},
+    {"id":"cargo","name":"Carga à deriva","kind":"wreck","pos":[26300,6700],"detail":"Caixas soltas, madeira partida e uma tira de pano presa numa prancha."},
+    {"id":"castaway","name":"Uma mão entre as ondas","kind":"rescue","pos":[18400,13200],"detail":"Há alguém agarrado aos restos de um batel. Aproxime a borda e lance uma corda."},
+    {"id":"merchant","name":"Mercante de cabotagem","kind":"merchant","pos":[23200,9100],"detail":"Um mercante abranda ao reconhecer a Botafogo. Traz mantimentos e uma carta parcial."},
+    {"id":"fisher","name":"Batel de pescadores","kind":"fisher","pos":[13700,17600],"detail":"Os pescadores conhecem as marcas da corrente e o abrigo de Porto Santo."},
+    {"id":"patrol","name":"Vela de corso","kind":"hostile","pos":[14300,15500],"detail":"A embarcação muda de rumo para se aproximar. Podes tentar evitá-la."},
+    {"id":"raider","name":"Corsário dos recifes","kind":"hostile","pos":[11700,22500],"detail":"Patrulha a passagem junto das Desertas."},
+    {"id":"boss","name":"O Quebra-Mar","kind":"boss","pos":[17300,22100],"rumor":true,"detail":"Navio de abalroamento. Baixa as velas, anuncia a carga e deixa os flancos expostos depois de passar."},
+    {"id":"current_1","name":"Primeira marca · espuma dividida","kind":"landmark","pos":[14400,20500],"detail":"A espuma corre em duas faixas. A água mais escura abre passagem para sudeste."},
+    {"id":"current_2","name":"Segunda marca · aves sobre a corrente","kind":"landmark","pos":[12600,22100],"detail":"As aves mantêm-se sobre uma faixa de água calma, para lá do mar cruzado."},
+    {"id":"current_3","name":"Terceira marca · abrigo dos recifes","kind":"landmark","pos":[11100,23300],"detail":"As três marcas formam uma passagem navegável. O cartógrafo já pode ligá-las na carta."}
+  ]
+}

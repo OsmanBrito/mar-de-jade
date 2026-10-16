@@ -1,0 +1,24 @@
+{
+  "buildings": [
+    {"name":"Abrigo / ligação à cidade","rect":[40,45,180,140],"height":100,"color":"8c9b99"},
+    {"name":"Armazém A","rect":[300,35,235,150],"height":120,"color":"a59d8a"},
+    {"name":"Oficina","rect":[40,375,200,160],"height":85,"color":"a59d8a"},
+    {"name":"Armazém B","rect":[310,390,230,150],"height":105,"color":"a59d8a"}
+  ],
+  "cargo":[[735,420,65,55],[810,435,50,60],[755,505,75,40]],
+  "street":[0,220,900,120],
+  "quay":[840,0,60,600],
+  "service":[580,160,240,230],
+  "pier":[900,230,220,100],
+  "gangway":[1060,330,45,35],
+  "boat":[1015,365,240,105],
+  "spawn":[125,280],
+  "markers":[
+    {"name":"Saída para a cidade","point":[20,280]},
+    {"name":"Entrada do abrigo","point":[160,205]},
+    {"name":"Refeição / serviço","point":[610,190]},
+    {"name":"Socorro / Duarte","point":[710,350]},
+    {"name":"Carga: lado seco","point":[685,470]},
+    {"name":"Embarque","point":[1090,280]}
+  ]
+}

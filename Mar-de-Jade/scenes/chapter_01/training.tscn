@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/chapter/training_director.gd" id="director"]
+[ext_resource type="PackedScene" path="res://scenes/maps/praca_infancia.tscn" id="world"]
+[node name="PrimeiroCombate" type="Node2D"]
+process_mode = 3
+script = ExtResource("director")
+[node name="Praca" parent="." instance=ExtResource("world")]
+process_mode = 1
+[node name="AttackStart" type="Marker2D" parent="."]
+position = Vector2(-120, 350)
+[node name="Target" type="Marker2D" parent="."]
+position = Vector2(-130, 280)
+[node name="DefenseStart" type="Marker2D" parent="."]
+position = Vector2(-130, 300)
+[node name="Instructor" type="Marker2D" parent="."]
+position = Vector2(-130, 230)

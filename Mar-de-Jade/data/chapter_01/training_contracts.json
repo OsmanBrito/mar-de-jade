@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "lessons": [
+    {
+      "requires_perfect_defense": false,
+      "status": "implemented_mar_de_ferro_training",
+      "lesson": "basic_attack",
+      "title": "A mão que avisa",
+      "lines": [
+        {
+          "text": "Estás a apertar demais.",
+          "speaker": "Leonor criança"
+        },
+        {
+          "text": "Se largar, cai.",
+          "speaker": "Herói criança"
+        },
+        {
+          "text": "Não mandei largar.",
+          "speaker": "Leonor criança"
+        },
+        {
+          "text": "Tu fizeste logo.",
+          "speaker": "Herói criança"
+        },
+        {
+          "text": "Eu sei fazer.",
+          "speaker": "Leonor criança"
+        },
+        {
+          "text": "Eu também quero.",
+          "speaker": "Herói criança"
+        },
+        {
+          "text": "Então olha antes de bater.",
+          "speaker": "Leonor criança"
+        },
+        {
+          "text": "Desta vez acertou.",
+          "speaker": "Herói criança"
+        },
+        {
+          "text": "O alvo não se mexeu.",
+          "speaker": "Leonor criança"
+        },
+        {
+          "text": "Podias dizer só que acertou.",
+          "speaker": "Herói criança"
+        },
+        {
+          "text": "Acerta outra vez.",
+          "speaker": "Leonor criança"
+        }
+      ],
+      "lethal": false,
+      "scene_id": "C01-M01/S04"
+    },
+    {
+      "requires_perfect_defense": false,
+      "status": "implemented_mar_de_ferro_training",
+      "lesson": "simple_defense",
+      "title": "Não fechar os olhos",
+      "lines": [
+        {
+          "text": "Olha para mim.",
+          "speaker": "Leonor criança"
+        },
+        {
+          "text": "Estou a olhar.",
+          "speaker": "Herói criança"
+        },
+        {
+          "text": "Não quando eu me mexo.",
+          "speaker": "Leonor criança"
+        },
+        {
+          "text": "Ia acertar.",
+          "speaker": "Herói criança"
+        },
+        {
+          "text": "E deixaste de ver.",
+          "speaker": "Leonor criança"
+        },
+        {
+          "text": "Foste depressa.",
+          "speaker": "Herói criança"
+        },
+        {
+          "text": "Vou repetir.",
+          "speaker": "Leonor criança"
+        },
+        {
+          "text": "Não fechei os olhos.",
+          "speaker": "Herói criança [defesa correta]"
+        },
+        {
+          "text": "Vi.",
+          "speaker": "Leonor criança"
+        },
+        {
+          "text": "Acabou?",
+          "speaker": "Herói criança"
+        },
+        {
+          "text": "Esse exercício.",
+          "speaker": "Leonor criança"
+        },
+        {
+          "text": "Ainda posso tentar.",
+          "speaker": "Herói criança"
+        },
+        {
+          "text": "Podes voltar amanhã. Hoje vais lavar isso.",
+          "speaker": "Leonor criança"
+        },
+        {
+          "text": "Estás a mandar-me embora?",
+          "speaker": "Herói criança"
+        },
+        {
+          "text": "Estou a mandar-te lavar a mão.",
+          "speaker": "Leonor criança"
+        }
+      ],
+      "lethal": false,
+      "scene_id": "C01-M01/S05"
+    }
+  ]
+}
+
+

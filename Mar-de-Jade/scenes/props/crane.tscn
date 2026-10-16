@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/map_prop.gd" id="prop_script"]
+
+[ext_resource type="Texture2D" path="res://assets/art/port_props.png" id="1_2jb3e"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f8x5c"]
+atlas = ExtResource("1_2jb3e")
+region = Rect2(627, 0, 627, 627)
+
+[node name="Crane" type="Node2D"]
+script = ExtResource("prop_script")
+
+[node name="Visual_01" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-313.5, -595.64996)
+texture = SubResource("AtlasTexture_f8x5c")
+centered = false
+
+[node name="Body" type="StaticBody2D" parent="."]
+collision_mask = 0
+
+[node name="Footprint" type="CollisionPolygon2D" parent="Body"]
+polygon = PackedVector2Array(-138, -58, 0, 34, 130, -55, 0, -116)

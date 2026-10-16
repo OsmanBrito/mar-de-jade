@@ -1,0 +1,348 @@
+extends "res://scripts/combat/mar_de_ferro/tactical_view.gd"
+const COMBAT_ART = preload("res://scripts/combat/portugal_actor_art.gd")
+const BOARD = preload("res://scripts/combat/portugal_board.gd")
+const FEEL = preload("res://scripts/combat/portugal_motion.gd")
+var arena = preload("res://scripts/combat/portugal_arena.gd").new()
+var portugal_icons: Dictionary = {}
+var icon_paths: Dictionary = {}
+var release_sound_played := false
+var weapon_tips: Dictionary = {}
+var field = preload("res://scripts/combat/portugal_field.gd").new()
+var field_state: Dictionary = {}
+## Keep reference input, previews, movement, facing, timing and impact pipeline.
+func tutorial_timing() -> bool:
+	return model.encounter!="portugal_duel"
+
+func screen(cell: Vector2i) -> Vector2: return BOARD.screen(cell)
+func cell_at(point: Vector2) -> Vector2i: return BOARD.cell_at(point)
+func tile_points(cell: Vector2i,inset := 0.0) -> PackedVector2Array: return BOARD.polygon(cell,inset)
+
+func timing_windows() -> Vector2:
+	var windows: Vector2 = super.timing_windows()
+	if phase == "timing_defend" and not model.perfect_defense_enabled: windows.y = 0.0
+	return windows
+
+func begin() -> void:
+	release_sound_played = false
+	if arena.c==null: arena.setup(host)
+	battlefield = arena
+	super.begin()
+	lesson = false
+	onboarding.skip()
+	log_lines.clear()
+	log_message("Escolhe movimento e ataque. A defesa acontece durante o golpe adversário.")
+
+func weapon_style(actor: int) -> String:
+	if actor==0 and model.get("style")!=null: return model.style
+	return "LA" if actor==1 else "ES"
+
+func attacking_animation() -> bool:
+	return phase.begins_with("animate") and not result.is_empty() and effect_kind(result.actor,result.skill) not in ["cover","brace","root","breath","heal","qi","charge","signal"]
+
+func strike_direction(actor: int) -> Vector2:
+	var origin: Vector2 = screen(result.get("movement_origin",model.units[actor].cell))
+	var aim: Vector2i = selected_cell if result.skill>=0 else (plan.cells[0] if not plan.get("cells",[]).is_empty() else model.units[actor].cell)
+	var direction := (screen(aim)-origin).normalized() if model.inside(aim) else Vector2.ZERO
+	if direction==Vector2.ZERO:
+		var face: Vector2i = Rules.DIRECTIONS[model.units[actor].face]
+		direction = Vector2(face.x-face.y,(face.x+face.y)*0.5).normalized()
+	return direction
+
+func start_animation(data: Dictionary,enemy: bool) -> void:
+	release_sound_played = false
+	super.start_animation(data,enemy)
+
+func update(delta: float) -> void:
+	if host.ending.running(): host.update_ending(delta); return
+	if attacking_animation() and not release_sound_played and weapon_style(result.actor)=="FO" and clock+maxf(0,delta-hit_pause)>=FEEL.RELEASE:
+		release_sound_played = true
+		host.combat_release_sound(weapon_style(result.actor))
+	super.update(delta)
+
+func apply_impact() -> void:
+	super.apply_impact()
+	if not (sequence_active and plan.get("no_counter",false)):
+		hit_pause = FEEL.hit_pause(weapon_style(result.actor),result,host.progress.data.options.reduced_fx,model.encounter.begins_with("portugal_child"))
+
+func unit_position(id: int) -> Vector2:
+	var point: Vector2 = super.unit_position(id)
+	if not attacking_animation(): return point
+	var reduced: bool = host.progress.data.options.reduced_fx
+	if id==result.actor:
+		var origin: Vector2i = result.get("movement_origin",model.units[id].cell)
+		if origin==result.get("movement_destination",origin) and not result.has("reposition_path"):
+			point = screen(model.units[id].cell)+FEEL.actor_offset(weapon_style(id),clock,strike_direction(id),reduced)
+	else:
+		for hit in result.get("hits",[]):
+			if hit.id==id and hit.damage>0:
+				var away: Vector2 = (screen(model.units[id].cell)-screen(model.units[result.actor].cell)).normalized()
+				var contact := maxf(0,sin(clampf((clock-ActorMotion.IMPACT)/0.28,0,1)*PI)) if result.get("impacted",false) else 0.0
+				point += away*contact*(4.0 if weapon_style(result.actor)=="MC" else 2.0)*(0.4 if reduced else 1.0)
+	return point
+
+func draw() -> void:
+	weapon_tips.clear()
+	arena.draw_ground(model.encounter,motion_clock,host.progress.data.options.reduced_fx)
+	draw_board()
+	draw_header()
+	draw_sidebar()
+	if phase == "aim" and is_player(): draw_aim_hero_hud()
+	draw_controls()
+	if detail_skill >= 0: draw_details()
+
+func draw_board() -> void:
+	field_state = field.snapshot(self)
+	# Other encounter types retain the inherited objectives and telegraphs.
+	if not model.objective.is_empty() or not model.optional_objective.is_empty(): super.draw_board(); return
+	field.draw_ground(self,field_state)
+	var objects: Array = []
+	for cell in model.obstacles: objects.append({"cell":cell,"obstacle":true,"id":-1})
+	for unit in model.units:
+		if unit.get("withdrawn",false): continue
+		if unit.hp>0 or (phase.begins_with("animate") and result.get("hits",[]).any(func(hit): return hit.id==unit.id)):
+			objects.append({"cell":unit.cell,"obstacle":false,"id":unit.id})
+	objects.sort_custom(func(a,b): return a.cell.x+a.cell.y<b.cell.x+b.cell.y)
+	for object in objects:
+		if object.obstacle: battlefield.draw_obstacle(model.encounter,object.cell)
+		else: draw_unit(object.id)
+	field.draw_annotations(self,field_state)
+	if phase.begins_with("animate"): draw_skill_effect()
+	for actor in passive_feedback.pulses: draw_passive_badge(actor)
+	for item in floats:
+		var point: Vector2 = unit_position(item.id)+Vector2(0,-53-(1.5-item.life)*23-item.get("offset",0))
+		host.centered(item.text,point.y,12,item.color,point.x)
+
+func draw_unit(id: int) -> void:
+	var unit: Dictionary = model.units[id]
+	var p: Vector2 = unit_position(id)
+	var colour: Color = JADE if unit.team == 0 else Color("bb969e")
+	var face: int = facing if phase == "facing" and id == model.current_id else unit.face
+	var direction: Vector2i = Rules.DIRECTIONS[face]
+	var vector: Vector2 = visual_direction(id,Vector2((direction.x-direction.y)*BOARD.STEP.x,(direction.x+direction.y)*BOARD.STEP.y).normalized())
+	var child: bool = model.encounter.begins_with("portugal_child")
+	var height := 44.0 if child else 60.0
+	var reaction := damage_reaction(id)
+	draw_passive_pulse(id,p)
+	if unit.kind == "target":
+		arena.draw_target(p,reaction,clock)
+		height = 59
+	else:
+		var pose := "ready"
+		var pose_time := motion_clock
+		var style := weapon_style(id)
+		if phase=="walk" and walk_actor==id: pose = "walk"; pose_time = clock
+		if phase.begins_with("animate") and result.get("actor",-1)==id:
+			pose = "guard" if effect_kind(id,result.skill) in ["cover","brace","root","breath"] else {"LA":"thrust","MC":"crush","FO":"shoot","PU":"punch"}.get(style,"attack")
+			pose_time = clock
+		elif phase=="timing_defend" and plan.get("targets",[]).has(id): pose = "parry"; pose_time = 0.2
+		elif phase.begins_with("animate") and result.get("impacted",false):
+			for hit in result.get("hits",[]):
+				if hit.id==id and hit.damage==0: pose = "parry"; pose_time = clock-ActorMotion.IMPACT
+		if reaction>0: pose = "hurt"; pose_time = maxf(0,clock-ActorMotion.IMPACT)
+		if unit.hp<=0 and reaction<0.3: pose = "kneel"
+		weapon_tips[id] = draw_combat_actor(unit,p,vector,pose,pose_time,style,reaction)
+	var arrow := p+vector*19
+	host.draw_colored_polygon(PackedVector2Array([arrow+vector*4,arrow-vector*3+vector.orthogonal()*3,arrow-vector*3-vector.orthogonal()*3]),GOLD if id==model.current_id else colour)
+	if id == model.current_id:
+		host.centered("▼ "+unit.name,p.y-height-16,10,GOLD,p.x)
+	elif (phase=="aim" and preview_cell()==unit.cell) or (phase=="choose" and hover_cell==unit.cell): host.centered(unit.name,p.y-height-16,10,PAPER,p.x)
+	host.bar(p+Vector2(-18,-height-10),Vector2(36,3),unit.hp,unit.max_hp,JADE if unit.team==0 else RED)
+	host.bar(p+Vector2(-18,-height-5),Vector2(36,2),unit.posture,unit.max_posture,GOLD)
+
+func draw_combat_actor(unit: Dictionary,point: Vector2,direction: Vector2,pose: String,time: float,style: String,reaction: float) -> Vector2:
+	return COMBAT_ART.draw_actor(host,COMBAT_ART.identity(model,unit),point,direction.x<0,pose,time,style,model.safe_training,reaction,host.progress.data.options.reduced_fx,direction)
+
+func icon_texture(actor: int, skill: int) -> Texture2D:
+	if icon_paths.is_empty():
+		for row in JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/skill_icons.json")).skills: icon_paths[row.id] = row.icon
+	var key := "basic"
+	if skill==4 and actor==1: key = "DU01"
+	elif skill==1 and model.get("style")!=null: key = model.FIRST[model.style]
+	var path: String = "res://assets/art/combat/portugal/basic-attack.png" if key=="basic" else icon_paths.get(key,"")
+	if path.is_empty(): return null
+	if not portugal_icons.has(path): portugal_icons[path] = load(path) if ResourceLoader.exists(path) else ImageTexture.create_from_image(Image.load_from_file(path))
+	return portugal_icons[path]
+
+func draw_header() -> void:
+	super.draw_header()
+	host.panel(Rect2(16,12,222,61),BG,EDGE)
+	host.text_at(("INFÂNCIA" if model.encounter.begins_with("portugal_child") else "PORTUGAL")+" · RONDA %02d"%model.round_no,Vector2(30,33),10,GOLD)
+	host.text_at(host.fit_text(model.caption,195,13),Vector2(30,57),13,PAPER)
+
+
+func compact_command_name(skill: int, full_name: String) -> String:
+	return "Básico" if skill == 0 else full_name
+
+func draw_icon_button(button_id: String,shortcut: int,skill: int,rect: Rect2,rarity: Color,enabled: bool,detail: String,fallback_name: String) -> void:
+	host.button(button_id,"",rect,enabled)
+	host.buttons[-1]["inspect_skill"] = skill
+	host.draw_rect(Rect2(rect.position+Vector2(4,4),Vector2(2,rect.size.y-8)),rarity)
+	presentation.draw_icon(host,icon_texture(model.current_id,skill),Rect2(rect.position+Vector2(12,5),Vector2(36,36)))
+	host.text_at(host.fit_text("%d · %s"%[shortcut,fallback_name],rect.size.x-80,14),rect.position+Vector2(60,21),14,PAPER if enabled else MUTED)
+	host.text_at(detail,rect.position+Vector2(60,38),10,MUTED)
+
+func timing_title() -> String:
+	if phase=="timing_defend": return "Reagir ao golpe · "+plan.name
+	return super.timing_title()
+
+func effect_kind(actor: int,skill: int) -> String:
+	if actor==0 and skill in [0,1] and model.get("style")!=null:
+		if skill==1 and model.style=="MC": return "brace"
+		return {"ES":"cut","LA":"line","MC":"heavy","FO":"ranged","PU":"punch"}.get(model.style,"cut")
+	return super.effect_kind(actor,skill)
+
+func draw_skill_effect() -> void:
+	if not attacking_animation(): super.draw_skill_effect(); return
+	var actor: int = result.actor
+	var style := weapon_style(actor)
+	var reduced: bool = host.progress.data.options.reduced_fx
+	var chest := 23.0 if model.encounter.begins_with("portugal_child") else 32.0
+	var source: Vector2 = unit_position(actor)+Vector2(0,-chest)
+	var aim: Vector2i = selected_cell if result.skill>=0 else (plan.cells[0] if not plan.get("cells",[]).is_empty() else model.units[actor].cell)
+	var target: Vector2 = screen(aim)+Vector2(0,-chest)
+	var direction := strike_direction(actor)
+	var kind := effect_kind(actor,result.skill)
+	var tint := Color("efe7cf") if style in ["ES","PU"] else Color("d6c394")
+	if style=="PU":
+		var punch := FEEL.extension(style,clock)
+		if clock>=0.34 and clock<0.58:
+			host.draw_line(source.lerp(target,0.5),source.lerp(target,punch),Color(tint,0.45*(1.0-smoothstep(ActorMotion.IMPACT,0.58,clock))),1.7,true)
+	else: draw_skill_travel(kind,source,target,direction,tint,reduced)
+	if not result.get("impacted",false): return
+	var progress := clampf((clock-ActorMotion.IMPACT)/0.24,0,1)
+	var fade := (1.0-progress)*(0.55 if reduced else 1.0)
+	if fade<=0: return
+	for hit in result.get("hits",[]):
+		var centre: Vector2 = unit_position(hit.id)+Vector2(0,-chest)
+		if hit.damage==0 and hit.get("resource","").is_empty():
+			var perfect: bool = int(result.get("defense_grades",{}).get(hit.id,0))==2
+			var ink := Color(GOLD if perfect else JADE,fade)
+			var angle := direction.angle()+PI
+			host.draw_arc(centre,10+progress*5,angle-0.7,angle+0.7,12,ink,2.0,true)
+			if perfect: impact_sparks(centre,Color(PAPER,fade),progress,2 if reduced else 4)
+		elif hit.damage>0:
+			impact_sparks(centre,Color(tint,fade),progress,2 if reduced else (5 if style=="MC" else 3))
+			if style=="MC" and not reduced:
+				var ground: Vector2 = unit_position(hit.id)
+				for side in [-1,1]: host.draw_circle(ground+Vector2(side*(4+progress*10),-progress*3),1+progress*2,Color(0.64,0.58,0.43,fade*0.22))
+		if hit.get("breaks",false):
+			for side in [-1,1]: host.draw_line(centre+Vector2(side*7,-9),centre+Vector2(side*(10+progress*9),1+progress*4),Color(GOLD,fade),1.8,true)
+
+func draw_skill_travel(kind: String,actor: Vector2,aim: Vector2,direction: Vector2,tint: Color,reduced: bool) -> void:
+	if kind=="ranged" and result.get("actor",-1)==0 and model.get("style")=="FO":
+		if clock>=ActorMotion.PROJECTILE_RELEASE and clock<ActorMotion.IMPACT:
+			var muzzle: Vector2 = weapon_tips.get(result.actor,actor+direction*28)
+			var progress := (clock-ActorMotion.PROJECTILE_RELEASE)/(ActorMotion.IMPACT-ActorMotion.PROJECTILE_RELEASE)
+			host.draw_line(muzzle,muzzle.lerp(aim,progress),Color(GOLD,0.7*(1-progress)),1.5,true)
+			host.draw_circle(muzzle,4*(1-progress),Color(1,0.84,0.45,0.8*(1-progress)))
+			if not reduced: host.draw_circle(muzzle+Vector2(progress*7,-progress*8),3+progress*5,Color(0.83,0.81,0.7,0.18*(1-progress)))
+		if not reduced and clock>=ActorMotion.PROJECTILE_RELEASE and clock<0.9:
+			var age := (clock-ActorMotion.PROJECTILE_RELEASE)/(0.9-ActorMotion.PROJECTILE_RELEASE)
+			var muzzle: Vector2 = weapon_tips.get(result.actor,actor+direction*28)
+			host.draw_circle(muzzle+Vector2(age*10,-age*14),3+age*7,Color(0.84,0.82,0.75,0.20*(1-age)))
+		return
+	super.draw_skill_travel(kind,actor,aim,direction,tint,reduced)
+
+func draw_sidebar() -> void:
+	super.draw_sidebar()
+	if is_player() and phase != "aim":
+		host.draw_rect(Rect2(166,246,63,25),Color("25383e"))
+		host.text_at("—",Vector2(190,263),9,MUTED)
+	if is_player() and phase=="move":
+		var state: Dictionary = field_state
+		host.panel(Rect2(16,287,222,109),BG,EDGE)
+		host.text_at("MOVIMENTO",Vector2(29,307),10,JADE)
+		if not model.inside(state.focus):
+			host.text_at("Escolhe uma casa no campo.",Vector2(29,329),11,PAPER)
+		elif state.valid or not state.path.is_empty():
+			host.text_at("Percurso: %d casa%s"%[state.cost,"" if state.cost==1 else "s"],Vector2(29,329),12,PAPER)
+			var budget: String = "Movimento: %d → %d"%[state.budget,state.budget-state.cost] if state.valid else "Disponível: %d · faltam %d"%[state.budget,state.cost-state.budget]
+			host.text_at(budget,Vector2(29,350),11,JADE if state.valid else RED)
+			if not state.valid: host.text_at("Movimento insuficiente.",Vector2(29,371),11,RED)
+		else:
+			var lines := wrap_hint(state.reason,195,11,3)
+			for i in lines.size(): host.text_at(lines[i],Vector2(29,329+i*18),11,RED if state.focus!=state.origin else PAPER)
+		host.text_at("Enter / A · confirmar" if state.valid else "Escolhe outro destino.",Vector2(29,389),10,MUTED)
+
+func draw_preview_sidebar() -> void:
+	var state: Dictionary = field_state
+	if state.is_empty() or state.valid: super.draw_preview_sidebar(); return
+	var definition: Dictionary = model.skill_def(model.current_id,selected_skill)
+	host.panel(Rect2(16,86,222,310),BG,GOLD)
+	host.text_at(host.fit_text(model.current().name+" · PREVISÃO",197,12),Vector2(29,108),12,GOLD)
+	host.text_at(host.fit_text(definition.name,197,16),Vector2(29,131),16,PAPER)
+	host.text_at("%d alento · 1 ação"%definition.cost,Vector2(29,152),11,MUTED)
+	var reason: String = state.reason if not state.reason.is_empty() else "Escolhe um alvo nos cantos dourados."
+	var lines := wrap_hint(reason,197,12,5)
+	for i in lines.size(): host.text_at(lines[i],Vector2(29,188+i*19),12,RED if model.inside(state.focus) else PAPER)
+	host.text_at("Tracejado: alcance máximo.",Vector2(29,304),11,MUTED)
+	host.text_at("Dourado: alvo válido.",Vector2(29,326),11,MUTED)
+	host.text_at("Tab · percorrer alvos",Vector2(29,381),10,GOLD)
+
+func draw_controls() -> void:
+	if host.completed and host.ending.has_result:
+		host.buttons.clear(); host.ending.draw(host); return
+	if phase=="telegraph":
+		host.panel(Rect2(16,408,928,118),BG,EDGE)
+		host.centered("GOLPE ANUNCIADO · "+plan.name.to_upper(),442,19,RED)
+		host.centered(defense_instruction(),475,13,JADE if not model.perfect_defense_enabled else GOLD)
+		host.centered("Lê o gesto. A defesa é uma reação ao ataque adversário.",509,11,MUTED)
+		return
+	super.draw_controls()
+	if phase == "choose" and is_player():
+		host.buttons = host.buttons.filter(func(item): return item.id != "t_undo")
+		host.panel(Rect2(590,476,218,41),BG,BG)
+		host.button("t_move","G · Mover",Rect2(590,478,105,37),model.current().moves > 0)
+		host.button("t_undo","Z · Desfazer",Rect2(700,478,105,37),can_undo_move())
+
+
+func draw_timing() -> void:
+	super.draw_timing()
+	if phase == "timing_defend" and not model.perfect_defense_enabled:
+		host.draw_rect(Rect2(331,430,587,20),BG)
+		host.text_at("CONFIRMA NO VERDE · DEFESA SIMPLES",Vector2(331,446),11,JADE)
+		host.draw_rect(Rect2(331,494,587,22),BG)
+		host.text_at("Bom reduz o impacto. Defesa Perfeita será aprendida com Tomé.",Vector2(331,510),11,PAPER)
+		host.draw_rect(Rect2(34,496,278,20),BG)
+		host.text_at("Prime uma vez no sinal verde.",Vector2(34,510),11,PAPER)
+
+func defense_instruction() -> String:
+	return "ESPAÇO no dourado · Defesa Perfeita" if model.perfect_defense_enabled else "ESPAÇO no verde · defesa simples"
+
+func tutorial_tip() -> Array:
+	if phase=="timing_defend":
+		return ["DEFESA PERFEITA" if model.perfect_defense_enabled else "DEFESA SIMPLES",defense_instruction(),"Confirma apenas uma vez.","A orientação final importa."]
+	if phase=="timing_attack": return ["O MOMENTO DO GOLPE","Confirma uma vez no dourado.","O impacto acontece depois do gesto.","O básico recupera alento."]
+	if phase=="facing" or (is_player() and model.current().acted): return ["ORIENTAÇÃO FINAL","Q / E ou clique: escolhe a direção.","Enter termina o turno.","A defesa acontece no golpe inimigo."]
+	if model.encounter=="portugal_duel": return ["AVALIAÇÃO DE LEONOR","Escolhe as tuas ações.","Leonor está muito além do aprendiz.","A derrota continua a história."]
+	if model.get("mode")=="school": return ["BÁSICO → TÉCNICA","Básico num turno; técnica no seguinte.","Confere custo e alcance antes de agir.","Podes mover antes e depois da ação."]
+	return ["UMA AÇÃO POR TURNO","Mover não consome o ataque.","Confirma alcance e alvo antes de agir.","A defesa acontece no turno inimigo."]
+
+func input_event(event: InputEvent) -> void:
+	# SubViewportContainer already maps a mouse event to the reference's 960×540
+	# coordinates. Use that event position rather than polling the outer window.
+	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
+		super.input_event(event)
+		return
+	var point: Vector2 = event.position
+	if detail_skill >= 0:
+		for button in host.buttons:
+			if button.id == "t_detail_close" and button.rect.has_point(point): detail_skill = -1; return
+		return
+	if phase == "cutin" or not onboarding.active.is_empty(): return
+	for button in host.buttons:
+		if not button.rect.has_point(point): continue
+		if button.has("inspect_skill") and not button.enabled:
+			detail_skill = button.inspect_skill; return
+		if button.enabled:
+			activate(button.id); return
+	if phase not in ["choose","move","aim","facing"] or point.y > 399: return
+	var cell: Vector2i = cell_at(point)
+	if not model.inside(cell): return
+	if phase == "facing":
+		if cell != model.current().cell: facing = model.direction_index(cell-Vector2i(model.current().cell))
+		return
+	select_cell(cell,event.double_click)
+
+
+

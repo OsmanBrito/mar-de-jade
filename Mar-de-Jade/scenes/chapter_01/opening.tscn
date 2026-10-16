@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/chapter/opening_director.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/maps/abrigo_infancia.tscn" id="2"]
+
+[node name="UmLugarAMesa" type="Node2D"]
+process_mode = 3
+script = ExtResource("1")
+next_scene_path = "res://scenes/chapter_01/plaza.tscn"
+
+[node name="Abrigo" parent="." instance=ExtResource("2")]
+
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(64, 210)
+zoom = Vector2(1.25, 1.25)

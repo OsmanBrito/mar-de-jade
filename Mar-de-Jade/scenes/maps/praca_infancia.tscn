@@ -1,0 +1,108 @@
+[gd_scene load_steps=11 format=4]
+
+[ext_resource type="Script" path="res://scripts/chapter/plaza_world.gd" id="1_gpd2k"]
+[ext_resource type="PackedScene" path="res://scenes/chapter_01/child_player.tscn" id="2_u5ehp"]
+[ext_resource type="TileSet" path="res://data/terrain/ground.tres" id="3_fkhis"]
+[ext_resource type="PackedScene" path="res://scenes/chapter_01/bench.tscn" id="4_5vywc"]
+[ext_resource type="Script" path="res://scripts/chapter/bench_proxy.gd" id="5_l7aa5"]
+[ext_resource type="PackedScene" path="res://scenes/props/crates.tscn" id="6_sm6xb"]
+[ext_resource type="Script" path="res://scripts/map_prop.gd" id="7_vp2g7"]
+[ext_resource type="PackedScene" path="res://scenes/props/pine.tscn" id="8_vx1tw"]
+[ext_resource type="Script" path="res://scripts/chapter/actor_proxy.gd" id="9_rpoyy"]
+[ext_resource type="Script" path="res://scripts/chapter/tutorial_marker.gd" id="10_d38on"]
+
+[node name="PracaInfancia" type="Node2D"]
+script = ExtResource("1_gpd2k")
+map_id = "praca_infancia"
+player_scene = ExtResource("2_u5ehp")
+
+[node name="Ground" type="TileMapLayer" parent="."]
+texture_filter = 1
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAkAAAAAAAAAAAABAAAAAAAAAAAAAAABAAEAAAAAAAAAAAABAAIAAAAAAAAAAAABAAMAAAAAAAAAAAABAAQAAAAAAAAAAAABAAUAAAAAAAAAAAABAAYAAAAAAAAAAAABAAcAAAAAAAAAAAABAAgAAAAAAAAAAAABAAkAAAAAAAAAAAACAAAAAAAAAAAAAAACAAEAAAAAAAAAAAACAAIAAAAAAAAAAAACAAMAAAAAAAAAAAACAAQAAAAAAAAAAAACAAUAAAAAAAAAAAACAAYAAAAAAAAAAAACAAcAAAAAAAAAAAACAAgAAAAAAAAAAAACAAkAAAAAAAAAAAADAAAAAAAAAAAAAAADAAEAAAAAAAAAAAADAAIAAAAAAAAAAAADAAMAAAAAAAAAAAADAAQAAAAAAAAAAAADAAUAAAAAAAAAAAADAAYAAAAAAAAAAAADAAcAAAAAAAAAAAADAAgAAAAAAAAAAAADAAkAAAAAAAAAAAAEAAAAAAAAAAAAAAAEAAEAAAAAAAAAAAAEAAIAAAAAAAAAAAAEAAMAAAAAAAAAAAAEAAQAAAAAAAAAAAAEAAUAAAAAAAAAAAAEAAYAAAAAAAAAAAAEAAcAAAAAAAAAAAAEAAgAAAAAAAAAAAAEAAkAAAAAAAAAAAAFAAAAAAAAAAAAAAAFAAEAAAAAAAAAAAAFAAIAAAAAAAAAAAAFAAMAAAAAAAAAAAAFAAQAAAAAAAAAAAAFAAUAAAAAAAAAAAAFAAYAAAAAAAAAAAAFAAcAAAAAAAAAAAAFAAgAAAAAAAAAAAAFAAkAAAAAAAAAAAAGAAAAAAAAAAAAAAAGAAEAAAAAAAAAAAAGAAIAAAAAAAAAAAAGAAMAAAAAAAAAAAAGAAQAAAAAAAAAAAAGAAUAAAAAAAAAAAAGAAYAAAAAAAAAAAAGAAcAAAAAAAAAAAAGAAgAAAAAAAAAAAAGAAkAAAAAAAAAAAAHAAAAAAAAAAAAAAAHAAEAAAAAAAAAAAAHAAIAAAAAAAAAAAAHAAMAAAAAAAAAAAAHAAQAAAAAAAAAAAAHAAUAAAAAAAAAAAAHAAYAAAAAAAAAAAAHAAcAAAAAAAAAAAAHAAgAAAAAAAAAAAAHAAkAAAAAAAAAAAAIAAAAAAAAAAAAAAAIAAEAAAAAAAAAAAAIAAIAAAAAAAAAAAAIAAMAAAAAAAAAAAAIAAQAAAAAAAAAAAAIAAUAAAAAAAAAAAAIAAYAAAAAAAAAAAAIAAcAAAAAAAAAAAAIAAgAAAAAAAAAAAAIAAkAAAAAAAAAAAAJAAAAAAAAAAAAAAAJAAEAAAAAAAAAAAAJAAIAAAAAAAAAAAAJAAMAAAAAAAAAAAAJAAQAAAAAAAAAAAAJAAUAAAAAAAAAAAAJAAYAAAAAAAAAAAAJAAcAAAAAAAAAAAAJAAgAAAAAAAAAAAAJAAkAAAAAAAAAAAA=")
+tile_set = ExtResource("3_fkhis")
+collision_enabled = false
+navigation_enabled = false
+
+[node name="ActorsAndProps" type="Node2D" parent="."]
+z_index = 2
+y_sort_enabled = true
+
+[node name="Bench" type="Node2D" parent="ActorsAndProps" instance=ExtResource("4_5vywc")]
+position = Vector2(64, 352)
+script = ExtResource("5_l7aa5")
+
+[node name="Obstacle" type="Node2D" parent="ActorsAndProps" instance=ExtResource("6_sm6xb")]
+position = Vector2(-64, 224)
+scale = Vector2(0.2, 0.2)
+script = ExtResource("7_vp2g7")
+object_id = &"praca_infancia/obstacle"
+
+[node name="pine_01" type="Node2D" parent="ActorsAndProps" instance=ExtResource("8_vx1tw")]
+position = Vector2(-350, 300)
+scale = Vector2(0.3, 0.3)
+script = ExtResource("7_vp2g7")
+object_id = &"praca_infancia/pine_01"
+
+[node name="pine_02" type="Node2D" parent="ActorsAndProps" instance=ExtResource("8_vx1tw")]
+position = Vector2(360, 300)
+scale = Vector2(0.3, 0.3)
+script = ExtResource("7_vp2g7")
+object_id = &"praca_infancia/pine_02"
+
+[node name="Leonor" type="Node2D" parent="ActorsAndProps"]
+position = Vector2(190, 352)
+script = ExtResource("9_rpoyy")
+identity = "leonor"
+posture = "standing"
+
+[node name="Body" type="StaticBody2D" parent="ActorsAndProps/Leonor"]
+collision_mask = 0
+
+[node name="Footprint" type="CollisionPolygon2D" parent="ActorsAndProps/Leonor/Body"]
+polygon = PackedVector2Array(10, 0, 8.660254, 5, 4.9999995, 8.6602545, -4.371139e-07, 10, -5.0000005, 8.660254, -8.660254, 5.0000005, -10, -8.742278e-07, -8.660254, -4.9999995, -4.999999, -8.6602545, 1.1924881e-07, -10, 4.999999, -8.6602545, 8.660254, -5.000002)
+
+[node name="Spawn" type="Marker2D" parent="."]
+position = Vector2(88, 352)
+
+[node name="Acompanhante" type="Node2D" parent="ActorsAndProps"]
+position = Vector2(300, 215)
+script = ExtResource("9_rpoyy")
+identity = "hero"
+npc_id = "attendant"
+
+[node name="Body" type="StaticBody2D" parent="ActorsAndProps/Acompanhante"]
+collision_mask = 0
+
+[node name="Footprint" type="CollisionPolygon2D" parent="ActorsAndProps/Acompanhante/Body"]
+polygon = PackedVector2Array(-12, 0, -8, -8, 0, -12, 8, -8, 12, 0, 8, 8, 0, 12, -8, 8)
+
+[node name="Staging" type="Node2D" parent="."]
+
+[node name="ChildInSun" type="Marker2D" parent="Staging"]
+position = Vector2(23, 352)
+
+[node name="LeonorSeat" type="Marker2D" parent="Staging"]
+position = Vector2(96, 352)
+
+[node name="LeonorArrival" type="Marker2D" parent="Staging"]
+position = Vector2(190, 352)
+
+[node name="LeonorStanding" type="Marker2D" parent="Staging"]
+position = Vector2(180, 330)
+
+[node name="FirstStart" type="Marker2D" parent="Staging"]
+position = Vector2(-150, 350)
+
+[node name="LeonorFirst" type="Marker2D" parent="Staging"]
+position = Vector2(285, 330)
+
+[node name="FirstTarget" type="Marker2D" parent="Staging"]
+position = Vector2(240, 350)
+script = ExtResource("10_d38on")
+
+[node name="LeonorSecond" type="Marker2D" parent="Staging"]
+position = Vector2(-165, 230)
+
+[node name="SecondTarget" type="Marker2D" parent="Staging"]
+position = Vector2(-128, 280)
+script = ExtResource("10_d38on")

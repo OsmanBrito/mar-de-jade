@@ -1,0 +1,49 @@
+[gd_scene load_steps=6 format=4]
+
+[ext_resource type="Script" path="res://scripts/chapter/shelter_view.gd" id="view"]
+[ext_resource type="TileSet" path="res://data/terrain/ground.tres" id="ground"]
+[ext_resource type="PackedScene" path="res://scenes/chapter_01/bed.tscn" id="bed"]
+[ext_resource type="PackedScene" path="res://scenes/chapter_01/table.tscn" id="table"]
+[ext_resource type="Script" path="res://scripts/chapter/actor_proxy.gd" id="actor"]
+
+[node name="AbrigoInfancia" type="Node2D"]
+process_mode = 1
+script = ExtResource("view")
+[node name="Ground" type="TileMapLayer" parent="."]
+texture_filter = 1
+tile_map_data = PackedByteArray("AAAAAAAAAAABAAEAAAAAAAEAAAABAAEAAAAAAAIAAAABAAEAAAAAAAMAAAABAAEAAAAAAAQAAAABAAEAAAAAAAUAAAABAAEAAAAAAAYAAAABAAEAAAABAAAAAAABAAEAAAABAAEAAAABAAEAAAABAAIAAAABAAEAAAABAAMAAAABAAEAAAABAAQAAAABAAEAAAABAAUAAAABAAEAAAABAAYAAAABAAEAAAACAAAAAAABAAEAAAACAAEAAAABAAEAAAACAAIAAAABAAEAAAACAAMAAAABAAEAAAACAAQAAAABAAEAAAACAAUAAAABAAEAAAACAAYAAAABAAEAAAADAAAAAAABAAEAAAADAAEAAAABAAEAAAADAAIAAAABAAEAAAADAAMAAAABAAEAAAADAAQAAAABAAEAAAADAAUAAAABAAEAAAADAAYAAAABAAEAAAAEAAAAAAABAAEAAAAEAAEAAAABAAEAAAAEAAIAAAABAAEAAAAEAAMAAAABAAEAAAAEAAQAAAABAAEAAAAEAAUAAAABAAEAAAAEAAYAAAABAAEAAAAFAAAAAAABAAEAAAAFAAEAAAABAAEAAAAFAAIAAAABAAEAAAAFAAMAAAABAAEAAAAFAAQAAAABAAEAAAAFAAUAAAABAAEAAAAFAAYAAAABAAEAAAAGAAAAAAABAAEAAAAGAAEAAAABAAEAAAAGAAIAAAABAAEAAAAGAAMAAAABAAEAAAAGAAQAAAABAAEAAAAGAAUAAAABAAEAAAAGAAYAAAABAAEAAAAHAAAAAAABAAEAAAAHAAEAAAABAAEAAAAHAAIAAAABAAEAAAAHAAMAAAABAAEAAAAHAAQAAAABAAEAAAAHAAUAAAABAAEAAAAHAAYAAAABAAEAAAA=")
+tile_set = ExtResource("ground")
+collision_enabled = false
+navigation_enabled = false
+
+[node name="ActorsAndProps" type="Node2D" parent="."]
+z_index = 2
+y_sort_enabled = true
+
+[node name="Bed" parent="ActorsAndProps" instance=ExtResource("bed")]
+position = Vector2(-64, 192)
+
+[node name="Table" parent="ActorsAndProps" instance=ExtResource("table")]
+position = Vector2(160, 288)
+
+[node name="Child" type="Node2D" parent="ActorsAndProps"]
+position = Vector2(-70, 248)
+script = ExtResource("actor")
+identity = "child"
+posture = "crouched"
+carries_bowl = true
+
+[node name="Tome" type="Node2D" parent="ActorsAndProps"]
+position = Vector2(-10, 251)
+script = ExtResource("actor")
+identity = "tome"
+npc_id = "tome_young"
+posture = "crouched"
+
+[node name="Staging" type="Node2D" parent="."]
+
+[node name="ChildAtTable" type="Marker2D" parent="Staging"]
+position = Vector2(120, 330)
+
+[node name="TomeAtTable" type="Marker2D" parent="Staging"]
+position = Vector2(220, 315)

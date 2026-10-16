@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "scope": "Elenco em cena em Lisboa no capítulo 1, incluindo prólogo e embarque",
+  "source_script": "res://docs/narrativa/C01-portugal-aprovado.md",
+  "excluded_mentions": [
+    "pai do protagonista",
+    "encarregado do armazém",
+    "piloto citado sem entrada individual em cena"
+  ],
+  "entries": [
+    {
+      "id": "leonor_adult",
+      "person_id": "leonor",
+      "name": "Leonor",
+      "role": "Princesa e instrutora; 19 anos no presente",
+      "period": "adulto",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 84,
+      "source": "res://assets/art/npcs/lisbon/leonor_adult-v1.png",
+      "expected_rows": 5,
+      "west_flip": false,
+      "pose_indices": {
+        "seated": 16,
+        "crouched": 17,
+        "seated_west": 18,
+        "crouched_west": 19
+      }
+    },
+    {
+      "id": "leonor_child",
+      "person_id": "leonor",
+      "name": "Leonor · infância",
+      "role": "Instrutora no prólogo; idade e patamar infantil não fixados",
+      "period": "infância",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 56,
+      "source": "res://assets/art/npcs/lisbon/leonor_child-v1.png",
+      "expected_rows": 5,
+      "west_flip": false,
+      "pose_indices": {
+        "seated": 16,
+        "crouched": 17,
+        "seated_west": 18,
+        "crouched_west": 19
+      }
+    },
+    {
+      "id": "tome_adult",
+      "person_id": "tome",
+      "name": "Frei Tomé",
+      "role": "Frei e figura paterna; 60 anos no presente",
+      "period": "adulto",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 82,
+      "source": "res://assets/art/npcs/lisbon/tome_adult-v1.png",
+      "expected_rows": 5,
+      "west_flip": true,
+      "pose_indices": {
+        "seated": 16,
+        "crouched": 17,
+        "seated_west": 18,
+        "crouched_west": 19
+      }
+    },
+    {
+      "id": "tome_young",
+      "person_id": "tome",
+      "name": "Frei Tomé · prólogo",
+      "role": "Mesmo frei no prólogo; sem nova idade numérica",
+      "period": "infância",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 82,
+      "source": "res://assets/art/npcs/lisbon/tome_young-v1.png",
+      "expected_rows": 5,
+      "west_flip": true,
+      "pose_indices": {
+        "seated": 16,
+        "crouched": 17,
+        "seated_west": 18,
+        "crouched_west": 19
+      }
+    },
+    {
+      "id": "duarte",
+      "person_id": "duarte",
+      "name": "Duarte",
+      "role": "Companheiro; 20 anos no presente",
+      "period": "presente",
+      "appearance_status": "proposta anterior reaproveitada",
+      "height": 84,
+      "source": "res://assets/art/npcs/lisbon/duarte-v1.png",
+      "expected_rows": 5,
+      "west_flip": false,
+      "pose_indices": {
+        "seated": 16,
+        "crouched": 17,
+        "seated_west": 18,
+        "crouched_west": 19
+      }
+    },
+    {
+      "id": "rodrigo",
+      "person_id": "rodrigo",
+      "name": "Rodrigo",
+      "role": "Capitão da Botafogo; recebe o aprendiz",
+      "period": "presente",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 86,
+      "source": "res://assets/art/npcs/lisbon/rodrigo-v1.png",
+      "expected_rows": 4,
+      "west_flip": true,
+      "full_name": "Rodrigo Falcão",
+      "canonical_age_approx": 48
+    },
+    {
+      "id": "beatriz",
+      "person_id": "beatriz",
+      "name": "Beatriz",
+      "role": "Tripulante da Botafogo; orienta a primeira amarra",
+      "period": "presente",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 82,
+      "source": "res://assets/art/npcs/lisbon/beatriz-v1.png",
+      "expected_rows": 4,
+      "west_flip": false
+    },
+    {
+      "id": "master",
+      "person_id": "master",
+      "name": "Mestre visitante",
+      "role": "Instrutor visitante; nome e identidade continuam em aberto",
+      "period": "presente",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 84,
+      "source": "res://assets/art/npcs/lisbon/master-v1.png",
+      "expected_rows": 4,
+      "west_flip": false
+    },
+    {
+      "id": "combatant",
+      "person_id": "combatant",
+      "name": "Combatente experiente",
+      "role": "Participante sem fala na demonstração pública",
+      "period": "presente",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 84,
+      "source": "res://assets/art/npcs/lisbon/combatant-v1.png",
+      "expected_rows": 4,
+      "west_flip": true
+    },
+    {
+      "id": "shelter_child",
+      "person_id": "shelter_child",
+      "name": "Criança do abrigo",
+      "role": "Menina que tenta apertar a correia",
+      "period": "presente",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 52,
+      "source": "res://assets/art/npcs/lisbon/shelter_child-v1.png",
+      "expected_rows": 4,
+      "west_flip": false
+    },
+    {
+      "id": "worker",
+      "person_id": "worker",
+      "name": "Trabalhador do cais",
+      "role": "Chama por ajuda e participa do socorro",
+      "period": "presente",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 84,
+      "source": "res://assets/art/npcs/lisbon/worker-v1.png",
+      "expected_rows": 4,
+      "west_flip": false
+    },
+    {
+      "id": "injured_worker",
+      "person_id": "injured_worker",
+      "name": "Trabalhador ferido",
+      "role": "Paciente do socorro no cais",
+      "period": "presente",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 82,
+      "source": "res://assets/art/npcs/lisbon/injured_worker-v1.png",
+      "expected_rows": 5,
+      "west_flip": false,
+      "pose_indices": {
+        "seated": 16,
+        "crouched": 17,
+        "seated_west": 18,
+        "crouched_west": 19
+      }
+    },
+    {
+      "id": "dock_woman",
+      "person_id": "dock_woman",
+      "name": "Mulher do cais",
+      "role": "Traz o pano e ajuda na retirada do paciente",
+      "period": "presente",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 80,
+      "source": "res://assets/art/npcs/lisbon/dock_woman-v1.png",
+      "expected_rows": 4,
+      "west_flip": false
+    },
+    {
+      "id": "observer",
+      "person_id": "observer",
+      "name": "Observador",
+      "role": "Reage ao olho verde e recebe a tarefa de buscar água",
+      "period": "presente",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 82,
+      "source": "res://assets/art/npcs/lisbon/observer-v1.png",
+      "expected_rows": 4,
+      "west_flip": true,
+      "east_flip": true
+    },
+    {
+      "id": "attendant",
+      "person_id": "attendant",
+      "name": "Acompanhante de Leonor",
+      "role": "Presença discreta à distância no prólogo",
+      "period": "presente",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 84,
+      "source": "res://assets/art/npcs/lisbon/attendant-v1.png",
+      "expected_rows": 4,
+      "west_flip": true
+    },
+    {
+      "id": "family",
+      "person_id": "family",
+      "name": "Familiar do trabalhador",
+      "role": "Figurante da família que participa da retirada; parentesco não fixado",
+      "period": "presente",
+      "appearance_status": "proposta visual; papel e cronologia conforme roteiro",
+      "height": 80,
+      "source": "res://assets/art/npcs/lisbon/family-v1.png",
+      "expected_rows": 4,
+      "west_flip": false
+    }
+  ]
+}

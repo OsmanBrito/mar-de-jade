@@ -1,0 +1,68 @@
+{
+	"aid_used": {
+
+	},
+	"boarding_profile": {
+
+	},
+	"coins": 180,
+	"discovered": {
+		"boss": "rumor",
+		"lisboa": "sighted",
+		"madeira": "known",
+		"porto_santo": "rumor"
+	},
+	"distance": 110.297493838705,
+	"elapsed": 62.0000000000006,
+	"heading": 2.35619449615479,
+	"hero_name": "Aprendiz",
+	"hull": 100.0,
+	"made_landfall": false,
+	"observed_signals": {
+
+	},
+	"phase": "sea",
+	"port": "",
+	"position": [
+		29500.0,
+		4000.0
+	],
+	"resolved": {
+
+	},
+	"route_known": false,
+	"route_marks": {
+
+	},
+	"style": "ES",
+	"supplies": 99.9426453032041,
+	"traffic": {
+		"boss": [
+			17749.90234375,
+			22109.357421875
+		],
+		"fisher": [
+			14041.373046875,
+			17696.640625
+		],
+		"merchant": [
+			23541.373046875,
+			9196.6416015625
+		],
+		"patrol": [
+			14749.90234375,
+			15509.357421875
+		],
+		"raider": [
+			12149.90234375,
+			22509.357421875
+		]
+	},
+	"upgrades": {
+
+	},
+	"version": 1,
+	"visited": {
+
+	}
+}

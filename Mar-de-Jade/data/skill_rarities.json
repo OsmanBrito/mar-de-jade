@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "classification_status": "initial",
+  "meaning": "Especialização e acesso ao ensino; não multiplica potência, custo ou proficiência.",
+  "tiers": [
+    {"id": "common", "level": 1, "name": "Comum", "color": "#A7B3BE"},
+    {"id": "uncommon", "level": 2, "name": "Incomum", "color": "#63C59B"},
+    {"id": "rare", "level": 3, "name": "Rara", "color": "#68ABF0"},
+    {"id": "epic", "level": 4, "name": "Épica", "color": "#BE8AF2"},
+    {"id": "legendary", "level": 5, "name": "Lendária", "color": "#E8BB62"}
+  ]
+}

@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="Script" path="res://scripts/chapter/adult_opening_director.gd" id="director"]
+[ext_resource type="PackedScene" path="res://scenes/maps/abrigo_infancia.tscn" id="room"]
+[ext_resource type="Script" path="res://scripts/chapter/actor_proxy.gd" id="actor"]
+[node name="ACorreiaEOPrazo" type="Node2D"]
+process_mode = 3
+script = ExtResource("director")
+[node name="Abrigo" parent="." instance=ExtResource("room")]
+[node name="Child" parent="Abrigo/ActorsAndProps" index="2"]
+position = Vector2(110, 340)
+identity = "hero"
+posture = "standing"
+carries_bowl = false
+[node name="Tome" parent="Abrigo/ActorsAndProps" index="3"]
+npc_id = "tome_adult"
+position = Vector2(220, 310)
+posture = "seated"
+[node name="Duarte" type="Node2D" parent="Abrigo/ActorsAndProps"]
+position = Vector2(-80, 285)
+script = ExtResource("actor")
+identity = "duarte"
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(50, 180)
+zoom = Vector2(1.25, 1.25)
+[node name="SackOnTable" type="Marker2D" parent="."]
+position = Vector2(160, 270)
+[node name="SackAtDoor" type="Marker2D" parent="."]
+position = Vector2(-45, 287)
+[node name="HeroBySack" type="Marker2D" parent="."]
+position = Vector2(150, 335)
+[node name="HeroAtDoor" type="Marker2D" parent="."]
+position = Vector2(-40, 345)
+

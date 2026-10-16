@@ -1,0 +1,61 @@
+{
+  "source": "Six MP3 files supplied by the user on 2026-10-15; originals copied unchanged.",
+  "loudness_analysis": "FFmpeg loudnorm input_i and input_tp; constant playback gain only.",
+  "crossfade_seconds": 5.0,
+  "tracks": [
+    {
+      "title": "Horizon of the Caravel",
+      "file": "Horizon_of_the_Caravel.mp3",
+      "seconds": 181.107,
+      "input_lufs": -11.52,
+      "input_true_peak_db": 0.5,
+      "gain_db": -8.48,
+      "sha256": "3c846346b05f361bf3d30baca7e268553b194a19366eb1625971878f8c3e2f90"
+    },
+    {
+      "title": "Sails Against the Horizon",
+      "file": "Sails_Against_The_Horizon.mp3",
+      "seconds": 179.749,
+      "input_lufs": -11.38,
+      "input_true_peak_db": 0.11,
+      "gain_db": -8.62,
+      "sha256": "b7fabba0538441d5a76bdc3644fc6bb0fa03396693eaa3d35f0614e193278427"
+    },
+    {
+      "title": "Salt on the Bowsprit",
+      "file": "Salt_on_the_Bowsprit.mp3",
+      "seconds": 180.323,
+      "input_lufs": -11.28,
+      "input_true_peak_db": 0.36,
+      "gain_db": -8.72,
+      "sha256": "942073c98b0b46e218e7452e64627af529459dbe3bf4a045bcf88d2440dbac2a"
+    },
+    {
+      "title": "Where the Map Ends",
+      "file": "Where_the_Map_Ends.mp3",
+      "seconds": 182.544,
+      "input_lufs": -11.34,
+      "input_true_peak_db": 0.69,
+      "gain_db": -8.66,
+      "sha256": "b77a7e210d92fb99ff2d10241d49a344b094ce15072f5e90e4d08b8c34162d59"
+    },
+    {
+      "title": "Vamos ao Mar",
+      "file": "Vamos_ao_Mar.mp3",
+      "seconds": 181.29,
+      "input_lufs": -10.93,
+      "input_true_peak_db": 0.57,
+      "gain_db": -9.07,
+      "sha256": "4f1fe195336b9f2001ae1a3011b77856400dde01dc3ac77cc024ec36b2bd1642"
+    },
+    {
+      "title": "O vento no peito",
+      "file": "O_vento_no_peito.mp3",
+      "seconds": 181.107,
+      "input_lufs": -11.44,
+      "input_true_peak_db": 0.42,
+      "gain_db": -8.56,
+      "sha256": "98fb7467b876096eb928408dec7327b9d74628c8cc4190a515fcf7d8d8232c4c"
+    }
+  ]
+}
