@@ -1,0 +1,26 @@
+.godot/
+.tools/
+.qa-runtime/
+build/
+*.tmp
+*.log
+tests/roundtrip-save.json*
+tests/name-profile-*.json*
+
+# Outputs produced by the test scripts, not source fixtures.
+tests/*-report.json
+tests/*-fixture.json*
+tests/*-fixture.cfg
+tests/*-ui-fixture.cfg
+tests/*-preview-defaults.cfg
+tests/player-state.json*
+tests/harbor-state.json*
+
+# Local editor and operating-system metadata.
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+desktop.ini

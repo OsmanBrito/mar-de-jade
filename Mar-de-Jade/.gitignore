@@ -1,8 +1,0 @@
-.godot/
-.tools/
-.qa-runtime/
-build/
-*.tmp
-*.log
-tests/roundtrip-save.json*
-tests/name-profile-*.json*

@@ -2,6 +2,8 @@
 
 Projeto editável em Godot 4.5.1 para Windows. O capítulo **A promessa impossível**, em Portugal, está ligado do nome do protagonista até ao embarque na Botafogo. Figuras, encenação e convés mantêm a apresentação provisória para validação; não foram criados executáveis ou exportações.
 
+O projeto fica diretamente na raiz deste repositório: abrir `project.godot`, `Jogar.cmd` ou `Abrir-no-Godot.cmd`. Os atalhos procuram o Godot em `GODOT_EXE`, no PATH ou na pasta padrão de Downloads. [Estrutura e validação local](docs/repositorio.md).
+
 **Navegação Lisboa → Madeira:** no arranque, escolher **Testar navegação · Lisboa → Madeira**, sem precisar de escrever um nome ou repetir Portugal. O teste tem salvamento próprio; **Continuar teste de navegação** aparece quando houver uma viagem guardada. Também é possível abrir `scenes/navigation/voyage.tscn` com F6. No fim de Portugal, **Navegar para a Madeira** inicia a viagem da campanha. [Controles, conteúdo e validação](docs/navegacao-jogavel.md).
 
 **Abordagem no convés:** escolher **Testar abordagem · combate no convés** no menu. A luta acontece no navio inimigo, com a Botafogo ao lado. NPCs, materiais e objetos usam a arte ilustrada de **Mar de Ferro**; técnicas, passivas, timing, controles e escala seguem Portugal. [Batalha completa com áudio — 26 segundos](docs/boarding-mar-de-ferro.mp4) · [Arte, regras e validação](docs/abordagem-combate-portugal.md).

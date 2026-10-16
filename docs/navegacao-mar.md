@@ -1,6 +1,6 @@
 # Navegação — refinamento do mar
 
-Implementado em 16/10/2026 no projeto `GitHub/mar-de-jade/Mar-de-Jade`, com Godot 4.5.1 e renderizador Compatibility. Entrar por **Testar navegação · Lisboa → Madeira** no menu inicial. Os controles pelo leme e os três níveis de vela continuam disponíveis.
+Implementado em 16/10/2026 no projeto `GitHub/mar-de-jade`, com Godot 4.5.1 e renderizador Compatibility. Entrar por **Testar navegação · Lisboa → Madeira** no menu inicial. Os controles pelo leme e os três níveis de vela continuam disponíveis.
 
 [Gravação real com áudio — 24,5 segundos](navigation-ocean.mp4): barco parado, aceleração até vela plena, curva e parada até a espuma se dispersar. Captura em 1280×800, 30 fps, estéreo 48 kHz; pico de áudio do MP4 medido em −10,8 dBFS.
 

@@ -1,0 +1,22 @@
+# Stable text files on Windows and other platforms; launchers need CRLF.
+* text=auto
+*.gd text eol=lf
+*.gdshader text eol=lf
+*.uid text eol=lf
+*.tscn text eol=lf
+*.tres text eol=lf
+*.godot text eol=lf
+*.import text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.cfg text eol=lf
+*.py text eol=lf
+*.ps1 text eol=lf
+*.cmd text eol=crlf
+*.png binary
+*.jpg binary
+*.webp binary
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.mp4 binary
