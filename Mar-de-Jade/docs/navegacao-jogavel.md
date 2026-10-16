@@ -4,7 +4,7 @@ Primeira implementação da entrevista de 15/10/2026, em Godot 4.5.1. Abrir o pr
 
 Revisão atual: [controle pelo leme, três níveis de vela e câmera com horizonte](navegacao-camera-e-leme.md). O [refinamento anterior](navegacao-refinamento.md) acrescentou pistas naturais, aproximação a avistamentos, retorno ao rumo e ambiência original.
 
-Também disponível: [seis músicas, ondas e áudio do casco](navegacao-atmosfera.md), com volumes em **Esc → Som e música**. [Prévia com áudio](navigation-atmosphere.mp4).
+Também disponível: [seis músicas, ondas e áudio do casco](navegacao-atmosfera.md), com volumes em **Esc → Som e música**. O [refinamento do mar](navegacao-mar.md) acrescenta reflexos, ondulação em quatro escalas e rastro contínuo com dispersão. [Prévia atual com áudio](navigation-ocean.mp4).
 
 A abordagem [usa a arte ilustrada de Mar de Ferro e as regras de Portugal](abordagem-combate-portugal.md), com técnicas, passivas, atributos, timing e escala do combate em terra. Dois conveses ficam visíveis; a luta acontece apenas no navio inimigo, com a Botafogo ao lado. **Testar abordagem · combate no convés** abre a luta diretamente pelo menu inicial, sem alterar os saves. [Gravação completa com áudio](boarding-mar-de-ferro.mp4).
 

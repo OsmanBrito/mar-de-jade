@@ -8,7 +8,7 @@ Projeto editável em Godot 4.5.1 para Windows. O capítulo **A promessa impossí
 
 A navegação agora tem [câmera com horizonte e controle pelo leme](docs/navegacao-camera-e-leme.md). **W aumenta a vela; S reduz**: parado, manobra, viagem e plena. Soltar W mantém o andamento; **A/D** viram em relação à proa. **Espaço / RB** recolhe as velas para parar. Aves e correntes indicam descobertas, a aproximação abranda ao chegar e **V / LB** retoma o rumo após o desvio.
 
-As **seis músicas fornecidas pelo jogador**, ondas em relevo, balanço, espuma e sons do casco estão integrados. **Esc → Som e música** ajusta trilha, ambiente e efeitos separadamente. [Prévia de 18 segundos com áudio](docs/navigation-atmosphere.mp4) · [Funcionamento e validação](docs/navegacao-atmosfera.md).
+As **seis músicas fornecidas pelo jogador**, ondas em relevo, balanço, espuma e sons do casco estão integrados. **Esc → Som e música** ajusta trilha, ambiente e efeitos separadamente. O mar recebeu ondulação em quatro escalas, reflexos do céu e do sol, espuma junto ao casco e um rastro contínuo que acompanha as curvas e se dispersa. [Prévia atual de 24 segundos com áudio](docs/navigation-ocean.mp4) · [Refinamento do mar e validação](docs/navegacao-mar.md) · [Trilha e ambiente](docs/navegacao-atmosfera.md).
 
 ## Jogar
 

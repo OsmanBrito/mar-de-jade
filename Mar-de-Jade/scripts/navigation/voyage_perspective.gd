@@ -1,6 +1,7 @@
 extends SubViewportContainer
 ## Presentation only: the existing 2D chart remains the authority for the voyage.
 const Sea = preload("res://scripts/navigation/voyage_sea.gd")
+const Wake = preload("res://scripts/navigation/voyage_wake.gd")
 var game
 var viewport: SubViewport
 var world: Node3D
@@ -13,6 +14,7 @@ var actors: Dictionary = {}
 var signals: Dictionary = {}
 var sail_panels: Array[Node3D] = []
 var wake: Array[MeshInstance3D] = []
+var wake_material: ShaderMaterial
 var camera_heading := 0.0
 var camera_ready := false
 var last_position := Vector2.ZERO
@@ -23,6 +25,7 @@ var last_crest := 0.0
 var last_impact_time := -10.0
 var last_sea_time := -1.0
 var splash_serial := 0
+var impact_strength := 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE; stretch = true
@@ -33,20 +36,24 @@ func _ready() -> void:
 	var environment := WorldEnvironment.new(); var settings := Environment.new()
 	settings.background_mode = Environment.BG_SKY
 	var sky := Sky.new(); var sky_material := ProceduralSkyMaterial.new()
-	sky_material.sky_top_color = Color("507f9c"); sky_material.sky_horizon_color = Color("bdcfc8")
-	sky_material.ground_horizon_color = Color("bdcfc8"); sky_material.ground_bottom_color = Color("547c80")
+	sky_material.sky_top_color = Color("4c809d"); sky_material.sky_horizon_color = Color("b4cbd0")
+	sky_material.ground_horizon_color = Color("b4cbd0"); sky_material.ground_bottom_color = Color("3e6873")
 	sky_material.sky_curve = 0.2; sky.sky_material = sky_material; settings.sky = sky
 	settings.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	settings.ambient_light_color = Color("c6d5cd"); settings.ambient_light_energy = 0.75
 	settings.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	settings.fog_enabled = true; settings.fog_density = 0.00016
-	settings.fog_light_color = Color("bdcfc8"); settings.fog_sky_affect = 0.0
+	settings.fog_enabled = true; settings.fog_density = 0.00012
+	settings.fog_light_color = Color("b4cbd0"); settings.fog_sky_affect = 0.0
 	environment.environment = settings; world.add_child(environment)
-	var sun := DirectionalLight3D.new(); sun.rotation_degrees = Vector3(-42,-35,0)
-	sun.light_color = Color("fff0ce"); sun.light_energy = 1.3; world.add_child(sun)
+	var sun := DirectionalLight3D.new(); sun.rotation_degrees = Vector3(-32,-55,0)
+	sun.light_color = Color("fff0d5"); sun.light_energy = 1.15
+	sun.light_specular = 0.32
+	world.add_child(sun)
 	var ocean := MeshInstance3D.new(); var plane := PlaneMesh.new(); plane.size = Vector2(140000,140000)
-	ocean.mesh = plane; ocean.position = Vector3(18000,-2,14500)
+	# Slight overlap under the near mesh avoids a sparkling gap at its moving edge.
+	ocean.mesh = plane; ocean.position = Vector3(18000,-3,14500)
 	water_material = ShaderMaterial.new(); water_material.shader = load("res://assets/shaders/navigation_perspective_ocean.gdshader")
+	Sea.configure(water_material)
 	ocean.material_override = water_material; world.add_child(ocean)
 	near_water = MeshInstance3D.new(); var near_plane := PlaneMesh.new()
 	near_plane.size = Vector2(4096,4096); near_plane.subdivide_width = 160; near_plane.subdivide_depth = 160
@@ -74,10 +81,10 @@ func _ready() -> void:
 				rod(bird,Vector3(0,0,0),Vector3(-3,2,8),0.8,Color("e6e3cc"))
 			elif sign_info.kind=="drift": box(sign_root,Vector3(i*45-180,0,sin(i*2.7)*46),Vector3(15+i%3*5,3,3),Color("a39068"))
 			else: box(sign_root,Vector3(i*40-180,-0.5,sin(i*1.3)*74),Vector3(27,0.2,2),Color("75a4a3"))
-	for i in 14:
-		var foam := MeshInstance3D.new(); var disc := CylinderMesh.new()
-		disc.top_radius = 1; disc.bottom_radius = 1; disc.height = 0.06; disc.radial_segments = 16
-		foam.mesh = disc; foam.material_override = material(Color(0.39,0.63,0.61,0.2),true)
+	wake_material = ShaderMaterial.new(); wake_material.shader = load("res://assets/shaders/navigation_wake.gdshader")
+	for i in 3:
+		var foam := MeshInstance3D.new(); foam.mesh = ArrayMesh.new()
+		foam.material_override = wake_material; foam.visible = false
 		world.add_child(foam); wake.append(foam)
 	for i in 24:
 		var drop := MeshInstance3D.new(); var sphere := SphereMesh.new()
@@ -213,8 +220,9 @@ func update_view(delta: float,snap: bool = false) -> void:
 	last_sea_time = m.elapsed
 	if snap or jumped or not camera_ready:
 		camera_heading = m.heading; camera_ready = true; trail.clear()
-		last_crest = Sea.crest(m.position,m.elapsed)
+		last_crest = Sea.crest(m.position+Vector2.from_angle(m.heading)*52,m.elapsed)
 		last_impact_time = m.elapsed-10
+		impact_strength = 0
 		for particle in spray: particle.start = -10.0
 	else: camera_heading = lerp_angle(camera_heading,m.heading,1-exp(-delta*5.0))
 	last_position = m.position
@@ -251,31 +259,23 @@ func update_view(delta: float,snap: bool = false) -> void:
 				bird.position.y = 75+sin(m.elapsed*0.7+i)*12
 				bird.rotation.x = sin(m.elapsed*4+i)*0.18
 	if delta>0:
-		trail.append({"at":m.position,"heading":m.heading,"time":m.elapsed,"speed":m.velocity.length()})
-		while trail.size()>240 or (not trail.is_empty() and m.elapsed-float(trail[0].time)>4): trail.pop_front()
-		var crest := Sea.crest(m.position,m.elapsed)
+		Wake.append_sample(trail,m.position,m.heading,m.elapsed,m.velocity.length())
+		var crest := Sea.crest(m.position+Vector2.from_angle(m.heading)*52,m.elapsed)
 		if crest>0.72 and last_crest<=0.72 and m.elapsed-last_impact_time>1.5:
 			last_impact_time = m.elapsed
 			bow_impact(clampf(0.18+m.velocity.length()/150.0+risk*0.25,0,1))
 		last_crest = crest
+	var ribbons := Wake.ribbons(trail,m.elapsed,risk)
 	for i in wake.size():
-		var age := (i/2+1)*0.32; var found := false
-		for j in range(trail.size()-1,-1,-1):
-			var sample: Dictionary = trail[j]
-			if m.elapsed-float(sample.time)<age: continue
-			var side := -1 if i%2==0 else 1
-			var back := Vector2.from_angle(sample.heading)
-			var at: Vector2 = sample.at-back*55+back.orthogonal()*side*(14+age*10)
-			wake[i].position = Vector3(at.x,Sea.height(at,m.elapsed,risk)-1.6,at.y)
-			wake[i].scale = Vector3((8+age*9)*(1-age/4),1,(2+age*2)*(1-age/4))
-			wake[i].rotation.y = -float(sample.heading); found = float(sample.speed)>8; break
-		wake[i].visible = found
+		wake[i].mesh = ribbons[i]; wake[i].visible = ribbons[i].get_surface_count()>0
+	wake_material.set_shader_parameter("sea_time",m.elapsed)
 	for particle in spray:
 		var age: float = m.elapsed-float(particle.start); var drop: MeshInstance3D = particle.node
 		drop.visible = age>=0 and age<float(particle.duration)
 		if drop.visible:
 			drop.position = particle.origin+particle.velocity*age+Vector3.DOWN*18*age*age
-			drop.scale = Vector3.ONE*(1-age/float(particle.duration))*1.7
+			drop.scale = Vector3.ONE*(1-age/float(particle.duration))*1.35
+			drop.visible = drop.position.y>Sea.height(Vector2(drop.position.x,drop.position.z),m.elapsed,risk)-1.8
 	var center: Vector2 = (m.position/128.0).floor()*128.0
 	near_water.position = Vector3(center.x,-2,center.y)
 	for shader in [water_material,near_material]:
@@ -284,9 +284,11 @@ func update_view(delta: float,snap: bool = false) -> void:
 		shader.set_shader_parameter("ship_position",m.position)
 		shader.set_shader_parameter("ship_forward",Vector2.from_angle(m.heading))
 		shader.set_shader_parameter("ship_speed",clampf(m.velocity.length()/90,0,1))
+		shader.set_shader_parameter("hull_impact",impact_strength*maxf(0,1-(m.elapsed-last_impact_time)/0.9))
 func bow_impact(strength: float) -> void:
 	var m = game.model; var forward := Vector2.from_angle(m.heading); var right := forward.orthogonal()
 	splash_serial += 1
+	impact_strength = strength; last_impact_time = m.elapsed
 	if game.ambience!=null: game.ambience.wave_hit(strength,splash_serial%2)
 	if strength<0.3: return
 	for i in spray.size():
