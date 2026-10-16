@@ -4,7 +4,7 @@ Projeto editável em Godot 4.5.1 para Windows. O capítulo **A promessa impossí
 
 **Navegação Lisboa → Madeira:** no arranque, escolher **Testar navegação · Lisboa → Madeira**, sem precisar de escrever um nome ou repetir Portugal. O teste tem salvamento próprio; **Continuar teste de navegação** aparece quando houver uma viagem guardada. Também é possível abrir `scenes/navigation/voyage.tscn` com F6. No fim de Portugal, **Navegar para a Madeira** inicia a viagem da campanha. [Controles, conteúdo e validação](docs/navegacao-jogavel.md).
 
-**Abordagem no convés:** o menu também oferece **Testar abordagem · combate no convés**. A luta acontece no navio inimigo, com a Botafogo ao lado e dois conveses visíveis. Mantém escala, animações, técnicas, passivas, timing e comandos do combate em terra, com kit de teste isolado. [Correções e capturas](docs/abordagem-combate-portugal.md).
+**Abordagem no convés:** escolher **Testar abordagem · combate no convés** no menu. A luta acontece no navio inimigo, com a Botafogo ao lado. NPCs, materiais e objetos usam a arte ilustrada de **Mar de Ferro**; técnicas, passivas, timing, controles e escala seguem Portugal. [Batalha completa com áudio — 26 segundos](docs/boarding-mar-de-ferro.mp4) · [Arte, regras e validação](docs/abordagem-combate-portugal.md).
 
 A navegação agora tem [câmera com horizonte e controle pelo leme](docs/navegacao-camera-e-leme.md). **W aumenta a vela; S reduz**: parado, manobra, viagem e plena. Soltar W mantém o andamento; **A/D** viram em relação à proa. **Espaço / RB** recolhe as velas para parar. Aves e correntes indicam descobertas, a aproximação abranda ao chegar e **V / LB** retoma o rumo após o desvio.
 

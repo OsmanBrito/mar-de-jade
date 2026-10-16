@@ -4,6 +4,8 @@ const Board = preload("res://scripts/combat/portugal_board.gd")
 const Layout = preload("res://scripts/navigation/boarding_layout.gd")
 const Launch = preload("res://scripts/navigation/voyage_launch.gd")
 const Model = preload("res://scripts/navigation/voyage_model.gd")
+const BoardingArt = preload("res://scripts/navigation/boarding_actor_art.gd")
+const Assets = preload("res://scripts/navigation/boarding_assets.gd")
 var checks := 0
 var failures: Array[String] = []
 var game
@@ -44,6 +46,18 @@ func drive() -> void:
 	else: v.update(1.8)
 func run() -> void:
 	Rules = load("res://scripts/combat/campaign_rules.gd"); Boarding = load("res://scripts/navigation/boarding_rules.gd")
+	var reused: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/art/combat/boarding/reused-assets.json"))
+	var hashes_match := true
+	for copy in reused.copies:
+		if FileAccess.get_sha256("res://"+copy.local)!=copy.sha256: hashes_match = false
+	check(hashes_match and reused.copies.size()==14,"All 14 shipped art resources are exact Mar de Ferro copies with recorded SHA-256")
+	for kind in ["guard","rogue","sailor","worker"]:
+		var actor: Dictionary = Assets.data().actors[kind]
+		check(actor.frames.size()==6 and actor.pivots.size()==6 and actor.height==60,kind+": original illustrated strip retains all six frames and a measured human-scale anchor")
+		var pixels: Image = Assets.texture(actor.source.get_file()).diffuse_texture.get_image()
+		check(pixels.has_mipmaps() and pixels.get_pixel(0,0).a==0,kind+": filtered art keeps transparency and mipmaps instead of an opaque rectangle")
+	check(BoardingArt.frame("rogue","attack",0.45)==4 and BoardingArt.frame("guard","hurt",0.1)==5 and BoardingArt.frame("guard","parry",0.2)==3,"Actual contact, reaction and defense select the original combat poses")
+	check(BoardingArt.frame("sailor","attack",0.45)==0 and BoardingArt.frame("worker","hurt",0.1)==0,"Civilian crew use idle/walk art without combat poses")
 	var progress = root.get_node("ChapterProgress"); var saved: Dictionary = progress.snapshot()
 	var profile = root.get_node("CampaignProfile"); var name_before: String = profile.hero_name
 	for style in ["ES","LA","MC","FO","PU"]:
@@ -143,15 +157,18 @@ func run() -> void:
 	for i in 20: view.update(0.12)
 	check(game.battle_host.combat.current().cell==destination and not game.battle_host.combat.current().acted,"Click, confirmation and walk preserve the action, as in Portugal")
 	await capture("movement")
-	var saw_defense := false; var saw_impact := false
+	var saw_defense := false; var saw_impact := false; var saw_victory := false
 	for i in 2500:
 		if game.model.phase!="boarding": break
 		if view.phase=="timing_defend": saw_defense = true
 		if view.phase.begins_with("animate") and view.result.get("impacted",false): saw_impact = true
 		if i==15: await capture("combat")
+		if game.battle_host.ending.phase=="hold" and not saw_victory:
+			saw_victory = true; await capture("victory")
 		drive()
 	check(saw_defense and saw_impact,"A real fight includes defensive timing and impact/recovery phases")
 	check(game.model.phase=="sea" and game.model.resolved.has("patrol"),"The complete turn battle is winnable and returns to the voyage")
+	check(saw_victory and game.battle_host.ending.title=="CONVÉS RECUPERADO","The last impact reaches the naval victory presentation before returning to sea")
 	for style in ["LA","MC","FO","PU"]:
 		game.model.style = style; game.model.boarding_profile = Loadout.practice(style)
 		game.begin_boarding()
@@ -169,6 +186,23 @@ func run() -> void:
 	check(game.model.style=="FO" and game.model.boarding_profile.vitals.hp==62 and game.model.boarding_profile.skills.has("FO07"),"Legacy campaign voyages recover their actual kit from the chapter file without replaying Portugal")
 	game.begin_boarding()
 	check(game.battle_host.combat.style=="FO" and game.battle_host.combat.units[0].hp==62 and game.battle_host.combat.commands(0)==[0,1],"Resumed campaign boarding uses the saved character instead of a replacement test character")
+	# A real enemy strike at failed defensive timing must also complete safely.
+	game.model.style = "ES"; game.model.boarding_profile = Loadout.practice()
+	game.begin_boarding()
+	var checkpoint: Dictionary = game.model.safe_state.duplicate(true)
+	for hero in game.battle_host.combat.heroes: hero.hp = 1
+	var saw_defeat := false
+	for i in 500:
+		if game.model.phase!="boarding": break
+		var host = game.battle_host; var v = host.tactical
+		if host.ending.running():
+			if host.ending.phase=="hold" and not saw_defeat:
+				saw_defeat = true; await capture("defeat")
+			host.update_ending(0.5)
+		elif v.is_player() and v.phase=="choose": v.start_facing(); v.confirm()
+		elif v.phase.begins_with("timing"): v.commit_timing(0)
+		else: v.update(1.8)
+	check(saw_defeat and game.model.phase=="game_over" and game.model.safe_state==checkpoint,"Failed defensive timing can defeat the party, show the defeat result and preserve its safe checkpoint")
 	check(progress.snapshot()==saved and profile.hero_name==name_before,"Quick testing leaves the campaign's name, equipment, vitals, learning and passives unchanged")
 	var report := {"checks":checks,"failures":failures,"rendered":DisplayServer.get_name()!="headless"}
 	FileAccess.open("res://tests/boarding-report.json",FileAccess.WRITE).store_string(JSON.stringify(report,"\t"))

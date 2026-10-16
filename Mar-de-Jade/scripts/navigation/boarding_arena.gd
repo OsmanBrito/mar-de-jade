@@ -1,111 +1,115 @@
 extends "res://scripts/combat/portugal_arena.gd"
+## Mar de Ferro's modular painted deck, water, fittings and illustrated actors.
 const Layout = preload("res://scripts/navigation/boarding_layout.gd")
-const People = preload("res://scripts/npcs/lisbon_npc_library.gd")
-const WOOD := Color("a48560")
+const Assets = preload("res://scripts/navigation/boarding_assets.gd")
+const CrewArt = preload("res://scripts/navigation/boarding_actor_art.gd")
+var focus: Array[Vector2] = []
+var wood: CanvasTexture
+var sea: CanvasTexture
+func setup(canvas: Node2D) -> void:
+	c = canvas
+	wood = Assets.texture("regional-deck.png",true)
+	sea = Assets.texture("regional-water-illustrated-v1.png",true)
 func deck_point(x: float,y: float) -> Vector2: return Layout.point(x,y)
 func deck_outline() -> PackedVector2Array: return Layout.outline()
-func patch(x: float,y: float,width: float,height: float,colour: Color,offset := Vector2.ZERO) -> void:
-	c.draw_colored_polygon(PackedVector2Array([Layout.point(x,y)+offset,Layout.point(x+width,y)+offset,Layout.point(x+width,y+height)+offset,Layout.point(x,y+height)+offset]),colour)
-func rail(a: Vector2,b: Vector2,colour: Color) -> void:
-	c.draw_line(a,b,Color("4c392b"),4,true)
-	var length := a.distance_to(b)
-	for i in range(ceili(length/21)+1):
-		var p := a.lerp(b,float(i)/maxi(1,ceili(length/21)))
-		c.draw_line(p,p-Vector2(0,10),colour.darkened(0.2),2,true)
-	c.draw_line(a-Vector2(0,10),b-Vector2(0,10),colour,2.5,true)
-	c.draw_line(a-Vector2(0,5),b-Vector2(0,5),colour.darkened(0.28),1,true)
+func surface(points: PackedVector2Array,tint: Color = Color.WHITE,period: float = 4) -> void:
+	var uv := PackedVector2Array()
+	for p in points:
+		var local := p-Board.ORIGIN
+		uv.append(Vector2((local.x/Board.STEP.x+local.y/Board.STEP.y)*0.5,(local.y/Board.STEP.y-local.x/Board.STEP.x)*0.5)/period)
+	c.draw_polygon(points,PackedColorArray([tint]),uv,wood)
+func patch(x: float,y: float,width: float,height: float,tint: Color = Color.WHITE,offset := Vector2.ZERO) -> void:
+	surface(PackedVector2Array([Layout.point(x,y)+offset,Layout.point(x+width,y)+offset,Layout.point(x+width,y+height)+offset,Layout.point(x,y+height)+offset]),tint)
+func rail(a: Vector2,b: Vector2,tint: Color) -> void:
+	# A textured solid gunwale with a dark iron fastener at each timber upright.
+	var face := PackedVector2Array([a,b,b-Vector2(0,8),a-Vector2(0,8)])
+	surface(face,tint.darkened(0.3),2)
+	c.draw_line(a,b,Color("372e25"),1.5,true)
+	c.draw_line(a-Vector2(0,8),b-Vector2(0,8),Color("c4a371"),2,true)
+	var posts := maxi(1,ceili(a.distance_to(b)/29))
+	for i in range(posts+1):
+		var p := a.lerp(b,float(i)/posts)
+		c.draw_line(p+Vector2(0,2),p-Vector2(0,10),Color("302e27"),3.3,true)
+		c.draw_line(p,p-Vector2(0,10),Color("9f8258"),1.4,true)
+		c.draw_circle(p-Vector2(0,5),0.8,Color("d1b17c"))
 func draw_ground(_encounter: String,time: float,reduced: bool) -> void:
-	c.draw_rect(Rect2(0,0,960,540),Color("194650"))
-	for i in 110:
-		var p := Vector2(fposmod(i*157.1+time*(1 if reduced else 5),1000)-20,fposmod(i*73.7,540))
-		c.draw_line(p,p+Vector2(13+sin(i)*9,-2),Color(0.55,0.77,0.76,0.09),1,true)
-	draw_ship(Layout.FRIENDLY_OFFSET,true,time)
-	draw_ship(Vector2.ZERO,false,time)
-	# Both decks are visible. The party has already crossed before turn one.
+	var motion := 0.0 if reduced else time
+	c.draw_rect(Rect2(0,0,960,540),Color("285763"))
+	var points := PackedVector2Array([Vector2.ZERO,Vector2(960,0),Vector2(960,540),Vector2(0,540)])
+	var uv := PackedVector2Array()
+	for p in points: uv.append(p/520.0+Vector2(motion*0.004,motion*0.002))
+	c.draw_polygon(points,PackedColorArray([Color(0.82,0.89,0.89,0.83)]),uv,sea)
+	draw_ship(Layout.FRIENDLY_OFFSET,true,motion)
+	draw_ship(Vector2.ZERO,false,motion)
+	# Two real openings, laid planks, rope lashes and contact shadows.
 	for x in [0.8,2.15]:
-		patch(x,3.82,0.62,1.95,Color("493b2d"),Vector2(0,3))
-		patch(x,3.82,0.62,1.95,Color("b59b74"))
-		for seam in [0.19,0.4]:
-			c.draw_line(Layout.point(x+seam,3.82),Layout.point(x+seam,5.77),Color("776044"),0.8,true)
-		for end in [4.05,5.55]:
-			c.draw_line(Layout.point(x+0.05,end),Layout.point(x+0.57,end),Color("584635"),1.8,true)
-	# The foreground mast must stand in front of the neighbouring ship's hull.
-	draw_mast(Layout.point(3.8,Layout.FRIENDLY_OFFSET.y+1.35),true,time)
-	# The Botafogo's crew holds the other deck, outside the combat simulation.
-	for crew in [{"id":"rodrigo","cell":Vector2(0.6,6.9)},{"id":"beatriz","cell":Vector2(5.8,7.1)}]:
-		var p := Layout.point(crew.cell.x,crew.cell.y)
-		c.draw_set_transform(p,0,Vector2(1,0.36)); c.draw_circle(Vector2.ZERO,12,Color(0.04,0.08,0.08,0.25)); c.draw_set_transform(Vector2.ZERO)
-		var entry: Dictionary = People.data()[crew.id]
-		People.draw_actor(c,crew.id,3,false,0,"standing",60.0/float(entry.height),p)
-	c.centered("BOTAFOGO",379,9,Color("d9c6a0"),455)
+		patch(x,3.82,0.62,1.95,Color("524736"),Vector2(0,4))
+		patch(x,3.82,0.62,1.95,Color("d6c7a6"))
+		for seam in [0.2,0.4]: c.draw_line(Layout.point(x+seam,3.82),Layout.point(x+seam,5.77),Color("755b3b"),0.6,true)
+		for end in [4.05,5.5]:
+			c.draw_line(Layout.point(x-0.06,end),Layout.point(x+0.68,end),Color("604c33"),2.5,true)
+			c.draw_line(Layout.point(x-0.06,end),Layout.point(x+0.68,end),Color("c1aa7d"),0.85,true)
+	# Foreground crew are anonymous sailors, keeping story identities untouched.
+	draw_prop("deckhouse",Layout.point(-0.55,7.35),Vector2(86,77),Color("c3c6b7"),false)
+	draw_prop("mast",Layout.point(3.8,6.9),Vector2(74,117),Color.WHITE,true)
+	draw_prop("barrel",Layout.point(1.65,8.6),Vector2(23,29),Color.WHITE,false)
+	draw_prop("crate",Layout.point(7.7,8.8),Vector2(34,30),Color.WHITE,false)
+	draw_prop("helm",Layout.point(0.3,8.5),Vector2(29,34),Color.WHITE,false)
+	CrewArt.draw_actor(c,"sailor",Layout.point(0.7,6.75),false,"ready",time,0,reduced,false)
+	CrewArt.draw_actor(c,"worker",Layout.point(5.8,7.1),true,"ready",time,0,reduced,false)
+	c.centered("BOTAFOGO",379,9,Color("eddfbb"),455)
 func draw_ship(offset: Vector2,friendly: bool,time: float) -> void:
 	var deck := Layout.outline(offset)
-	# A deep hull, waterline and contact shadow give the deck volume.
-	var shadow := PackedVector2Array(); var bottom := PackedVector2Array()
-	for p in deck: shadow.append(p+Vector2(5,20)); bottom.append(p+Vector2(0,12))
-	c.draw_colored_polygon(shadow,Color(0.03,0.12,0.15,0.38))
-	c.draw_colored_polygon(bottom,Color("352d27"))
-	var wood := Color("8d795b") if friendly else WOOD
-	c.draw_colored_polygon(deck,wood)
-	# Planks, staggered joints and grain follow the unchanged tactical projection.
-	for row in 27:
-		var y: float = -0.8+row*0.17+offset.y
-		var shade: float = sin(row*7.71)*0.035
-		patch(-0.6,y,9.38,0.17,wood.lightened(shade) if shade>0 else wood.darkened(-shade))
-		c.draw_line(Layout.point(-0.6,y),Layout.point(8.78,y),Color(0.25,0.18,0.12,0.52),0.65,true)
-		for joint in 5:
-			var x: float = -0.5+joint*2.0+(0.8 if row%2 else 0.0)
-			if x>8.7: continue
-			c.draw_line(Layout.point(x,y),Layout.point(x,y+0.17),Color(0.28,0.21,0.15,0.45),0.6,true)
-			var grain: float = 0.6+fposmod(row*0.31+joint*0.72,0.9)
-			c.draw_line(Layout.point(x+0.08,y+0.08),Layout.point(minf(8.7,x+grain),y+0.08),Color(0.9,0.8,0.62,0.13),0.5,true)
-	# Forecastle and stern sit outside the walkable cells, like courtyard scenery.
-	patch(-1.0,offset.y,0.35,3.0,wood.darkened(0.19),Vector2(0,-4))
-	var bow := PackedVector2Array([Layout.point(8.8,offset.y-0.82),Layout.point(10.05,offset.y+1.5),Layout.point(8.8,offset.y+3.82)])
-	c.draw_colored_polygon(bow,wood.darkened(0.08))
-	for y in range(0,4): c.draw_line(Layout.point(8.85,offset.y+y),Layout.point(9.4 if y in [1,2] else 8.9,offset.y+y),Color("715a40"),0.7,true)
+	var shadow := PackedVector2Array()
+	for p in deck: shadow.append(p+Vector2(4,19))
+	c.draw_colored_polygon(shadow,Color(0.02,0.10,0.12,0.35))
+	# Individual hull faces have the same painted timber, natural shading and depth.
+	for i in deck.size():
+		var a := deck[i]; var b := deck[(i+1)%deck.size()]
+		if b.x>a.x: continue
+		var face := PackedVector2Array([a,b,b+Vector2(0,12),a+Vector2(0,12)])
+		var uv := PackedVector2Array([Vector2.ZERO,Vector2(a.distance_to(b)/160,0),Vector2(a.distance_to(b)/160,0.38),Vector2(0,0.38)])
+		c.draw_polygon(face,PackedColorArray([Color("57432e")]),uv,wood)
+		c.draw_line(a+Vector2(0,12),b+Vector2(0,12),Color("253532"),2,true)
+	var tint := Color("aeb9aa") if friendly else Color("d2c3a8")
+	surface(deck,tint)
 	var edge := deck.duplicate(); edge.append(deck[0])
-	c.draw_polyline(edge,Color("49382b"),5,true); c.draw_polyline(edge,Color("cfb993"),2.4,true)
-	rail(Layout.point(-0.65,offset.y-0.85),Layout.point(8.8,offset.y-0.85),Color("b49a71"))
-	rail(deck[0],deck[1],Color("b49a71")); rail(deck[0],deck[6],Color("b49a71"))
-	# Rail openings line up with the two boarding planks.
-	if not friendly:
-		for ends in [Vector2(-0.65,0.65),Vector2(1.55,2.0),Vector2(2.85,8.8)]:
-			rail(Layout.point(ends.x,3.85),Layout.point(ends.y,3.85),Color("c3aa80"))
-	for x in [3.1,6.7]: draw_cannon(Layout.point(x,offset.y-0.55),true)
+	c.draw_polyline(edge,Color("403325"),4,true); c.draw_polyline(edge,Color("c4a371"),1.6,true)
+	# Raised strips remain outside all walkable cells.
+	patch(-1.05,offset.y,0.35,3.0,tint.darkened(0.2),Vector2(0,-3))
+	var back := offset.y-0.85
 	if friendly:
-		rail(Layout.point(-0.65,offset.y+3.85),Layout.point(8.8,offset.y+3.85),Color("ac946f"))
+		for ends in [Vector2(-0.65,0.65),Vector2(1.55,2.0),Vector2(2.85,8.8)]: rail(Layout.point(ends.x,back),Layout.point(ends.y,back),tint)
+	else: rail(Layout.point(-0.65,back),Layout.point(8.8,back),tint)
+	rail(deck[0],deck[1],tint); rail(deck[0],deck[6],tint)
+	var front := offset.y+3.85
+	if friendly: rail(Layout.point(-0.65,front),Layout.point(8.8,front),tint)
 	else:
-		var flag := Layout.point(-0.8,1.7)-Vector2(0,48)
-		c.draw_line(flag,flag+Vector2(0,48),Color("58432d"),2,true)
-		c.draw_colored_polygon(PackedVector2Array([flag,flag+Vector2(24,3),flag+Vector2(21,16),flag+Vector2(0,12)]),Color("873d3a"))
+		for ends in [Vector2(-0.65,0.65),Vector2(1.55,2.0),Vector2(2.85,8.8)]: rail(Layout.point(ends.x,front),Layout.point(ends.y,front),tint)
+	for x in [2.0,7.1]: draw_prop("cannon",Layout.point(x,offset.y-0.62),Vector2(38,34),Color("e2e0ce"),false)
+	# Faint foam tracks sit beneath the keel and never cover the tactical field.
 	for i in 12:
-		var p := Layout.point(i*0.78-0.5,offset.y+4.12)+Vector2(0,12)
-		c.draw_line(p,p+Vector2(10,3),Color(0.74,0.85,0.78,0.15+sin(time*1.5+i)*0.05),1,true)
-func draw_cannon(p: Vector2,port: bool) -> void:
-	var direction := Vector2(0.85,-0.43) if port else Vector2(-0.85,0.43)
-	c.draw_circle(p+Vector2(0,2),7,Color(0.1,0.1,0.07,0.3))
-	c.draw_line(p-direction*7,p+direction*13,Color("293937"),6,true)
-	c.draw_line(p-direction*7+Vector2(0,3),p+direction*4+Vector2(0,3),Color("6b4c30"),4,true)
-	c.draw_circle(p+Vector2(-4,4),3,Color("473d2c")); c.draw_circle(p+Vector2(6,4),3,Color("473d2c"))
-func draw_mast(p: Vector2,friendly: bool,time: float) -> void:
-	c.draw_circle(p,12,Color(0.12,0.12,0.07,0.3))
-	c.draw_circle(p,8,Color("695034")); c.draw_line(p,p-Vector2(0,89),Color("59452f"),6,true)
-	c.draw_line(p-Vector2(25,74),p+Vector2(29,-48),Color("71563a"),4,true)
-	c.draw_line(p-Vector2(23,70),p+Vector2(26,-50),Color("c9bea0"),7,true)
-	for i in 7:
-		var q := (p-Vector2(23,70)).lerp(p+Vector2(26,-50),i/6.0)
-		c.draw_line(q-Vector2(0,3),q+Vector2(0,4),Color("746b51"),1,true)
-	if friendly:
-		var top := p-Vector2(0,89)
-		c.draw_colored_polygon(PackedVector2Array([top,top+Vector2(24,2+sin(time)*1.5),top+Vector2(22,13),top+Vector2(0,11)]),Color("d7ccab"))
-		c.draw_line(top+Vector2(10,2),top+Vector2(10,11),Color("984339"),2,true)
-		c.draw_line(top+Vector2(5,6),top+Vector2(16,6),Color("984339"),2,true)
+		var p := Layout.point(i*0.78-0.5,offset.y+4.12)+Vector2(0,14)
+		c.draw_line(p,p+Vector2(13,3),Color(0.75,0.86,0.81,0.15+sin(time*1.5+i)*0.04),1,true)
+func prop_bounds(key: String,foot: Vector2,bounds: Vector2) -> Rect2:
+	var texture := Assets.prop(key)
+	var shown := texture.get_size()*minf(bounds.x/texture.get_width(),bounds.y/texture.get_height())
+	return Rect2(foot-Vector2(shown.x*0.5,shown.y),shown)
+func prop_alpha(key: String,rect: Rect2) -> float:
+	var texture := Assets.prop(key)
+	var pixels: Image = Assets.images[Assets.data().props[key].source.get_file()]
+	for foot in focus:
+		if foot.y>=rect.end.y-8: continue
+		var head := foot-Vector2(0,37)
+		if not rect.has_point(head): continue
+		var pixel := Vector2i(texture.region.position+(head-rect.position)/rect.size*texture.region.size)
+		if pixels.get_pixelv(pixel).a>0.45: return 0.38
+	return 1.0
+func draw_prop(key: String,foot: Vector2,bounds: Vector2,tint: Color = Color.WHITE,fade: bool = true) -> void:
+	var rect := prop_bounds(key,foot,bounds)
+	var alpha := prop_alpha(key,rect) if fade else 1.0
+	c.draw_texture_rect(Assets.contact_shadow(),Rect2(foot-Vector2(rect.size.x*0.52,4),Vector2(rect.size.x*1.04,12)),false,Color(1,1,1,alpha))
+	c.draw_texture_rect(Assets.prop(key),rect,false,Color(tint,alpha))
 func draw_obstacle(_encounter: String,cell: Vector2i,_deck: bool = false) -> void:
-	var p := Board.screen(cell)
-	if cell==Vector2i(4,0): draw_mast(p,false,0); return
-	c.draw_colored_polygon(PackedVector2Array([p+Vector2(-20,-16),p+Vector2(0,-27),p+Vector2(20,-16),p+Vector2(0,-5)]),Color("b99d73"))
-	c.draw_colored_polygon(PackedVector2Array([p+Vector2(-20,-16),p+Vector2(0,-5),p+Vector2(0,12),p+Vector2(-20,1)]),Color("705637"))
-	c.draw_colored_polygon(PackedVector2Array([p+Vector2(0,-5),p+Vector2(20,-16),p+Vector2(20,1),p+Vector2(0,12)]),Color("8a6b46"))
-	c.draw_line(p+Vector2(-16,-12),p+Vector2(-4,7),Color("b3976c"),2,true)
-	c.draw_line(p+Vector2(5,6),p+Vector2(16,-12),Color("b3976c"),2,true)
+	if cell==Vector2i(4,0): draw_prop("mast",Board.screen(cell),Vector2(77,122))
+	else: draw_prop("crate",Board.screen(cell)+Vector2(0,7),Vector2(39,36))

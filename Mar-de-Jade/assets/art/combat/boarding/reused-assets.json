@@ -1,0 +1,77 @@
+{
+  "source_project": "C:\\Users\\gamer\\Documents\\ChatGPT\\jogo",
+  "source_modified": false,
+  "processing": "PNG/SVG files copied byte for byte. Only JSON measurements created.",
+  "copies": [
+    {
+      "source": "assets/sprites/guard-illustrated-strip.png",
+      "local": "assets/art/combat/boarding/guard-illustrated-strip.png",
+      "sha256": "5a121478a7156e519a8775f79deea8099411afe24e04aed2ec899c2a9b6cfe06"
+    },
+    {
+      "source": "assets/sprites/rogue-illustrated-strip.png",
+      "local": "assets/art/combat/boarding/rogue-illustrated-strip.png",
+      "sha256": "6b46df1c071f3a456d0da54769901a4b5c9bbe7d0ea71c4595010602fa79e512"
+    },
+    {
+      "source": "assets/sprites/sailor-illustrated-strip.png",
+      "local": "assets/art/combat/boarding/sailor-illustrated-strip.png",
+      "sha256": "81f1a845dd2ebea184284774ab6cf8f5e47611baed8534237e7a005496698d39"
+    },
+    {
+      "source": "assets/sprites/worker-illustrated-strip.png",
+      "local": "assets/art/combat/boarding/worker-illustrated-strip.png",
+      "sha256": "83842573190bce4e15ce23f09f39f14c727509bf5a0f001e9a77a539bfb7a536"
+    },
+    {
+      "source": "assets/sprites/npc-saber.svg",
+      "local": "assets/art/combat/boarding/npc-saber.svg",
+      "sha256": "f0a674dceb34199006be6ac0dd321317e00ff21b2b1bdef3cac70e07af7eb5fe"
+    },
+    {
+      "source": "assets/sprites/ines-sword.svg",
+      "local": "assets/art/combat/boarding/ines-sword.svg",
+      "sha256": "ccc9fe358bef77de1eb5ce734f93bcca987b61a546129e29cec73492981b03d7"
+    },
+    {
+      "source": "assets/scenery/regional-deck.png",
+      "local": "assets/art/combat/boarding/regional-deck.png",
+      "sha256": "a5b49ab26c1b38e157c5993b04f247f4426450a1a52360bfcc7105e2584553d9"
+    },
+    {
+      "source": "assets/scenery/regional-water-illustrated-v1.png",
+      "local": "assets/art/combat/boarding/regional-water-illustrated-v1.png",
+      "sha256": "587cba06beeca1ec91ef9c21514e315cbbb4443d7746a682a14085146dd1c988"
+    },
+    {
+      "source": "assets/scenery/regional-deckhouse.png",
+      "local": "assets/art/combat/boarding/regional-deckhouse.png",
+      "sha256": "b581280325621153e45bb924a943847dbab49d7af374445c369efe80397fc7bc"
+    },
+    {
+      "source": "assets/scenery/final-cannon-refined-v1.png",
+      "local": "assets/art/combat/boarding/final-cannon-refined-v1.png",
+      "sha256": "40ecc84ea466bc20aff715af2d337983e9425abfcc51defb76587740d0b32df0"
+    },
+    {
+      "source": "assets/scenery/bruma-crate.png",
+      "local": "assets/art/combat/boarding/bruma-crate.png",
+      "sha256": "cd4411b166799f21b943bf723448a1feb044217d0ad91e578a4435c81d1038d5"
+    },
+    {
+      "source": "assets/scenery/bruma-barrel.png",
+      "local": "assets/art/combat/boarding/bruma-barrel.png",
+      "sha256": "8cef11965a0a06509222d13578535579f299065db3bd3a1dcc81f7a2431b88b8"
+    },
+    {
+      "source": "assets/scenery/regional-sail-reefed-illustrated-v1.png",
+      "local": "assets/art/combat/boarding/regional-sail-reefed-illustrated-v1.png",
+      "sha256": "328721a9f36955bc673aaa5eb3eb5d1a3a7cf0859bc24ba3e5735e4c74b3f2e1"
+    },
+    {
+      "source": "assets/scenery/regional-helm-natural-v1.png",
+      "local": "assets/art/combat/boarding/regional-helm-natural-v1.png",
+      "sha256": "589a8b27a240453908f0e1e701348c400ed7af807ba744ce0eaabee0beda9b2a"
+    }
+  ]
+}

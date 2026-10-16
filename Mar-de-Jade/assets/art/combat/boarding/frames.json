@@ -1,0 +1,410 @@
+{
+  "actors": {
+    "guard": {
+      "source": "res://assets/art/combat/boarding/guard-illustrated-strip.png",
+      "size": [
+        1536,
+        256
+      ],
+      "height": 60,
+      "reference_height": 201,
+      "frames": [
+        [
+          0,
+          0,
+          256,
+          256
+        ],
+        [
+          256,
+          0,
+          256,
+          256
+        ],
+        [
+          512,
+          0,
+          256,
+          256
+        ],
+        [
+          768,
+          0,
+          256,
+          256
+        ],
+        [
+          1024,
+          0,
+          256,
+          256
+        ],
+        [
+          1280,
+          0,
+          256,
+          256
+        ]
+      ],
+      "pivots": [
+        [
+          146.78,
+          237
+        ],
+        [
+          157.51,
+          237
+        ],
+        [
+          164.82,
+          236
+        ],
+        [
+          67.93,
+          239
+        ],
+        [
+          49.65,
+          238
+        ],
+        [
+          133.03,
+          238
+        ]
+      ],
+      "grips": [
+        [
+          188,
+          132
+        ],
+        [
+          165,
+          134
+        ],
+        [
+          162,
+          135
+        ],
+        [
+          188,
+          114
+        ],
+        [
+          61,
+          129
+        ],
+        [
+          166,
+          116
+        ]
+      ],
+      "weapon": "sword"
+    },
+    "rogue": {
+      "source": "res://assets/art/combat/boarding/rogue-illustrated-strip.png",
+      "size": [
+        1536,
+        256
+      ],
+      "height": 60,
+      "reference_height": 200,
+      "frames": [
+        [
+          0,
+          0,
+          256,
+          256
+        ],
+        [
+          256,
+          0,
+          256,
+          256
+        ],
+        [
+          512,
+          0,
+          256,
+          256
+        ],
+        [
+          768,
+          0,
+          256,
+          256
+        ],
+        [
+          1024,
+          0,
+          256,
+          256
+        ],
+        [
+          1280,
+          0,
+          256,
+          256
+        ]
+      ],
+      "pivots": [
+        [
+          99.45,
+          236
+        ],
+        [
+          145.09,
+          236
+        ],
+        [
+          151.76,
+          236
+        ],
+        [
+          88.35,
+          238
+        ],
+        [
+          127.91,
+          237
+        ],
+        [
+          120.01,
+          237
+        ]
+      ],
+      "grips": [
+        [
+          126,
+          130
+        ],
+        [
+          173,
+          139
+        ],
+        [
+          178,
+          143
+        ],
+        [
+          177,
+          128
+        ],
+        [
+          116,
+          134
+        ],
+        [
+          165,
+          122
+        ]
+      ],
+      "weapon": "saber"
+    },
+    "sailor": {
+      "source": "res://assets/art/combat/boarding/sailor-illustrated-strip.png",
+      "size": [
+        1536,
+        256
+      ],
+      "height": 60,
+      "reference_height": 202,
+      "frames": [
+        [
+          0,
+          0,
+          256,
+          256
+        ],
+        [
+          256,
+          0,
+          256,
+          256
+        ],
+        [
+          512,
+          0,
+          256,
+          256
+        ],
+        [
+          768,
+          0,
+          256,
+          256
+        ],
+        [
+          1024,
+          0,
+          256,
+          256
+        ],
+        [
+          1280,
+          0,
+          256,
+          256
+        ]
+      ],
+      "pivots": [
+        [
+          148.16,
+          237
+        ],
+        [
+          162.23,
+          237
+        ],
+        [
+          162.65,
+          238
+        ],
+        [
+          61.38,
+          238
+        ],
+        [
+          120.66,
+          237
+        ],
+        [
+          123.14,
+          238
+        ]
+      ],
+      "grips": [],
+      "weapon": ""
+    },
+    "worker": {
+      "source": "res://assets/art/combat/boarding/worker-illustrated-strip.png",
+      "size": [
+        1536,
+        256
+      ],
+      "height": 60,
+      "reference_height": 202,
+      "frames": [
+        [
+          0,
+          0,
+          256,
+          256
+        ],
+        [
+          256,
+          0,
+          256,
+          256
+        ],
+        [
+          512,
+          0,
+          256,
+          256
+        ],
+        [
+          768,
+          0,
+          256,
+          256
+        ],
+        [
+          1024,
+          0,
+          256,
+          256
+        ],
+        [
+          1280,
+          0,
+          256,
+          256
+        ]
+      ],
+      "pivots": [
+        [
+          121.16,
+          237
+        ],
+        [
+          159.31,
+          236
+        ],
+        [
+          139.13,
+          237
+        ],
+        [
+          62.37,
+          238
+        ],
+        [
+          79.34,
+          237
+        ],
+        [
+          101.39,
+          238
+        ]
+      ],
+      "grips": [],
+      "weapon": ""
+    }
+  },
+  "props": {
+    "deckhouse": {
+      "source": "res://assets/art/combat/boarding/regional-deckhouse.png",
+      "region": [
+        48,
+        20,
+        1209,
+        1196
+      ]
+    },
+    "cannon": {
+      "source": "res://assets/art/combat/boarding/final-cannon-refined-v1.png",
+      "region": [
+        39,
+        21,
+        1259,
+        1178
+      ]
+    },
+    "crate": {
+      "source": "res://assets/art/combat/boarding/bruma-crate.png",
+      "region": [
+        0,
+        0,
+        388,
+        358
+      ]
+    },
+    "barrel": {
+      "source": "res://assets/art/combat/boarding/bruma-barrel.png",
+      "region": [
+        0,
+        0,
+        373,
+        407
+      ]
+    },
+    "mast": {
+      "source": "res://assets/art/combat/boarding/regional-sail-reefed-illustrated-v1.png",
+      "region": [
+        16,
+        12,
+        987,
+        1518
+      ]
+    },
+    "helm": {
+      "source": "res://assets/art/combat/boarding/regional-helm-natural-v1.png",
+      "region": [
+        0,
+        10,
+        1187,
+        1302
+      ]
+    }
+  }
+}

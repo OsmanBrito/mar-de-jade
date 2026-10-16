@@ -6,7 +6,7 @@ Revisão atual: [controle pelo leme, três níveis de vela e câmera com horizon
 
 Também disponível: [seis músicas, ondas e áudio do casco](navegacao-atmosfera.md), com volumes em **Esc → Som e música**. [Prévia com áudio](navigation-atmosphere.mp4).
 
-A abordagem foi [corrigida para compartilhar o combate de Portugal](abordagem-combate-portugal.md), com técnicas, passivas, atributos, timing, escala e animações. Dois conveses ficam visíveis; a luta acontece apenas no navio inimigo, com a Botafogo ao lado. **Testar abordagem · combate no convés** abre a luta diretamente pelo menu inicial, sem alterar os saves.
+A abordagem [usa a arte ilustrada de Mar de Ferro e as regras de Portugal](abordagem-combate-portugal.md), com técnicas, passivas, atributos, timing e escala do combate em terra. Dois conveses ficam visíveis; a luta acontece apenas no navio inimigo, com a Botafogo ao lado. **Testar abordagem · combate no convés** abre a luta diretamente pelo menu inicial, sem alterar os saves. [Gravação completa com áudio](boarding-mar-de-ferro.mp4).
 
 ## Percurso e conteúdo
 
@@ -54,7 +54,7 @@ A batalha naval usa manobra em tempo real, mira assistida pela tripulação e ba
 
 O Quebra-Mar alterna bordadas e cargas anunciadas. Após a carga, seus flancos ficam expostos. Ignorar os sinais pode afundar a Botafogo; aprender o padrão permite evitá-los. O encontro fica fora da derrota principal e pode ser procurado quando o jogador quiser.
 
-Após incapacitar um navio, é possível recolher salvado e continuar ou abordar. A abordagem usa o combate tático existente: protagonista e Duarte, casas, movimento, ações, orientação e timing ofensivo/defensivo. O grupo começa no convés inimigo de 9×4 casas, mantendo o tamanho de casa do combate em terra; a Botafogo, sua tripulação e as pranchas ficam visíveis ao lado. Os adversários reutilizam os atlas de combate de Portugal. Vitória retorna ao mar e resolve aquele navio; derrota leva ao ponto seguro. Fuga naval conserva dano e deixa a ameaça no mapa.
+Após incapacitar um navio, é possível recolher salvado e continuar ou abordar. A abordagem usa o combate tático existente: protagonista e Duarte, casas, movimento, ações, orientação e timing ofensivo/defensivo. O grupo começa no convés inimigo de 9×4 casas, mantendo o tamanho de casa do combate em terra; a Botafogo, sua tripulação e as pranchas ficam visíveis ao lado. Adversários, tripulação, materiais e objetos usam os recursos ilustrados de Mar de Ferro. Vitória retorna ao mar e resolve aquele navio; derrota preserva o ponto seguro. Fuga naval conserva dano e deixa a ameaça no mapa.
 
 ## Preparação e salvamento
 
@@ -79,7 +79,7 @@ O trajeto direto em vela de viagem mediu **371 segundos, aproximadamente 6min11s
 
 Regressões repetidas neste refinamento: `chapter_full.gd` (31 verificações) e `name_entry.gd` (23), preservando o percurso anterior e a entrada do jogo. A execução headless emitiu o aviso de certificados do ambiente, sem falhas de GDScript nos testes finais.
 
-Capturas de QA: [menu](navigation-menu.png), [mar](navigation-sea.png), [sinais naturais](navigation-signals.png), [aproximação](navigation-approach.png), [descoberta](navigation-discovery.png), [perigo e retorno](navigation-danger.png), [carta](navigation-chart.png), [convés](navigation-deck.png), [Madeira](navigation-madeira.png), [enseada](navigation-island.png), [boss](navigation-boss.png), [ordens](navigation-orders.png), [abordagem](navigation-boarding.png).
+Capturas de QA: [menu](navigation-menu.png), [mar](navigation-sea.png), [sinais naturais](navigation-signals.png), [aproximação](navigation-approach.png), [descoberta](navigation-discovery.png), [perigo e retorno](navigation-danger.png), [carta](navigation-chart.png), [convés](navigation-deck.png), [Madeira](navigation-madeira.png), [enseada](navigation-island.png), [boss](navigation-boss.png), [ordens](navigation-orders.png), [abordagem](boarding-start.png).
 
 ## Arquivos e apresentação
 
@@ -91,6 +91,6 @@ Capturas de QA: [menu](navigation-menu.png), [mar](navigation-sea.png), [sinais 
 - Carta, encontros táticos, convés e porto: `scripts/navigation/voyage_view.gd` e `assets/shaders/navigation_ocean.gdshader`.
 - Ambiência e sinais sonoros: `scripts/navigation/voyage_audio.gd`; síntese reproduzível em `tools/build_navigation_audio.py`, com fontes/metadados em `assets/audio/navigation/sources.json`.
 - Trilha fornecida pelo jogador: `assets/audio/navigation/music/playlist.json`, com seis MP3, durações e ganhos de reprodução. Ondas e flotação: `scripts/navigation/voyage_sea.gd`.
-- Abordagem: `boarding_rules.gd`, `boarding_view.gd`, `boarding_arena.gd` e `boarding_ending.gd`, reutilizando o combate existente e sem modificar os módulos de referência.
+- Abordagem: `boarding_rules.gd`, `boarding_view.gd`, `boarding_arena.gd`, `boarding_assets.gd`, `boarding_actor_art.gd` e `boarding_ending.gd`, reutilizando o combate existente e os recursos ilustrados de Mar de Ferro, sem modificar os módulos de referência.
 
 A viagem usa geometria 3D procedural simples e shader de mar, com câmera atrás do navio e horizonte. Encontros, carta, convés e caminhada em terra usam as apresentações próprias existentes. Disparos reutilizam os efeitos sonoros do projeto. Mar, vento, aves, madeira e descoberta usam áudio original sintetizado localmente, sem gravações externas. A apresentação continua aberta ao playtest. O Quebra-Mar, interações e falas do trecho são conteúdo novo de implementação; não substituem as falas aprovadas de Portugal nem antecipam cenas da missão africana. Não foram gerados executáveis ou exportações.
