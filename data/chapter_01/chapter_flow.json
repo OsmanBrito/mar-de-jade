@@ -108,7 +108,7 @@
         }
       ],
       "directions": [
-        "[No pátio, exercício adulto curto com Duarte: confirmar movimento, básico e defesa simples com o corpo/arma provisórios desta etapa. Não repetir toda a explicação infantil nem conceder Defesa Perfeita antes de M04.]",
+        "[No pátio, exercício adulto curto com Duarte: confirmar movimento, básico e defesa simples com o equipamento de treino. Não repetir toda a explicação infantil nem conceder Defesa Perfeita antes de M04.]",
         "[Uma criança do abrigo se aproxima da sacola e tenta apertar uma correia.]",
         "[Ele conclui sem prolongar uma desculpa. Um trabalhador chama do cais.]",
         "[Partir para socorro. A familiaridade de Leonor não resolveu por ele a baixa aptidão ou o hábito de adiar.]"
@@ -1430,6 +1430,15 @@
           "tag": "Tomé"
         },
         {
+          "type": "task",
+          "id": "recovery_water",
+          "caption": "Toma a água que Tomé deixou ao alcance da cama."
+        },
+        {
+          "type": "stage",
+          "action": "water_drunk"
+        },
+        {
           "type": "line",
           "speaker": "Herói",
           "text": "Ela deu-me dez anos.",
@@ -1542,7 +1551,7 @@
         {
           "type": "task",
           "id": "recovery_walk",
-          "caption": "Caminha até à mesa quando o corpo o permitir.",
+          "caption": "Caminha até à mesa e regressa ao apoio de Tomé, sem pressa.",
           "map": "room"
         },
         {

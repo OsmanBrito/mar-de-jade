@@ -4,7 +4,7 @@ Revisão após o playtest de 15/10/2026. O jogador identificou deriva excessiva,
 
 ## Experimentar
 
-F5 ou `Jogar.cmd` → **Testar navegação · Lisboa → Madeira**. O barco começa com velas recolhidas. Cada toque em W sobe um nível; cada toque em S desce. Setas cima/baixo e impulsos verticais do analógico têm o mesmo efeito; é preciso retornar o analógico ao centro entre impulsos.
+`Jogar.cmd` → terminar Portugal → **Navegar para a Madeira**, ou **Continuar viagem guardada** na entrada. No editor, F6 em `scenes/navigation/voyage.tscn` abre o teste separado. O barco começa com velas recolhidas. Cada toque em W sobe um nível; cada toque em S desce. Setas cima/baixo e impulsos verticais do analógico têm o mesmo efeito; é preciso retornar o analógico ao centro entre impulsos.
 
 | Estado | Andamento relativo | Uso |
 |---|---|---|

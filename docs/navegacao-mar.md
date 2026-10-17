@@ -1,6 +1,18 @@
 # Navegação — refinamento do mar
 
-Implementado em 16/10/2026 no projeto `GitHub/mar-de-jade`, com Godot 4.5.1 e renderizador Compatibility. Entrar por **Testar navegação · Lisboa → Madeira** no menu inicial. Os controles pelo leme e os três níveis de vela continuam disponíveis.
+Implementado em 16/10/2026 no projeto `GitHub/mar-de-jade`, com Godot 4.5.1 e renderizador Compatibility, e reunido com as correções da campanha no repositório principal `Documents/GitHub/mar-de-jade` na mesma data. Entrar pelo fim de Portugal em **Navegar para a Madeira**, continuar uma viagem guardada, ou abrir `scenes/navigation/voyage.tscn` no editor. Os controles pelo leme e os três níveis de vela continuam disponíveis.
+
+## Integração com a campanha
+
+A revisão do mar estava na outra cópia do projeto e em arquivos de preparação dentro de `.qa-runtime/ocean-refinement`, mas ainda não estava nos scripts e shaders usados por `Jogar.cmd` desta pasta. O embarque já chamava a cena correta; essa cena carregava os arquivos anteriores de 15/10.
+
+Foram integrados os três módulos `voyage_perspective`, `voyage_sea` e `voyage_wake`, os dois shaders e os respectivos testes e recursos. Os cinco arquivos de implementação foram comparados por SHA-256 com a cópia de origem. A interface atual e a correção de resolução dos combates foram preservadas. O modelo e o formato dos saves são os mesmos: viagens existentes usam a apresentação atualizada ao reabrir o jogo.
+
+O novo `tests/navigation_campaign_entry.gd` aciona o botão real do fim do capítulo e verifica que a viagem da campanha recebe o oceano de quatro ondas, o shader de espuma contínua, a câmera com horizonte, as seis músicas e o personagem com suas técnicas. A captura abaixo foi feita nessa rota, com autosave desligado e hashes dos saves reais conferidos antes e depois.
+
+![Navegação atual na viagem da campanha](navigation-campaign-current.png)
+
+Validação desta integração: **153 verificações sem falhas** — entrada pela campanha (12), mar em OpenGL (16), áudio e atmosfera em OpenGL (37) e navegação headless (88). As capturas de mar parado, andamento, curva e mar pesado foram geradas novamente nesta cópia.
 
 [Gravação real com áudio — 24,5 segundos](navigation-ocean.mp4): barco parado, aceleração até vela plena, curva e parada até a espuma se dispersar. Captura em 1280×800, 30 fps, estéreo 48 kHz; pico de áudio do MP4 medido em −10,8 dBFS.
 

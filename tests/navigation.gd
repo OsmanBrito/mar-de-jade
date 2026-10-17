@@ -194,14 +194,13 @@ func run() -> void:
 	var chapter_before: Dictionary = chapter.snapshot(); var name_before: String = profile.hero_name
 	check(change_scene_to_file("res://scenes/chapter_01/name_entry.tscn")==OK,"Initial menu loads")
 	await frames()
-	var shortcut: Button = current_scene.get_node("Center/Card/Margin/Content/NavigationQuickStart")
-	check(shortcut!=null and not shortcut.disabled,"Quick navigation shortcut works without entering a name")
+	check(not current_scene.has_node("Center/Card/Margin/Content/NavigationQuickStart"),"Internal navigation shortcut is absent from the campaign entry")
 	await capture("menu")
-	# Exercise the actual menu action, disabling live autosave before _ready.
+	# Exercise the isolated QA launch, disabling live autosave before _ready.
 	var isolate := func(node):
 		if node.scene_file_path==Launch.SCENE: node.auto_save = false
 	root.child_entered_tree.connect(isolate)
-	shortcut.pressed.emit(); await frames(5)
+	Launch.start(self); await frames(5)
 	root.child_entered_tree.disconnect(isolate)
 	game = current_scene
 	check(game.scene_file_path==Launch.SCENE,"Quick shortcut actually opens the voyage scene")

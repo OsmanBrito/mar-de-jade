@@ -33,7 +33,7 @@ func run() -> void:
 	for index in [0,1,4,6,12,13,14,16]:
 		root.get_node("ChapterProgress").flags.injured = index in [12,13]
 		flow._load_block(index)
-		for step in 150:
+		for step in 1800:
 			if not flow.busy: break
 			await physics_frame
 		flow.world.player.camera.reset_smoothing()

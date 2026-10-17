@@ -19,7 +19,7 @@ static func data() -> Dictionary:
 static func resolve(id: String) -> String:
 	return {"tome":"tome_adult","leonor":"leonor_child","child":"hero_child"}.get(id,id)
 
-static func draw_actor(canvas: Node2D,id: String,facing: int,walking: bool,time: float,posture: String,scale_multiplier: float = 1.0,origin: Vector2 = Vector2.ZERO) -> bool:
+static func draw_actor(canvas: Node2D,id: String,facing: int,walking: bool,time: float,posture: String,scale_multiplier: float = 1.0,origin: Vector2 = Vector2.ZERO,eye_glow: bool = false) -> bool:
 	id = resolve(id)
 	if not data().has(id): return false
 	var entry: Dictionary = data()[id]
@@ -39,5 +39,7 @@ static func draw_actor(canvas: Node2D,id: String,facing: int,walking: bool,time:
 	canvas.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	canvas.draw_set_transform(origin,0,Vector2(-1 if flip else 1,1))
 	canvas.draw_texture_rect_region(textures[id],Rect2(Vector2(-pivot[0],-pivot[1])*factor,Vector2(rect[2],rect[3])*factor),Rect2(rect[0],rect[1],rect[2],rect[3]))
+	if id in ["hero_child","hero_story"]:
+		preload("res://scripts/chapter/hero_eyes.gd").draw(canvas,"child" if id=="hero_child" else "story",index,rect,pivot,factor,eye_glow)
 	canvas.draw_set_transform(Vector2.ZERO)
 	return true

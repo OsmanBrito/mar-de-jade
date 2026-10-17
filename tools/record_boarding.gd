@@ -12,14 +12,14 @@ func press(code: Key) -> void:
 	var event := InputEventKey.new(); event.keycode = code; event.physical_keycode = code; event.pressed = true
 	root.push_input(event); event = event.duplicate(); event.pressed = false; root.push_input(event)
 func click(point: Vector2) -> void:
-	var at: Vector2 = game.battle_container.position+point*game.battle_container.scale
+	var at: Vector2 = preload("res://scripts/combat/battle_stage.gd").ui_to_window(game.battle_host,point)
 	var motion := InputEventMouseMotion.new(); motion.position = at; motion.global_position = at; root.push_input(motion,true)
 	var event := InputEventMouseButton.new(); event.position = at; event.global_position = at; event.button_index = MOUSE_BUTTON_LEFT; event.pressed = true
 	root.push_input(event,true); event = event.duplicate(); event.pressed = false; root.push_input(event,true)
 func run() -> void:
 	root.get_node("ChapterProgress").auto_save = false
 	change_scene_to_file("res://scenes/chapter_01/name_entry.tscn"); await frames(3)
-	current_scene.get_node("Center/Card/Margin/Content/BoardingQuickStart").pressed.emit(); await frames(12)
+	preload("res://scripts/navigation/voyage_launch.gd").start(self,false,false,true); await frames(12)
 	game = current_scene
 	if game.model.phase!="boarding" or game.auto_save: push_error("Boarding recording must use the isolated menu shortcut"); quit(1); return
 	await frames(30)

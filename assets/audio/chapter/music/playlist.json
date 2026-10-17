@@ -1,0 +1,13 @@
+{
+  "source_project": "Maré de Ferro — projeto local jogo, seleção conferida na implementação atual de music.gd e no catálogo musical.",
+  "copy_policy": "Arquivos originais copiados sem edição; nenhum download ou geração externa.",
+  "tracks": {
+    "shelter": {"file":"02_casa_das_mares.ogg","title":"Casa das Marés","source":"assets/audio/music/exploration/02_casa_das_mares.ogg","gain_db":-5.0},
+    "city": {"file":"Echoes_of_the_Templar_City.mp3","title":"Echoes of the Templar City","source":"assets/audio/Echoes_of_the_Templar_City.mp3","gain_db":-12.0},
+    "harbor": {"file":"porto_morning_tides.mp3","title":"Porto Morning Tides","source":"assets/audio/porto_morning_tides.mp3","gain_db":-12.0},
+    "promise": {"file":"16_duarte_ines_theme.ogg","title":"Tema de Duarte e Inês","source":"assets/audio/music/emotional/16_duarte_ines_theme.ogg","gain_db":-5.0},
+    "recovery": {"file":"19_after_the_wave.ogg","title":"Depois da Onda","source":"assets/audio/music/emotional/19_after_the_wave.ogg","gain_db":-5.0},
+    "training": {"file":"steel_on_saltwind.mp3","title":"Steel on Saltwind","source":"assets/audio/steel_on_saltwind.mp3","gain_db":-12.0},
+    "duel": {"file":"Duel_at_the_Atlantic_Edge.mp3","title":"Duel at the Atlantic Edge","source":"assets/audio/Duel_at_the_Atlantic_Edge.mp3","gain_db":-12.0}
+  }
+}

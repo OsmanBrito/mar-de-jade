@@ -26,7 +26,8 @@ func run() -> void:
 					if selection < 5: game._show_styles(game.style_options)
 					else: game.confirm_style()
 				"block_end": break
-		await process_frame
+		if game.busy: await physics_frame
+		else: await process_frame
 	check(progress.tested_styles.size() == 5,"All five styles can be tested in one visit")
 	check(progress.passives.size() == 8,"Eight passives taught with correct owner")
 	check(progress.equipped_passives.is_empty() and progress.duarte_equipped_passives.is_empty(),"Learning does not auto-equip passives")

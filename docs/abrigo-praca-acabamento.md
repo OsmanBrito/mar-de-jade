@@ -1,5 +1,7 @@
 # Abrigo e praça — segunda passagem de acabamento
 
+Continuação: [mesa, paredes, sombras e integração visual — antes/depois](mesa-paredes-integracao.md). As capturas abaixo acompanham a versão atual; o texto e os números desta página registram a segunda passagem.
+
 16/10/2026. Esta passagem trabalha as proporções e a composição do abrigo e da praça, com efeitos partilhados no pátio, na refeição e na recuperação. Não representa o aceite visual final de toda a campanha.
 
 ## O que mudou

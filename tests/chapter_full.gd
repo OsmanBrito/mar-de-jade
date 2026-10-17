@@ -46,7 +46,12 @@ func drive_battle() -> void:
 		if b.current().acted:
 			v.start_facing(); v.facing = b.suggested_facing(b.current_id); v.confirm(); return
 		if b.mode == "adult_basic" and not b.moved_in_battle:
-			v.select_move(); v.select_cell(Vector2i(4,3)); v.confirm(); return
+			var destination: Vector2i = b.current().cell
+			var nearest := 999
+			for cell in b.reachable(b.current_id).costs:
+				if cell==b.current().cell or b.path_to(b.current_id,cell).is_empty(): continue
+				if b.distance(cell,b.units[2].cell)<nearest: destination = cell; nearest = b.distance(cell,b.units[2].cell)
+			v.select_move(); v.select_cell(destination); v.confirm(); return
 		if b.mode in ["adult_defense","perfect_defense"] or (b.mode == "duarte_support" and b.current_id == 0):
 			v.start_facing(); v.facing = b.suggested_facing(b.current_id); v.confirm(); return
 		var skill := 0
@@ -69,7 +74,7 @@ func drive_battle() -> void:
 	else:
 		v.update(2.1)
 func capture_scene() -> void:
-	if DisplayServer.get_name() == "headless": return
+	if DisplayServer.get_name() == "headless" or not OS.get_cmdline_user_args().has("--capture"): return
 	var id: String = game.blocks[game.scene_index].id
 	if captured.has(id): return
 	if game.phase == "dialogue" and not game.busy:
@@ -77,6 +82,7 @@ func capture_scene() -> void:
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://tests/chapter-"+id.replace("/","-")+".png")
 func run() -> void:
+	Engine.time_scale = 3.0
 	root.get_node("CampaignProfile").hero_name = "Inês"
 	root.get_node("ChapterProgress").reset()
 	root.get_node("ChapterProgress").auto_save = false
@@ -104,11 +110,25 @@ func run() -> void:
 				"battle": drive_battle()
 				"styles": game.choose_style("ES")
 				"styles_result": game.confirm_style()
+				"roaming":
+					var destination: Vector2 = game.routes.goal
+					if game.routes.area()!=game.routes.goal_area:
+						var next := "square" if game.routes.area() in ["room","cais"] else "cais"
+						if game.routes.area()=="square" and game.routes.goal_area=="room": next = "room"
+						if game.routes.area()=="cais" and game.routes.goal_area=="deck": next = "deck"
+						for exit in game.routes.exits:
+							if exit.to==next: destination = exit.point; break
+					check(await walk_near(destination,45),"Walks to the actual city passage or story meeting")
+					await press_interact()
+				"rest_confirm": game.routes.rest()
 				"exploration":
 					check(await walk_near(game.harbor.GATE,70),"Walk through Lisbon to Duarte's boarding point")
 					await press_interact()
-				"boarding": game.harbor.confirm_boarding()
-		await frames(1)
+				"boarding":
+					if game.routes.active: game.routes.board()
+					else: game.harbor.confirm_boarding()
+		if game.busy: await physics_frame
+		else: await frames(1)
 	check(game.completed,"Full chapter reaches departure")
 	check(scene_ids.size() == 17,"Every remaining scene block completed")
 	check(root.get_node("ChapterProgress").flags.get("duel_lost",false),"Adult duel produces real defeat")

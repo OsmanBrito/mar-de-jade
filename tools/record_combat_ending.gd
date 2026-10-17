@@ -1,10 +1,12 @@
 extends "res://tools/record_combat.gd"
 ## Real full-health duel and approved narrative handoff, through normal input.
 func click(point: Vector2) -> void:
-	var at: Vector2 = game.battle_container.position+point*game.battle_container.scale
+	var at: Vector2 = preload("res://scripts/combat/battle_stage.gd").ui_to_window(game.battle_host,point)
 	var motion := InputEventMouseMotion.new(); motion.position = at; motion.global_position = at; root.push_input(motion,true)
 	var event := InputEventMouseButton.new(); event.position = at; event.global_position = at; event.button_index = MOUSE_BUTTON_LEFT; event.pressed = true; root.push_input(event,true)
 	event = event.duplicate(); event.pressed = false; root.push_input(event,true)
+func click_cell(cell: Vector2i) -> void:
+	click(game.battle_host.tactical.screen(cell))
 func phase(wanted: String,limit := 180) -> bool:
 	for i in limit:
 		if game.battle_host.tactical.phase==wanted: return true
@@ -19,7 +21,7 @@ func run() -> void:
 	game = load("res://scenes/chapter_01/chapter_flow.tscn").instantiate(); game.start_block = 8; root.add_child(game)
 	await frames(25)
 	var host = game.battle_host; var v = host.tactical
-	press(KEY_1); await frames(4); click(v.screen(host.combat.units[2].cell)); await frames(15); press(KEY_ENTER)
+	press(KEY_1); await frames(4); click_cell(host.combat.units[2].cell); await frames(15); press(KEY_ENTER)
 	if not await phase("timing_attack"): quit(1); return
 	for i in 80:
 		if v.grade_at(v.clock/v.duration)==2: press(KEY_SPACE); break

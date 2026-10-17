@@ -21,7 +21,7 @@ static func pose_frame(pose: String,time: float,style: String = "ES") -> int:
 		"parry","guard","brace","cover": return 6
 		"attack","thrust","crush","shoot","sweep","punch": return Feel.frame(style,time)
 	return 0
-static func draw_actor(canvas: Node2D,id: String,point: Vector2,face_left: bool,pose: String,time: float,style: String,wooden: bool,flash: float = 0,reduced: bool = false,aim: Vector2 = Vector2.RIGHT,size_multiplier: float = 1.0) -> Vector2:
+static func draw_actor(canvas: CanvasItem,id: String,point: Vector2,face_left: bool,pose: String,time: float,style: String,wooden: bool,flash: float = 0,reduced: bool = false,aim: Vector2 = Vector2.RIGHT,size_multiplier: float = 1.0) -> Vector2:
 	var info: Dictionary = data()[id]
 	if not textures.has(id):
 		var source: Texture2D = load(info.source) if ResourceLoader.exists(info.source) else ImageTexture.create_from_image(Image.load_from_file(info.source))
@@ -41,6 +41,8 @@ static func draw_actor(canvas: Node2D,id: String,point: Vector2,face_left: bool,
 	var tint := Color.WHITE.lerp(Color("f0b3a4"),flash*0.40)
 	var tip := point
 	canvas.draw_texture_rect_region(textures[id],Rect2(Vector2(-pivot[0],-pivot[1])*scale_factor,Vector2(r[2],r[3])*scale_factor),Rect2(r[0],r[1],r[2],r[3]),tint)
+	if id in ["hero","hero_child"]:
+		preload("res://scripts/chapter/hero_eyes.gd").draw(canvas,"combat" if id=="hero" else "combat_child",frame,r,pivot,scale_factor)
 	if frame not in [7,8] and style!="PU":
 		var hand := Vector2(grip[0]-pivot[0],grip[1]-pivot[1])*scale_factor
 		var axis := Motion.weapon_axis("guard",time) if frame==6 else (Feel.weapon_axis(style,time) if frame in [3,4,5] else Vector2(0.50,-0.86))
@@ -58,7 +60,7 @@ static func draw_actor(canvas: Node2D,id: String,point: Vector2,face_left: bool,
 		canvas.draw_texture_rect_region(textures[id],Rect2((Vector2(patch.position)-Vector2(pivot[0],pivot[1]))*scale_factor,patch.size*scale_factor),Rect2(Vector2(r[0],r[1])+patch.position,patch.size),tint)
 	canvas.draw_set_transform(Vector2.ZERO)
 	return tip
-static func draw_weapon(canvas: Node2D,hand: Vector2,axis: Vector2,style: String,wooden: bool,factor: float) -> void:
+static func draw_weapon(canvas: CanvasItem,hand: Vector2,axis: Vector2,style: String,wooden: bool,factor: float) -> void:
 	var normal := axis.orthogonal()
 	var shaft := Color("96714b")
 	var metal := Color("b6c5bf")

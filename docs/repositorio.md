@@ -1,5 +1,7 @@
 # Estrutura do repositório
 
+Projeto principal: `C:/Users/gamer/Documents/GitHub/mar-de-jade`. Em 16/10/2026, as correções recentes da campanha, combate, interface e música foram reunidas aqui com a navegação atual. O caminho antigo em `Documents/ChatGPT/Mar-de-Jade` redireciona para este repositório. Os saves continuam em `user://` na mesma pasta de dados de Mar de Jade.
+
 Desde a revisão de 16/10/2026, `project.godot` fica diretamente na raiz de `mar-de-jade`. A pasta intermediária `Mar-de-Jade/` foi removida; os caminhos internos `res://` continuam relativos à mesma raiz do projeto Godot.
 
 | Caminho | Conteúdo |

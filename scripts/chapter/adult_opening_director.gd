@@ -23,6 +23,9 @@ func _ready() -> void:
 	data = JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/adult_opening.json"))
 	hero = $Abrigo/ActorsAndProps/Child
 	$Abrigo/ActorsAndProps/Tome.seat_support = true
+	hero.facing = 3
+	$Abrigo/ActorsAndProps/Tome.facing = 1
+	$Abrigo/ActorsAndProps/Duarte.facing = 3
 	get_node("Camera").enabled = false
 	preload("res://scripts/chapter/chapter_framing.gd").install(self,[hero,$Abrigo/ActorsAndProps/Tome,$Abrigo/ActorsAndProps/Duarte],1.45)
 	view = preload("res://scripts/chapter/dialogue_view.gd").new()
@@ -35,7 +38,8 @@ func _ready() -> void:
 	view.body.get_parent().add_child(choices)
 	for id in ["assumir","desculpar"]:
 		var button := Button.new()
-		button.text = "Assumir o atraso" if id == "assumir" else "Dar uma desculpa"
+		button.text = "“"+data.segments[id][0].text+"”"
+		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		button.custom_minimum_size.y = 42
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.pressed.connect(choose.bind(id))
@@ -81,13 +85,13 @@ func advance() -> void:
 		completed = true
 		phase = "complete"
 		view.speaker.text = "A correia e o prazo"
-		view.body.text = "A sacola está pronta. Duarte espera no pátio."
+		view.body.text = "A sacola está pronta. Termina a entrega no cais e regressa ao pátio de Duarte."
 		view.next_button.show()
 		view.next_button.disabled = false
-		view.next_button.text = "Continuar para o pátio"
-		view.replay_button.show()
+		view.next_button.text = "Sair para Lisboa"
+		view.replay_button.hide()
 		view.next_button.grab_focus()
-		view.status.text = "Cena concluída"
+		view.status.text = ""
 		scene_finished.emit(data.id)
 
 func choose(id: String) -> void:
@@ -125,6 +129,7 @@ func _continue_pressed() -> void:
 	if busy or paused: return
 	if completed:
 		ChapterProgress.choices.origin_response = CampaignProfile.origin_response
+		if sack_ready and not ChapterProgress.flags.get("delivery_finished",false): ChapterProgress.flags.delivery_pending = true
 		get_tree().change_scene_to_file("res://scenes/chapter_01/chapter_flow.tscn")
 	else: advance()
 

@@ -81,7 +81,7 @@ func _ready() -> void:
 	_build_ui(); _build_boarding()
 	if resume and not model.last_error.is_empty(): show_message("Viagem",model.last_error)
 	elif not resume and not boarding_test:
-		show_message("Ao leme da Botafogo", "Madeira é a primeira escala antes da missão em Duas Águas. Agora olhas pela proa, com o horizonte à frente.\n\nCada toque em W / cima aumenta a vela: parado → manobra → viagem → plena. S / baixo reduz. Ao soltar W, o barco mantém a vela escolhida. A/D ou esquerda/direita comandam o leme.\n\nEspaço recolhe as velas para parar. M abre a carta; marca um rumo para o piloto conduzir. A/D ou W/S devolvem-te o leme. E interage; C leva-te ao convés.\n\nProcura aves, restos e velas à frente. V retoma o rumo após um desvio. Escuta o piloto se o mar pesar.")
+		show_message("Ao leme da Botafogo", "Madeira é a primeira escala para abastecer antes de Duas Águas e da busca pela caravela desaparecida. Vais como aprendiz sob Rodrigo.\n\nComeça pela manobra: W / cima aumenta a vela um nível; S / baixo reduz. A/D ou esquerda/direita viram o leme. Espaço / RB recolhe as velas para parar.\n\nOs 180 de ouro são o fundo de bordo para provisões, reparos e serviços. A tua carteira de Lisboa não foi gasta nem somada a esse fundo. Ajuda completa disponível na pausa.")
 		if auto_save: _save(false)
 	if model.phase in ["port","island"]: walker = Vector2(700,560)
 	_refresh_controls()
@@ -105,6 +105,7 @@ func _prepare_boarding_profile(chapter_path: String = ChapterProgress.SAVE_PATH)
 func _build_ui() -> void:
 	var layer := CanvasLayer.new(); layer.layer = 5; add_child(layer)
 	ui = Control.new(); ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); ui.mouse_filter = Control.MOUSE_FILTER_IGNORE; layer.add_child(ui)
+	ui.theme = preload("res://scripts/ui/presentation.gd").theme()
 	var top := Panel.new(); top.position = Vector2(16,16); top.size = Vector2(1408,99); top.mouse_filter = Control.MOUSE_FILTER_IGNORE; top.add_theme_stylebox_override("panel",box(INK,Color("5b756d"))); ui.add_child(top)
 	status = label("MAR DE JADE  /  A PRIMEIRA DERROTA",16,GOLD); status.position = Vector2(36,29); ui.add_child(status)
 	objective = label("",22,PAPER); objective.position = Vector2(36,57); ui.add_child(objective)
@@ -118,7 +119,7 @@ func label(value: String,size: int,color: Color) -> Label:
 	var item := Label.new(); item.text = value; item.add_theme_font_size_override("font_size",size); item.add_theme_color_override("font_color",color); item.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return item
 func box(fill: Color,border: Color) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new(); style.bg_color = fill; style.border_color = border; style.set_border_width_all(1); style.set_corner_radius_all(5)
+	var style := preload("res://scripts/ui/presentation.gd").panel(fill,border)
 	style.content_margin_left = 18; style.content_margin_right = 18; style.content_margin_top = 12; style.content_margin_bottom = 12
 	return style
 func button(title: String,action: Callable) -> Button:
@@ -237,6 +238,10 @@ func _sail(delta: float,direction: Vector2) -> void:
 	if (absf(direction.x)>0.4 or (automatic and absf(angle_difference(model.heading,course.angle()))>0.65)) and model.velocity.length()>20 and turn_sound_clock<=0:
 		ambience.cue("creak"); turn_sound_clock = 14
 	var messages: Array[String] = model.update(delta,course,throttle) if automatic else model.helm(delta,direction.x,sail_level)
+	if not model.tutorials.get("sail",false) and model.velocity.length()>8:
+		model.tutorials.sail = true; notice("A Botafogo ganhou andamento. Soltar W mantém a vela; A/D altera o rumo. Experimenta uma pequena curva e depois Espaço para parar.")
+	if model.tutorials.get("sail",false) and not model.tutorials.get("turn",false) and absf(direction.x)>0.4 and model.velocity.length()>8:
+		model.tutorials.turn = true; notice("O leme acompanha a proa. Agora recolhe as velas com Espaço / RB; o casco abranda até parar.")
 	for message in messages:
 		queue_report(message)
 		if message.begins_with("À vista:"): ambience.cue("discovery")
@@ -261,6 +266,9 @@ func stop_sailing() -> void:
 	sail_level = 0; waypoint = Vector2.ZERO; focus_id = ""
 	ambience.sail_shift()
 	notice("Velas recolhidas. A Botafogo perde o andamento. W volta a içar.")
+	if model.tutorials.get("sail",false) and not model.tutorials.get("stop",false):
+		model.tutorials.stop = true
+		notice("Manobra praticada. M abre a carta; seleciona Madeira para o piloto conduzir. Procura aves, restos e velas pelo caminho. A ajuda completa continua na pausa.")
 func mark_contact(id: String) -> void:
 	var entry: Dictionary = model.place(id)
 	if entry.is_empty(): return
@@ -287,11 +295,12 @@ func _refresh_status() -> void:
 	elif model.phase in ["naval","naval_result"]: title = current_enemy.get("name","")+" · encontro naval"
 	objective.text = title
 	var hull_value: float = naval.hull if model.phase=="naval" and naval!=null else model.hull
-	resources.text = "CASCO %d%%    PROVISÕES %d%%    %d REAIS\n%s"%[ceili(hull_value),ceili(model.supplies),model.coins,"Teste de navegação" if Launch.mode=="test" else "Viagem da campanha"]
+	resources.text = "CASCO %d%%    PROVISÕES %d%%    BORDO %d OURO\n%s"%[ceili(hull_value),ceili(model.supplies),model.coins,"Teste de navegação" if Launch.mode=="test" else "Viagem da campanha · fundo da tripulação"]
 	if model.phase in ["naval","naval_result"] and naval!=null:
 		hint.text = "W ↑ vela · S ↓ vela · A/D leme  |  "+sail_name()+"  |  "+naval.note
 	else:
 		hint.text = "W ↑ vela · S ↓ vela · A/D leme  |  Espaço parar  |  M carta · C convés · V retomar rumo · E interagir  |  "+sail_name()
+		if not model.tutorials.get("stop",false): hint.text = "W ↑ vela · S ↓ vela · A/D leme · Espaço parar  |  "+sail_name()+"  |  Esc · ajuda"
 		if sail_button!=null: sail_button.text = "Parar · Espaço"
 		if course_button!=null: course_button.text = "Águas seguras · V" if model.danger>0 else "Retomar rumo · V"
 		if interact_button!=null:
@@ -302,6 +311,9 @@ func _refresh_status() -> void:
 
 func open_chart() -> void:
 	if model.phase not in ["sea","deck","port","island"]: return
+	if not model.tutorials.get("chart",false):
+		model.tutorials.chart = true
+		notice("Carta · seleciona Madeira para traçar a derrota. O piloto conduz; tocar no leme devolve-te o controle. V retoma o rumo depois de um desvio.")
 	clear_overlay(); overlay = "chart"; _refresh_controls()
 	if controls.get_child_count()>0: controls.get_child(0).grab_focus()
 func set_course(id: String) -> void:
@@ -395,18 +407,18 @@ func interact() -> void:
 				"attendant":
 					if not model.aid_used.has(model.port):
 						model.aid_used[model.port] = true; model.coins += 30; model.supplies = maxf(65,model.supplies); model.hull = maxf(65,model.hull); _save(false)
-						show_message("Serviço do cais","Ajudaste a conferir a carga e a preparar as amarras.\n\n+30 reais. O cais garantiu o essencial para continuar: casco e reservas repostos até pelo menos 65%. Este serviço é recebido uma vez em cada escala.")
+						show_message("Serviço do cais","Ajudaste a conferir a carga e a preparar as amarras.\n\n+30 de ouro. O cais garantiu o essencial para continuar: casco e reservas repostos até pelo menos 65%. Este serviço é recebido uma vez em cada escala.")
 					else: show_message("Serviço do cais","A carga desta escala já foi conferida. O comerciante e os pilotos continuam disponíveis.")
 				"duarte":
 					if model.phase=="island":
 						if not model.resolved.has("desertas"):
 							model.resolved.desertas = true; model.coins += 45; model.supplies = minf(100,model.supplies+15)
-							show_message("Uma passagem antiga","Encontraste marcas de navegação talhadas junto do abrigo e restos de uma carga.\n\n+45 reais · +15 provisões. A descoberta fica registada na carta."); _save(false)
+							show_message("Uma passagem antiga","Encontraste marcas de navegação talhadas junto do abrigo e restos de uma carga.\n\n+45 de ouro · +15 provisões. A descoberta fica registada na carta."); _save(false)
 						else: show_message("Duarte","Já examinámos este abrigo. As marcas continuam aqui para quem souber procurá-las.")
 					else: show_message("Duarte","O Quebra-Mar ronda o largo, longe da derrota direta. Dizem que tenta abalroar quem enfrenta. É uma ameaça para quando estivermos preparados.\n\nTambém podemos procurar Porto Santo e as marcas da Passagem das Desertas.")
 func open_services(specialists: bool) -> void:
 	var ids := ["chart","pilot","cartographer","hull"] if specialists else ["supplies","repair","chart"]
-	var names := {"supplies":"Provisões +40 · 12 reais","repair":"Reparar casco +45 · 15 reais","chart":"Carta das Desertas · 35 reais","pilot":"Contratar piloto · 65 reais","cartographer":"Contratar cartógrafo · 55 reais","hull":"Reforçar o casco · 90 reais"}
+	var names := {"supplies":"Provisões +40 · 12 de ouro","repair":"Reparar casco +45 · 15 de ouro","chart":"Carta das Desertas · 35 de ouro","pilot":"Contratar piloto · 65 de ouro","cartographer":"Contratar cartógrafo · 55 de ouro","hull":"Reforçar o casco · 90 de ouro"}
 	var actions: Array = []
 	for id in ids:
 		var item_id: String = id
@@ -414,7 +426,7 @@ func open_services(specialists: bool) -> void:
 			var message: String = model.buy(item_id); service_feedback = message; _save(false); notice(message); open_services(specialists)
 		])
 	actions.append(["Voltar",func(): pass])
-	modal("services","Pilotos e cartas" if specialists else "Provisões e reparos","%d reais · casco %d%% · provisões %d%%\n%s"%[model.coins,ceili(model.hull),ceili(model.supplies),"O piloto melhora a manobra; o cartógrafo melhora os avistamentos. A carta oferece pistas, e o casco amplia a margem em mar pesado." if specialists else "Prepara a próxima viagem. O serviço do cais ajuda com o essencial uma vez por escala."]+("\n\n"+service_feedback if not service_feedback.is_empty() else ""),actions)
+	modal("services","Pilotos e cartas" if specialists else "Provisões e reparos","%d de ouro · casco %d%% · provisões %d%%\n%s"%[model.coins,ceili(model.hull),ceili(model.supplies),"O piloto melhora a manobra; o cartógrafo melhora os avistamentos. A carta oferece pistas, e o casco amplia a margem em mar pesado." if specialists else "Prepara a próxima viagem. O serviço do cais ajuda com o essencial uma vez por escala."]+("\n\n"+service_feedback if not service_feedback.is_empty() else ""),actions)
 
 func begin_naval(entry: Dictionary) -> void:
 	current_enemy = entry; naval = Naval.new(); naval.begin(entry.kind=="boss",model.hull,model.upgrades.get("hull",false))
@@ -455,7 +467,7 @@ func finish_encounter(boarded: bool,fled: bool = false) -> void:
 		model.resolved[current_enemy.id] = true; model.discovered[current_enemy.id] = "explored"
 		var reward := (140 if current_enemy.kind=="boss" else 40)+(30 if boarded else 0)
 		model.coins += reward; model.supplies = minf(100,model.supplies+(20 if boarded else 8))
-		notice(("Boss vencido! " if current_enemy.kind=="boss" else "Encontro concluído. ")+"+%d reais · recursos recuperados."%reward)
+		notice(("Boss vencido! " if current_enemy.kind=="boss" else "Encontro concluído. ")+"+%d de ouro · recursos recuperados."%reward)
 		_save(false)
 	else:
 		var at: Vector2 = model.place_position(current_enemy)
@@ -488,8 +500,15 @@ func begin_boarding() -> void:
 	if current_enemy.kind=="boss":
 		for unit in battle_host.combat.enemies: unit.hp += 25; unit.max_hp += 25
 	_refresh_controls()
+	if not model.tutorials.get("boarding",false):
+		model.tutorials.boarding = true
+		battle_host.notify_player("A Bolsa usa ligaduras e água pessoais. Vida e alento restantes seguem para o próximo encontro; o fundo de bordo paga os serviços do navio.")
 func _boarding_completed(success: bool) -> void:
 	battle_container.hide()
+	if success:
+		var profile: Dictionary = model.boarding_profile
+		for key in ["hp","qi","posture"]: profile.vitals[key] = int(battle_host.combat.units[0][key])
+		profile.inventory = battle_host.combat.progress_override.inventory.duplicate(true)
 	if success: finish_encounter(true)
 	else: game_over("O grupo foi vencido na abordagem. A viagem regressa ao último ponto seguro.")
 func game_over(reason: String) -> void:
@@ -515,11 +534,15 @@ func open_pause() -> void:
 	if model.phase=="game_over": return
 	modal("pause","Viagem em pausa","O mar espera. Consulta a carta ou retoma a última viagem guardada.",[
 		["Continuar",func(): pass],
+		["Ajuda ao leme e missão",open_help],
 		["Som e música",open_audio],
 		["Guardar viagem",func(): _save(true)],
 		["Carregar ponto seguro",restore_safe],
 		["Menu inicial",return_menu]
 	])
+
+func open_help() -> void:
+	show_message("Leme, rumo e responsabilidade",preload("res://scripts/chapter/chapter_objectives.gd").TRAVEL+"\n\n1. W/S muda a vela; A/D vira o leme; Espaço recolhe a vela. Soltar W mantém o andamento.\n2. M abre a carta. Madeira traça um rumo; V retoma-o depois de um desvio.\n3. Aves, restos e velas indicam descobertas. Aproxima-te e usa E. C abre o convés.\n4. Num encontro naval, Q/E dispara pelos flancos; Espaço abre ordens e pausa o encontro.\n\nFundo de bordo: 180 de ouro iniciais, separado da carteira de Lisboa. Equipamento e aprendizado seguem contigo. Vida, alento e postura restantes persistem entre abordagens; consumíveis usados saem da tua sacola. A derrota retoma o último ponto seguro.")
 func open_audio() -> void:
 	var column := modal("audio","Som e música","",[
 		["Próxima música",func(): open_audio(); ambience.next_track()],

@@ -27,6 +27,15 @@ func run() -> void:
 	var host = game.battle_host
 	var b = host.combat
 	var v = host.tactical
+	var initial_cell: Vector2i = b.current().cell
+	var target_cell: Vector2i = b.units[2].cell
+	var destination := Vector2i(-1,-1)
+	var path_cost := 99
+	for cell in b.reachable(0).costs:
+		var route: Array = b.path_to(0,cell)
+		if b.distance(cell,target_cell)==1 and not route.is_empty() and route.size()<path_cost:
+			destination = cell; path_cost = route.size()
+	check(destination!=Vector2i(-1,-1),"The actual map has a reachable attack position beside the target")
 	check(game.phase == "battle" and v.phase == "choose","Real reference battle opens from dialogue")
 	check(b.order == [0,2] and b.heroes[1].hp == 0,"Initiative has only pupil and target")
 	check(b.current().moves == 5,"Reference movement budget replaces pixel step")
@@ -39,12 +48,13 @@ func run() -> void:
 	check(v.phase == "move","Keyboard reaches scaled reference battle viewport")
 	await capture("res://tests/reference-battle-preview.png")
 	v.select_move()
-	v.select_cell(Vector2i(4,3))
+	v.select_cell(destination)
+	host.queue_redraw(); await frames(2)
 	await capture("res://tests/reference-move-preview.png")
-	check(b.current().cell == Vector2i(2,5),"Selecting path previews without moving")
-	check(b.path_to(0,Vector2i(4,3)).size() == 4,"Path routes around bench")
+	check(b.current().cell == initial_cell,"Selecting path previews without moving")
+	check(b.path_to(0,destination).size() == path_cost and path_cost<=5,"Path follows the actual map furniture within the movement budget")
 	var pointer = InputEventMouseMotion.new()
-	pointer.position = game.battle_container.position+Vector2(798,496)*game.battle_container.scale
+	pointer.position = preload("res://scripts/combat/battle_stage.gd").ui_to_window(host,Vector2(760,496))
 	pointer.global_position = pointer.position
 	root.push_input(pointer,true)
 	await frames(2)
@@ -53,13 +63,13 @@ func run() -> void:
 	click.button_index = MOUSE_BUTTON_LEFT; click.pressed = true
 	root.push_input(click,true)
 	await frames(2)
-	check(b.current().cell == Vector2i(4,3) and b.current().moves == 1,"Confirmed path spends per-house movement")
+	check(b.current().cell == destination and b.current().moves == 5-path_cost,"Confirmed path spends the displayed movement cost")
 	v.update(1)
 	v.undo_move()
-	check(b.current().cell == Vector2i(2,5) and b.current().moves == 5,"Reference undo restores position and budget")
-	v.select_move(); v.select_cell(Vector2i(4,3))
+	check(b.current().cell == initial_cell and b.current().moves == 5,"Reference undo restores position and budget")
+	v.select_move(); v.select_cell(destination)
 	await capture("res://tests/reference-move-preview.png"); v.confirm(); v.update(1)
-	v.select_skill(0); v.select_cell(Vector2i(5,3)); v.confirm()
+	v.select_skill(0); v.select_cell(target_cell); v.confirm()
 	check(v.phase == "timing_attack","Reference attack timing begins after confirmation")
 	var escape = InputEventKey.new()
 	escape.keycode = KEY_ESCAPE; escape.physical_keycode = KEY_ESCAPE; escape.pressed = true
@@ -87,7 +97,7 @@ func run() -> void:
 	check(b.current_id == 2,"Facing confirmation ends turn and yields to opponent")
 	v.update(1); v.update(2)
 	check(b.current_id == 0 and not b.current().acted,"Opponent returns next turn with refreshed action")
-	v.select_skill(0); v.select_cell(Vector2i(5,3)); v.confirm(); v.commit_timing(1)
+	v.select_skill(0); v.select_cell(target_cell); v.confirm(); v.commit_timing(1)
 	v.update(0.46); v.update(2)
 	# Result hold and covered handoff follow the actual recovery.
 	host.update_ending(1); host.update_ending(1)

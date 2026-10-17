@@ -58,6 +58,7 @@ func configure_input() -> void:
 	var accept_pad := InputEventJoypadButton.new()
 	accept_pad.button_index = JOY_BUTTON_A
 	if not InputMap.action_has_event("ui_accept",accept_pad): InputMap.action_add_event("ui_accept",accept_pad)
+	GamePreferences.apply_bindings()
 
 func _mount_map(map_id: String, entrance: String = "") -> void:
 	if world != null:

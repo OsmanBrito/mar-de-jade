@@ -35,9 +35,13 @@ var weights := [0.0,0.0]
 var music_duck := -7.0
 var settings_dirty := false
 var settings_clock := 0.0
+var preferences:
+	get: return get_node("/root/GamePreferences")
 
 func _ready() -> void:
 	load_settings()
+	if settings_path=="user://navegacao-audio.cfg":
+		_sync_preferences(); preferences.changed.connect(_sync_preferences)
 	var manifest: Variant = JSON.parse_string(FileAccess.get_file_as_string(PLAYLIST))
 	if manifest is Dictionary: tracks = manifest.get("tracks",[])
 	enabled = DisplayServer.get_name()!="headless" or allow_headless_audio
@@ -147,11 +151,12 @@ func wave_hit(strength: float,side: int) -> void:
 func set_level(key: String,value: float) -> void:
 	if not levels.has(key): return
 	levels[key] = clampf(value,0,1); apply_level(key)
+	if settings_path=="user://navegacao-audio.cfg": preferences.set_level(key,value)
 	settings_dirty = true; settings_clock = 0
 func apply_level(key: String) -> void:
 	if not buses.has(key): return
 	var index := AudioServer.get_bus_index(buses[key]); var value: float = levels[key]
-	AudioServer.set_bus_mute(index,value<=0)
+	AudioServer.set_bus_mute(index,value<=0 or (key=="music" and preferences.music_muted))
 	AudioServer.set_bus_volume_db(index,linear_to_db(maxf(value,0.001)))
 func load_settings() -> void:
 	var config := ConfigFile.new()
@@ -172,3 +177,7 @@ func _exit_tree() -> void:
 	for i in range(bus_names.size()-1,-1,-1):
 		var index := AudioServer.get_bus_index(bus_names[i])
 		if index>=0: AudioServer.remove_bus(index)
+
+func _sync_preferences() -> void:
+	levels = preferences.levels.duplicate()
+	for key in levels: apply_level(key)

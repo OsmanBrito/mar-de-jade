@@ -35,6 +35,7 @@ var land_polygons: Array[PackedVector2Array] = []
 var warned_ahead := false
 var blocked_by_coast := false
 var boarding_profile: Dictionary = {}
+var tutorials: Dictionary = {}
 
 func _init() -> void:
 	chart = JSON.parse_string(FileAccess.get_file_as_string(DATA))
@@ -167,16 +168,16 @@ func investigate(id: String) -> String:
 		"wreck":
 			if resolved.has(id): return "A carga já foi recolhida."
 			resolved[id] = true; supplies = minf(100,supplies+24); coins += 30
-			return "Carga recolhida · +24 provisões · +30 reais. Um recibo aponta para Porto Santo."
+			return "Carga recolhida · +24 provisões · +30 de ouro. Um recibo aponta para Porto Santo."
 		"rescue":
 			if resolved.has(id): return "O sobrevivente já está a salvo."
 			resolved[id] = true; coins += 35; reveal("porto_santo","rumor")
-			return "Náufrago a salvo · +35 reais de gratificação. Ele conhece sinais de uma passagem junto das Desertas. Conversa com ele no convés."
+			return "Náufrago a salvo · +35 de ouro de gratificação. Ele conhece sinais de uma passagem junto das Desertas. Conversa com ele no convés."
 		"landmark":
 			route_marks[id] = true
 			if route_marks.size()>=3 and not route_known:
 				route_known = true; coins += 60; reveal("desertas","sighted")
-				return "Rota descoberta por observação · Passagem das Desertas · +60 reais. A corrente é agora conhecida e a travessia fica mais rápida."
+				return "Rota descoberta por observação · Passagem das Desertas · +60 de ouro. A corrente é agora conhecida e a travessia fica mais rápida."
 			return entry.detail+" · Marcas registadas: "+str(route_marks.size())+"/3."
 	return entry.detail
 func dock(id: String) -> void:
@@ -188,7 +189,7 @@ func buy(id: String) -> String:
 	if upgrades.has(id): return "Esse serviço já foi contratado."
 	if id=="supplies" and supplies>=99: return "As reservas já estão completas."
 	if id=="repair" and hull>=99: return "O casco já está em bom estado."
-	if coins<prices[id]: return "Reais insuficientes. O serviço do cais pode ajudar com o essencial."
+	if coins<prices[id]: return "Ouro insuficiente. O serviço do cais pode ajudar com o essencial."
 	coins -= prices[id]
 	match id:
 		"supplies": supplies = minf(100,supplies+40)
@@ -207,13 +208,17 @@ func safe_to_save() -> bool:
 func snapshot() -> Dictionary:
 	var ships := {}
 	for id in traffic: ships[id] = [traffic[id].x,traffic[id].y]
-	return {"version":1,"position":[position.x,position.y],"heading":heading,"supplies":supplies,"hull":hull,"coins":coins,"distance":distance,"elapsed":elapsed,"discovered":string_keys(discovered),"visited":string_keys(visited),"resolved":string_keys(resolved),"upgrades":string_keys(upgrades),"route_marks":string_keys(route_marks),"aid_used":string_keys(aid_used),"observed_signals":string_keys(observed_signals),"traffic":ships,"route_known":route_known,"made_landfall":made_landfall,"hero_name":hero_name,"style":style,"phase":phase,"port":port,"boarding_profile":boarding_profile.duplicate(true)}
+	return {"version":1,"position":[position.x,position.y],"heading":heading,"supplies":supplies,"hull":hull,"coins":coins,"distance":distance,"elapsed":elapsed,"discovered":string_keys(discovered),"visited":string_keys(visited),"resolved":string_keys(resolved),"upgrades":string_keys(upgrades),"route_marks":string_keys(route_marks),"aid_used":string_keys(aid_used),"observed_signals":string_keys(observed_signals),"traffic":ships,"route_known":route_known,"made_landfall":made_landfall,"hero_name":hero_name,"style":style,"phase":phase,"port":port,"boarding_profile":boarding_profile.duplicate(true),"tutorials":tutorials.duplicate()}
 func string_keys(data: Dictionary) -> Dictionary:
 	var result := {}
 	for key in data: result[str(key)] = data[key]
 	return result
 func restore(data: Dictionary) -> bool:
 	if data.get("version")!=1: return false
+	var lessons: Variant = data.get("tutorials",{})
+	if not lessons is Dictionary or lessons.size()>5: return false
+	for key in lessons:
+		if key not in ["sail","turn","stop","chart","boarding"] or not lessons[key] is bool: return false
 	if not data.get("position") is Array or data.position.size()!=2: return false
 	for value in data.position:
 		if not number(value): return false
@@ -261,6 +266,7 @@ func restore(data: Dictionary) -> bool:
 	for id in traffic: traffic[id] = point(ships[id]) if ships.has(id) else point(place(id).pos)
 	observed_signals = signs.duplicate()
 	boarding_profile = kit.duplicate(true)
+	tutorials = lessons.duplicate()
 	velocity = Vector2.ZERO; danger = 0; immunity = 8; warned_ahead = false; blocked_by_coast = false
 	return true
 func number(value) -> bool:

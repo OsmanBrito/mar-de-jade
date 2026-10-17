@@ -8,6 +8,7 @@ var host
 var container: SubViewportContainer
 var hints: Label
 var menu: PopupMenu
+@export_enum("auto","plaza_child","plaza","courtyard","cais","service","room","deck") var battle_map := "auto"
 func _ready() -> void:
 	var bindings = preload("res://scripts/main.gd").new(); bindings.configure_input(); bindings.free()
 	var layer := CanvasLayer.new(); layer.layer = 7; add_child(layer)
@@ -28,6 +29,11 @@ func _ready() -> void:
 	for key in style_keys: styles.add_item(preload("res://scripts/combat/campaign_rules.gd").STYLES[key].name)
 	styles.id_pressed.connect(func(index): style = style_keys[index]; restart())
 	menu.add_submenu_item("Manejo","Manejos")
+	var maps := PopupMenu.new(); maps.name = "Mapas"; menu.add_child(maps)
+	var map_ids: Array = preload("res://scripts/combat/battle_maps.gd").data().keys()
+	for id in map_ids: maps.add_item(preload("res://scripts/combat/battle_maps.gd").profile(id).title)
+	maps.id_pressed.connect(func(index): battle_map = map_ids[index]; restart())
+	menu.add_submenu_item("Mapa de combate","Mapas")
 	menu.popup_hide.connect(func(): host.paused = false)
 	get_viewport().size_changed.connect(resize_stage); resize_stage(); restart()
 func resize_stage() -> void:
@@ -38,6 +44,7 @@ func resize_stage() -> void:
 func restart() -> void:
 	host.combat = preload("res://scripts/combat/portugal_rules.gd").new() if encounter.begins_with("child_") else preload("res://scripts/combat/campaign_rules.gd").new()
 	host.tactical.setup(host,host.combat)
+	host.select_battle_map(battle_map if battle_map!="auto" else ("plaza_child" if encounter.begins_with("child_") else ("plaza" if encounter=="duel" else "courtyard")))
 	var hero_name: String = CampaignProfile.hero_name if not CampaignProfile.hero_name.is_empty() else "Aprendiz"
 	if encounter.begins_with("child_"): host.begin(0 if encounter=="child_attack" else 1,hero_name)
 	else: host.begin_encounter(encounter,hero_name,style)

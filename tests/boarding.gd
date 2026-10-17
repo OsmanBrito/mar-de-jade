@@ -118,11 +118,10 @@ func run() -> void:
 	check(not loaded_ship.restore(bad_ship) and loaded_ship.snapshot()==valid_ship,"Unknown learned techniques cannot enter the voyage checkpoint")
 	var legacy_ship: Dictionary = ship.snapshot(); legacy_ship.erase("boarding_profile")
 	check(loaded_ship.restore(legacy_ship) and loaded_ship.boarding_profile.is_empty(),"Older voyage saves without a character kit remain compatible")
-	check(change_scene_to_file("res://scenes/chapter_01/name_entry.tscn")==OK,"Main menu loads for the real boarding shortcut")
+	check(change_scene_to_file("res://scenes/chapter_01/name_entry.tscn")==OK,"Campaign entry loads without internal QA shortcuts")
 	await frames()
-	var shortcut: Button = current_scene.get_node("Center/Card/Margin/Content/BoardingQuickStart")
-	check(not shortcut.disabled,"Boarding can be tested without choosing a name or sailing first")
-	shortcut.pressed.emit(); await frames(6)
+	check(not current_scene.has_node("Center/Card/Margin/Content/BoardingQuickStart"),"Internal boarding shortcut is absent from the player menu")
+	Launch.start(self,false,false,true); await frames(6)
 	game = current_scene; game.set_process(false); game.battle_host.set_process(false)
 	check(game.model.phase=="boarding" and not game.auto_save,"Shortcut starts an isolated boarding encounter without replacing voyage checkpoints")
 	var view = game.battle_host.tactical; var reference_view = load("res://scripts/combat/portugal_view.gd").new()
@@ -130,12 +129,13 @@ func run() -> void:
 	check(view.tutorial_timing()==reference_view.tutorial_timing() and view.attack_timing_duration()==reference_view.attack_timing_duration() and view.defense_timing_duration()==reference_view.defense_timing_duration(),"Boarding keeps the same timing rhythm and durations as Portugal")
 	check(view.screen(Vector2i(2,3))==reference_view.screen(Vector2i(2,3)) and view.tile_points(Vector2i(2,3))==reference_view.tile_points(Vector2i(2,3)),"Actor spacing and ground perspective are identical to land combat")
 	var container: SubViewportContainer = game.battle_host.get_viewport().get_parent()
-	check(is_equal_approx(container.scale.x,container.scale.y) and game.battle_host.get_viewport().size==Vector2i(960,540),"The actual boarding viewport scales uniformly, without stretching actors or HUD")
+	var presentation: Transform2D = root.get_final_transform()*container.get_global_transform()
+	check(is_equal_approx(presentation.x.length(),1.0) and is_equal_approx(presentation.y.length(),1.0) and game.battle_host.get_viewport().size==Vector2i(container.size),"Boarding presents one rendered texel per physical window pixel")
 	if DisplayServer.get_name()!="headless":
 		var original_size := root.size
 		for window_size in [Vector2i(1600,900),Vector2i(1024,768)]:
 			root.size = window_size; await frames(4)
-			var transform: Transform2D = root.get_final_transform()*container.get_global_transform()
+			var transform: Transform2D = root.get_final_transform()*container.get_global_transform()*game.battle_host.get_viewport().canvas_transform
 			check(is_equal_approx(transform.x.length(),transform.y.length()),"Window %s retains square pixels and the land combat's proportions"%window_size)
 		root.size = original_size; await frames(4)
 	view.select_move()
@@ -151,7 +151,7 @@ func run() -> void:
 	game.battle_host._unhandled_input(key(KEY_G))
 	check(view.phase=="move","G opens the familiar movement command")
 	var destination := actor_start+Vector2i.RIGHT
-	var click := InputEventMouseButton.new(); click.pressed = true; click.button_index = MOUSE_BUTTON_LEFT; click.position = Board.screen(destination)
+	var click := InputEventMouseButton.new(); click.pressed = true; click.button_index = MOUSE_BUTTON_LEFT; click.position = game.battle_host.get_viewport().canvas_transform*Board.screen(destination)
 	game.battle_host._unhandled_input(click)
 	game.battle_host._unhandled_input(key(KEY_ENTER))
 	for i in 20: view.update(0.12)

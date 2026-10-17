@@ -106,10 +106,10 @@ func advance() -> void:
 			phase = "complete"
 			_set_staged(true)
 			view.speaker.text = "O espaço entre os dois"
-			view.body.text = "O primeiro exercício de movimentação está concluído."
-			view.status.text = "Duas passagens concluídas"
+			view.body.text = "Leonor espera junto dos instrumentos de treino."
+			view.status.text = ""
 			view.next_button.text = "Continuar para o treino"
-			view.replay_button.show()
+			view.replay_button.hide()
 			view.next_button.grab_focus()
 			scene_finished.emit("C01-M01/S03")
 

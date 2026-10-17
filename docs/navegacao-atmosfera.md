@@ -1,6 +1,8 @@
 # Navegação — trilha, ondas e som do casco
 
-Refinamento de 15/10/2026, após aprovação dos controles pelo leme e da câmera com horizonte. Entrar por **Testar navegação · Lisboa → Madeira** ou continuar uma viagem guardada.
+Refinamento iniciado em 15/10/2026, após aprovação dos controles pelo leme e da câmera com horizonte. O acesso atual é **Navegar para a Madeira** no fim de Portugal ou **Continuar viagem guardada** na entrada; o estudo isolado usa F6 em `scenes/navigation/voyage.tscn`.
+
+A [revisão visual de 16/10](navegacao-mar.md) acrescenta quatro ondas, reflexos e espuma contínua e já está integrada à saída de Portugal nesta cópia. O acesso atual é pelo fim da campanha ou por uma viagem guardada; os atalhos internos de teste foram retirados do menu do jogador.
 
 ## Trilha fornecida pelo jogador
 
@@ -21,9 +23,9 @@ A sequência tem cerca de dezoito minutos de material e se repete ao terminar. H
 
 ## Mar e embarcação
 
-O mar próximo usa uma malha subdividida de 4096 unidades ao redor da embarcação. Quatro ondas somadas deformam sua superfície; o restante do oceano usa uma superfície leve até o horizonte. A malha acompanha a viagem e as fases das ondas usam posições do mundo, mantendo continuidade ao mudar de rumo. O material recebe luz do sol, reflexo do céu e pequenas ondulações irregulares nas normais. Em mar pesado, a ondulação e a espuma crescem. O [refinamento de 16/10](navegacao-mar.md) detalha a implementação e as verificações atuais.
+O mar próximo usa uma malha subdividida de 4096 unidades ao redor da embarcação. Três ondas somadas deformam sua superfície; o restante do oceano usa uma superfície leve até o horizonte. A malha acompanha a viagem e as fases das ondas usam posições do mundo, mantendo continuidade ao mudar de rumo. Em mar pesado, a ondulação e a espuma crescem.
 
-O navio sobe, inclina a proa e balança de lado conforme o mesmo campo de ondas. A câmera permanece nivelada. Restos e barcos próximos também flutuam. Espuma acompanha a proa e as laterais do casco; três faixas contínuas formam o rastro a partir de posições e rumos anteriores, acompanhando as curvas. O histórico é amostrado até vinte vezes por segundo, limitado a 160 pontos e sete segundos; a espuma se alarga e desaparece com a idade. Ao encontrar uma crista, a água produz um impacto no casco; com andamento, o encontro também lança gotas nas laterais. Parado, as batidas são mais suaves. Pausa e diálogos suspendem a animação do mar e do barco.
+O navio sobe, inclina a proa e balança de lado conforme o mesmo campo de ondas. A câmera permanece nivelada. Restos e barcos próximos também flutuam. Espuma aparece junto à proa; o rastro usa posições e rumos anteriores, para acompanhar as curvas em vez de girar todo junto do navio. Ao encontrar uma crista, a água produz um impacto no casco; com andamento, o encontro também lança gotas nas laterais. Parado, as batidas são mais suaves. Pausa e diálogos suspendem a animação do mar e do barco.
 
 Camadas originais sintetizadas localmente:
 
@@ -37,7 +39,7 @@ Os loops receberam bordas suavizadas para evitar estalos ao repetir. Água/vento
 
 ![Mar e espuma](navigation-waves.png)
 
-[Prévia atual de 24 segundos com áudio capturado no Godot](navigation-ocean.mp4). O trecho mostra parada, vela plena, curva e dispersão do rastro. Usa um excerto de Horizon of the Caravel, a partir de 35 segundos, junto da mixagem real de mar e casco. A [prévia anterior de 18 segundos](navigation-atmosphere.mp4) permanece como registro da primeira integração.
+[Prévia de 18 segundos com áudio capturado no Godot](navigation-atmosphere.mp4). O trecho usa um excerto de Horizon of the Caravel, a partir de 35 segundos, junto da mixagem real de mar e casco.
 
 ## Validação e arquivos
 

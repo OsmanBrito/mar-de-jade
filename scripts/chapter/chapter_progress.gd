@@ -2,6 +2,9 @@ extends Node
 ## Chapter checkpoints contain IDs and values, never scene nodes or combat instances.
 const SAVE_PATH := "user://capitulo-01.json"
 const Items = preload("res://scripts/chapter/player_items.gd")
+const LocalRequests = preload("res://scripts/chapter/local_request_state.gd")
+var local_requests: Dictionary = {}
+var journey: Dictionary = {}
 var coins := 0
 var equipment: Dictionary = {}
 var shop_stock: Dictionary = {}
@@ -24,6 +27,8 @@ var auto_save := true
 var last_error := ""
 
 func reset() -> void:
+	local_requests.clear()
+	journey.clear()
 	checkpoint = 0; entry_scene = "res://scenes/chapter_01/opening.tscn"; flags.clear(); choices.clear(); style = "ES"
 	tested_styles.clear(); skills.clear(); passives.clear(); equipped_passives.clear(); duarte_equipped_passives.clear()
 	inventory = {"PT-Q01":1}; completed = false; resume_requested = false
@@ -34,7 +39,7 @@ func _ready() -> void:
 	shop_stock = Items.stock()
 
 func snapshot() -> Dictionary:
-	return {"schema_version":2,"hero_name":CampaignProfile.hero_name,"checkpoint":checkpoint,"entry_scene":entry_scene,"flags":string_keys(flags),"choices":string_keys(choices),"style":style,"tested_styles":tested_styles.duplicate(),"skills":skills.duplicate(),"passives":passives.duplicate(),"equipped_passives":equipped_passives.duplicate(),"duarte_equipped_passives":duarte_equipped_passives.duplicate(),"inventory":inventory.duplicate(true),"completed":completed,"coins":coins,"equipment":equipment.duplicate(),"shop_stock":shop_stock.duplicate(),"payments":payments.duplicate(),"vitals":vitals.duplicate()}
+	return {"schema_version":3,"hero_name":CampaignProfile.hero_name,"checkpoint":checkpoint,"entry_scene":entry_scene,"flags":string_keys(flags),"choices":string_keys(choices),"style":style,"tested_styles":tested_styles.duplicate(),"skills":skills.duplicate(),"passives":passives.duplicate(),"equipped_passives":equipped_passives.duplicate(),"duarte_equipped_passives":duarte_equipped_passives.duplicate(),"inventory":inventory.duplicate(true),"completed":completed,"coins":coins,"equipment":equipment.duplicate(),"shop_stock":shop_stock.duplicate(),"payments":payments.duplicate(),"vitals":vitals.duplicate(),"local_requests":local_requests.duplicate(),"journey":journey.duplicate(true)}
 
 func save_to(path: String = SAVE_PATH) -> Error:
 	var file = FileAccess.open(path+".tmp",FileAccess.WRITE)
@@ -56,7 +61,7 @@ func load_from(path: String = SAVE_PATH) -> Error:
 	if not FileAccess.file_exists(path): return ERR_FILE_NOT_FOUND
 	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
 	if not data is Dictionary: return ERR_INVALID_DATA
-	if data.get("schema_version") != 1 and data.get("schema_version") != 2: return ERR_INVALID_DATA
+	if data.get("schema_version") != 1 and data.get("schema_version") != 2 and data.get("schema_version") != 3: return ERR_INVALID_DATA
 	if not data.get("hero_name") is String or not CampaignProfile.name_error(data.hero_name).is_empty(): return ERR_INVALID_DATA
 	if not data.get("checkpoint") is float and not data.get("checkpoint") is int: return ERR_INVALID_DATA
 	if int(data.checkpoint) < 0 or int(data.checkpoint) >= 17 or float(data.checkpoint) != int(data.checkpoint): return ERR_INVALID_DATA
@@ -95,7 +100,10 @@ func load_from(path: String = SAVE_PATH) -> Error:
 	for id in data.duarte_equipped_passives:
 		if not data.passives.has(id) or id != "DU-P09": return ERR_INVALID_DATA
 	# Validate the complete new economy before mutating any live state.
-	if data.schema_version == 2 and not Items.valid_state(data): return ERR_INVALID_DATA
+	if data.schema_version >= 2 and not Items.valid_state(data): return ERR_INVALID_DATA
+	if data.schema_version == 3 and not data.has("local_requests"): return ERR_INVALID_DATA
+	if not LocalRequests.valid(data.get("local_requests",{}),data.inventory): return ERR_INVALID_DATA
+	if not preload("res://scripts/chapter/lisbon_journey_state.gd").valid(data.get("journey",{}),int(data.checkpoint),data.flags): return ERR_INVALID_DATA
 	CampaignProfile.hero_name = data.hero_name
 	checkpoint = int(data.checkpoint); entry_scene = data.entry_scene; flags = data.flags; choices = data.choices; style = data.style
 	tested_styles.assign(data.tested_styles); skills.assign(data.skills); passives.assign(data.passives)
@@ -111,6 +119,11 @@ func load_from(path: String = SAVE_PATH) -> Error:
 	if data.schema_version == 1 and not equipment.is_empty(): flags.initial_weapon_received = true
 	Items.clamp_vitals(self)
 	completed = data.completed
+	local_requests = data.get("local_requests",{}).duplicate()
+	journey = data.get("journey",{}).duplicate(true)
+	if not journey.is_empty():
+		journey.target = int(journey.target); journey.event = int(journey.event)
+		journey.position = [roundi(float(journey.position[0])),roundi(float(journey.position[1]))]
 	CampaignProfile.origin_response = str(choices.get("origin_response",""))
 	resume_requested = true
 	return OK

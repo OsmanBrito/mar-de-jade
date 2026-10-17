@@ -17,8 +17,8 @@ func input_event(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and event.physical_keycode in [KEY_UP,KEY_DOWN,KEY_LEFT,KEY_RIGHT] and phase in ["choose","move","aim","facing"]:
 		cursor_cell = cursor_cell.clamp(Vector2i.ZERO,Layout.SIZE-Vector2i.ONE)
 		selected_cell = cursor_cell
-func draw_header() -> void:
-	super.draw_header()
-	host.panel(Rect2(16,12,222,61),BG,EDGE)
-	host.text_at("A BORDO · RONDA %02d"%model.round_no,Vector2(30,33),10,GOLD)
-	host.text_at("Recuperar o convés",Vector2(30,57),13,PAPER)
+func encounter_location() -> String:
+	return "A BORDO"
+
+func encounter_caption() -> String:
+	return "Recuperar o convés"

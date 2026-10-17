@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=4]
+[gd_scene load_steps=7 format=4]
 
 [ext_resource type="Script" path="res://scripts/chapter/shelter_view.gd" id="view"]
 [ext_resource type="TileSet" path="res://data/terrain/ground.tres" id="ground"]
 [ext_resource type="PackedScene" path="res://scenes/chapter_01/bed.tscn" id="bed"]
 [ext_resource type="PackedScene" path="res://scenes/chapter_01/table.tscn" id="table"]
 [ext_resource type="Script" path="res://scripts/chapter/actor_proxy.gd" id="actor"]
+[ext_resource type="Script" path="res://scripts/chapter/furniture_proxy.gd" id="seat"]
 
 [node name="AbrigoInfancia" type="Node2D"]
 process_mode = 1
@@ -43,7 +44,25 @@ posture = "crouched"
 [node name="Staging" type="Node2D" parent="."]
 
 [node name="ChildAtTable" type="Marker2D" parent="Staging"]
-position = Vector2(120, 305)
+position = Vector2(92, 283)
 
 [node name="TomeAtTable" type="Marker2D" parent="Staging"]
-position = Vector2(220, 315)
+position = Vector2(232, 286)
+
+[node name="TomeAtSeat" type="Marker2D" parent="Staging"]
+position = Vector2(-7, 256)
+
+[node name="TomeFrontLeft" type="Marker2D" parent="Staging"]
+position = Vector2(58, 326)
+
+[node name="TomeFrontRight" type="Marker2D" parent="Staging"]
+position = Vector2(232, 326)
+
+[node name="ChildApproach" type="Marker2D" parent="Staging"]
+position = Vector2(48, 300)
+
+[node name="TomeSeat" type="Node2D" parent="ActorsAndProps"]
+z_index = -1
+position = Vector2(-2, 259)
+script = ExtResource("seat")
+furniture = "stool"

@@ -96,10 +96,10 @@ func advance() -> void:
 	view.panel.show()
 	view.speaker.text = "A primeira promessa"
 	view.body.text = "O instrumento dele ficou junto do dela, para amanhã."
-	view.status.text = "Cena concluída"
+	view.status.text = ""
 	view.next_button.show()
 	view.next_button.text = "Continuar para o presente"
-	view.replay_button.show()
+	view.replay_button.hide()
 	view.next_button.grab_focus()
 	scene_finished.emit(sequence["id"])
 

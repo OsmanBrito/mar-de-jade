@@ -22,6 +22,9 @@ static func draw(canvas: Node2D,key: String,foot: Vector2,size: Vector2) -> void
 static func place(parent: Node2D,key: String,foot: Vector2,size: Vector2) -> Node2D:
 	var node := Node2D.new(); node.position = foot; node.name = key.capitalize()
 	parent.add_child(node)
+	var shadow := Node2D.new(); shadow.set_script(preload("res://scripts/chapter/contact_shadow.gd"))
+	shadow.footprint = Vector2(size.x*0.45,12); shadow.center = Vector2(0,-8)
+	node.add_child(shadow)
 	var sprite := Sprite2D.new(); sprite.texture = texture(key)
 	sprite.position = -Vector2(0,size.y*0.5)
 	sprite.scale = size/sprite.texture.get_size()

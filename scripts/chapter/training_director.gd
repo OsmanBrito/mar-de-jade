@@ -95,7 +95,7 @@ func advance() -> void:
 			view.speaker.text = "Treino concluído"
 			view.body.text = "Ataque básico e defesa simples praticados."
 			view.next_button.text = "Continuar para a promessa"
-			view.replay_button.show()
+			view.replay_button.hide()
 			view.next_button.grab_focus()
 			scene_finished.emit("C01-M01/S05")
 		_:
@@ -109,6 +109,7 @@ func advance() -> void:
 				battle_host.tactical.phase = "choose"
 				battle_host.tactical.refresh_paths()
 			else:
+				battle_host.select_battle_map("plaza_child")
 				battle_host.begin(lesson,CampaignProfile.hero_name)
 
 func _battle_finished(success: bool) -> void:

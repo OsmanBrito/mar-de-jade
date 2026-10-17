@@ -1,0 +1,244 @@
+{
+  "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\WulinSH\\Wulin_Data\\StreamingAssets\\aa\\StandaloneWindows64\\map_assets_all.bundle",
+  "source_sha256": "8de06f564798a510c1dbcb6b1939f815601c8cab41b126be2def976e2c247818",
+  "tool": "UnityPy 1.25.4",
+  "scope": "local visual study",
+  "source_unchanged": true,
+  "sprites": [
+    {
+      "id": -8669636477257603249,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie5.2_C_0",
+      "path": "sprites/-8669636477257603249.png",
+      "width": 64,
+      "height": 43,
+      "pivot": {
+        "x": 0.421875,
+        "y": 0.5116279125213623
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -8517716203706661107,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.4_C_0",
+      "path": "sprites/-8517716203706661107.png",
+      "width": 44,
+      "height": 61,
+      "pivot": {
+        "x": 0.27272728085517883,
+        "y": 0.20454545319080353
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -8093169816063855361,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.3_C_0",
+      "path": "sprites/-8093169816063855361.png",
+      "width": 64,
+      "height": 143,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.0486111119389534
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -8042866007411064611,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.13_L_1",
+      "path": "sprites/-8042866007411064611.png",
+      "width": 32,
+      "height": 79,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.33695653080940247
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6733683748965170494,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.2_C_0",
+      "path": "sprites/-6733683748965170494.png",
+      "width": 64,
+      "height": 128,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.140625
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6700433478443973950,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.2_R_1",
+      "path": "sprites/-6700433478443973950.png",
+      "width": 13,
+      "height": 128,
+      "pivot": {
+        "x": 0.0,
+        "y": 0.265625
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6342336202680755393,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.6_R_1",
+      "path": "sprites/-6342336202680755393.png",
+      "width": 11,
+      "height": 88,
+      "pivot": {
+        "x": 0.0,
+        "y": 0.25
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -6323764215697634686,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.1_L_2",
+      "path": "sprites/-6323764215697634686.png",
+      "width": 36,
+      "height": 89,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.3472222089767456
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -5722565698226829555,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.4_R_1",
+      "path": "sprites/-5722565698226829555.png",
+      "width": 35,
+      "height": 65,
+      "pivot": {
+        "x": 0.0,
+        "y": 0.3863636255264282
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -5548930799720745729,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.3_R_2",
+      "path": "sprites/-5548930799720745729.png",
+      "width": 14,
+      "height": 144,
+      "pivot": {
+        "x": 0.0,
+        "y": 0.2708333432674408
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -5242674951354411555,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.11_C_0",
+      "path": "sprites/-5242674951354411555.png",
+      "width": 57,
+      "height": 82,
+      "pivot": {
+        "x": 0.6842105388641357,
+        "y": 0.03658536449074745
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -4547390712172936614,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.14_L_1",
+      "path": "sprites/-4547390712172936614.png",
+      "width": 25,
+      "height": 75,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.4000000059604645
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -4176007514649771326,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.2_L_1",
+      "path": "sprites/-4176007514649771326.png",
+      "width": 36,
+      "height": 89,
+      "pivot": {
+        "x": 1.0,
+        "y": 0.265625
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -4097600115541936276,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.7_C_0",
+      "path": "sprites/-4097600115541936276.png",
+      "width": 57,
+      "height": 100,
+      "pivot": {
+        "x": 0.31578946113586426,
+        "y": 0.20999999344348907
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -3417588856728470827,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.15_R_2",
+      "path": "sprites/-3417588856728470827.png",
+      "width": 27,
+      "height": 83,
+      "pivot": {
+        "x": 0.0,
+        "y": 0.5662650465965271
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -3406138070569725232,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie1_C_0",
+      "path": "sprites/-3406138070569725232.png",
+      "width": 69,
+      "height": 62,
+      "pivot": {
+        "x": 0.49275362491607666,
+        "y": 0.29032257199287415
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -3197613085764094841,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.12_C_0",
+      "path": "sprites/-3197613085764094841.png",
+      "width": 57,
+      "height": 67,
+      "pivot": {
+        "x": 0.3333333432674408,
+        "y": -0.3731343150138855
+      },
+      "pixels_per_unit": 64.0
+    },
+    {
+      "id": -1452653411458264222,
+      "file": "CAB-0b359a1e44094cf40cc7fd38c2062410",
+      "name": "taijie8.5_C_0",
+      "path": "sprites/-1452653411458264222.png",
+      "width": 24,
+      "height": 61,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.2950819730758667
+      },
+      "pixels_per_unit": 64.0
+    }
+  ],
+  "errors": []
+}

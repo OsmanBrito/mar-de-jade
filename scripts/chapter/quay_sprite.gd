@@ -34,3 +34,4 @@ func _draw() -> void:
 	draw_set_transform(Vector2.ZERO)
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	draw_texture_rect_region(artwork(identity),Rect2(Vector2(-pivot[0],-pivot[1])*factor,Vector2(r[2],r[3])*factor),Rect2(r[0],r[1],r[2],r[3]))
+	if identity=="hero": preload("res://scripts/chapter/hero_eyes.gd").draw(self,"walk",index,r,pivot,factor)

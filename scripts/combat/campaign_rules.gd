@@ -1,6 +1,10 @@
 extends "res://scripts/combat/portugal_rules.gd"
 const STYLES := {"ES":{"name":"Espada","range":1,"power":22},"LA":{"name":"Lança","range":2,"power":20},"MC":{"name":"Machado","range":1,"power":28},"FO":{"name":"Arma de fogo","range":4,"power":20},"PU":{"name":"Desarmado","range":1,"power":18}}
 const FIRST := {"ES":"ES07","LA":"LA07","MC":"MC08","FO":"FO07","PU":"PU07"}
+## Local practice drills, not entries or unlocks from the canonical skill catalogue.
+const DEMO := {"ES":["C01-DEMO-ES-01","C01-DEMO-ES-02"],"LA":["C01-DEMO-LA-01","C01-DEMO-LA-02"],"MC":["C01-DEMO-MC-01","C01-DEMO-MC-02"],"FO":["C01-DEMO-FO-01","C01-DEMO-FO-02"],"PU":["C01-DEMO-PU-01","C01-DEMO-PU-02"]}
+const DEMO_NAMES := {"ES":["Corte concentrado","Corte em arco"],"LA":["Linha de haste","Pressão de haste"],"MC":["Impacto concentrado","Talho em arco"],"FO":["Disparo imóvel","Disparo móvel"],"PU":["Palma curta","Entrada de flanco"]}
+const PRACTICE_TIPS := {"ES":"precisão e passagem","LA":"distância e linha","MC":"impacto e área","FO":"linha de tiro e preparação","PU":"interrupção e flanco"}
 var mode := ""
 var style := "ES"
 var moved_in_battle := false
@@ -18,12 +22,13 @@ var contact_weakened := false
 var preparation := false
 var prepared_contact := false
 var approach_weakened := false
+var weakened_target := -1
 var equipment_bonus: Dictionary = {}
 ## Optional read-only snapshot for encounters outside Portugal (e.g. quick tests).
 var progress_override: Dictionary = {}
 func combat_progress():
 	return ChapterProgress if progress_override.is_empty() else progress_override
-func weapon_techniques_available() -> bool: return mode in ["school","boarding"]
+func weapon_techniques_available() -> bool: return mode in ["school","practice","boarding"]
 func companion_support_available() -> bool: return mode in ["duarte_support","boarding"]
 
 func start_encounter(kind: String, hero_name: String, chosen_style: String = "ES") -> void:
@@ -32,6 +37,7 @@ func start_encounter(kind: String, hero_name: String, chosen_style: String = "ES
 	moved_in_battle = false; correct_sequence = false; previous_action = -1; previous_action_turn = -1
 	technique_evaluated = false; technique_used = false; support_used = false
 	stationary_eligible = false; protective_ready = false; contact_weakened = false; preparation = false; prepared_contact = false; approach_weakened = false
+	weakened_target = -1
 	perfect_defense_enabled = kind == "perfect_defense" or combat_progress().flags.get("perfect_defense",false)
 	safe_training = kind != "duel"
 	encounter = "portugal_"+kind
@@ -41,10 +47,10 @@ func start_encounter(kind: String, hero_name: String, chosen_style: String = "ES
 	units[0].cell = Vector2i(4,3)
 	units[2].name = "Duarte" if kind.begins_with("adult_") else ("Leonor" if kind == "duel" else "Tomé")
 	units[2].kind = "leonor" if kind == "duel" else "tome"
-	if kind in ["adult_basic","style_test","school"]:
+	if kind in ["adult_basic","style_test","school","practice"]:
 		lesson = 0; units[2].name = "Alvo de treino"; units[2].kind = "target"
 	if kind == "adult_basic": units[0].cell = Vector2i(2,5)
-	if kind in ["style_test","school"] and style in ["LA","FO"]:
+	if kind in ["style_test","school","practice"] and style in ["LA","FO"]:
 		units[0].cell = Vector2i(3,3); obstacles.erase(Vector2i(3,3))
 	if kind == "school" and style == "MC": units[2].name = "Tomé"; units[2].kind = "tome"; lesson = 1
 	if kind == "duel":
@@ -62,6 +68,13 @@ func start_encounter(kind: String, hero_name: String, chosen_style: String = "ES
 	for unit in units: unit.turn_origin = unit.cell; unit.home = unit.cell
 	for row in JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/skill_icons.json")).skills:
 		skill_names[row.id] = row.name
+	if kind=="practice":
+		caption = "Prática livre · "+STYLES[style].name
+		units[0].qi = 40; units[0].max_qi = 40
+		units[2].hp = 9999; units[2].max_hp = 9999; units[2].posture = 9999; units[2].max_posture = 9999
+		add("Segundo alvo",9999,0,9999,"target",Vector2i(6,3),10,0,1)
+		add("Tomé · golpe de contacto",9999,0,9999,"tome",Vector2i(7,5),10,3,1)
+		order_index = -1; rebuild_order(); next_turn()
 	equipment_bonus = {}
 	if kind in ["school","perfect_defense","duarte_support","boarding"] and combat_progress().flags.get("recovered",false):
 		var stats: Dictionary = preload("res://scripts/chapter/player_items.gd").stats(combat_progress())
@@ -83,6 +96,7 @@ func passive_active(id: String) -> bool:
 	return combat_progress().equipped_passives.has(id) and mode in ["school","perfect_defense","duarte_support","boarding"]
 
 func commands(actor: int) -> Array:
+	if actor==0 and mode=="practice": return [0,1,2,3]
 	if actor == 1 and companion_support_available(): return [0,4] if mode!="boarding" or combat_progress().skills.has("DU01") else [0]
 	return [0,1] if weapon_techniques_available() and (mode!="boarding" or combat_progress().skills.has(FIRST[style])) else [0]
 
@@ -99,7 +113,7 @@ func skill_def(actor: int, skill: int) -> Dictionary:
 		definition.cost = 4 if style != "MC" else 7
 		definition.power = 18 if style != "MC" else 0
 		definition.range = 2 if style == "LA" else (3 if style == "FO" else 1)
-		definition.description = "Usa depois de um básico no turno anterior. Técnica de Fundamento, ensinada por Tomé."
+		definition.description = "Básico no turno anterior prepara o fundamento. "+{"ES":"Menos potência que o básico; acertar reduz em 10% a potência do próximo golpe de contacto.","LA":"Exige duas casas; acertar enfraquece em 10% o próximo contacto. Mantém distância fora do básico curto.","MC":"Não causa dano: prepara redução de 30% do próximo impacto recebido. Não é uma ação Defender.","FO":"Linha livre e até três casas; acertar reduz pela metade o bónus de aproximação do próximo ataque.","PU":"Contacto curto: acertar enfraquece em 10% a potência do próximo golpe."}[style]
 		if style == "MC": definition.shape = "self"; definition.range = 0; definition.effect = "brace"
 		if style == "LA": definition.description += " Exige alvo a exatamente duas casas."
 		if passive_active("GE22") and not technique_evaluated and previous_action == 0 and previous_action_turn == current().turns-1:
@@ -111,6 +125,31 @@ func skill_def(actor: int, skill: int) -> Dictionary:
 		definition.cost = 5 if not support_used and combat_progress().duarte_equipped_passives.has("DU-P09") else 6
 		definition.shape = "ally"; definition.range = 1; definition.power = 0; definition.effect = "cover"
 		definition.description = "Prepara uma interceptação próxima: 60% do residual para o aliado e 40% para Duarte."
+	elif skill in [2,3] and actor==0 and mode=="practice":
+		definition.content_id = DEMO[style][skill-2]; definition.name = "Exercício · "+DEMO_NAMES[style][skill-2]
+		definition.cost = 5 if skill==2 else 7
+		definition.power = 30 if skill==2 else 22; definition.posture = 24 if skill==2 else 18
+		definition.description = "Exercício do pátio com arma emprestada; não concede uma técnica do catálogo. "
+		if style=="ES":
+			definition.shape = "single" if skill==2 else "arc"
+			definition.description += "Precisão concentra potência num alvo." if skill==2 else "O corte em arco alcança os alvos adjacentes na direção escolhida."
+		elif style=="LA":
+			definition.shape = "line" if skill==2 else "single"; definition.range = 3 if skill==2 else 2
+			definition.description += "A ponta percorre três casas em linha; unidades não interrompem a haste." if skill==2 else "Golpe de haste a até duas casas; mais pressão sobre a postura."
+			if skill==3: definition.posture = 36
+		elif style=="MC":
+			definition.shape = "single" if skill==2 else "arc"; definition.power = 38 if skill==2 else 26
+			definition.posture = 38 if skill==2 else 26
+			definition.description += "Cunha sacrifica alento para concentrar dano e pressão." if skill==2 else "Talho amplo atinge a área frontal; confere os alvos na previsão."
+		elif style=="FO":
+			definition.shape = "single"; definition.range = 5 if skill==2 else 3; definition.effect = "ranged"
+			definition.power = 36 if skill==2 else 25
+			definition.description += "Tiro longo exige ficar imóvel neste turno e linha livre." if skill==2 else "Tiro curto permite reposicionar antes da ação; mantém linha livre."
+		else:
+			definition.shape = "single"; definition.range = 1 if skill==2 else 3
+			if skill==2: definition.posture = 42
+			else: definition.flank_attack = true
+			definition.description += "Palma curta pressiona a postura, sem ampliar alcance." if skill==2 else "Passo de lado exige uma casa de flanco livre e desloca antes do golpe."
 	elif skill != 0: return {}
 	if actor == 0 and definition.power > 0: definition.power += int(equipment_bonus.get("attack",0))
 	return mastered(actor,skill,definition)
@@ -125,6 +164,8 @@ func availability_reason(skill: int) -> String:
 
 func attack_reason(skill: int, aim: Vector2i) -> String:
 	var reason: String = super.attack_reason(skill,aim)
+	if reason.is_empty() and mode=="practice" and style=="FO" and skill==2 and current().cell!=current().turn_origin:
+		return "Tiro Preparado exige ficar imóvel neste turno."
 	if reason.is_empty() and weapon_techniques_available() and skill == 1 and style == "LA" and distance(current().cell,aim) != 2:
 		return "Ponta de Medida exige exatamente duas casas."
 	if reason.is_empty() and weapon_techniques_available() and skill == 1 and style == "FO" and aim.x != current().cell.x and aim.y != current().cell.y:
@@ -138,8 +179,15 @@ func move_to(destination: Vector2i) -> Array[Vector2i]:
 
 func perform(skill: int, aim: Vector2i, quality: int) -> Dictionary:
 	var qualifying: bool = previous_action == 0 and previous_action_turn == current().turns-1
+	var definition: Dictionary = skill_def(current_id,skill)
+	var actor := current_id
 	var result: Dictionary = super.perform(skill,aim,quality)
 	if result.has("error"): return result
+	if actor==0 and skill==1:
+		if definition.cost<(7 if style=="MC" else 4): record_passive(0,"GE22",{"qi":1})
+		if style in ["LA","FO"] and passive_active(style+"-P11") and current().cell==current().turn_origin:
+			record_passive(0,style+"-P11",{"damage_base":int(definition.power)-18-int(equipment_bonus.get("attack",0))})
+	if actor==1 and skill==4 and definition.cost==5: record_passive(1,"DU-P09",{"qi":1})
 	if current_id == 0:
 		if skill == 1:
 			technique_evaluated = true; technique_used = true
@@ -148,6 +196,7 @@ func perform(skill: int, aim: Vector2i, quality: int) -> Dictionary:
 			protective_ready = quality >= 1 and ((style == "ES" and passive_active("ES-P11")) or (style == "PU" and passive_active("PU-P11")))
 			if style == "MC": preparation = true; current().guard = false
 			if style == "FO" and quality >= 1: approach_weakened = true
+			if style in ["ES","LA","PU","FO"] and quality>=1 and not result.hits.is_empty(): weakened_target = int(result.hits[0].id)
 		previous_action = skill; previous_action_turn = current().turns
 	if current_id == 1 and skill == 4: support_used = true
 	return result
@@ -159,13 +208,23 @@ func end_turn(face: int) -> Dictionary:
 	return super.end_turn(face)
 
 func ai_plan() -> Dictionary:
+	if mode=="practice" and current_id==4:
+		var previous_lesson := lesson; lesson = 1
+		var contact: Dictionary = super.ai_plan(); lesson = previous_lesson
+		contact.power = 12; contact.posture = 4; contact.name = "Contacto controlado de Tomé"
+		if not contact.get("path",[]).is_empty():
+			contact.approach_bonus = 4; contact.power += 4
+		if contact_weakened and current_id==weakened_target: contact.power = roundi(contact.power*0.9)
+		return contact
 	if lesson == 0: return super.ai_plan()
 	var result: Dictionary = super.ai_plan()
 	if uses_training_ai():
 		result.power = 90 if mode == "duel" else 8
 		result.posture = 18 if mode == "duel" else 3
 		result.name = "Avaliação de Leonor" if mode == "duel" else "Golpe anunciado"
-	if contact_weakened and result.has("power"): result.power = roundi(result.power*0.9)
+		if mode == "school" and not result.get("path",[]).is_empty():
+			result.approach_bonus = 4; result.power += 4
+	if contact_weakened and current_id==weakened_target and result.has("power"): result.power = roundi(result.power*0.9)
 	return result
 
 func cover_info(target: int, damage: int) -> Dictionary:
@@ -176,34 +235,50 @@ func cover_info(target: int, damage: int) -> Dictionary:
 
 func defense_preview(actor: int, target: int, attack: Dictionary, grade: int) -> Dictionary:
 	var effective: Dictionary = attack.duplicate(true)
-	if approach_weakened and attack.get("approach_bonus",0) > 0: effective.power = maxi(0,int(attack.power)-int(ceil(float(attack.approach_bonus)*0.5)))
+	if approach_weakened and actor==weakened_target:
+		if attack.get("approach_bonus",0)>0: effective.power = maxi(0,int(attack.power)-int(ceil(float(attack.approach_bonus)*0.5)))
 	var result: Dictionary = super.defense_preview(actor,target,effective,grade)
 	if target != 0 or mode == "duel": return result
 	var reduction := 0.0
+	var active_ids: Array[String] = []
 	if stationary_eligible and units[0].cell == stationary_cell and attack.kind != "ranged": reduction += 0.05
+	if reduction>0: active_ids.append("GE21")
 	if result.side == "Frente" and attack.kind != "ranged":
 		if protective_ready: reduction += 0.05
+		if protective_ready: active_ids.append(style+"-P11")
 		if preparation and passive_active("MC-P11"): reduction += 0.05
+		if preparation and passive_active("MC-P11"): active_ids.append("MC-P11")
 		if preparation: result.damage = roundi(result.damage*0.7)
+	result.chapter_passives = {}
+	for i in active_ids.size():
+		result.chapter_passives[active_ids[i]] = roundi(result.damage*(1.0-i*0.05))-roundi(result.damage*(1.0-(i+1)*0.05))
 	result.damage = roundi(result.damage*(1.0-minf(reduction,0.2)))
 	result.raw_damage = result.damage
 	result.cover = cover_info(target,result.damage)
 	return result
 
 func resolve_enemy(plan: Dictionary, grades: Dictionary) -> Dictionary:
+	var passive_changes: Dictionary = {}
+	if plan.get("targets",[]).has(0):
+		passive_changes = defense_preview(current_id,0,plan,int(grades.get(0,0))).get("chapter_passives",{})
 	var had_support: bool = companion_support_available() and units[1].cover_target == 0
 	if weapon_techniques_available() and style == "MC" and preparation and plan.get("targets",[]).has(0): prepared_contact = true
 	var result: Dictionary = super.resolve_enemy(plan,grades)
+	if not result.has("error"):
+		for id in passive_changes:
+			record_passive(0,id,{"mitigated_damage":passive_changes[id],"condition":1})
 	if had_support and plan.get("targets",[]).has(0): defense_success = true
 	if mode == "perfect_defense":
 		defense_success = int(grades.get(0,0)) == 2 and flank(current_id,0) == "Frente"
 		defense_failed = not defense_success
 	if plan.get("targets",[]).has(0): stationary_eligible = false; protective_ready = false; preparation = false
-	contact_weakened = false; approach_weakened = false
+	if current_id==weakened_target:
+		contact_weakened = false; approach_weakened = false; weakened_target = -1
 	return result
 
 func enemy_intent(_id: int) -> Dictionary:
-	return {"title":caption,"detail":"Diferença de poder: Leonor tem Plenitude 3. Escolhe as tuas ações; a derrota continua a história." if mode == "duel" else ("Básico num turno, técnica no seguinte. Espaço confirma o timing." if mode == "school" else "Observa o golpe e a orientação. A defesa acontece no timing inimigo.")}
+	if mode=="practice": return {"title":"Armas emprestadas · "+PRACTICE_TIPS[style],"detail":"Compara alcance, área, custo e postura na previsão. R / Select sai durante qualquer ação. Nenhuma técnica é aprendida aqui."}
+	return {"title":caption,"detail":"Objetivo: experimentar a distância e responder ao golpe. Leonor tem Plenitude 3; a derrota continua a história, sem exigir vitória ou consumo de itens." if mode == "duel" else ("Básico num turno, técnica no seguinte. Espaço confirma o timing." if mode == "school" else "Observa o golpe e a orientação. A defesa acontece no timing inimigo.")}
 
 func lesson_result() -> Dictionary:
 	var finished := false
@@ -220,6 +295,7 @@ func lesson_result() -> Dictionary:
 
 func next_turn() -> Dictionary:
 	var result: Dictionary = super.next_turn()
+	if mode=="practice" and current_id==0: current().qi = current().max_qi
 	if current_id == 0:
 		stationary_eligible = false; protective_ready = false; preparation = false
 	return result

@@ -1,0 +1,9 @@
+{
+  "plaza_child": {"title":"PRAÇA · INFÂNCIA","floor":"paving","tint":"d6d4bc","buildings":[0,3],"training":true,"shore":false,"obstacle":"bench","obstacles":[[3,2],[3,3],[3,4]],"dressing":"garden"},
+  "plaza": {"title":"PRAÇA DE LISBOA","floor":"paving","tint":"d1cbb8","buildings":[3,0],"training":false,"shore":false,"obstacle":"bench","obstacles":[[2,2],[6,5],[6,6]],"dressing":"square"},
+  "courtyard": {"title":"PÁTIO DO ABRIGO","floor":"paving","tint":"d9d3b9","buildings":[0,2],"training":true,"shore":false,"obstacle":"bench","obstacles":[[3,2],[3,3],[3,4]],"dressing":"garden"},
+  "cais": {"title":"CAIS DE LISBOA","floor":"paving","tint":"bfc7bc","buildings":[1,2],"training":false,"shore":true,"obstacle":"cargo","obstacles":[[2,2],[3,2],[6,5]],"dressing":"cargo"},
+  "service": {"title":"ARMAZÉM DO CAIS","floor":"paving","tint":"c5bca7","buildings":[1,1],"training":false,"shore":false,"obstacle":"cargo","obstacles":[[2,2],[3,2],[6,5]],"dressing":"cargo"},
+  "room": {"title":"INTERIOR DO ABRIGO","floor":"wood","tint":"c8b391","buildings":[],"training":false,"shore":false,"obstacle":"bench","obstacles":[[2,2],[6,5],[6,6]],"dressing":"interior"},
+  "deck": {"title":"CONVÉS","floor":"wood","tint":"c5b99c","buildings":[],"training":false,"shore":true,"obstacle":"cargo","obstacles":[[2,2],[6,5],[6,6]],"dressing":"deck"}
+}

@@ -5,6 +5,9 @@ const CLEARANCE := 14.0 # Approved 12px actor radius plus contact margin.
 const STEP := 16.0
 var navigation := AStarGrid2D.new()
 
+func _draw() -> void:
+	if not has_meta("departure_deck"): super._draw()
+
 func _ready() -> void:
 	super._ready()
 	if map_id == "praca_infancia":
@@ -20,6 +23,11 @@ func rebuild_navigation() -> void:
 	interactions.clear()
 	_collect_authored_nodes(sorted_world)
 	_build_navigation()
+
+func _collect_authored_nodes(node: Node) -> void:
+	if node is CanvasItem and not node.visible: return
+	if node is CollisionPolygon2D and node.disabled: return
+	super._collect_authored_nodes(node)
 
 func point_clear(point: Vector2) -> bool:
 	if not is_walkable_point(point):

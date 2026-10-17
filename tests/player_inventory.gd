@@ -21,7 +21,7 @@ func press_pad(code: int) -> void:
 func run() -> void:
 	p = root.get_node("ChapterProgress"); p.auto_save = false; p.reset()
 	root.get_node("CampaignProfile").hero_name = "Joana"
-	check(Items.items().size() == 18 and p.coins == 0 and p.inventory == {"PT-Q01":1},"New campaign has only its story bag and no free gear")
+	check(p.coins == 0 and p.inventory == {"PT-Q01":1} and not p.inventory.has("PT-T03"),"New campaign has only its story bag, without free gear or quest parts")
 	Items.pay_service(p); Items.pay_service(p)
 	check(p.coins == 40 and p.payments.size() == 1,"Cais service payment cannot be farmed")
 	Items.buy(p,"PT-V01")

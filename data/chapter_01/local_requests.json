@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "requests": {
+    "C01-LIS-01": {
+      "title": "A roda presa",
+      "giver": "Oficial da oficina",
+      "summary": "O carro da oficina ficou imobilizado. Descobre o problema antes de tentar movê-lo.",
+      "reward_gold": 12,
+      "reward_item": "PT-C02",
+      "part_item": "PT-T03",
+      "objectives": {
+        "inspect": "Examina a roda do carro junto à oficina.",
+        "parts": "Fala com o trabalhador do pontão sobre uma cavilha para o eixo.",
+        "fit": "Volta ao carro e combina o reparo com o oficial da oficina.",
+        "return": "O carro já pode circular. Volta a falar com o oficial da oficina.",
+        "completed": "Carro reparado e devolvido ao trabalho. Recebeste 12 de ouro e uma ração."
+      },
+      "history": {
+        "inspect": "Aceitaste ajudar o oficial da oficina.",
+        "parts": "A roda está inteira; falta a cavilha que a mantém no eixo.",
+        "fit": "O trabalhador do pontão entregou uma cavilha de reserva.",
+        "return": "Com o carro apoiado pelo oficial, encaixaste a cavilha e libertaste a passagem.",
+        "completed": "O oficial retomou o trabalho e reconhece a tua ajuda nas visitas seguintes."
+      }
+    }
+  },
+  "dialogue": {
+    "offer": [
+      ["Oficial da oficina", "Não empurres esse carro. A roda saiu do sítio quando tentámos virá-lo."],
+      ["Herói", "Partiu o eixo?"],
+      ["Oficial da oficina", "Não sei. Segurei a carga antes de tombar. Preciso de alguém que veja a roda enquanto eu preparo o apoio."],
+      ["Herói", "Posso olhar antes de mexer."]
+    ],
+    "inspect": [
+      ["Herói", "O aro está inteiro. A roda escorregou para fora, mas o eixo não tem uma fratura."],
+      ["Herói", "Há uma ranhura vazia na ponta do eixo. A corda está solta, sem prender os raios."]
+    ],
+    "diagnosed": [
+      ["Herói", "Falta a cavilha. Se empurrarmos, a roda volta a sair."],
+      ["Oficial da oficina", "O pessoal do pontão guarda peças para os carros de carga. Pergunta por uma cavilha de eixo; não uma estaca de amarração."]
+    ],
+    "part": [
+      ["Trabalhador do pontão", "Para aquele carro pequeno? Tenho uma de reserva."],
+      ["Herói", "O eixo está inteiro. Falta a peça da ranhura."],
+      ["Trabalhador do pontão", "Então é esta. Apoiem a carga antes de a encaixar. Não metas a mão debaixo do carro a tentar fazer as duas coisas sozinho."]
+    ],
+    "repair": [
+      ["Oficial da oficina", "Eu seguro o apoio. Diz quando a roda estiver alinhada."],
+      ["Herói", "Agora. Mantém assim… a cavilha entrou."],
+      ["Oficial da oficina", "Afasta a mão. Vamos experimentar devagar."]
+    ],
+    "reward": [
+      ["Oficial da oficina", "Já o levei até à porta e a roda ficou no lugar. A rua também ficou livre."],
+      ["Herói", "Guarda uma cavilha de reserva com ele."],
+      ["Oficial da oficina", "Já guardei. E isto é pelo teu trabalho: doze de ouro e uma ração. Vais precisar de comer antes de salvar o cais inteiro."]
+    ],
+    "thanks": [
+      ["Oficial da oficina", "A roda continua firme. Hoje consegui levar duas cargas sem pedir quatro braços."],
+      ["Herói", "E a cavilha de reserva?"],
+      ["Oficial da oficina", "Na caixa das ferramentas. Podes conferir; já aprendi a pergunta."]
+    ],
+    "fisher": [
+      ["Pescadora", "A passagem abriu depois do socorro. Já consigo levar o peixe sem contornar a carga toda."],
+      ["Herói", "O ferido teve quem ficasse com ele."],
+      ["Pescadora", "E ainda bem. O cais precisa de braços, mas as pessoas não são peças de reposição."]
+    ],
+    "neighbor": [
+      ["Vizinha", "Se procuras a oficina, segue a rua para o interior. O carro ficou mesmo à porta."],
+      ["Herói", "Ouvi dizer que não consegue andar."],
+      ["Vizinha", "É raro ficar tão quieto. Costumo ouvi-lo antes de ver o oficial chegar."]
+    ],
+    "neighbor_done": [
+      ["Vizinha", "Já ouvi o carro a passar outra vez. Diz ao oficial que consertar a roda não lhe dá licença para correr."],
+      ["Herói", "Uma coisa de cada vez."]
+    ],
+    "worker": [
+      ["Trabalhador do pontão", "As peças pequenas ficam comigo. Cordas e ferramentas grandes vão para a oficina."],
+      ["Herói", "Para não se perderem?"],
+      ["Trabalhador do pontão", "Para alguém saber onde estão quando fazem falta."]
+    ]
+  }
+}

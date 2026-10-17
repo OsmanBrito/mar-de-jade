@@ -22,7 +22,7 @@ func snapshot(view) -> Dictionary:
 				state.path = model.path_to(model.current_id,focus,model.SIZE.x*model.SIZE.y)
 			state.cost = state.path.size()
 			if focus==origin: state.reason = "Já estás nesta casa."
-			elif model.obstacles.has(focus): state.reason = "Um banco bloqueia esta casa."
+			elif model.obstacles.has(focus): state.reason = "O cenário bloqueia esta casa."
 			elif model.unit_at(focus,model.current_id)>=0: state.reason = "Esta casa está ocupada."
 			elif not state.valid: state.reason = "Movimento insuficiente." if not state.path.is_empty() else "Não há caminho até esta casa."
 	elif view.is_player() and view.phase=="aim":

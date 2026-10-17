@@ -56,6 +56,9 @@ func run() -> void:
 	var bad = valid.duplicate(true); bad.entry_scene = "res://scenes/main.tscn"
 	FileAccess.open("res://tests/resume-invalid.json",FileAccess.WRITE).store_string(JSON.stringify(bad))
 	check(progress.load_from("res://tests/resume-invalid.json") == ERR_INVALID_DATA and progress.snapshot() == valid,"Unrelated save scene rejected without destroying state")
+	for i in 180:
+		if not current_scene.busy: break
+		await physics_frame
 	current_scene.queue_free()
 	await frames(3)
 	print("CHAPTER_ROUTES_RESULT ",JSON.stringify({"checks":checks,"failures":failures}))

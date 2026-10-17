@@ -1,5 +1,5 @@
 extends RefCounted
-## Keep the reference viewport's proportions and its actual pointer coordinates.
+## Render one combat texel per window pixel, independently of the campaign stretch.
 const SIZE := Vector2(960,540)
 static func install(layer: CanvasLayer,container: SubViewportContainer) -> void:
 	var background := ColorRect.new(); background.name = "BattleBackdrop"; background.color = Color("102c37"); background.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -18,10 +18,30 @@ static func cover(host: Node,opacity: float) -> void:
 	if curtain==null: return
 	curtain.modulate.a = clampf(opacity,0,1); curtain.visible = opacity>0
 static func fit(container: SubViewportContainer,window_size: Vector2) -> void:
-	var factor := minf(window_size.x/SIZE.x,window_size.y/SIZE.y)
-	container.scale = Vector2.ONE*factor
-	container.position = (window_size-SIZE*factor)*0.5
+	# window_size is in the campaign's logical coordinates (1440x900), not pixels.
+	# A SubViewport does not inherit canvas_items' native-resolution rendering.
+	# Cancel the outer stretch on its container and allocate the actual pixel area.
+	var outer := container.get_viewport().get_final_transform()
+	var pixel_scale := Vector2(outer.x.length(),outer.y.length())
+	var pixels := Vector2i((window_size*pixel_scale).round()).max(Vector2i(2,2))
+	var factor := minf(float(pixels.x)/SIZE.x,float(pixels.y)/SIZE.y)
+	container.scale = Vector2.ONE/pixel_scale
+	container.position = Vector2.ZERO
+	container.size = Vector2(pixels)
+	# The viewport texture is presented 1:1; its illustrated assets filter inside it.
+	container.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var viewport := container.get_child(0) as SubViewport if container.get_child_count()>0 else null
+	if viewport:
+		if not container.stretch: viewport.size = pixels
+		viewport.canvas_transform = Transform2D(Vector2(factor,0),Vector2(0,factor),(Vector2(pixels)-SIZE*factor)*0.5)
+		# An explicit canvas_transform does not update automatic font oversampling.
+		viewport.oversampling_override = maxf(1.0,factor)
 	var background := container.get_parent().get_node_or_null("BattleBackdrop") as ColorRect
 	if background: background.size = window_size
 	var curtain := container.get_parent().get_node_or_null("BattleCurtain") as ColorRect
 	if curtain: curtain.size = window_size
+
+static func ui_to_window(host: Node,point: Vector2) -> Vector2:
+	var viewport := host.get_viewport()
+	var container := viewport.get_parent() as SubViewportContainer
+	return container.get_global_transform()*viewport.canvas_transform*point if container else point

@@ -1,6 +1,6 @@
 # Navegação — refinamento do primeiro percurso
 
-Implementado em 15/10/2026 após a primeira versão Lisboa–Madeira. O acesso continua no menu inicial em **Testar navegação · Lisboa → Madeira**. Os salvamentos anteriores continuam compatíveis.
+Registro histórico do refinamento implementado em 15/10/2026 após a primeira versão Lisboa–Madeira. O acesso atual é pelo fim de Portugal ou pela continuação de uma viagem; os botões internos de teste foram retirados do menu. Os salvamentos anteriores continuam compatíveis.
 
 Registro do refinamento anterior. O playtest seguinte substituiu a condução absoluta e o controle de meia vela por [leme relativo, três velas e câmera com horizonte](navegacao-camera-e-leme.md); os controles e medições abaixo descrevem a etapa anterior.
 

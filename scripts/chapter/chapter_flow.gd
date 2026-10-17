@@ -42,6 +42,11 @@ var player_menu
 var menu_focus: Control
 var service_paid_now := false
 var harbor
+var routes
+var staging
+var block_generation := 0
+var practice_resume_index := -1
+var practice_events: Array = []
 
 func _ready() -> void:
 	if CampaignProfile.hero_name.is_empty():
@@ -70,7 +75,8 @@ func _ready() -> void:
 	view.body.get_parent().add_child(options_box)
 	_create_battle()
 	harbor = preload("res://scripts/chapter/harbor_visit.gd").new(self)
-	_load_block(scene_index)
+	routes = preload("res://scripts/chapter/lisbon_routes.gd").new(self)
+	_load_block(scene_index,false,true)
 
 func _create_battle() -> void:
 	battle_layer = CanvasLayer.new(); battle_layer.layer = 10; add_child(battle_layer)
@@ -83,27 +89,48 @@ func _create_battle() -> void:
 	battle_host.combat = RULES.new()
 	viewport.add_child(battle_host)
 	battle_host.lesson_completed.connect(_battle_finished)
+	battle_host.practice_aborted.connect(_practice_aborted)
 	get_viewport().size_changed.connect(_resize_battle)
 	_resize_battle(); battle_container.hide()
 
 func _resize_battle() -> void:
 	preload("res://scripts/combat/battle_stage.gd").fit(battle_container,get_viewport_rect().size)
 
-func _load_block(index: int) -> void:
+func _load_block(index: int,preserve_position: bool = false,restore_journey: bool = false) -> void:
+	block_generation += 1
+	var saved_journey: Dictionary = ChapterProgress.journey.duplicate(true) if restore_journey else {}
+	if routes!=null and routes.active: routes.stop(true)
+	var previous_kind := map_kind
+	var feet: Vector2 = world.player.position if is_instance_valid(world) else Vector2.ZERO
 	scene_index = index; ChapterProgress.checkpoint = index
 	ChapterProgress.entry_scene = "res://scenes/chapter_01/chapter_flow.tscn"
 	events = blocks[index].events.duplicate(true); event_index = -1; current_event = {}
+	if index==0 and ((ChapterProgress.flags.get("delivery_pending",false) and not ChapterProgress.flags.get("delivery_finished",false)) or saved_journey.get("stage","")=="delivery_return"):
+		events = [{"type":"task","id":"delivery","caption":"Leva os sacos de farinha à vizinha da cozinha; mantém-nos separados do peixe.","map":"cais"},{"type":"line","speaker":"Vizinha","text":"Chegaram secos e separados. Obrigada pela entrega. O Duarte espera-te no pátio."},{"type":"stage","action":"delivery_return"}]+events
 	phase = "dialogue"; busy = false; completed = false; task_id = ""
 	service_paid_now = false
 	view.status.text = ""; view.speaker.text = ""; view.body.text = ""
 	_clear_options(); view.show(); view.next_button.show(); view.next_button.disabled = false
 	view.replay_button.hide(); view.next_button.text = "Continuar"
 	view.caption_label.text = "Portugal · Presente\n"+blocks[index].title
-	_load_map(blocks[index].map)
+	view.hint.text = "Enter / espaço / A · continuar     Esc / Start · menu"
+	var first_delivery: bool = index==0 and ChapterProgress.flags.get("delivery_pending",false) and not ChapterProgress.flags.get("delivery_finished",false)
+	_load_map("room" if first_delivery else blocks[index].map)
+	if first_delivery and saved_journey.is_empty(): world.player.position = Vector2(-40,345)
+	if preserve_position and routes.zone(previous_kind)==routes.zone(map_kind):
+		world.player.position = feet
+		if index==7:
+			world.player.presentation.posture = "standing"
+			events.insert(0,{"type":"stage","action":"sit_bench"})
+	if not saved_journey.is_empty():
+		event_index = int(saved_journey.event)
+		if event_index>=0 and event_index<events.size(): current_event = events[event_index]
+		routes.restore(saved_journey); scene_snapshot = ChapterProgress.snapshot(); return
 	scene_snapshot = ChapterProgress.snapshot()
 	if ChapterProgress.auto_save: ChapterProgress.save_to()
-	if index == 15 and ChapterProgress.flags.get("harbor_pause",false) and harbor.can_begin():
-		harbor.begin(); return
+	if index in [3,5,15] and ChapterProgress.flags.get("harbor_pause",false) and harbor.can_begin():
+		ChapterProgress.flags.erase("harbor_pause")
+		routes.begin("rest" if index==5 else "block",6 if index==5 else index+1); return
 	advance()
 
 func _point(key: String) -> Vector2:
@@ -112,16 +139,19 @@ func _point(key: String) -> Vector2:
 
 func _load_map(kind: String) -> void:
 	if has_node("DepartureCamera"): get_node("DepartureCamera").free()
+	if has_node("DepartureShore"): get_node("DepartureShore").free()
 	if world != null:
 		remove_child(world); world.queue_free()
 	map_kind = kind; actors.clear()
 	var map_path := "res://scenes/maps/praca_infancia.tscn"
 	if kind in ["cais","service"]: map_path = "res://scenes/maps/cais_vivo.tscn"
 	elif kind == "room": map_path = "res://scenes/maps/abrigo_infancia.tscn"
+	elif kind == "deck": map_path = "res://scenes/maps/botafogo_departure.tscn"
 	world = load(map_path).instantiate()
 	world.set_script(WORLD)
-	world.map_id = "abrigo_adulto" if kind == "room" else ("cais" if kind in ["cais","service"] else "praca_infancia")
+	world.map_id = "abrigo_adulto" if kind == "room" else ("cais" if kind in ["cais","service"] else ("botafogo_departure" if kind=="deck" else "praca_infancia"))
 	world.player_scene = PLAYER
+	if kind in ["plaza","courtyard"]: world.set_meta("open_lisbon",true)
 	world.process_mode = Node.PROCESS_MODE_PAUSABLE
 	var sorted = world.get_node("ActorsAndProps")
 	for object in sorted.get_children():
@@ -130,12 +160,17 @@ func _load_map(kind: String) -> void:
 	if not world.has_node("Spawn"):
 		var spawn := Marker2D.new(); spawn.name = "Spawn"; world.add_child(spawn)
 	world.get_node("Spawn").position = _point("hero")
+	if kind=="deck":
+		for x in 10:
+			for y in 10: world.get_node("Ground").set_cell(Vector2i(x,y),0,Vector2i(1,0))
 	add_child(world)
+	if kind in ["plaza","courtyard"]: preload("res://scripts/chapter/lisbon_routes.gd").open_paths(world)
 	if kind == "deck":
 		for node_name in ["CityGround","PracaDeLisboa"]:
 			var decoration: Node = world.get_node_or_null(node_name)
 			if decoration != null: decoration.free()
 		preload("res://scripts/chapter/departure_deck.gd").install(world)
+		var shore := Node2D.new(); shore.set_script(preload("res://scripts/chapter/departure_shore.gd")); shore.name = "DepartureShore"; add_child(shore)
 	world.player.presentation.identity = "hero"
 	world.player.presentation.posture = "standing"
 	world.player.enabled = false; world.player.set_physics_process(false)
@@ -153,9 +188,14 @@ func _load_map(kind: String) -> void:
 	if kind == "service":
 		var table := preload("res://scenes/chapter_01/table.tscn").instantiate()
 		table.position = _point("object")+Vector2(0,28)
-		table.scale = Vector2.ONE*0.7
 		sorted.add_child(table)
+		props.z_index = 1 # Crockery belongs on the tabletop, not behind the table sprite.
+		_add_actor("Ajudante da cozinha",Vector2(470,830))
+		actors["Ajudante da cozinha"].npc_id = "attendant"; actors["Ajudante da cozinha"].carries_bowl = not ChapterProgress.flags.get("meal",false)
 	_configure_actors()
+	staging = preload("res://scripts/chapter/chapter_staging.gd").new()
+	staging.name = "ChapterStaging"; staging.director = self; world.add_child(staging)
+	staging.configure(kind,blocks[scene_index].id)
 	if kind in ["cais","service"]:
 		preload("res://scripts/chapter/portugal_quay_art.gd").apply(world)
 	harbor.install(world)
@@ -187,6 +227,11 @@ func _configure_actors() -> void:
 		actors["Tomé"].visible = id != "C01-M02/S01"
 		actors["Trabalhador ferido"].posture = "seated"
 		world.player.presentation.eye_glow = ChapterProgress.flags.get("green_sight",false) and id == "C01-M02/S02"
+		if scene_index==0:
+			for actor in actors.values(): actor.hide()
+			var receiver = world.sorted_world.get_node_or_null("Vizinha")
+			if receiver!=null:
+				receiver.set_physics_process(false); receiver.position = Vector2(315,955); receiver.presentation.walking = false
 	elif map_kind == "plaza":
 		var public_scene: bool = id == "C01-M03/S01"
 		actors["Mestre"].visible = public_scene; actors["Combatente"].visible = public_scene
@@ -198,14 +243,20 @@ func _configure_actors() -> void:
 		if ChapterProgress.flags.get("injured",false):
 			world.player.presentation.posture = "fallen"; world.player.position = Vector2(23,352)
 	elif map_kind == "service":
-		actors["Leonor"].posture = "seated"; world.player.presentation.posture = "seated"
-		actors["Leonor"].facing = 1; world.player.presentation.facing = 3
-		actors["Leonor"].seat_support = true; world.player.presentation.seat_support = true
+		_seat_at_meal()
+		if not ChapterProgress.flags.get("meal",false):
+			world.player.position = _point("hero"); world.player.presentation.posture = "standing"
 	elif map_kind == "room" and ChapterProgress.flags.get("injured",false):
 		world.player.position = Vector2(-70,205); world.player.presentation.posture = "seated"
 		world.player.presentation.injured = true
-		props.bedside = true
-		props.bedside_point = world.player.position+Vector2(30,5)
+		var bedside := Node2D.new(); bedside.name = "BedsideSupport"
+		bedside.set_script(preload("res://scripts/chapter/bedside_setting.gd"))
+		bedside.position = world.player.position+Vector2(52,20)
+		world.get_node("ActorsAndProps").add_child(bedside)
+		var body := StaticBody2D.new(); body.collision_mask = 0; bedside.add_child(body)
+		var footprint := CollisionPolygon2D.new()
+		footprint.polygon = PackedVector2Array([Vector2(-17,-3),Vector2(0,-11),Vector2(17,-3),Vector2(0,6)])
+		body.add_child(footprint)
 		actors["Duarte"].visible = id != "C01-M03/S07"
 		actors["Tomé"].posture = "seated"
 		actors["Tomé"].seat_support = true
@@ -213,25 +264,36 @@ func _configure_actors() -> void:
 		actor.get_child(1).process_mode = Node.PROCESS_MODE_PAUSABLE
 		if not actor.visible: actor.get_child(1).get_child(0).set_deferred("disabled",true)
 
+func _seat_at_meal() -> void:
+	world.player.position = _point("object")+Vector2(-74,27)
+	actors["Leonor"].position = _point("object")+Vector2(75,28)
+	actors["Leonor"].posture = "seated"; world.player.presentation.posture = "seated"
+	actors["Leonor"].facing = 1; world.player.presentation.facing = 3
+	actors["Leonor"].seat_support = true; world.player.presentation.seat_support = true
+	actors["Leonor"].queue_redraw(); world.player.presentation.queue_redraw()
+
 func _lock_player(lock: bool) -> void:
 	world.player.enabled = not lock; world.player.set_physics_process(not lock)
 	world.player.velocity = Vector2.ZERO; world.player.destination_path.clear(); world.player.presentation.walking = false
 	world.player.camera.offset = Vector2(120,65) if lock and map_kind in ["cais","service","deck"] else Vector2(0,-100)
 	if lock and map_kind == "room":
 		world.player.camera.offset = Vector2(64,250)-world.player.position
+	if is_instance_valid(staging) and staging.get_parent()==world and not has_node("DepartureCamera"): staging.set_control_locked(lock)
 
 func _clear_options() -> void:
 	for child in options_box.get_children():
 		options_box.remove_child(child)
 		child.queue_free()
 	options_box.hide()
-	view.panel.offset_top = -210; view.panel.offset_bottom = -54
 
 func _option(label: String, callback: Callable) -> void:
-	var button := Button.new(); button.text = label; button.custom_minimum_size.y = 36
+	var button := Button.new(); button.text = label; button.custom_minimum_size.y = 42
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.pressed.connect(callback); options_box.add_child(button)
 
 func advance() -> void:
+	if phase == "local_dialogue" and not busy and not paused:
+		harbor.city.advance(); return
 	if busy or paused or phase not in ["dialogue","block_end"]: return
 	if phase == "block_end":
 		if scene_index+1 < blocks.size(): _load_block(scene_index+1)
@@ -244,12 +306,16 @@ func advance() -> void:
 			_lock_player(true); _clear_options(); view.panel.show(); view.next_button.show()
 			view.speaker.text = CampaignProfile.speaker_name(current_event.speaker)
 			view.body.text = current_event.text; view.status.text = ""
+			view.remember(view.speaker.text,view.body.text)
 			view.hint.text = "Enter / espaço / A · continuar     Esc · menu     F5 · guardar"
 			view.next_button.grab_focus()
 		"choice": _show_choice(current_event)
 		"stage":
 			busy = true; view.next_button.disabled = true
+			view.hint.text = "Esc / Start · pausar"
+			var generation := block_generation
 			await _stage(current_event.action)
+			if generation!=block_generation: return
 			busy = false; view.next_button.disabled = false; advance()
 		"task": _begin_task(current_event)
 		"battle": _begin_battle(current_event.mode)
@@ -260,31 +326,39 @@ func _finish_block() -> void:
 	if continue_after_duel and scene_index+1<blocks.size():
 		continue_after_duel = false
 		block_finished.emit(blocks[scene_index].id)
-		_load_block(scene_index+1)
+		_load_block(scene_index+1,true)
 		return
 	phase = "block_end"; _lock_player(true); _clear_options(); view.show(); view.panel.show()
-	view.speaker.text = blocks[scene_index].title; view.status.text = "Etapa concluída"
-	if service_paid_now: view.status.text += " · Serviço no cais: +40 reais"
-	view.body.text = "Continuar."; view.next_button.show(); view.next_button.text = "Continuar"
-	view.next_button.grab_focus()
 	block_finished.emit(blocks[scene_index].id)
-	if scene_index == 15 and harbor.can_begin():
-		harbor.begin(); return
+	if scene_index in [0,3,5,6,14,15]:
+		routes.begin("rest" if scene_index==5 else "block",scene_index+1); return
 	if scene_index == blocks.size()-1:
 		completed = true; ChapterProgress.completed = true
 		view.speaker.text = "Capítulo 1 · A promessa impossível"
-		view.body.text = "A Botafogo parte. Portugal fica para trás. A viagem começa como aprendiz."
-		view.status.text = "Capítulo 1 concluído"; view.next_button.hide(); view.replay_button.show()
+		view.body.text = "A Botafogo parte. Vais como aprendiz sob Rodrigo. Madeira é a primeira escala para mantimentos, antes de Duas Águas e da busca pela caravela desaparecida."
+		view.status.text = "Rumo à Madeira"; view.next_button.hide(); view.replay_button.hide()
+		view.hint.text = "Enter / A · navegar para a Madeira     Esc · menu"
 		options_box.show()
 		_option("Navegar para a Madeira",func(): preload("res://scripts/navigation/voyage_launch.gd").start(get_tree(),true))
-		view.replay_button.grab_focus()
+		options_box.get_child(0).grab_focus()
 		if ChapterProgress.auto_save: ChapterProgress.save_to()
+		return
+	# The final line leads straight into the next scene. Safe preparation and
+	# shore leave keep their own menus instead of a filler "Continuar." card.
+	var paid := service_paid_now
+	_load_block(scene_index+1,true)
+	if paid: view.status.text = "Serviço no cais · +40 de ouro"
 
 func _show_choice(event: Dictionary) -> void:
 	phase = "choice"; choice_event = event; _lock_player(true); _clear_options()
 	view.speaker.text = CampaignProfile.hero_name; view.body.text = "Escolhe a tua resposta."
 	view.next_button.hide(); options_box.show()
-	for option in event.options: _option(option.label,choose.bind(option.id))
+	for option in event.options:
+		var label: String = option.label
+		for response in option.events:
+			if response.type=="line" and response.speaker in ["Herói","Herói adulto"]:
+				label = "“"+response.text+"”"; break
+		_option(label,choose.bind(option.id))
 	options_box.get_child(0).grab_focus()
 
 func choose(id: String) -> void:
@@ -298,13 +372,21 @@ func _insert(extra: Array) -> void:
 	for i in range(extra.size()-1,-1,-1): events.insert(event_index+1,extra[i].duplicate(true))
 
 func _begin_task(event: Dictionary) -> void:
-	if event.has("map"): _load_map(event.map)
+	if event.id=="fetch_tome":
+		routes.begin("fetch",scene_index); return
+	if event.id=="delivery" and map_kind!="cais":
+		routes.begin("delivery",scene_index); return
+	if event.has("map") and event.map!=map_kind: _load_map(event.map)
 	task_id = event.id; task_step = 0; phase = "task"
 	view.panel.hide(); _clear_options(); _lock_player(false)
 	world.player.presentation.posture = "standing"; world.player.presentation.position = Vector2.ZERO
 	if task_id == "recovery_walk":
-		world.player.position = Vector2(110,365); props.marker = _point("destination")
+		props.marker = Vector2(110,365)
+		actors["Tomé"].position = Vector2(10,295); actors["Tomé"].posture = "standing"
 	else: props.marker = _point("object")
+	if task_id == "recovery_water":
+		props.marker = world.player.position+Vector2(28,16)
+		world.player.presentation.posture = "seated"; _lock_player(true)
 	# The first adult task is performed beside the child, not at the generic
 	# prop position.  Keeping the marker on the actor makes the instruction
 	# match what the player sees and lets E/A work when approaching the child.
@@ -312,31 +394,81 @@ func _begin_task(event: Dictionary) -> void:
 		props.marker = actors["Criança"].position + Vector2(0, 18)
 		props.object_position = props.marker
 	props.marker_active = true; props.marker_label = "E · "+{"lever":"usar a alavanca","fetch_tome":"falar com Tomé","clear_passage":"pegar o caixote","meal":"levar a refeição","pack":"guardar a tigela","blue_rope":"apanhar a amarra","knot":"apertar a correia","recovery_walk":"caminhar"}.get(task_id,"interagir")
+	if task_id=="recovery_water": props.marker_label = "E / A · beber água"
 	if task_id == "fetch_tome": props.marker = actors["Tomé"].position+Vector2(-35,25)
+	if task_id=="delivery":
+		props.delivery_active = true; props.carrying = true; props.marker = Vector2(315,997)
+		props.marker_label = "E / A · conferir a entrega da cozinha"
+	if task_id=="lever":
+		props.marker_label = "E / A · assentar o apoio"
+		view.status.text = "A madeira prende o braço. Assenta a alavanca num apoio antes de combinar a elevação com Duarte."
 	if task_id == "clear_passage": props.crate_task = true
-	if task_id == "meal": props.carrying = true
+	if task_id == "meal":
+		props.carrying = false; props.meal_ready = false; actors["Ajudante da cozinha"].carries_bowl = true
+		props.marker = actors["Ajudante da cozinha"].position+Vector2(0,30)
+		props.marker_label = "E / A · receber duas porções e água"
 	if task_id == "pack":
 		actors["Tomé"].carries_bowl = false
 		world.player.presentation.carries_bowl = true
 	task_start = world.player.position
 	view.status.text = "OBJETIVO  ·  "+event.caption; view.hint.text = "WASD / setas / clique · mover     E / A · executar objetivo     Esc · menu"
+	if task_id=="recovery_water": view.hint.text = "E / A · beber a água     Esc / Start · menu"
 	var focus = get_viewport().gui_get_focus_owner()
 	if focus != null: focus.release_focus()
 	world.rebuild_navigation()
 
 func interact_task() -> void:
-	if paused or phase != "task" or world.player.position.distance_to(props.marker) > 92: return
+	if paused or busy or phase != "task": return
+	if task_id=="blue_rope" and task_step==0:
+		var white := Vector2(50,290)
+		if world.player.position.distance_to(white)<70 and world.player.position.distance_to(white)<world.player.position.distance_to(props.marker):
+			view.status.text = "Beatriz · A branca fica comigo. Leva a ponta da azul ao Duarte."
+			return
+	if world.player.position.distance_to(props.marker) > (68 if task_id=="meal" else 92): return
+	if task_id=="delivery":
+		phase = "delivery_choice"; _lock_player(true); _clear_options(); view.panel.show(); view.next_button.hide(); options_box.show()
+		view.speaker.text = "Vizinha da cozinha"; view.body.text = "São os sacos do abrigo? Confere onde os pousas antes de me passares a entrega."
+		_option("Farinha seca, separada do peixe · entregar à cozinha",_deliver.bind(true))
+		_option("Pousar tudo na banca do peixe",_deliver.bind(false))
+		options_box.get_child(0).grab_focus(); return
+	if task_id=="meal" and task_step==0:
+		task_step = 1; props.carrying = true; actors["Ajudante da cozinha"].carries_bowl = false
+		props.marker = _point("object")+Vector2(-50,20); props.marker_label = "E / A · servir a refeição"
+		view.status.text = "Leva as porções e a água para a mesa onde Leonor espera."
+		return
+	if task_id=="lever":
+		busy = true
+		if task_step==0:
+			task_step = 1; await staging.support_cargo(); busy = false
+			props.marker = actors.Duarte.position+Vector2(-40,25)
+			props.marker_label = "E / A · levantar com Duarte"
+			view.status.text = "Apoio firme. Duarte segura a madeira; aproxima-te dele e confirma a elevação conjunta."
+			return
+		await staging.lift_cargo(); busy = false
 	if task_id == "recovery_walk" and world.player.position.distance_to(task_start) < 35: return
 	if task_id == "clear_passage" and task_step == 0:
 		task_step = 1; props.carrying = true; props.marker = _point("destination")
 		props.marker_label = "E · pousar no lado seco"; view.status.text = "Leva o caixote para o lado seco."; return
+	if task_id=="recovery_walk" and task_step==0:
+		task_step = 1; props.marker = Vector2(-30,330)
+		props.marker_label = "E / A · regressar ao apoio"
+		view.status.text = "Chegaste à mesa. Volta devagar até Tomé; o treino pode esperar."
+		return
+	if task_id=="blue_rope" and task_step==0:
+		task_step = 1; props.marker = actors.Duarte.position+Vector2(35,-20)
+		props.marker_label = "E / A · entregar a ponta azul"
+		view.status.text = "Leva a ponta azul ao Duarte. Beatriz trata da branca."
+		world.get_node("ConvesDaBotafogo").rope_owner = world.player
+		staging.sound("creak",-26,1.1,true)
+		return
+	if task_id=="blue_rope":
+		world.get_node("ConvesDaBotafogo").rope_owner = null
+		world.get_node("ConvesDaBotafogo").rope_secured = true
 	var already_done: bool = ChapterProgress.flags.get(task_id,false)
 	ChapterProgress.flags[task_id] = true
 	if task_id == "meal":
 		props.carrying = false; props.meal_ready = true
-		world.player.position = _point("hero")
-		world.player.presentation.posture = "seated"
-		world.player.presentation.facing = 3
+		_seat_at_meal()
 	if task_id == "lever": ChapterProgress.flags.cargo_freed = true; props.cargo_freed = true
 	if task_id == "clear_passage": props.object_position = _point("destination"); props.carrying = false
 	if task_id == "clear_passage":
@@ -350,9 +482,35 @@ func interact_task() -> void:
 	if task_id == "fetch_tome": _load_map(blocks[scene_index].map)
 	props.marker_active = false; _lock_player(true); phase = "dialogue"; view.panel.show(); advance()
 
+func _deliver(clean: bool) -> void:
+	if paused or phase!="delivery_choice" or world.player.position.distance_to(props.marker)>92: return
+	if not clean:
+		view.body.text = "O pano da banca está molhado. Tomé pediu farinha separada do peixe; entrega os sacos secos diretamente à cozinha."
+		return
+	ChapterProgress.flags.delivery_finished = true; ChapterProgress.flags.delivery_pending = false
+	props.delivery_active = false; props.carrying = false; props.marker_active = false
+	_clear_options(); phase = "dialogue"; advance()
+
 func _begin_battle(mode: String) -> void:
 	phase = "battle"; _lock_player(true); view.hide(); _clear_options(); battle_container.show()
+	battle_host.select_battle_map(map_kind)
+	battle_host.allow_practice_exit = mode!="duel"
 	battle_host.begin_encounter(mode,CampaignProfile.hero_name,ChapterProgress.style)
+
+func _practice_aborted() -> void:
+	battle_container.hide(); view.show(); phase = "dialogue"
+	if battle_host.combat.mode in ["style_test","school","practice"]:
+		if practice_resume_index>=0:
+			event_index = practice_resume_index; events = practice_events.duplicate(true)
+		_show_styles(style_options)
+		view.status.text = "Treino interrompido. Escolhe outro manejo; uma aula incompleta não concede aprendizado."
+	else:
+		_clear_options(); options_box.show(); view.panel.show(); view.next_button.hide()
+		phase = "practice_retry"
+		view.speaker.text = "Treino em pausa"; view.body.text = "Podes rever o equipamento e tentar novamente quando estiveres pronto."
+		_option("Repetir exercício",func(): _begin_battle(current_event.mode))
+		_option("Consultar equipamento e passivas",func(): _menu("Equipamento"))
+		options_box.get_child(0).grab_focus()
 
 func _battle_finished(success: bool) -> void:
 	if ChapterProgress.flags.get("recovered",false) and battle_host.combat.mode in ["school","perfect_defense","duarte_support"]:
@@ -384,32 +542,49 @@ func _battle_finished(success: bool) -> void:
 func _show_styles(options: Array) -> void:
 	phase = "styles"; style_options = options; _clear_options(); options_box.show(); _lock_player(true)
 	view.panel.show(); view.next_button.hide(); view.speaker.text = "Tomé"
-	view.body.text = "Experimenta um manejo. Podes testar os cinco antes de escolher."
-	view.panel.offset_top = -490
+	view.body.text = "Armas emprestadas por Tomé. A aula ensina o fundamento; a prática livre permite comparar três técnicas sem concedê-las. R / Select sai a qualquer momento."
 	for option in options: _option(option.label+ (" · testado" if ChapterProgress.tested_styles.has(option.style) else ""),choose_style.bind(option.style))
-	if not ChapterProgress.tested_styles.is_empty(): _option("Continuar com "+RULES.STYLES[ChapterProgress.style].name,confirm_style)
+	_option("Comparar armas em prática livre",_free_practice_menu)
+	if ChapterProgress.tested_styles.has(ChapterProgress.style) and ChapterProgress.skills.has(RULES.FIRST[ChapterProgress.style]): _option("Continuar com "+RULES.STYLES[ChapterProgress.style].name,confirm_style)
 	options_box.get_child(0).grab_focus()
 
 func choose_style(style: String) -> void:
 	if paused or phase != "styles": return
 	for option in style_options:
 		if option.style == style:
+			practice_resume_index = event_index; practice_events = events.duplicate(true)
 			ChapterProgress.style = style; pending_style = style
 			_insert(option.events+[{"type":"battle","mode":"style_test"}]); _clear_options(); phase = "dialogue"; advance(); return
 
 func _style_result() -> void:
 	phase = "styles_result"; _clear_options(); options_box.show(); view.panel.show(); view.next_button.hide()
 	view.speaker.text = "Fundamento · "+RULES.STYLES[ChapterProgress.style].name
-	view.body.text = "Prática concluída. Técnica e passivas aprendidas; as passivas ficam por equipar."
+	view.body.text = "Fundamento aprendido. Tens quatro vagas de passivas por pessoa; aprender não equipa. Escolhe uma passiva para ver o efeito e confirmar a preparação. As de Duarte só ocupam vagas dele."
+	view.status.text = "Ativas: %d/4 tuas · %d/4 de Duarte"%[ChapterProgress.equipped_passives.size(),ChapterProgress.duarte_equipped_passives.size()]
+	_option("Preparar passivas · escolher as ativas",func(): _menu("Passivas"))
 	_option("Experimentar outro manejo",func():
 		if not paused: _show_styles(style_options))
-	_option("Escolher este manejo e continuar",confirm_style)
-	_option("Preparar passivas",func(): _menu("Passivas"))
-	view.panel.offset_top = -350
+	_option("Comparar três técnicas em prática livre",_free_practice_menu)
+	_option("Escolher este manejo e continuar"+(" sem passivas ativas" if ChapterProgress.equipped_passives.is_empty() else ""),confirm_style)
+	options_box.get_child(0).grab_focus()
+
+func _free_practice_menu() -> void:
+	if paused: return
+	_clear_options(); options_box.show(); phase = "styles"
+	view.body.text = "Prática livre com armas emprestadas: básico e três técnicas. Não concede aprendizado, itens ou aprovação. R / Select regressa à escolha de armas."
+	for style in RULES.STYLES:
+		_option(RULES.STYLES[style].name+" · "+RULES.PRACTICE_TIPS[style],func():
+			ChapterProgress.style = style
+			practice_resume_index = event_index; practice_events = events.duplicate(true)
+			_begin_battle("practice"))
+	_option("Voltar às aulas de Tomé",func(): _show_styles(style_options))
 	options_box.get_child(0).grab_focus()
 
 func confirm_style() -> void:
 	if paused or phase not in ["styles","styles_result"]: return
+	if not ChapterProgress.skills.has(RULES.FIRST[ChapterProgress.style]) and not (ChapterProgress.style=="PU" and ChapterProgress.flags.get("initial_weapon_received",false)):
+		view.status.text = "Conclui a aula deste manejo para aprender o fundamento antes da escolha inicial. A prática livre não concede aprendizado."
+		return
 	var item: String = {"ES":"PT-W01","LA":"PT-W02","MC":"PT-W03","FO":"PT-W04","PU":"PT-W05"}[ChapterProgress.style]
 	if not ChapterProgress.flags.get("initial_weapon_received",false):
 		ChapterProgress.inventory[item] = int(ChapterProgress.inventory.get(item,0))+1
@@ -430,24 +605,39 @@ func restart_block() -> void:
 
 func _stage(action: String) -> void:
 	match action:
+		"delivery_return":
+			routes.waiting_stage = true; routes.begin("stage",scene_index,"delivery_return")
+			await routes.stage_arrived; routes.waiting_stage = false
 		"child_arrives": actors["Criança"].show()
-		"green_sight": world.player.presentation.eye_glow = true; props.green_sight = true; ChapterProgress.flags.green_sight = true; await get_tree().create_timer(0.7,false).timeout
-		"treatment": props.green_sight = false; ChapterProgress.flags.patient_stable = true; actors["Trabalhador ferido"].injured = true
+		"green_sight":
+			ChapterProgress.flags.green_sight = true
+			await staging.perceive_injury()
+		"treatment":
+			props.green_sight = false; actors["Trabalhador ferido"].injured = true
+			await staging.ordinary_treatment(); ChapterProgress.flags.patient_stable = true
 		"leonor_arrives": actors["Leonor"].show(); world.player.presentation.eye_glow = false
-		"patient_departure": actors["Trabalhador ferido"].hide(); ChapterProgress.flags.patient_helped = true
-		"clean_cloth": ChapterProgress.flags.clean_cloth = true
-		"morning": view.caption_label.text = "Portugal · Manhã\n"+blocks[scene_index].title
+		"patient_departure":
+			await staging.leave_with_family(); ChapterProgress.flags.patient_helped = true
+		"clean_cloth":
+			ChapterProgress.flags.clean_cloth = true
+			await staging.clean_cloth()
+		"morning": view.caption_label.text = "Portugal · Manhã seguinte\n"+blocks[scene_index].title
 		"afternoon": view.caption_label.text = "Portugal · Fim da tarde\n"+blocks[scene_index].title
-		"two_cups","cup_in_reach":
-			if world.has_node("ActorsAndProps/Bench/Cups"): world.get_node("ActorsAndProps/Bench/Cups").show()
+		"sit_bench":
+			_lock_player(true); view.panel.hide()
+			var origin: Vector2 = world.player.position
+			world.player.presentation.walking = true; world.player.presentation.facing = 2
+			var sitting := create_tween()
+			sitting.tween_method(func(weight: float):
+				world.player.position = origin.lerp(Vector2(23,367),weight)
+				world.player.presentation.frame_time = weight*5,0.0,1.0,maxf(0.3,origin.distance_to(Vector2(23,367))/70))
+			await sitting.finished; world.player.presentation.walking = false
+			world.player.presentation.posture = "seated"; world.player.presentation.facing = 3
+		"two_cups","cup_in_reach": await staging.cups_on_bench(action=="cup_in_reach")
 		"master_demonstration":
-			await _move_actor("Mestre",actors["Combatente"].position+Vector2(-20,0),0.5)
-			actors["Combatente"].posture = "seated"
-			actors["Combatente"].carries_training_tool = false
+			await staging.master_demonstration()
 		"leonor_demonstration":
-			await _move_actor("Leonor",actors["Mestre"].position+Vector2(25,0),0.35)
-			actors["Mestre"].posture = "seated"; actors["Leonor"].posture = "standing"
-			actors["Mestre"].carries_training_tool = false
+			await staging.leonor_demonstration()
 		"fallen","cannot_stand": world.player.presentation.posture = "fallen"
 		"leonor_leaves":
 			await _move_actor("Leonor",Vector2(330,270),1.2); actors["Leonor"].hide(); ChapterProgress.flags.leonor_departed = true
@@ -459,45 +649,60 @@ func _stage(action: String) -> void:
 		"tome_assistance":
 			_add_actor("Tomé",Vector2(-230,390))
 			await _move_actor("Tomé",world.player.position+Vector2(-25,25),0.8)
+			await staging.assisted_return()
 			ChapterProgress.flags.assisted_return = true
 		"treated_in_bed": ChapterProgress.flags.treated = true
-		"time_passes": view.body.text = "O tempo passa. Primeiro caminhar, depois pequenas tarefas."; view.panel.show(); await get_tree().create_timer(1.0,false).timeout
+		"water_drunk": await staging.water_drunk()
+		"time_passes": await staging.recovery_time()
 		"recovered":
 			ChapterProgress.flags.injured = false; ChapterProgress.flags.recovered = true
 			ChapterProgress.vitals = {"hp":100,"qi":8,"posture":100}
-		"return_courtyard": _load_map("courtyard")
+		"return_courtyard":
+			routes.waiting_stage = true; routes.begin("stage",scene_index,"return_courtyard")
+			await routes.stage_arrived; routes.waiting_stage = false
 		"give_bowl": actors["Tomé"].carries_bowl = true
 		"packed": ChapterProgress.flags.packed = true; props.packed = true
 		"ship_departs":
 			ChapterProgress.flags.embarked = true; view.panel.hide(); view.status.text = "A Botafogo parte."
+			view.hint.text = "Esc / Start · pausar"
 			var camera := Camera2D.new(); camera.name = "DepartureCamera"
-			camera.position = world.player.camera.global_position; camera.zoom = world.player.camera.zoom; camera.offset = world.player.camera.offset
-			world.player.camera.enabled = false; add_child(camera); camera.make_current()
-			var tween = world.create_tween(); tween.tween_property(world,"position",Vector2(80,-35),2.0); await tween.finished; view.panel.show()
+			var previous: Camera2D = get_viewport().get_camera_2d()
+			camera.position = previous.global_position; camera.zoom = previous.zoom; camera.offset = previous.offset
+			staging.camera.enabled = false; world.player.camera.enabled = false
+			add_child(camera); camera.make_current()
+			staging.mark("departure_cast_off"); staging.sound("creak",-22,1.0,true)
+			var tween = world.create_tween().set_parallel(true)
+			tween.tween_property(world,"position",Vector2(145,85),3.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+			tween.tween_property(world.get_node("ConvesDaBotafogo"),"departure_progress",1.0,3.5)
+			staging.sound("sail_flap",-25,0.9,true)
+			await tween.finished; staging.mark("departure_underway"); view.panel.show()
 
 func _move_actor(name: String, destination: Vector2, seconds: float) -> void:
 	actors[name].facing = 3 if destination.x > actors[name].position.x else 1
 	var tween = world.create_tween(); tween.tween_property(actors[name],"position",destination,seconds); await tween.finished
 
 func _process(_delta: float) -> void:
-	if harbor != null: harbor.update()
-	if is_instance_valid(world) and world.has_meta("living_quay"):
+	if routes!=null and routes.active: routes.update(_delta)
+	elif harbor != null: harbor.update()
+	if is_instance_valid(world):
 		for name in actors:
 			var label: Label = actors[name].get_node("NameLabel")
-			label.visible = phase == "dialogue" and current_event.get("speaker","") == name
+			label.visible = phase == "dialogue" and not busy and current_event.get("speaker","") == name
 	if phase == "task" and not paused and props != null:
 		props.queue_redraw()
 
 func _menu(initial: String = "Personagem") -> void:
-	if phase == "battle" or busy: return
+	if phase == "battle": return
 	if menu_open:
 		player_menu.close(); menu_open = false; paused = false; get_tree().paused = false
 		view.show()
 		if phase == "styles": _show_styles(style_options)
 		elif phase == "styles_result": _style_result()
+		elif phase=="roaming": routes.resume()
 		if is_instance_valid(menu_focus) and menu_focus.is_visible_in_tree(): menu_focus.grab_focus()
 		return
 	menu_focus = get_viewport().gui_get_focus_owner()
+	if routes.active: routes.save()
 	view.hide()
 	menu_open = true; paused = true; get_tree().paused = true
 	player_menu.open(initial)
@@ -508,38 +713,48 @@ func load_checkpoint() -> void:
 		player_menu.notice.text = "Não foi possível carregar este capítulo."; return
 	get_tree().paused = false; paused = false; menu_open = false
 	player_menu.close()
-	_load_block(ChapterProgress.checkpoint)
+	_load_block(ChapterProgress.checkpoint,false,true)
 
 func _input(event: InputEvent) -> void:
 	# Task input belongs to the world, before the completed combat viewport can
 	# consume ui_accept (E/A is also registered as dialogue confirmation).
-	if paused or phase not in ["task","exploration"]: return
-	if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept"):
+	if paused or phase not in ["task","exploration","roaming"]: return
+	if event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()
 		if battle_host.ending.running(): return
 		if phase == "task": interact_task()
+		elif phase=="roaming": routes.interact()
 		else: harbor.interact()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if view == null or phase == "battle": return
+	if phase == "local_dialogue" and not paused and not busy and (event.is_action_pressed("ui_cancel") or (event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B)):
+		get_viewport().set_input_as_handled(); harbor.city.close(); return
 	if phase == "boarding" and not paused and (event.is_action_pressed("ui_cancel") or (event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B)):
 		get_viewport().set_input_as_handled(); harbor.resume(); return
+	if phase=="rest_confirm" and not paused and (event.is_action_pressed("ui_cancel") or (event is InputEventJoypadButton and event.pressed and event.button_index==JOY_BUTTON_B)):
+		get_viewport().set_input_as_handled(); routes.resume(); return
 	if event.is_action_pressed("ui_cancel") or (event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_START): get_viewport().set_input_as_handled(); _menu(); return
 	if paused: return
-	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode in [KEY_I,KEY_C,KEY_K,KEY_P]:
+	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode in [KEY_I,KEY_C,KEY_K,KEY_P,KEY_J]:
 		get_viewport().set_input_as_handled()
-		_menu({KEY_I:"Inventário",KEY_C:"Personagem",KEY_K:"Técnicas",KEY_P:"Passivas"}[event.physical_keycode]); return
+		_menu({KEY_I:"Inventário",KEY_C:"Personagem",KEY_K:"Técnicas",KEY_P:"Passivas",KEY_J:"Pedidos"}[event.physical_keycode]); return
 	if event is InputEventKey and event.pressed and event.physical_keycode == KEY_F5:
+		if routes.active: routes.save()
 		view.status.text = "Capítulo guardado." if ChapterProgress.save_to() == OK else ChapterProgress.last_error
 		get_viewport().set_input_as_handled(); return
-	if phase == "exploration":
-		if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept"):
+	if phase=="roaming":
+		if event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:
+			get_viewport().set_input_as_handled()
+			world.walk_to(world.get_global_transform_with_canvas().affine_inverse()*event.position)
+	elif phase == "exploration":
+		if event.is_action_pressed("interact"):
 			get_viewport().set_input_as_handled(); harbor.interact()
 		elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			get_viewport().set_input_as_handled()
 			world.walk_to(world.get_global_transform_with_canvas().affine_inverse()*event.position)
 	elif phase == "task":
-		if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept"): interact_task(); get_viewport().set_input_as_handled()
+		if event.is_action_pressed("interact"): interact_task(); get_viewport().set_input_as_handled()
 		elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			get_viewport().set_input_as_handled()
 			world.walk_to(world.get_global_transform_with_canvas().affine_inverse()*event.position)
@@ -553,7 +768,6 @@ func _show_equipment() -> void:
 	phase = "equipment"; _clear_options(); options_box.show(); view.panel.show(); view.next_button.hide()
 	view.speaker.text = "Passivas · %s %d/4 · Duarte %d/4" % [CampaignProfile.hero_name,ChapterProgress.equipped_passives.size(),ChapterProgress.duarte_equipped_passives.size()]
 	view.body.text = "Escolhe até quatro passivas aprendidas. Equipar não recupera vida nem energia."
-	view.panel.offset_top = -610
 	var catalog = JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/passives.json"))
 	for row in catalog.passives:
 		if ChapterProgress.passives.has(row.id):

@@ -35,12 +35,21 @@ var walking := false
 var frame_time := 0.0
 var facing := 0
 var seat_support := false
+var seat_lift := 0.0
+var empty_bowl := false
+var tool_angle := 0.45:
+	set(value): tool_angle = value; queue_redraw()
+var cup_lift := 0.0:
+	set(value): cup_lift = value; queue_redraw()
 
 func _process(_delta: float) -> void:
 	if walking:
 		queue_redraw()
 
 func _draw() -> void:
+	if identity=="hero" and npc_id.is_empty() and injured and posture=="standing":
+		preload("res://scripts/combat/portugal_actor_art.gd").draw_actor(self,"hero",Vector2.ZERO,facing!=3,"hurt",0,"PU",true,0,true,Vector2.RIGHT,1.4)
+		return
 	if identity in ["hero", "hero_child"] and npc_id.is_empty() and posture=="fallen":
 		# Reuse the actual defeat silhouette, rather than shrinking a standing walker.
 		preload("res://scripts/combat/portugal_actor_art.gd").draw_actor(self,"hero",Vector2.ZERO,facing!=3,"kneel",0,"PU",true,0,false,Vector2.RIGHT,1.1)
@@ -57,19 +66,16 @@ func _draw() -> void:
 		child = height<60
 	if posture != "standing" and not NPC_ART.data().has(visual_id):
 		height *= 0.75
-	draw_set_transform(Vector2.ZERO,0,Vector2(1,0.4))
-	draw_circle(Vector2.ZERO,17 if child else 21,Color(0.05,0.07,0.06,0.3))
-	draw_set_transform(Vector2.ZERO)
+	preload("res://scripts/chapter/contact_shadow.gd").draw_contact(self,Vector2.ZERO,Vector2(17 if child else 21,6 if child else 8))
 	if seat_support and posture == "seated":
-		for x in [-11,11]: draw_line(Vector2(x,-23),Vector2(x,0),Color("624a32"),4,true)
-		draw_colored_polygon(PackedVector2Array([Vector2(-17,-24),Vector2(0,-32),Vector2(17,-24),Vector2(0,-16)]),Color("9c7950"))
+		preload("res://scripts/chapter/dining_art.gd").draw(self,"stool_east" if facing == 3 else "stool_west",Vector2(-5 if facing == 3 else 5,3),30 if child else 38,seat_lift)
 	var cloth = Color("6f9996") if child else Color("8b795b")
 	if identity in ["hero", "hero_child"]: cloth = Color("6f9996")
 	if identity == "duarte": cloth = Color("866654")
 	if identity in ["leonor", "leonor_adult"]:
 		cloth = Color("a288b6")
 	var eye_offset = Vector2(4 if facing == 3 else -4,-height+7)
-	if NPC_ART.draw_actor(self,visual_id,facing,walking,frame_time,posture):
+	if NPC_ART.draw_actor(self,visual_id,facing,walking,frame_time,posture,1.0,Vector2(0,-seat_lift if posture == "seated" else 0.0),eye_glow):
 		pass
 	elif identity in ["hero", "hero_child"]:
 		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
@@ -79,6 +85,7 @@ func _draw() -> void:
 		var r: Array = info.frames[index]; var pivot: Array = info.pivots[index]
 		var factor: float = height/295.0
 		draw_texture_rect_region(art.artwork("hero"),Rect2(Vector2(-pivot[0],-pivot[1])*factor,Vector2(r[2],r[3])*factor),Rect2(r[0],r[1],r[2],r[3]))
+		preload("res://scripts/chapter/hero_eyes.gd").draw(self,"walk",index,r,pivot,factor,eye_glow)
 	else:
 		draw_colored_polygon(PackedVector2Array([Vector2(-12,-height+14),Vector2(11,-height+14),Vector2(17,-8),Vector2(-16,-8)]),cloth)
 		var stride = sin(frame_time*TAU/3.0)*4.0 if walking else 0.0
@@ -89,18 +96,13 @@ func _draw() -> void:
 		if facing != 2: draw_circle(eye_offset,1.3,Color("453a2b"))
 	if carries_training_tool:
 		var side := 1.0 if facing == 3 else -1.0
-		draw_line(Vector2(5*side,-height*0.45),Vector2(30*side,-height*0.3),Color("b6a177"),4)
-	if injured:
-		draw_line(Vector2(-12,-height*0.35),Vector2(12,-height*0.28),Color("e5ddc7"),7)
-	if eye_glow:
-		draw_circle(eye_offset,3,Color("78c5af"))
+		preload("res://scripts/chapter/staged_instrument.gd").draw_tool(self,Vector2(5*side,-height*0.45),tool_angle,30 if child else 43,side)
 	if carries_cup:
-		draw_rect(Rect2(-5,-height*0.4,10,9),Color("c1b699"))
+		preload("res://scripts/chapter/dining_art.gd").draw(self,"cup",Vector2(4 if facing == 3 else -4,-height*0.38-seat_lift-cup_lift),11)
 	if carries_bowl:
-		draw_set_transform(Vector2(0,-height*0.4),0,Vector2(1,0.48))
-		draw_circle(Vector2.ZERO,10,Color("c1b699"))
-		draw_arc(Vector2.ZERO,8,0,TAU,24,Color("6d634d"),2)
-		draw_set_transform(Vector2.ZERO)
+		var hand := Vector2(6 if facing == 3 else -6,-height*(0.16 if posture == "crouched" else 0.33))
+		if empty_bowl: preload("res://scripts/chapter/story_prop_art.gd").draw_item(self,"PT-Q02",hand,19)
+		else: preload("res://scripts/chapter/dining_art.gd").draw(self,"bowl",hand,19)
 
 
 

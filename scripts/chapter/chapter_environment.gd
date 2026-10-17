@@ -31,6 +31,10 @@ void fragment(){
 	dressing.set_script(load("res://scripts/chapter/chapter_environment.gd"))
 	dressing.name = "PracaDeLisboa"; dressing.z_index = 1
 	world.add_child(dressing)
+	var ground_details := Node2D.new()
+	ground_details.set_script(preload("res://scripts/chapter/square_ground_details.gd"))
+	ground_details.name = "DesgasteLocal"; ground_details.z_index = 1
+	world.add_child(ground_details)
 	var frames: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(ART+"frames.json"))
 	for spec in [
 		["Abrigo",0,Vector2(-365,35),330.0],
@@ -80,16 +84,29 @@ func _draw() -> void:
 		draw_line(at,at+Vector2(32,-16 if i<0 else 16),Color("8e8267"),2,true)
 	# Stone enclosure makes the finite walking area legible against the city beyond.
 	var corners := PackedVector2Array([Vector2(0,-32),Vector2(640,288),Vector2(0,608),Vector2(-640,288)])
-	var masonry := CanvasTexture.new()
-	masonry.diffuse_texture = preload("res://assets/art/living-quay/mar-de-ferro-bank-masonry-v1.png")
-	masonry.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	for i in 4:
 		var a := corners[i]; var b := corners[(i+1)%4]
-		var face := PackedVector2Array([a,b,b-Vector2(0,22),a-Vector2(0,22)])
-		var uv := PackedVector2Array([Vector2(0,0.4),Vector2(a.distance_to(b)/145.0,0.4),Vector2(a.distance_to(b)/145.0,0.1),Vector2(0,0.1)])
-		draw_polygon(face,PackedColorArray([Color("c3b08b")]),uv,masonry)
-		draw_line(a-Vector2(0,22),b-Vector2(0,22),Color("ccbd98"),4,true)
 		var count := ceili(a.distance_to(b)/34)
-		for joint in count:
-			var at := a.lerp(b,float(joint)/count)
-			draw_line(at,at-Vector2(0,21),Color("82775e"),1,true)
+		for row in 2:
+			for joint in count+1:
+				var start := clampf((joint-row*0.5)/count,0,1)
+				var end := clampf((joint+1-row*0.5)/count,0,1)
+				if end <= start: continue
+				if get_parent().has_meta("open_lisbon"):
+					if i==3 and start>0.33 and end<0.61: continue
+					if (i==0 and start>0.80) or (i==1 and end<0.20): continue
+				var p := a.lerp(b,start)-Vector2(0,row*11)
+				var q := a.lerp(b,end)-Vector2(0,row*11)
+				var color := Color("ac9c7c").lightened(fposmod(joint*0.127+row*0.21+i*0.1,0.16))
+				draw_colored_polygon(PackedVector2Array([p,q,q-Vector2(0,10),p-Vector2(0,10)]),color)
+				draw_line(q,q-Vector2(0,10),Color(0.35,0.32,0.23,0.42),0.8,true)
+			draw_line(a-Vector2(0,row*11),b-Vector2(0,row*11),Color(0.35,0.32,0.23,0.26),0.8,true)
+		var caps: Array = [[0.0,1.0]]
+		if get_parent().has_meta("open_lisbon"):
+			if i==3: caps = [[0.0,0.33],[0.61,1.0]]
+			elif i==0: caps = [[0.0,0.80]]
+			elif i==1: caps = [[0.20,1.0]]
+		for segment in caps:
+			var p := a.lerp(b,segment[0]); var q := a.lerp(b,segment[1])
+			draw_colored_polygon(PackedVector2Array([p-Vector2(0,21),q-Vector2(0,21),q-Vector2(0,25),p-Vector2(0,25)]),Color("d1c09a"))
+			draw_line(p-Vector2(0,25),q-Vector2(0,25),Color("e0ceaa"),1,true)

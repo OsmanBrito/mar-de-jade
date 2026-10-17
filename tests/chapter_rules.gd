@@ -45,6 +45,24 @@ func run() -> void:
 		else:
 			b.resolve_enemy(b.ai_plan(),{0:1}); b.next_turn()
 	check(b.units[0].hp == 0 and actions > 0 and b.units[2].hp > 0,"Power gap gives real playable defeat, not round script")
+	b.start_encounter("school","Inês","FO"); b.end_turn(0)
+	b.current_id = 2
+	plan = {"power":40,"posture":3,"approach_bonus":8,"kind":"attack","path":[Vector2i(4,3)]}
+	var expected_attack := plan.duplicate(true); expected_attack.power = 36
+	var expected_damage: int = b.defense_preview(b.current_id,0,expected_attack,0).damage
+	b.approach_weakened = true; b.weakened_target = 2
+	check(b.defense_preview(b.current_id,0,plan,0).damage==expected_damage,"Disparo de Medida halves only the explicit approach bonus")
+	plan.erase("approach_bonus"); b.approach_weakened = false
+	expected_damage = b.defense_preview(b.current_id,0,plan,0).damage
+	b.approach_weakened = true
+	check(b.defense_preview(b.current_id,0,plan,0).damage==expected_damage,"Walking without an approach bonus does not reduce the entire attack")
+	b.start_encounter("practice","Inês","FO"); b.current_id = 0; b.obstacles.clear()
+	b.perform(1,b.units[2].cell,1)
+	check(b.weakened_target==2,"The weakening belongs to the enemy actually hit")
+	plan.approach_bonus = 8; b.approach_weakened = false
+	expected_damage = b.defense_preview(4,0,plan,0).damage
+	b.approach_weakened = true
+	check(b.defense_preview(4,0,plan,0).damage==expected_damage,"Hitting the dummy does not weaken the instructor's unrelated approach")
 	print("CHAPTER_RULES_RESULT ",JSON.stringify({"checks":count,"failures":failures}))
 	quit(0 if failures.is_empty() else 1)
 

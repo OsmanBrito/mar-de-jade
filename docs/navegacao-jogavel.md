@@ -1,12 +1,12 @@
 # Lisboa–Madeira — navegação jogável
 
-Primeira implementação da entrevista de 15/10/2026, em Godot 4.5.1. Abrir o projeto com F5 ou `Jogar.cmd` e escolher **Testar navegação · Lisboa → Madeira**. O botão funciona sem escolher nome e sem repetir a campanha. Para F6, abrir `scenes/navigation/voyage.tscn`.
+Navegação Lisboa–Madeira em Godot 4.5.1, iniciada na entrevista de 15/10/2026. **Acesso atual:** `Jogar.cmd` → campanha → botão **Navegar para a Madeira** no fim de Portugal; ou **Continuar viagem guardada** na entrada. O teste isolado pertence ao editor: abrir `scenes/navigation/voyage.tscn` e usar F6. Os antigos botões de teste foram retirados do menu do jogador.
 
 Revisão atual: [controle pelo leme, três níveis de vela e câmera com horizonte](navegacao-camera-e-leme.md). O [refinamento anterior](navegacao-refinamento.md) acrescentou pistas naturais, aproximação a avistamentos, retorno ao rumo e ambiência original.
 
-Também disponível: [seis músicas, ondas e áudio do casco](navegacao-atmosfera.md), com volumes em **Esc → Som e música**. O [refinamento do mar](navegacao-mar.md) acrescenta reflexos, ondulação em quatro escalas e rastro contínuo com dispersão. [Prévia atual com áudio](navigation-ocean.mp4).
+Também disponível: [seis músicas, ondas e áudio do casco](navegacao-atmosfera.md), com volumes em **Esc → Som e música**. [Prévia com áudio](navigation-atmosphere.mp4).
 
-A abordagem [usa a arte ilustrada de Mar de Ferro e as regras de Portugal](abordagem-combate-portugal.md), com técnicas, passivas, atributos, timing e escala do combate em terra. Dois conveses ficam visíveis; a luta acontece apenas no navio inimigo, com a Botafogo ao lado. **Testar abordagem · combate no convés** abre a luta diretamente pelo menu inicial, sem alterar os saves. [Gravação completa com áudio](boarding-mar-de-ferro.mp4).
+A abordagem [usa a arte ilustrada de Mar de Ferro e as regras de Portugal](abordagem-combate-portugal.md), com técnicas, passivas, atributos, timing e escala do combate em terra. Dois conveses ficam visíveis; a luta acontece apenas no navio inimigo, com a Botafogo ao lado. Na campanha, a abordagem é uma opção após incapacitar a embarcação hostil. A [gravação anterior com áudio](boarding-mar-de-ferro.mp4) conserva a apresentação daquela entrega.
 
 ## Percurso e conteúdo
 
@@ -69,7 +69,7 @@ O piloto avisa ao reconhecer mar pesado à frente, antes de entrar na zona de ri
 - O perfil de nome e `capitulo-01.json` continuam separados.
 - Autosave em interações e portos quando a situação for segura; F5 permite salvar manualmente nas mesmas condições. Salvamento inseguro é recusado para preservar uma recuperação viável.
 - Checkpoints conservam posição, recursos, visitas, descobertas, melhorias, encontros resolvidos e posições dos navios. Há arquivo anterior `.bak`; dados inválidos são rejeitados antes de alterar o estado.
-- O menu inicial oferece continuar cada viagem guardada. **Testar navegação** inicia uma nova tentativa no arquivo do teste.
+- O menu inicial oferece continuar a viagem da campanha. F6 na cena de navegação usa o arquivo separado do teste.
 
 ## Validação
 

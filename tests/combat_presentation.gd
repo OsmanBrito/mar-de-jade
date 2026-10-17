@@ -16,7 +16,7 @@ func press(key: Key) -> void:
 	var event := InputEventKey.new(); event.keycode = key; event.physical_keycode = key; event.pressed = true; root.push_input(event)
 	event = event.duplicate(); event.pressed = false; root.push_input(event)
 func click(point: Vector2) -> void:
-	var screen_point: Vector2 = game.container.position+point*game.container.scale
+	var screen_point: Vector2 = preload("res://scripts/combat/battle_stage.gd").ui_to_window(game.host,point)
 	var motion := InputEventMouseMotion.new(); motion.position = screen_point; motion.global_position = screen_point; root.push_input(motion,true)
 	var event := InputEventMouseButton.new(); event.position = screen_point; event.global_position = screen_point; event.button_index = MOUSE_BUTTON_LEFT; event.pressed = true; root.push_input(event,true)
 	event = event.duplicate(); event.pressed = false; root.push_input(event,true)
@@ -30,7 +30,7 @@ func run() -> void:
 	var command = game.host.buttons.filter(func(b): return b.id=="t_skill_0")[0]
 	click(command.rect.get_center()); await frames(2)
 	check(v.phase=="aim","Mouse selects the actual illustrated action button")
-	click(v.screen(model.units[2].cell)); await frames(2)
+	click(game.host.tactical.screen(model.units[2].cell)); await frames(2)
 	check(v.confirmation,"Mouse selects a target using the new board projection")
 	press(KEY_ENTER); await frames(2)
 	check(v.phase=="timing_attack","Keyboard confirms the real mouse-selected attack")

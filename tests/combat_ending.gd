@@ -78,7 +78,8 @@ func run() -> void:
 			if game.phase=="dialogue": game.advance()
 			elif game.phase=="task": game.world.player.position = game.props.marker; game.interact_task()
 			elif game.phase=="styles": game.choose_style("ES")
-		await process_frame
+		if game.busy: await physics_frame
+		else: await process_frame
 	host = game.battle_host; host.set_process(false); v = host.tactical
 	check(host.combat.mode=="style_test","Canonical maneuver trial opens before school")
 	if host.combat.units.size()<3:

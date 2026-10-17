@@ -1,24 +1,42 @@
 # Mar de Jade — capítulo 1 jogável
 
-Projeto editável em Godot 4.5.1 para Windows. O capítulo **A promessa impossível**, em Portugal, está ligado do nome do protagonista até ao embarque na Botafogo. Figuras, encenação e convés mantêm a apresentação provisória para validação; não foram criados executáveis ou exportações.
+Projeto editável em Godot 4.5.1 para Windows. O capítulo **A promessa impossível**, em Portugal, está ligado do nome do protagonista até ao embarque na Botafogo e à navegação para a Madeira.
 
-O projeto fica diretamente na raiz deste repositório: abrir `project.godot`, `Jogar.cmd` ou `Abrir-no-Godot.cmd`. Os atalhos procuram o Godot em `GODOT_EXE`, no PATH ou na pasta padrão de Downloads. [Estrutura e validação local](docs/repositorio.md).
+**Revisão do Arco 1 implementada:** três pedidos de Lisboa, entrega anterior ao treino, socorro coordenado, intervalos de exploração, retorno assistido e recuperação. O pátio permite sair, trocar manejo e comparar o fundamento com dois exercícios extras. Há histórico de conversas, objetivos, preferências compartilhadas e recursos conservados entre abordagens. [Registro dos 43 pontos, limites e 851 verificações](docs/reviews/arco-01-fechamento-da-revisao.md). Ritmo, emoção e mixagem ainda requerem avaliação humana; os olhos ficaram fora deste fechamento por orientação do usuário.
+
+**Pedidos de Lisboa:** quatro moradores conversáveis oferecem **A roda presa**, **A conta das entregas** e **Uma sacola preparada**. Recompensas únicas, respostas posteriores e consequências são conservadas no save. **J / menu → Pedidos** consulta o compromisso atual. [Primeira entrega e funcionamento do carro](docs/cais-pedidos.md).
+
+**Demonstração, recuperação e partida:** a luta pública mostra ataques, defesa e dois desarmes; Tomé acompanha a água e a caminhada de recuperação. A Botafogo tem cena própria, tarefa da amarra em duas etapas e afastamento do cais. Esc/Start pausa a encenação. [Capturas, pontos atendidos e validação](docs/encenacao-praca-recuperacao-embarque.md).
+
+O projeto principal fica em `C:/Users/gamer/Documents/GitHub/mar-de-jade`. Os atalhos `Jogar.cmd` e `Abrir-no-Godot.cmd` desta pasta usam `tools/start-godot.ps1`. O caminho antigo em `Documents/ChatGPT/Mar-de-Jade` serve apenas de redirecionamento, sem outra cópia do jogo. [Estrutura do repositório](docs/repositorio.md).
+
+Para jogar, executa **Jogar.cmd**, ou abre `project.godot` no Godot e usa **F5**. A entrada oferece uma nova campanha e as continuações guardadas. Os atalhos internos de teste foram retirados da interface do jogador. [Revisão para o primeiro teste](docs/primeiro-teste.md).
+
+**Revisão de Portugal, fase 1 — abrigo:** continuidade das falas corrigida, releitura, gestos separados, caminhada ao redor da mesa e saída gradual para a praça. [Prévia de 30 segundos e validação](docs/revisao-portugal-abrigo.md).
+
+**Mapas de combate separados:** cada local de Portugal seleciona seu próprio cenário de batalha, seguindo a estrutura atual do Mar de Ferro. Piso contínuo, personagens ilustrados e objetos com proporções preservadas; a exploração não é modificada pela luta. [Estrutura e validação](docs/combate-no-mapa.md).
+
+**Resolução dos combates:** a imagem e as fontes agora acompanham os pixels reais da janela, eliminando a ampliação intermediária que borrava a apresentação. Correção compartilhada pela infância, campanha e abordagem. [Capturas e validação em cinco resoluções](docs/combate-resolucao.md).
+
+**Música:** o capítulo tem sete temas para abrigo, Lisboa, cais, promessa, recuperação, treinos e duelo, com transições suaves e volume próprio em Sistema. A playlist da navegação permanece independente. [Faixas e validação](docs/musicas-capitulo.md).
 
 **Revisão dos mapas até ao embarque:** herói infantil com arte e poses próprias, escala adulta coerente com o elenco, praça e pátio integrados à cidade, abrigo com materiais comuns e convés em formato de navio. A interação E/A após o treino foi corrigida e o percurso completo agora é testado com caminhada e física reais. [Capturas, alterações e validação](docs/campaign-map-refinement.md).
 
 **Acabamento do abrigo e da praça:** mobiliário ilustrado, banco à escala das crianças, sala com roupa/louça e tapete, conversas mais próximas e painel de diálogo compacto. [Capturas da segunda passagem](docs/abrigo-praca-acabamento.md).
 
-**Navegação Lisboa → Madeira:** no arranque, escolher **Testar navegação · Lisboa → Madeira**, sem precisar de escrever um nome ou repetir Portugal. O teste tem salvamento próprio; **Continuar teste de navegação** aparece quando houver uma viagem guardada. Também é possível abrir `scenes/navigation/voyage.tscn` com F6. No fim de Portugal, **Navegar para a Madeira** inicia a viagem da campanha. [Controles, conteúdo e validação](docs/navegacao-jogavel.md).
+**Mesa e paredes:** assentos e louça ilustrados, refeição no cais em escala adulta, reboco e janelas com profundidade, sombras de contato e desgaste localizado da praça. [Antes/depois e validação](docs/mesa-paredes-integracao.md).
 
-**Abordagem no convés:** escolher **Testar abordagem · combate no convés** no menu. A luta acontece no navio inimigo, com a Botafogo ao lado. NPCs, materiais e objetos usam a arte ilustrada de **Mar de Ferro**; técnicas, passivas, timing, controles e escala seguem Portugal. [Batalha completa com áudio — 26 segundos](docs/boarding-mar-de-ferro.mp4) · [Arte, regras e validação](docs/abordagem-combate-portugal.md).
+**Navegação Lisboa → Madeira:** no fim de Portugal, **Navegar para a Madeira** inicia a viagem da campanha. **Continuar viagem guardada** aparece na entrada quando existe uma viagem. O modo isolado continua disponível para QA abrindo `scenes/navigation/voyage.tscn` com F6. [Controles, conteúdo e validação](docs/navegacao-jogavel.md).
+
+**Abordagem no convés:** acontece nos encontros durante a navegação, no navio inimigo, com a Botafogo ao lado. Técnicas, passivas, timing, controles e escala seguem Portugal. [Arte, regras e validação](docs/abordagem-combate-portugal.md).
 
 A navegação agora tem [câmera com horizonte e controle pelo leme](docs/navegacao-camera-e-leme.md). **W aumenta a vela; S reduz**: parado, manobra, viagem e plena. Soltar W mantém o andamento; **A/D** viram em relação à proa. **Espaço / RB** recolhe as velas para parar. Aves e correntes indicam descobertas, a aproximação abranda ao chegar e **V / LB** retoma o rumo após o desvio.
 
-As **seis músicas fornecidas pelo jogador**, ondas em relevo, balanço, espuma e sons do casco estão integrados. **Esc → Som e música** ajusta trilha, ambiente e efeitos separadamente. O mar recebeu ondulação em quatro escalas, reflexos do céu e do sol, espuma junto ao casco e um rastro contínuo que acompanha as curvas e se dispersa. [Prévia atual de 24 segundos com áudio](docs/navigation-ocean.mp4) · [Refinamento do mar e validação](docs/navegacao-mar.md) · [Trilha e ambiente](docs/navegacao-atmosfera.md).
+As **seis músicas fornecidas pelo jogador**, ondas em relevo, balanço, espuma e sons do casco estão integrados. **Esc → Som e música** ajusta trilha, ambiente e efeitos separadamente. A revisão de 16/10 também está nesta cópia e na saída de Portugal: quatro ondas, reflexos e rastro contínuo que acompanha as curvas e se dispersa. [Captura da campanha e validação](docs/navegacao-mar.md) · [Prévia de 24 segundos com áudio](docs/navigation-ocean.mp4) · [Trilha e ambiente](docs/navegacao-atmosfera.md).
 
 ## Jogar
 
-**Combates de Portugal:** abrir `scenes/art/combat_study.tscn` e usar **F6**. **F1** escolhe encontro e manejo; **R** repete. Usa o mesmo combate da campanha, com arena ilustrada, 54 poses de personagens, ícones e sons. Não grava progresso. Vídeos: [encerramento e retorno à história, 11 segundos](docs/combate-encerramento-v4.mp4), [leitura do campo, 13 segundos](docs/combate-campo-v3.mp4), [cinco manejos e aparo, 28 segundos](docs/combate-manejos-v2.mp4). [Acabamento, origem e validação](docs/combat-portugal-finish.md).
+**Combates de Portugal:** abrir `scenes/art/combat_study.tscn` e usar **F6**. **F1** escolhe encontro, manejo e mapa de combate; **R** repete. Usa o mesmo combate da campanha, com cenários separados por local, personagens ilustrados, ícones e sons. Não grava progresso. [Estrutura e validação](docs/combate-no-mapa.md). Os vídeos anteriores conservam a apresentação antiga para comparação.
 
 **Elenco de Lisboa:** abrir `scenes/art/lisbon_cast_gallery.tscn` e usar **F6**. São 14 identidades, 16 versões e 280 quadros, já ligados ao capítulo. Ver [personagens, poses e origem da arte](docs/narrativa/C01-elenco-lisboa.md).
 
@@ -53,13 +71,13 @@ Nome → abrigo/infância → praça/movimento → treino infantil → promessa 
 
 A derrota contra Leonor resulta do combate e da diferença de atributos, sem game over ou golpes impostos por uma sequência fixa. Ela não ataca o protagonista caído. O treino só regressa depois da recuperação. O capítulo termina como aprendiz sob Rodrigo, sem antecipar África ou novo encontro com Leonor.
 
-No pátio é possível experimentar espada, lança, machado, arma de fogo e desarmado antes da escolha inicial. Há uma técnica introdutória por manejo, oito passivas aprendíveis, preparação de até quatro passivas por personagem e um exercício de proteção com Duarte. Aprender não equipa automaticamente; as passivas de Duarte permanecem dele. A escolha inicial conserva a possibilidade de aprender outros manejos posteriormente.
+No pátio é possível experimentar espada, lança, machado, arma de fogo e desarmado antes da escolha inicial. Cada manejo tem um fundamento aprendível e dois exercícios extras exclusivos da demonstração, além do básico. R / Select interrompe o treino e permite trocar de arma sem conceder aprendizado de uma aula incompleta. Há oito passivas aprendíveis, preparação de até quatro passivas por personagem e um exercício de proteção com Duarte. Aprender não equipa automaticamente; as passivas de Duarte permanecem dele. A escolha inicial conserva a possibilidade de aprender outros manejos posteriormente.
 
 ## Guardar e rever
 
-O checkpoint `user://capitulo-01.json` conserva nome, cena/etapa, escolhas, manejo, aprendizado, passivas, bagagem e conclusão, além de moedas, equipamentos, recursos e estoque. O save versão 2 carrega saves da versão 1. Guarda ao início da cena e após alterações à mochila; carregar repete essa cena, não um turno incompleto. Há backup anterior `.bak`. O perfil de nome continua separado em `campanha-perfil.json`, assim como `viagem.json` do estudo antigo do cais.
+O checkpoint `user://capitulo-01.json` conserva nome, cena/etapa, escolhas, manejo, aprendizado, passivas, bagagem e conclusão, além de moedas, equipamentos, recursos e estoque. O save versão 3 carrega saves das versões 1 e 2 e conserva os pedidos locais. Guarda ao início da cena e após alterações à mochila; carregar repete essa cena, não um turno incompleto. Há backup anterior `.bak`. O perfil de nome continua separado em `campanha-perfil.json`, assim como `viagem.json` do estudo antigo do cais.
 
-[Menu, inventário e loja: funcionamento e validação](docs/menu-inventario-loja.md) · [Prévia real de 10 segundos](docs/menu-loja-portugal.mp4). A loja abre pelo menu nas pausas seguras em Lisboa. O serviço no cais dá 40 reais uma única vez; equipamentos e suprimentos têm preços iniciais para validação.
+[Menu, inventário e loja: funcionamento e validação](docs/menu-inventario-loja.md) · [Prévia real de 10 segundos](docs/menu-loja-portugal.mp4). A loja abre pelo menu nas pausas seguras em Lisboa. O serviço no cais dá 40 de ouro uma única vez; equipamentos e suprimentos têm preços iniciais para validação.
 
 Depois de preparar a sacola, há exploração livre do cais antes do embarque. Aproxima do comerciante e usa E / A para negociar; fechar a loja mantém a posição. Procura Duarte no pontão e confirma a partida quando estiveres pronto. Guardar/carregar nessa pausa retoma o cais com as compras conservadas. [Integração e testes](docs/comerciante-lisboa.md) · [Percurso real em vídeo](docs/comerciante-lisboa.mp4).
 
@@ -69,11 +87,11 @@ Para rever o restante capítulo diretamente: abrir `scenes/chapter_01/chapter_fl
 
 - Roteiro: `docs/narrativa/C01-portugal-aprovado.md`.
 - Falas e eventos do restante capítulo: `data/chapter_01/chapter_flow.json`; gerados por `tools/build_chapter_content.py` e comparados ao aprovado por `tools/validate_chapter_content.py`.
-- Direção e tarefas: `scripts/chapter/chapter_flow.gd`; posições provisórias em `data/chapter_01/staging.json`.
+- Direção e tarefas: `scripts/chapter/chapter_flow.gd`; encenação em `data/chapter_01/staging.json`.
 - Regras do recorte: `scripts/combat/campaign_rules.gd`, herdando o combate de Mar de Ferro. Os 23 módulos de referência continuam iguais à fonte, exceto os caminhos de importação; `tools/verify_combat_reference.ps1` verifica isso.
 - Persistência: `scripts/chapter/chapter_progress.gd`.
 - Testes reproduzíveis: `tests/chapter_full.gd`, `chapter_rules.gd`, `chapter_routes.gd`, `chapter_styles.gd`, `chapter_passives.gd` e os ensaios anteriores da infância.
 
 O percurso completo foi exercitado em headless e OpenGL, com verificação de cenas, tarefas, combate, estilos, escolhas, passivas e saves inválidos. As 250 falas dos 17 blocos restantes coincidem com o roteiro aprovado, incluindo alternativas. Capturas temporárias foram usadas para conferir a apresentação e removidas após a validação.
 
-O ritmo, o balanceamento e a meta histórica de 120 minutos ainda precisam de validação manual. Este recorte não transforma todo o catálogo amplo de técnicas/itens em sistemas definitivos: o pátio usa o conjunto introdutório indicado acima. Elenco de Lisboa e personagens de combate já têm arte ilustrada; a exploração, a encenação e o convés continuam sujeitos à revisão visual. O nome do mestre visitante continua em aberto, apresentado apenas como Mestre.
+A revisão ampliou conteúdo e ligações entre cenas; sua duração humana ainda não foi medida. A antiga meta de 120 minutos não descreve a experiência atual. Ritmo e balanceamento continuam sujeitos ao playtest. Este recorte não transforma todo o catálogo amplo de técnicas/itens em sistemas definitivos: os exercícios locais de demonstração são identificados separadamente das técnicas do roteiro. Elenco de Lisboa e personagens de combate já têm arte ilustrada; a exploração, a encenação e o convés continuam sujeitos à revisão visual. O nome do mestre visitante continua em aberto, apresentado apenas como Mestre.

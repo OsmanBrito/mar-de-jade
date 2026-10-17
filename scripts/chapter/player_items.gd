@@ -84,7 +84,7 @@ static func buy_reason(p, id: String) -> String:
 	var row: Dictionary = items().get(id,{})
 	if row.is_empty() or not row.tradeable or row.price == null: return "Este objeto não está à venda."
 	if int(p.shop_stock.get(id,0)) < 1: return "Esgotado."
-	if p.coins < int(row.price): return "Não tens reais suficientes."
+	if p.coins < int(row.price): return "Ouro insuficiente."
 	if int(p.inventory.get(id,0)) >= 999: return "A quantidade máxima é 999."
 	return ""
 
@@ -102,7 +102,7 @@ static func sell_reason(p, id: String) -> String:
 	if not row.tradeable or row.price == null: return "Objeto protegido; fica contigo."
 	if p.equipment.values().has(id) and int(p.inventory[id]) <= 1: return "Retira o equipamento antes de vender."
 	if int(p.shop_stock.get(id,0)) >= 999: return "A loja não aceita mais unidades deste objeto."
-	if p.coins+maxi(1,int(row.price)/2) > 1000000: return "A bolsa atingiu o limite de reais."
+	if p.coins+maxi(1,int(row.price)/2) > 1000000: return "A bolsa atingiu o limite de ouro."
 	return ""
 
 static func sell(p, id: String) -> String:

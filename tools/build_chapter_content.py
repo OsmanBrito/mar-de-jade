@@ -56,10 +56,10 @@ setevents('C01-M03/S03',[battle('duel'),stage('fallen')])
 setevents('C01-M03/S04',[stage('fallen'),stage('cup_in_reach')]+by['C01-M03/S04']['events'])
 e=by['C01-M03/S05']['events']; e[-2]['flag']='promise_response'; setevents('C01-M03/S05',e[:-1]+[stage('leonor_leaves')]+e[-1:]+[stage('cannot_stand'),stage('silence')])
 setevents('C01-M03/S06',[stage('duarte_arrives')]+by['C01-M03/S06']['events']+[stage('tome_assistance')])
-setevents('C01-M03/S07',[stage('treated_in_bed')]+by['C01-M03/S07']['events'])
+e=by['C01-M03/S07']['events']; setevents('C01-M03/S07',[stage('treated_in_bed')]+e[:5]+[task('recovery_water','Toma a água que Tomé deixou ao alcance da cama.'),stage('water_drunk')]+e[5:])
 e=by['C01-M04/S01']['events']; options=e[-1]['options']; styles={'espada':'ES','lança':'LA','machado':'MC','arma de fogo':'FO','desarmado':'PU'}
 for o in options: o['style']=styles[o['id']]
-setevents('C01-M04/S01',[stage('time_passes'),task('recovery_walk','Caminha até à mesa quando o corpo o permitir.','room'),stage('recovered'),stage('return_courtyard')]+e[:-1]+[{'type':'styles','options':options}])
+setevents('C01-M04/S01',[stage('time_passes'),task('recovery_walk','Caminha até à mesa e regressa ao apoio de Tomé, sem pressa.','room'),stage('recovered'),stage('return_courtyard')]+e[:-1]+[{'type':'styles','options':options}])
 e=by['C01-M04/S02']['events']; setevents('C01-M04/S02',e[:1]+[battle('perfect_defense',on_failure=e[1:6])]+e[6:])
 e=by['C01-M04/S03']['events']; setevents('C01-M04/S03',e[:7]+[stage('give_bowl')]+e[7:]+[task('pack','Guarda a tigela, a água e as provisões na sacola.'),stage('packed')])
 e=by['C01-M04/S04']['events']; setevents('C01-M04/S04',e+[task('blue_rope','Trabalha na amarra azul com Duarte. A branca é de Beatriz.'),stage('ship_departs')])

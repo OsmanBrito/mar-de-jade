@@ -1,0 +1,6 @@
+{
+  "cais": {"title":"Lisboa · Cais e mercado", "exits":[{"to":"square","label":"Rua da praça e do abrigo","at":[-230,870]}]},
+  "square": {"title":"Lisboa · Praça e pátio", "exits":[{"to":"cais","label":"Descer ao cais","at":[650,288]},{"to":"room","label":"Entrar no abrigo","at":[-365,75]}]},
+  "room": {"title":"Lisboa · Abrigo", "exits":[{"to":"square","label":"Sair para a praça e o pátio","at":[-40,390]}]},
+  "deck": {"title":"Botafogo · Convés", "exits":[{"to":"cais","label":"Descer ao pontão","at":[-170,395]}]}
+}

@@ -21,22 +21,13 @@ var trading := "Comprar"
 var row_buttons: Dictionary = {}
 var action_button: Button
 var pending_sale := ""
-var tab_names := ["Personagem","Inventário","Equipamento","Técnicas","Passivas","Loja de Lisboa","Sistema"]
+var pending_binding := ""
+var tab_names := ["Personagem","Inventário","Equipamento","Técnicas","Passivas","Pedidos","Conversas","Loja de Lisboa","Sistema"]
 
 func _ready() -> void:
 	layer = 30; process_mode = Node.PROCESS_MODE_ALWAYS
 	screen = Control.new(); screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); add_child(screen)
-	var theme := Theme.new(); theme.default_font_size = 17
-	theme.set_color("font_color","Label",Color("e8dfc8"))
-	for state in ["normal","hover","pressed","focus","disabled"]:
-		var box := StyleBoxFlat.new()
-		box.bg_color = Color("28524f") if state in ["hover","pressed"] else Color("122f31")
-		box.border_color = Color("c8b17a") if state == "focus" else Color("55756b")
-		box.set_border_width_all(2 if state == "focus" else 1); box.set_corner_radius_all(4)
-		box.content_margin_left = 13; box.content_margin_right = 13; box.content_margin_top = 8; box.content_margin_bottom = 8
-		theme.set_stylebox(state,"Button",box)
-		if state == "disabled": theme.set_color("font_disabled_color","Button",Color("85938a"))
-	screen.theme = theme
+	screen.theme = preload("res://scripts/ui/presentation.gd").theme()
 	var shade := ColorRect.new(); shade.color = Color(0.015,0.035,0.04,0.88)
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); screen.add_child(shade)
 	var panel := PanelContainer.new(); panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -48,19 +39,21 @@ func _ready() -> void:
 	var header := HBoxContainer.new(); column.add_child(header)
 	var title := label("MAR DE JADE  /  PORTUGAL",25,Color("e6cb8d")); title.size_flags_horizontal = Control.SIZE_EXPAND_FILL; header.add_child(title)
 	wallet = label("",21,Color("e6cb8d")); header.add_child(wallet)
-	button(header,"Retomar  ·  Esc",func(): close_requested.emit())
-	var navigation := HBoxContainer.new(); navigation.add_theme_constant_override("separation",7); column.add_child(navigation)
+	var resume_button := button(header,"Retomar  ·  Esc",func(): close_requested.emit())
+	resume_button.custom_minimum_size.x = 160
+	resume_button.autowrap_mode = TextServer.AUTOWRAP_OFF
+	var navigation := HFlowContainer.new(); navigation.add_theme_constant_override("h_separation",7); navigation.add_theme_constant_override("v_separation",5); column.add_child(navigation)
 	for name in tab_names:
 		tabs[name] = button(navigation,name,switch_page.bind(name)); tabs[name].size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_child(HSeparator.new())
 	content = HBoxContainer.new(); content.size_flags_vertical = Control.SIZE_EXPAND_FILL; content.add_theme_constant_override("separation",24); column.add_child(content)
-	var scroll := ScrollContainer.new(); scroll.custom_minimum_size.x = 270; scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; content.add_child(scroll)
+	var scroll := ScrollContainer.new(); scroll.custom_minimum_size.x = 270; scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; scroll.follow_focus = true; content.add_child(scroll)
 	summary = VBoxContainer.new(); summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL; summary.add_theme_constant_override("separation",8); scroll.add_child(summary)
 	content.add_child(VSeparator.new())
-	var middle := ScrollContainer.new(); middle.size_flags_horizontal = Control.SIZE_EXPAND_FILL; middle.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; content.add_child(middle)
+	var middle := ScrollContainer.new(); middle.size_flags_horizontal = Control.SIZE_EXPAND_FILL; middle.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; middle.follow_focus = true; content.add_child(middle)
 	listing = VBoxContainer.new(); listing.size_flags_horizontal = Control.SIZE_EXPAND_FILL; listing.add_theme_constant_override("separation",8); middle.add_child(listing)
 	content.add_child(VSeparator.new())
-	var right := ScrollContainer.new(); right.custom_minimum_size.x = 300; right.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; content.add_child(right)
+	var right := ScrollContainer.new(); right.custom_minimum_size.x = 300; right.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; right.follow_focus = true; content.add_child(right)
 	details = VBoxContainer.new(); details.size_flags_horizontal = Control.SIZE_EXPAND_FILL; details.add_theme_constant_override("separation",14); right.add_child(details)
 	column.add_child(HSeparator.new())
 	notice = label("",16,Color("e6cb8d")); notice.custom_minimum_size.y = 24; column.add_child(notice)
@@ -68,7 +61,7 @@ func _ready() -> void:
 	screen.hide()
 
 func label(value: String, font_size: int = 17, color := Color("e8dfc8")) -> Label:
-	var node := Label.new(); node.text = value; node.add_theme_font_size_override("font_size",font_size)
+	var node := Label.new(); node.text = value; node.add_theme_font_size_override("font_size",GamePreferences.font_size(font_size))
 	node.add_theme_color_override("font_color",color); node.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return node
 
@@ -78,6 +71,8 @@ func paragraph(parent: Control, value: String, color := Color("b4c7bd")) -> Labe
 
 func button(parent: Control, text: String, callback: Callable) -> Button:
 	var node := Button.new(); node.text = text; node.custom_minimum_size.y = 42
+	node.add_theme_font_size_override("font_size",GamePreferences.font_size(17))
+	node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	node.pressed.connect(callback); parent.add_child(node); return node
 
 func clear(parent: Node) -> void:
@@ -85,11 +80,11 @@ func clear(parent: Node) -> void:
 
 func open(initial: String = "Personagem") -> void:
 	page = initial; filter = "Todos"; selected = ""; pending_sale = ""; screen.show(); refresh()
-	notice.text = "O capítulo guarda no início da etapa; a mochila conserva as tuas alterações."
+	notice.text = "Progresso guardado no início de cada etapa. A mochila conserva as tuas alterações."
 	tabs[page].grab_focus()
 
 func close() -> void:
-	screen.hide(); pending_sale = ""
+	screen.hide(); pending_sale = ""; pending_binding = ""
 
 func switch_page(value: String) -> void:
 	page = value; selected = ""; filter = "Todos"; pending_sale = ""; refresh()
@@ -98,17 +93,12 @@ func switch_page(value: String) -> void:
 func refresh() -> void:
 	clear(summary); clear(listing); clear(details); row_buttons.clear(); action_button = null
 	var p = ChapterProgress
-	wallet.text = "%d reais" % p.coins
+	wallet.text = "%d de ouro" % p.coins
 	for name in tabs: tabs[name].modulate = Color("e6cb8d") if name == page else Color.WHITE
 	var hero_name := label(CampaignProfile.hero_name,29,Color("e6cb8d"))
 	hero_name.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS; hero_name.tooltip_text = CampaignProfile.hero_name; summary.add_child(hero_name)
 	summary.add_child(label("19 anos  ·  Aprendiz",16))
-	var art := TextureRect.new(); art.custom_minimum_size = Vector2(244,160)
-	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	var atlas := AtlasTexture.new(); atlas.atlas = load("res://assets/art/combat/portugal/hero-v1.png")
-	var manifest = JSON.parse_string(FileAccess.get_file_as_string("res://assets/art/combat/portugal/frames.json"))
-	var rect: Array = manifest.entries.hero.frames[0]
-	atlas.region = Rect2(rect[0],rect[1],rect[2],rect[3]); art.texture = atlas; summary.add_child(art)
+	var art := preload("res://scripts/chapter/hero_portrait.gd").new(); art.custom_minimum_size = Vector2(244,160); summary.add_child(art)
 	summary.add_child(label(Items.STYLES[p.style],22,Color("e6cb8d")))
 	paragraph(summary,"Em recuperação · aguarda o tratamento de Tomé." if p.flags.get("injured",false) else "Fundamento" if p.flags.get("recovered",false) else "Antes do ensino de Tomé")
 	var stats := Items.stats(p)
@@ -123,6 +113,46 @@ func refresh() -> void:
 		"Inventário","Equipamento","Loja de Lisboa": inventory_page()
 		"Técnicas","Passivas": knowledge_page()
 		"Sistema": system_page()
+		"Pedidos": requests_page()
+		"Conversas": history_page()
+
+func requests_page() -> void:
+	listing.add_child(label("Compromisso atual",25,Color("e6cb8d")))
+	paragraph(listing,preload("res://scripts/chapter/chapter_objectives.gd").current(director))
+	listing.add_child(HSeparator.new())
+	var errands = preload("res://scripts/chapter/lisbon_errands.gd")
+	for id in errands.DEFINITIONS:
+		var progress: String = errands.stage(ChapterProgress,id)
+		if progress.is_empty(): continue
+		var row: Dictionary = errands.DEFINITIONS[id]
+		listing.add_child(label(row.title,22,Color("e6cb8d")))
+		paragraph(listing,"Concluído" if progress=="completed" else "Em curso")
+		paragraph(listing,row.summary); paragraph(listing,row.objectives[progress]); listing.add_child(HSeparator.new())
+	var requests = preload("res://scripts/chapter/local_request_state.gd")
+	listing.add_child(label("Pedidos de Lisboa",25,Color("e6cb8d")))
+	var state: String = requests.stage(ChapterProgress)
+	if state.is_empty():
+		paragraph(listing,"Conversa com os moradores. O oficial da oficina precisa de ajuda com um carro imobilizado.")
+		paragraph(details,"Depois do socorro e antes do embarque podes explorar o cais. Duarte espera no pontão para seguir contigo.")
+		return
+	var row: Dictionary = requests.definition()
+	listing.add_child(label(row.title,23,Color("e6cb8d")))
+	paragraph(listing,"Concluído" if state=="completed" else "Em curso",Color("a3c9b3"))
+	paragraph(listing,row.summary)
+	paragraph(listing,requests.objective(ChapterProgress))
+	paragraph(details,"O que aconteceu",Color("e6cb8d"))
+	for step in requests.STAGES:
+		paragraph(details,"• "+row.history[step])
+		if step==state: break
+	paragraph(details,"Recompensa: 12 de ouro e uma ração." if state!="completed" else "Recompensa recebida. O carro voltou ao trabalho e a passagem ficou livre.")
+
+func history_page() -> void:
+	listing.add_child(label("Conversas recentes",25,Color("e6cb8d")))
+	paragraph(details,"Consulta das falas já vistas nesta sessão. Fechar conserva a fala, a tarefa e os pedidos exatamente onde estavam.")
+	if director.view.history.is_empty(): paragraph(listing,"Ainda não há falas nesta sessão.")
+	for row in director.view.history:
+		paragraph(listing,row.speaker,Color("e6cb8d"))
+		paragraph(listing,row.text)
 
 func character_page() -> void:
 	listing.add_child(label("Preparação para a viagem",25,Color("e6cb8d")))
@@ -139,12 +169,12 @@ func character_page() -> void:
 	paragraph(details,director.blocks[director.scene_index].title)
 	paragraph(details,"O equipamento aumenta os atributos a partir dos treinos de Tomé. Trocar uma peça não recupera vida ou alento.")
 	paragraph(details,"Tomé repõe pelo menos 8 de alento no início de cada aula de manejo.")
-	paragraph(details,"O serviço no cais rende 40 reais, uma única vez.")
+	paragraph(details,"O serviço no cais rende 40 de ouro, uma única vez.")
 
 func shop_reason() -> String:
 	if director.busy or ChapterProgress.flags.get("injured",false): return "Termina esta sequência e recupera antes de visitar a loja."
 	if director.map_kind not in ["cais","service","plaza","courtyard"] or ChapterProgress.flags.get("embarked",false): return "A loja fica em Lisboa. Visita-a nas pausas no cais, na praça ou no pátio."
-	if director.phase not in ["block_end","styles","styles_result","equipment","exploration"]: return "Termina esta etapa para visitar a loja numa pausa segura."
+	if director.phase not in ["block_end","styles","styles_result","equipment","exploration","roaming"]: return "Termina esta etapa para visitar a loja numa pausa segura."
 	return ""
 
 func inventory_page() -> void:
@@ -172,7 +202,7 @@ func inventory_page() -> void:
 		if filter == "História" and row.tradeable: continue
 		count += 1
 		var suffix := "   ×%d" % amount
-		if shopping: suffix += "   ·   %d reais" % (int(row.price) if trading == "Comprar" else maxi(1,int(row.price)/2)) if row.price != null else "   ·   Protegido"
+		if shopping: suffix += "   ·   %d de ouro" % (int(row.price) if trading == "Comprar" else maxi(1,int(row.price)/2)) if row.price != null else "   ·   Protegido"
 		elif ChapterProgress.equipment.values().has(id): suffix += "   ·   Equipado"
 		var node := button(listing,row.name+suffix,select_item.bind(id))
 		node.alignment = HORIZONTAL_ALIGNMENT_LEFT; node.icon = load(row.icon); node.expand_icon = true
@@ -216,7 +246,7 @@ func draw_item() -> void:
 	if page == "Loja de Lisboa":
 		var reason := Items.buy_reason(p,selected) if trading == "Comprar" else Items.sell_reason(p,selected)
 		var price: int = int(row.price) if trading == "Comprar" else maxi(1,int(row.price)/2) if row.price != null else 0
-		var verb := trading+" 1 · %d reais" % price
+		var verb := trading+" 1 · %d de ouro" % price
 		action_button = button(details,verb,trade_selected)
 		action_button.disabled = not reason.is_empty()
 		if not reason.is_empty(): paragraph(details,reason)
@@ -297,16 +327,55 @@ func show_knowledge(row: Dictionary, passive: bool) -> void:
 
 func system_page() -> void:
 	listing.add_child(label("Capítulo e progresso",25,Color("e6cb8d")))
+	var score = get_node("/root/ChapterMusic")
+	var volume_label := label("Música do capítulo · %d%%"%roundi(score.music_level*100),18)
+	listing.add_child(volume_label)
+	var volume := HSlider.new(); volume.name = "ChapterMusicVolume"; volume.min_value = 0; volume.max_value = 100; volume.step = 5
+	volume.value = score.music_level*100; volume.custom_minimum_size = Vector2(240,32); listing.add_child(volume)
+	volume.value_changed.connect(func(value): score.set_level(value/100.0); volume_label.text = "Música do capítulo · %d%%"%roundi(value))
+	var mute := CheckButton.new(); mute.name = "ChapterMusicMute"; mute.text = "Silenciar música"; mute.button_pressed = score.muted; listing.add_child(mute)
+	mute.toggled.connect(func(value): score.set_muted(value))
+	for key in ["ambience","effects"]:
+		var audio_label := label("%s · %d%%"%["Ambiente" if key=="ambience" else "Efeitos",roundi(GamePreferences.levels[key]*100)],18)
+		listing.add_child(audio_label)
+		var slider := HSlider.new(); slider.name = "SharedAudio_"+key; slider.min_value = 0; slider.max_value = 100; slider.step = 5
+		slider.value = GamePreferences.levels[key]*100; slider.custom_minimum_size = Vector2(240,32); listing.add_child(slider)
+		slider.value_changed.connect(func(value): GamePreferences.set_level(key,value/100.0); audio_label.text = "%s · %d%%"%["Ambiente" if key=="ambience" else "Efeitos",roundi(value)])
+	paragraph(listing,"Música, ambiente e efeitos conservam os mesmos volumes na viagem. Silenciar música não silencia os avisos de combate.")
+	listing.add_child(label("Leitura e combate",25,Color("e6cb8d")))
+	for key in ["wide_timing","reduced_fx","fast_combat"]:
+		var toggle := CheckButton.new(); toggle.name = key
+		toggle.text = {"wide_timing":"Janela de timing ampliada","reduced_fx":"Reduzir efeitos e movimento","fast_combat":"Animações de combate rápidas"}[key]
+		toggle.button_pressed = GamePreferences.options[key]; listing.add_child(toggle)
+		toggle.toggled.connect(func(value): GamePreferences.set_option(key,value))
+	var scale_button := button(listing,"Tamanho de texto · %d%%"%roundi(GamePreferences.text_scale*100),func():
+		GamePreferences.set_text_scale(1.0 if GamePreferences.text_scale>=1.19 else GamePreferences.text_scale+0.1)
+		refresh())
+	scale_button.tooltip_text = "Alterna 100%, 110% e 120%. Conversas e menus usam rolagem quando necessário."
+	details.add_child(label("Teclado",24,Color("e6cb8d")))
+	for action in GamePreferences.bindings:
+		var caption: String = {"move_left":"Andar à esquerda","move_right":"Andar à direita","move_up":"Andar para cima","move_down":"Andar para baixo","interact":"Interagir","combat_move":"Combate · mover","combat_end":"Combate · fim do turno","combat_timing":"Combate · timing","combat_exit":"Sair de treino"}[action]
+		button(details,caption+" · "+OS.get_keycode_string(GamePreferences.bindings[action]),func():
+			pending_binding = action; notice.text = "Prime a nova tecla para "+caption+". Esc cancela.")
+	button(details,"Restaurar teclas",func():
+		GamePreferences.bindings = GamePreferences.DEFAULT_BINDINGS.duplicate(); GamePreferences.apply_bindings(); GamePreferences.commit(); refresh())
 	paragraph(listing,"Carregar regressa ao início da etapa guardada, com os teus itens e moedas. Recomeçar repete a etapa atual.")
 	button(listing,"Guardar capítulo",func(): save_requested.emit())
-	button(listing,"Carregar último save",func():
+	var load_button := button(listing,"Carregar último save",func():
 		clear(details); paragraph(details,"Regressar ao início da etapa guardada?")
 		button(details,"Confirmar carregamento",func(): load_requested.emit()))
-	button(listing,"Recomeçar esta etapa",func():
+	var restart_button := button(listing,"Recomeçar esta etapa",func():
 		clear(details); paragraph(details,"Repetir a etapa atual? Os teus objetos e moedas serão conservados.")
 		button(details,"Confirmar reinício",func(): restart_requested.emit()))
+	load_button.disabled = director.busy; restart_button.disabled = director.busy
+	if director.busy: paragraph(listing,"Retoma a cena antes de carregar ou recomeçar esta etapa.")
 
 func _input(event: InputEvent) -> void:
 	if not screen.visible: return
+	if not pending_binding.is_empty() and event is InputEventKey and event.pressed and not event.echo:
+		get_viewport().set_input_as_handled()
+		if event.physical_keycode==KEY_ESCAPE: pending_binding = ""; notice.text = "Alteração cancelada."; return
+		var message: String = GamePreferences.bind_key(pending_binding,event.physical_keycode)
+		pending_binding = ""; refresh(); notice.text = message; return
 	if event.is_action_pressed("ui_cancel") or (event is InputEventJoypadButton and event.pressed and event.button_index in [JOY_BUTTON_B,JOY_BUTTON_START]):
 		get_viewport().set_input_as_handled(); close_requested.emit()

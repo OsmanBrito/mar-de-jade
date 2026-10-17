@@ -19,8 +19,11 @@ config/icon="res://assets/icon.svg"
 
 [autoload]
 
+GamePreferences="*res://scripts/game_preferences.gd"
 CampaignProfile="*res://scripts/chapter/campaign_profile.gd"
 ChapterProgress="*res://scripts/chapter/chapter_progress.gd"
+ChapterMusic="*res://scripts/chapter/chapter_music.gd"
+ChapterAmbience="*res://scripts/chapter/chapter_ambience.gd"
 
 [display]
 

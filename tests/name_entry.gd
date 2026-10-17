@@ -25,6 +25,7 @@ func scene_frames() -> void:
 func run() -> void:
 	root.get_node("ChapterProgress").auto_save = false
 	profile = root.get_node("CampaignProfile")
+	var preferences = root.get_node("GamePreferences"); preferences.persist_enabled = false
 	profile.hero_name = ""
 	check(ProjectSettings.get_setting("application/run/main_scene") == "res://scenes/chapter_01/name_entry.tscn", "F5 begins with the name choice")
 	check(change_scene_to_file("res://scenes/chapter_01/name_entry.tscn") == OK, "Name screen loads")
@@ -33,6 +34,19 @@ func run() -> void:
 	entry.profile_path = "res://tests/name-profile-fixture.json"
 	check(entry.name_field.has_focus(), "Name field receives initial keyboard focus")
 	check(entry.confirm_button.disabled, "Empty name cannot be confirmed")
+	var settings: Button = entry.confirm_button.get_parent().get_node("GameSettings")
+	settings.pressed.emit(); await scene_frames()
+	var panel = entry.get_child(entry.get_child_count()-1)
+	check(paused and not entry.can_process(), "Initial settings prevent input reaching the name screen")
+	var timing: CheckButton = panel.column.get_node("wide_timing")
+	var previous_timing: bool = preferences.options.wide_timing
+	timing.button_pressed = not previous_timing
+	check(preferences.options.wide_timing != previous_timing, "Initial settings update the shared combat preference")
+	timing.button_pressed = previous_timing
+	await capture("res://previews/revision-initial-settings.png")
+	var cancel := InputEventKey.new(); cancel.keycode = KEY_ESCAPE; cancel.physical_keycode = KEY_ESCAPE; cancel.pressed = true
+	root.push_input(cancel); await scene_frames()
+	check(not paused and not is_instance_valid(panel) and settings.has_focus(), "Escape closes initial settings and returns focus without starting a campaign")
 	entry.confirm()
 	check(current_scene == entry and profile.hero_name.is_empty(), "Empty confirmation does not start the story")
 	entry.name_field.text = "   "
