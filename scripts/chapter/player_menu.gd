@@ -207,11 +207,12 @@ func requests_page() -> void:
 
 func history_page() -> void:
 	listing.add_child(label("Conversas recentes",25,Color("e6cb8d")))
-	paragraph(details,"Consulta das falas já vistas nesta sessão. Fechar conserva a fala, a tarefa e os pedidos exatamente onde estavam.")
-	if director.view.history.is_empty(): paragraph(listing,"Ainda não há falas nesta sessão.")
+	paragraph(details,"Últimas 200 falas vistas na campanha, conservadas entre cenas e no progresso guardado. Fechar conserva a fala e a tarefa atuais.")
+	if director.view.history.is_empty(): paragraph(listing,"Ainda não há falas registradas nesta campanha.")
 	for row in director.view.history:
 		paragraph(listing,row.speaker,Color("e6cb8d"))
-		paragraph(listing,row.text)
+		var line := paragraph(listing,row.text)
+		line.focus_mode = Control.FOCUS_ALL
 
 func character_page() -> void:
 	listing.add_child(label("Preparação para a viagem",25,Color("e6cb8d")))

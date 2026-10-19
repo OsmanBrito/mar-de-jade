@@ -154,21 +154,21 @@ func open_personal(page: String = "inventory",feedback: String = "") -> void:
 	text += "\nDuarte · Vida %d/120 · Alento %d/12 · Postura %d/100\nDuarte conserva equipamento próprio fixo neste arco; técnicas e passivas pertencem a ele."%[companion.hp,companion.qi,companion.posture]
 	if not feedback.is_empty(): text += "\n\n"+feedback
 	if not personal_safe(): text += "\nProcura um porto ou águas seguras para preparar equipamento e usar suprimentos."
-	var column := modal("personal","Personagem e bagagem",text,[["Bagagem",func(): open_personal("inventory")],["Equipamento",func(): open_personal("equipment")],["Técnicas e passivas",func(): open_personal("knowledge")],["Diário e pedidos",func(): open_personal("journal")],["Voltar à pausa",open_pause]])
+	var column := modal("personal","Personagem e bagagem",text,[["Conversas",open_conversations],["Bagagem",func(): open_personal("inventory")],["Equipamento",func(): open_personal("equipment")],["Técnicas e passivas",func(): open_personal("knowledge")],["Diário e pedidos",func(): open_personal("journal")],["Voltar à pausa",open_pause]])
 	if page=="journal":
 		var journal = preload("res://scripts/chapter/campaign_journal.gd")
 		var entries: Array = journal.notes(personal)+journal.requests(personal)
 		if entries.is_empty(): column.add_child(label("Ainda não há descobertas ou pedidos registrados.",17,PAPER))
 		for row in entries:
 			var note := label(row.title+" · "+row.text,17,PAPER)
-			note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; note.custom_minimum_size.x = 650
+			note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; note.custom_minimum_size.x = minf(650,get_viewport_rect().size.x-100)
 			column.add_child(note)
 		return
 	if page=="knowledge":
 		for row in JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/skill_icons.json")).skills:
 			if personal.skills.has(row.id):
 				var note := label(row.name+(" · Registro de catálogo antigo; não executável neste arco." if not preload("res://scripts/chapter/arc_content.gd").executable(row.id) else " · "+row.get("description","")),17,PAPER)
-				note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; note.custom_minimum_size.x = 650; column.add_child(note)
+				note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; note.custom_minimum_size.x = minf(650,get_viewport_rect().size.x-100); column.add_child(note)
 		for row in JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/passives.json")).passives:
 			if not personal.get("passives",[]).has(row.id): continue
 			var equipped: Array = personal.duarte_equipped_passives if row.id.begins_with("DU") else personal.equipped_passives
@@ -240,15 +240,16 @@ func _build_ui() -> void:
 	notice_label = label("",16,PAPER); notice_label.position = Vector2(35,736); notice_label.size = Vector2(1370,45); notice_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; ui.add_child(notice_label)
 	modal_root = Control.new(); modal_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); modal_root.mouse_filter = Control.MOUSE_FILTER_IGNORE; ui.add_child(modal_root)
 func label(value: String,size: int,color: Color) -> Label:
-	var item := Label.new(); item.text = value; item.add_theme_font_size_override("font_size",size); item.add_theme_color_override("font_color",color); item.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var item := Label.new(); item.text = value; item.add_theme_font_size_override("font_size",GamePreferences.font_size(size)); item.add_theme_color_override("font_color",color); item.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return item
 func box(fill: Color,border: Color) -> StyleBoxFlat:
 	var style := preload("res://scripts/ui/presentation.gd").panel(fill,border)
 	style.content_margin_left = 18; style.content_margin_right = 18; style.content_margin_top = 12; style.content_margin_bottom = 12
 	return style
 func button(title: String,action: Callable) -> Button:
-	var item := Button.new(); item.text = title; item.custom_minimum_size = Vector2(160,43); item.add_theme_font_size_override("font_size",16)
+	var item := Button.new(); item.text = title; item.custom_minimum_size = Vector2(160,43); item.add_theme_font_size_override("font_size",GamePreferences.font_size(16)); item.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	item.add_theme_color_override("font_color",PAPER); item.add_theme_stylebox_override("normal",box(Color("183c44"),Color("52736b"))); item.add_theme_stylebox_override("hover",box(Color("2a514f"),GOLD)); item.add_theme_stylebox_override("focus",box(Color("315853"),GOLD))
+	item.set_meta("hint_source",title); item.text = GamePreferences.navigation_hint(title,model.phase=="naval")
 	item.pressed.connect(action); return item
 func notice(message: String) -> void:
 	notice_label.text = message; notice_clock = 8
@@ -266,18 +267,26 @@ func modal(kind: String,title: String,body: String,actions: Array) -> VBoxContai
 	clear_overlay(); overlay = kind
 	var shade := ColorRect.new(); shade.color = Color(0.015,0.045,0.055,0.75); shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); modal_root.add_child(shade)
 	var center := CenterContainer.new(); center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); modal_root.add_child(center)
-	var card := PanelContainer.new(); card.custom_minimum_size.x = 700; card.add_theme_stylebox_override("panel",box(INK,GOLD)); center.add_child(card)
-	var scroll := ScrollContainer.new(); scroll.follow_focus = true; scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; scroll.custom_minimum_size = Vector2(650,0); card.add_child(scroll)
-	var column := VBoxContainer.new(); column.custom_minimum_size.x = 650; column.add_theme_constant_override("separation",12); scroll.add_child(column)
-	if kind=="personal": scroll.custom_minimum_size.y = minf(620,get_viewport_rect().size.y-100)
+	var card := PanelContainer.new(); card.custom_minimum_size.x = minf(700,get_viewport_rect().size.x-48); card.add_theme_stylebox_override("panel",box(INK,GOLD)); center.add_child(card)
+	var scroll := ScrollContainer.new(); scroll.follow_focus = true; scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; scroll.custom_minimum_size = Vector2(minf(650,get_viewport_rect().size.x-100),0); card.add_child(scroll)
+	var column := VBoxContainer.new(); column.custom_minimum_size.x = minf(650,get_viewport_rect().size.x-100); column.add_theme_constant_override("separation",12); scroll.add_child(column)
+	column.minimum_size_changed.connect(func():
+		scroll.custom_minimum_size.y = minf(column.get_combined_minimum_size().y,maxf(120,get_viewport_rect().size.y-100)))
 	column.add_child(label(title,26,GOLD))
-	var paragraph := label(body,17,PAPER); paragraph.custom_minimum_size.x = 650; paragraph.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; column.add_child(paragraph)
+	var paragraph := label(body,17,PAPER); paragraph.custom_minimum_size.x = minf(650,get_viewport_rect().size.x-100); paragraph.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; column.add_child(paragraph)
 	for action in actions:
 		var callback: Callable = action[1]
 		var choice := button(action[0],func(): clear_overlay(); callback.call())
 		column.add_child(choice)
 		if column.get_child_count()==3: choice.grab_focus()
 	return column
+func show_conversation(title: String,body: String) -> void:
+	if Launch.mode=="campaign" and not model.campaign_state.is_empty():
+		if not model.campaign_state.has("dialogue_history"): model.campaign_state.dialogue_history = []
+		preload("res://scripts/chapter/dialogue_log.gd").remember(model.campaign_state,title,body)
+		ChapterProgress.dialogue_history.assign(model.campaign_state.dialogue_history)
+	show_message(title,body)
+
 func show_message(title: String,body: String,after: Callable = Callable()) -> void:
 	modal("dialogue",title,body,[["Continuar",func():
 		if after.is_valid(): after.call()
@@ -303,16 +312,26 @@ func _refresh_controls() -> void:
 	else:
 		controls.add_child(button("Carta · M",open_chart))
 		controls.add_child(button("Convés · C" if model.phase=="sea" else "Voltar ao mar · B",enter_deck if model.phase=="sea" else leave_stage))
-		interact_button = button(GamePreferences.hint_text("Interagir · E / A"),interact); controls.add_child(interact_button)
-		controls.add_child(button(GamePreferences.hint_text("Guardar · F5 / menu"),func(): _save(true)))
+		interact_button = button("Interagir · E / A",interact); controls.add_child(interact_button)
+		controls.add_child(button("Guardar · F5 / menu",func(): _save(true)))
 		controls.add_child(button("Menu · Esc",open_pause))
 		if model.phase=="sea":
 			sail_button = button("Parar · Espaço",stop_sailing); controls.add_child(sail_button)
 			course_button = button("Retomar rumo · V",resume_course); controls.add_child(course_button)
+	# HUD actions stay on one line; long modal actions may wrap inside their scroll.
+	for action in controls.get_children():
+		if action is Button:
+			action.custom_minimum_size.x = minf(230,(1380.0-maxi(0,controls.get_child_count()-1)*8)/maxi(1,controls.get_child_count()))
+			action.autowrap_mode = TextServer.AUTOWRAP_OFF; action.clip_text = true
+			action.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			action.tooltip_text = action.text
 
 func _process(delta: float) -> void:
 	clock += delta
 	if view==null: return
+	if controls!=null:
+		for control in controls.get_children():
+			if control is Button and control.has_meta("hint_source"): control.text = GamePreferences.navigation_hint(control.get_meta("hint_source"),model.phase=="naval")
 	if is_instance_valid(audio_track_label): audio_track_label.text = "Tocando · "+ambience.track_title()
 	ocean.size = get_viewport_rect().size
 	ocean.material.set_shader_parameter("world_origin",-view.world_offset()/zoom)
@@ -427,14 +446,14 @@ func _refresh_status() -> void:
 	else:
 		hint.text = "W ↑ vela · S ↓ vela · A/D leme  |  Espaço parar  |  M carta · C convés · V retomar rumo · E / A interagir  |  "+sail_name()
 		if not model.tutorials.get("stop",false): hint.text = "W ↑ vela · S ↓ vela · A/D leme · Espaço parar  |  "+sail_name()+"  |  Esc · ajuda"
-		if sail_button!=null: sail_button.text = "Parar · Espaço"
-		if course_button!=null: course_button.text = "Águas seguras · V" if model.danger>0 else "Retomar rumo · V"
+		if sail_button!=null: sail_button.text = GamePreferences.navigation_hint("Parar · Espaço")
+		if course_button!=null: course_button.text = GamePreferences.navigation_hint("Águas seguras · V" if model.danger>0 else "Retomar rumo · V")
 		if interact_button!=null:
 			var near: Dictionary = model.closest() if model.phase=="sea" else nearby_person()
 			interact_button.disabled = near.is_empty()
 			if not near.is_empty(): hint.text = "E / A · "+near.name+"    |    "+hint.text
 		if model.phase in ["deck","port","island"]: hint.text = "WASD / analógico ou clique: caminhar  ·  E / A: conversar  ·  B: voltar ao mar  ·  Esc: menu"
-		hint.text = GamePreferences.hint_text(hint.text)
+	hint.text = GamePreferences.navigation_hint(hint.text,model.phase=="naval")
 
 func open_chart() -> void:
 	if model.phase not in ["sea","deck","port","island"]: return
@@ -506,7 +525,7 @@ func interact() -> void:
 			"merchant": open_services(false)
 			"fisher":
 				model.reveal("porto_santo","sighted"); model.reveal("current_1","rumor")
-				show_message("Batel de pescadores","O mestre aponta Porto Santo na carta. Para sul, a espuma dividida marca o começo de outra passagem. É preciso reconhecer os outros sinais antes de confiar nela.")
+				show_conversation("Batel de pescadores","O mestre aponta Porto Santo na carta. Para sul, a espuma dividida marca o começo de outra passagem. É preciso reconhecer os outros sinais antes de confiar nela.")
 				_save(false)
 			"hostile","boss": begin_naval(entry)
 			_:
@@ -520,12 +539,12 @@ func interact() -> void:
 		if model.phase=="deck":
 			match person.id:
 				"worker": leave_stage()
-				"duarte": show_message("Duarte","Se vires algo, chama. Temos uma missão, mas prestar atenção ao caminho também faz parte dela.\n\nNa abordagem, fico contigo. Guarda espaço para te moveres e observa o golpe antes de defender.")
-				"beatriz": show_message("Beatriz","A seta da bússola mostra o vento. A carta dá-nos a derrota para a Madeira. Se a água mudar e o mar pesar, escuta o aviso antes de insistir.\n\nPodes marcar um rumo na carta e assumir a manobra quando quiseres.")
-				"rodrigo": show_message("Rodrigo","Madeira é a primeira escala. Depois seguimos para Duas Águas e para a busca.\n\nMantém a passagem livre e traz as dúvidas ao piloto. Explorar também exige saber voltar.")
+				"duarte": show_conversation("Duarte","Se vires algo, chama. Temos uma missão, mas prestar atenção ao caminho também faz parte dela.\n\nNa abordagem, fico contigo. Guarda espaço para te moveres e observa o golpe antes de defender.")
+				"beatriz": show_conversation("Beatriz","A seta da bússola mostra o vento. A carta dá-nos a derrota para a Madeira. Se a água mudar e o mar pesar, escuta o aviso antes de insistir.\n\nPodes marcar um rumo na carta e assumir a manobra quando quiseres.")
+				"rodrigo": show_conversation("Rodrigo","Madeira é a primeira escala. Depois seguimos para Duas Águas e para a busca.\n\nMantém a passagem livre e traz as dúvidas ao piloto. Explorar também exige saber voltar.")
 				"injured_worker":
 					model.reveal("current_1","rumor"); model.reveal("current_2","rumor")
-					show_message("Sobrevivente","A espuma dividia-se junto da primeira marca. Mais adiante, as aves ficavam sobre a corrente calma. A terceira marca era o abrigo entre os recifes. Regista as três e consegues reconhecer a passagem.")
+					show_conversation("Sobrevivente","A espuma dividia-se junto da primeira marca. Mais adiante, as aves ficavam sobre a corrente calma. A terceira marca era o abrigo entre os recifes. Regista as três e consegues reconhecer a passagem.")
 		else:
 			match person.id:
 				"worker":
@@ -544,8 +563,8 @@ func interact() -> void:
 						if not model.resolved.has("desertas"):
 							model.resolved.desertas = true; model.coins += 45; model.supplies = minf(100,model.supplies+15)
 							show_message("Uma passagem antiga","Encontraste marcas de navegação talhadas junto do abrigo e restos de uma carga.\n\n+45 de ouro · +15 provisões. A descoberta fica registada na carta."); _save(false)
-						else: show_message("Duarte","Já examinámos este abrigo. As marcas continuam aqui para quem souber procurá-las.")
-					else: show_message("Duarte","O Quebra-Mar ronda o largo, longe da derrota direta. Dizem que tenta abalroar quem enfrenta. É uma ameaça para quando estivermos preparados.\n\nTambém podemos procurar Porto Santo e as marcas da Passagem das Desertas.")
+						else: show_conversation("Duarte","Já examinámos este abrigo. As marcas continuam aqui para quem souber procurá-las.")
+					else: show_conversation("Duarte","O Quebra-Mar ronda o largo, longe da derrota direta. Dizem que tenta abalroar quem enfrenta. É uma ameaça para quando estivermos preparados.\n\nTambém podemos procurar Porto Santo e as marcas da Passagem das Desertas.")
 func open_services(specialists: bool) -> void:
 	var ids := ["chart","pilot","cartographer","hull"] if specialists else ["supplies","repair","chart"]
 	var names := {"supplies":"Provisões +40 · 12 de ouro","repair":"Reparar casco +45 · 15 de ouro","chart":"Carta das Desertas · 35 de ouro","pilot":"Contratar piloto · 65 de ouro","cartographer":"Contratar cartógrafo · 55 de ouro","hull":"Reforçar o casco · 90 de ouro"}
@@ -663,6 +682,17 @@ func _save(feedback: bool) -> Error:
 	model.phase = original
 	if feedback: notice("Viagem guardada em segurança." if result==OK else model.last_error)
 	return result
+func open_conversations() -> void:
+	var column := modal("personal","Conversas","Últimas 200 falas vistas, conservadas no progresso guardado.",[["Voltar à pausa",open_pause]])
+	for row in model.campaign_state.get("dialogue_history",[]):
+		var entry := label(row.speaker+" · "+row.text,17,PAPER)
+		entry.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; entry.custom_minimum_size.x = minf(650,get_viewport_rect().size.x-100)
+		entry.focus_mode = Control.FOCUS_ALL; column.add_child(entry)
+
+func open_preferences() -> void:
+	var panel := preload("res://scripts/ui/preferences_panel.gd").new(); add_child(panel)
+	panel.closed.connect(open_pause)
+
 func open_pause() -> void:
 	if model.phase=="boarding": return
 	if model.phase=="naval": open_orders(); return
@@ -672,6 +702,8 @@ func open_pause() -> void:
 		["Personagem e bagagem",open_personal],
 		["Ajuda ao leme e missão",open_help],
 		["Som e música",open_audio],
+		["Leitura, combate e controles",open_preferences],
+		["Conversas",open_conversations],
 		["Guardar viagem",func(): _save(true)],
 		["Carregar ponto seguro",restore_safe],
 		["Menu inicial",return_menu]

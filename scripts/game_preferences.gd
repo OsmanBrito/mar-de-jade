@@ -80,6 +80,22 @@ func hint_text(raw: String) -> String:
 	else:
 		for pair in [["G ·",OS.get_keycode_string(bindings.combat_move)+" ·"],["T ·",OS.get_keycode_string(bindings.combat_end)+" ·"],["ESPAÇO",OS.get_keycode_string(bindings.combat_timing)]]: result = result.replace(pair[0],pair[1])
 	return result
+func navigation_hint(raw: String, naval: bool = false) -> String:
+	var result := raw
+	if controller:
+		for pair in [["W ↑ vela · S ↓ vela · A/D leme","Analógico ↑/↓ · vela · ←/→ · leme"],["WASD / analógico ou clique","Analógico / direcional"],["Espaço parar","RB parar"],["Parar · Espaço","Parar · RB"],["M carta","Y carta"],["Carta · M","Carta · Y"],["C convés","X convés"],["Convés · C","Convés · X"],["V retomar rumo","LB retomar rumo"],["Retomar rumo · V","Retomar rumo · LB"],["Águas seguras · V","Águas seguras · LB"],["Bombordo · Q","Bombordo · LB"],["Boreste · E","Boreste · RB"],["Ordens · Espaço","Ordens · Y"],["Reparo · R","Reparo · X"],["Retirada · F","Retirada · B"],["Alvo · 1 / 2 / 3","Alvo · Y"]]:
+			result = result.replace(pair[0],pair[1])
+	else:
+		var up := OS.get_keycode_string(bindings.move_up)
+		var down := OS.get_keycode_string(bindings.move_down)
+		var left := OS.get_keycode_string(bindings.move_left)
+		var right := OS.get_keycode_string(bindings.move_right)
+		result = result.replace("W ↑ vela · S ↓ vela · A/D leme","%s ↑ vela · %s ↓ vela · %s/%s leme"%[up,down,left,right])
+		result = result.replace("WASD / analógico ou clique","%s%s%s%s / setas ou clique"%[up,left,down,right])
+	# Naval stopping/ordens is handled by Y; generic combat A does not apply.
+	if controller and naval: result = result.replace("Espaço","Y")
+	return hint_text(result)
+
 func load_settings() -> void:
 	var config := ConfigFile.new()
 	if config.load(path)!=OK:

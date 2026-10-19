@@ -15,7 +15,8 @@ var root: Control
 var content_scroll: ScrollContainer
 var content_box: VBoxContainer
 var last_body_text := ""
-var history: Array[Dictionary] = []
+var history: Array[Dictionary]:
+	get: return ChapterProgress.dialogue_history
 var last_record := ""
 var hint_source := ""
 var rendered_hint := ""
@@ -140,10 +141,9 @@ func _preferences_changed() -> void:
 	if hint!=null: hint.add_theme_font_size_override("font_size",GamePreferences.font_size(14))
 
 func remember(who: String,words: String) -> void:
-	if who.is_empty() or words.is_empty() or last_record==who+"\n"+words: return
+	if who.is_empty() or words.is_empty(): return
 	last_record = who+"\n"+words
-	history.append({"speaker":who,"text":words})
-	if history.size()>100: history.pop_front()
+	preload("res://scripts/chapter/dialogue_log.gd").remember(ChapterProgress,who,words)
 
 func _process(_delta: float) -> void:
 	if hint!=null:

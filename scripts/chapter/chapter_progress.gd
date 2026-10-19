@@ -1,12 +1,13 @@
 extends Node
 ## Chapter checkpoints contain IDs and values, never scene nodes or combat instances.
 const SAVE_PATH := "user://capitulo-01.json"
-const SCHEMA_VERSION := 10
+const SCHEMA_VERSION := 11
 const CAMPAIGN_ID := "mar_de_jade"
 const Items = preload("res://scripts/chapter/player_items.gd")
 const LocalRequests = preload("res://scripts/chapter/local_request_state.gd")
 var run_id := Crypto.new().generate_random_bytes(16).hex_encode()
 var local_requests: Dictionary = {}
+var dialogue_history: Array[Dictionary] = []
 var journey: Dictionary = {}
 var childhood_hunt: Dictionary = {}
 var coins := 0
@@ -33,6 +34,7 @@ var last_error := ""
 
 func reset() -> void:
 	run_id = Crypto.new().generate_random_bytes(16).hex_encode()
+	dialogue_history.clear()
 	companion_vitals.clear()
 	local_requests.clear()
 	journey.clear(); childhood_hunt.clear()
@@ -46,7 +48,7 @@ func _ready() -> void:
 	shop_stock = Items.stock()
 
 func snapshot() -> Dictionary:
-	return {"schema_version":SCHEMA_VERSION,"campaign_id":CAMPAIGN_ID,"run_id":run_id,"hero_name":CampaignProfile.hero_name,"checkpoint":checkpoint,"entry_scene":entry_scene,"flags":string_keys(flags),"choices":string_keys(choices),"style":style,"tested_styles":tested_styles.duplicate(),"skills":skills.duplicate(),"passives":passives.duplicate(),"equipped_passives":equipped_passives.duplicate(),"duarte_equipped_passives":duarte_equipped_passives.duplicate(),"inventory":inventory.duplicate(true),"completed":completed,"coins":coins,"equipment":equipment.duplicate(),"shop_stock":shop_stock.duplicate(),"payments":payments.duplicate(),"vitals":vitals.duplicate(),"companion_vitals":companion_vitals.duplicate(true),"local_requests":local_requests.duplicate(),"journey":journey.duplicate(true),"childhood_hunt":childhood_hunt.duplicate(true)}
+	return {"schema_version":SCHEMA_VERSION,"dialogue_history":dialogue_history.duplicate(true),"campaign_id":CAMPAIGN_ID,"run_id":run_id,"hero_name":CampaignProfile.hero_name,"checkpoint":checkpoint,"entry_scene":entry_scene,"flags":string_keys(flags),"choices":string_keys(choices),"style":style,"tested_styles":tested_styles.duplicate(),"skills":skills.duplicate(),"passives":passives.duplicate(),"equipped_passives":equipped_passives.duplicate(),"duarte_equipped_passives":duarte_equipped_passives.duplicate(),"inventory":inventory.duplicate(true),"completed":completed,"coins":coins,"equipment":equipment.duplicate(),"shop_stock":shop_stock.duplicate(),"payments":payments.duplicate(),"vitals":vitals.duplicate(),"companion_vitals":companion_vitals.duplicate(true),"local_requests":local_requests.duplicate(),"journey":journey.duplicate(true),"childhood_hunt":childhood_hunt.duplicate(true)}
 
 func save_to(path: String = SAVE_PATH) -> Error:
 	if path==SAVE_PATH and preload("res://scripts/navigation/shore_bridge.gd").is_visit(snapshot()):
@@ -80,7 +82,7 @@ func load_from(path: String = SAVE_PATH) -> Error:
 func restore(source_data: Dictionary, apply: bool = true) -> Error:
 	var data := source_data.duplicate(true)
 	# JSON stores numbers as floats; Array.has uses strict Variant types.
-	if data.get("schema_version") != 1 and data.get("schema_version") != 2 and data.get("schema_version") != 3 and data.get("schema_version") != 4 and data.get("schema_version") != 5 and data.get("schema_version") != 6 and data.get("schema_version") != 7 and data.get("schema_version") != 8 and data.get("schema_version") != 9 and data.get("schema_version") != SCHEMA_VERSION: return ERR_INVALID_DATA
+	if data.get("schema_version") != 1 and data.get("schema_version") != 2 and data.get("schema_version") != 3 and data.get("schema_version") != 4 and data.get("schema_version") != 5 and data.get("schema_version") != 6 and data.get("schema_version") != 7 and data.get("schema_version") != 8 and data.get("schema_version") != 9 and data.get("schema_version") != 10 and data.get("schema_version") != SCHEMA_VERSION: return ERR_INVALID_DATA
 	if data.schema_version >= 4 and data.get("campaign_id") != CAMPAIGN_ID: return ERR_INVALID_DATA
 	if not data.get("hero_name") is String or not CampaignProfile.name_error(data.hero_name).is_empty(): return ERR_INVALID_DATA
 	if not data.get("checkpoint") is float and not data.get("checkpoint") is int: return ERR_INVALID_DATA
@@ -145,7 +147,11 @@ func restore(source_data: Dictionary, apply: bool = true) -> Error:
 	if not identity is String or identity.length() not in [32,64] or not identity.is_valid_hex_number(false): return ERR_INVALID_DATA
 	if data.schema_version>=10 and not data.has("run_id"): return ERR_INVALID_DATA
 	if not preload("res://scripts/chapter/party_resources.gd").valid(data.get("companion_vitals",{})): return ERR_INVALID_DATA
+	var transcript: Variant = data.get("dialogue_history",[])
+	if data.schema_version>=11 and not data.has("dialogue_history"): return ERR_INVALID_DATA
+	if not preload("res://scripts/chapter/dialogue_log.gd").valid(transcript): return ERR_INVALID_DATA
 	if not apply: return OK
+	dialogue_history.assign(transcript)
 	companion_vitals = preload("res://scripts/chapter/party_resources.gd").normalized(data.get("companion_vitals",{}))
 	run_id = identity
 	childhood_hunt = hunt.duplicate(true)

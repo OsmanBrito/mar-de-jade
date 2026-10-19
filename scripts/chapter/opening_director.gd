@@ -115,6 +115,7 @@ func read_previous() -> void:
 func _show_turn() -> void:
 	var turn: Dictionary = history[history_cursor]
 	speaker.text = CampaignProfile.speaker_name(turn.speaker); body.text = turn.text
+	preload("res://scripts/chapter/dialogue_log.gd").remember(ChapterProgress,speaker.text,body.text)
 	speaker.visible = not turn.get("narration",false)
 	body.add_theme_color_override("font_color",Color("a6b6aa") if turn.get("narration",false) else Color("eee5cc"))
 	turn_counter.visible = not turn.get("narration",false)

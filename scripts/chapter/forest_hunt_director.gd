@@ -100,7 +100,7 @@ func advance() -> void:
 	cursor += 1
 	if cursor<lines.size():
 		var speaker: String = lines[cursor][0]
-		view.speaker.text = get_node("/root/CampaignProfile").speaker_name(speaker); view.body.text = lines[cursor][1]; return
+		view.speaker.text = get_node("/root/CampaignProfile").speaker_name(speaker); view.body.text = lines[cursor][1]; view.remember(view.speaker.text,view.body.text); return
 	if after=="next": next_stage()
 	elif after.begins_with("choice:"): show_choice(after.trim_prefix("choice:"))
 	elif after.begins_with("battle:"): begin_battle(after.trim_prefix("battle:"))

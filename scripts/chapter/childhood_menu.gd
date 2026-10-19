@@ -55,7 +55,7 @@ func close() -> void:
 func text(value: String, title: bool = false) -> void:
 	var label := Label.new(); label.text = value; label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_font_size_override("font_size",GamePreferences.font_size(24 if title else 18)); column.add_child(label)
-	if page=="journal":
+	if page in ["journal","history"]:
 		label.focus_mode = Control.FOCUS_ALL
 		label.focus_entered.connect(func(): label.modulate = Color("e6cb8d"))
 		label.focus_exited.connect(func(): label.modulate = Color.WHITE)
@@ -69,8 +69,14 @@ func refresh() -> void:
 	text("Infância · Caderno" if page=="journal" else "Infância · Pausa",true)
 	if not message.is_empty(): text(message)
 	if page=="journal": journal()
+	elif page=="history":
+		text("Conversas · últimas 200 falas guardadas com a campanha",true)
+		for row in progress.dialogue_history:
+			text(row.speaker+" · "+row.text)
+		if progress.dialogue_history.is_empty(): text("Ainda não há falas registradas.")
 	var back := button("Retomar",close)
 	button("Pausa e opções" if page=="journal" else "Caderno · objetivo, pedidos e descobertas",func(): page = "pause" if page=="journal" else "journal"; message = ""; refresh())
+	button("Conversas",func(): page = "history"; message = ""; refresh())
 	button("Guardar progresso",save_game)
 	button("Som, leitura e combate",settings)
 	if page=="pause":
@@ -78,7 +84,7 @@ func refresh() -> void:
 			var caption: String = {"interact":"Interagir","journal":"Caderno","quick_save":"Guardar"}[action]
 			button(caption+" · "+OS.get_keycode_string(GamePreferences.bindings[action]),func(): pending_binding = action; message = "Prime a nova tecla. Esc/B cancela."; refresh())
 	text("Guardar conserva o percurso livre. Falas e combates retomam o início da etapa.")
-	if page=="journal": column.get_child(0).grab_focus()
+	if page in ["journal","history"]: column.get_child(0).grab_focus()
 	else: back.grab_focus()
 
 func journal() -> void:

@@ -65,6 +65,7 @@ func advance() -> void:
 			queue_redraw()
 		view.speaker.text = CampaignProfile.speaker_name(lines[line_index].speaker)
 		view.body.text = lines[line_index].text
+		view.remember(view.speaker.text,view.body.text)
 		view.next_button.grab_focus()
 		return
 	if segment == "common":

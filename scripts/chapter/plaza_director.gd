@@ -88,6 +88,7 @@ func advance() -> void:
 		if event["type"] == "line":
 			view.speaker.text = CampaignProfile.speaker_name(event["speaker"])
 			view.body.text = event["text"]
+			view.remember(view.speaker.text,view.body.text)
 			view.status.text = ""
 			view.next_button.grab_focus()
 			return

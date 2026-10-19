@@ -86,6 +86,7 @@ func advance() -> void:
 	if line_index < lines.size():
 		view.speaker.text = CampaignProfile.speaker_name(str(lines[line_index]["speaker"]).replace(" [defesa correta]",""))
 		view.body.text = lines[line_index]["text"]
+		view.remember(view.speaker.text,view.body.text)
 		return
 	match after_dialogue:
 		"defense_intro":
