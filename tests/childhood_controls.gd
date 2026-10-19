@@ -51,15 +51,15 @@ func run() -> void:
 		if game.phase!="dialogue": break
 		game.advance()
 	var menu = game.get_node("ChildhoodMenu")
-	check(prefs.bind_key("interact",KEY_V)=="Comando atualizado." and prefs.bind_key("journal",KEY_H)=="Comando atualizado." and prefs.bind_key("quick_save",KEY_L)=="Comando atualizado.","Interact, journal and save can be rebound in childhood")
+	check(prefs.bind_key("interact",KEY_U)=="Comando atualizado." and prefs.bind_key("journal",KEY_H)=="Comando atualizado." and prefs.bind_key("quick_save",KEY_L)=="Comando atualizado.","Interact, journal and save can be rebound in childhood")
 	prefs.apply_bindings(); prefs.controller = false; await frames()
-	check(game.view.hint.text.contains("V") and game.view.hint.text.contains("H") and game.view.hint.text.contains("L"),"Forest hints show the bound keys: "+game.view.hint.text)
+	check(game.view.hint.text.contains("U") and game.view.hint.text.contains("H") and game.view.hint.text.contains("L"),"Forest hints show the bound keys: "+game.view.hint.text)
 	await key(KEY_J); check(not menu.opened,"Old journal key no longer opens the notebook")
 	await key(KEY_H); check(menu.opened and menu.page=="journal","Rebound notebook key opens the notebook")
 	await key(KEY_ESCAPE)
 	game.world.player.position = Vector2(340,780)
 	await key(KEY_E); check(game.phase=="explore","Old interact key cannot bypass the binding: "+game.phase)
-	await key(KEY_V); check(game.phase=="dialogue","Bound interaction reaches the actual forest objective")
+	await key(KEY_U); check(game.phase=="dialogue","Bound interaction reaches the actual forest objective")
 	await key(KEY_ESCAPE); var cursor: int = game.cursor
 	await key(KEY_SPACE); check(game.cursor==cursor,"Confirming a menu never advances the underlying conversation")
 	if menu.opened: menu.close()

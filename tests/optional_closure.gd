@@ -113,6 +113,7 @@ func run() -> void:
 			check(await walk(exit.point),"Actual walk reaches the gangplank")
 			game.routes.interact("exit:deck");await frames();break
 	check(game.phase=="boarding","Physical gangplank opens the departure review")
+	check(not p.dialogue_history.is_empty() and p.dialogue_history.back().text==game.view.body.text,"Gangplank dialogue is preserved in the shared transcript")
 	for name in Optional.pending(p):check(game.view.body.text.contains(name),"Departure names pending "+name)
 	check(game.view.body.text.contains("quando estiveres de novo em Lisboa") and game.options_box.get_child_count()==2,"Departure communicates interruption and preserves free choice")
 	check(p.local_requests==requests and House.stage(p,true)=="asked","Boarding review neither fails requests nor completes childhood history")

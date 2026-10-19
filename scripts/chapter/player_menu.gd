@@ -328,13 +328,23 @@ func draw_item() -> void:
 		action_button.disabled = not reason.is_empty()
 		if not reason.is_empty(): paragraph(details,reason)
 	elif row.has("recovery"):
+		var hero_preview := paragraph(details,Items.recovery_text(p,selected))
+		var duarte_preview := paragraph(details,Items.recovery_text(p,selected,"duarte"))
 		var reason := Items.use_reason(p,selected)
-		action_button = button(details,"Usar 1 unidade",func():
+		action_button = button(details,"Usar no protagonista",func():
 			var message := Items.use(p,selected); refresh(); notice.text = message
 			if row_buttons.has(selected): row_buttons[selected].grab_focus()
 			else: tabs[page].grab_focus())
 		action_button.disabled = not reason.is_empty()
 		if not reason.is_empty(): paragraph(details,reason)
+		var companion_reason := Items.use_reason(p,selected,"duarte")
+		var companion_action := button(details,"Usar em Duarte",func():
+			var message := Items.use(p,selected,"duarte"); refresh(); notice.text = message
+			if row_buttons.has(selected): row_buttons[selected].grab_focus()
+			else: tabs[page].grab_focus())
+		details.move_child(companion_action,3); details.move_child(hero_preview,4); details.move_child(duarte_preview,5)
+		companion_action.disabled = not companion_reason.is_empty()
+		if not companion_reason.is_empty(): paragraph(details,"Duarte · "+companion_reason)
 	# The primary action stays above long descriptions and comparison rows.
 	if action_button != null: details.move_child(action_button,3)
 
@@ -422,6 +432,7 @@ func system_page() -> void:
 		refresh())
 	scale_button.tooltip_text = "Alterna 100%, 110% e 120%. Conversas e menus usam rolagem quando necessário."
 	details.add_child(label("Teclado",24,Color("e6cb8d")))
+	if not GamePreferences.binding_notice.is_empty(): paragraph(details,GamePreferences.binding_notice)
 	for action in GamePreferences.bindings:
 		var caption: String = {"move_left":"Andar à esquerda","move_right":"Andar à direita","move_up":"Andar para cima","move_down":"Andar para baixo","interact":"Interagir","combat_move":"Combate · mover","combat_end":"Combate · fim do turno","combat_timing":"Combate · timing","combat_exit":"Sair de treino","journal":"Caderno","quick_save":"Guardar"}[action]
 		button(details,caption+" · "+OS.get_keycode_string(GamePreferences.bindings[action]),func():

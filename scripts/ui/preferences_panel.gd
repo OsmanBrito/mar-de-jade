@@ -24,6 +24,8 @@ func text(value: String) -> Label:
 	var label := Label.new(); label.text = value; label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_font_size_override("font_size",preferences.font_size(18)); column.add_child(label); return label
 func refresh() -> void:
+	var focused := get_viewport().gui_get_focus_owner()
+	var focus_id: String = str(focused.name) if focused!=null and column.is_ancestor_of(focused) else "Back"
 	for child in column.get_children(): column.remove_child(child); child.queue_free()
 	text("Som, leitura e combate").add_theme_font_size_override("font_size",preferences.font_size(26))
 	for key in ["music","ambience","effects"]:
@@ -39,20 +41,24 @@ func refresh() -> void:
 		toggle.add_theme_font_size_override("font_size",preferences.font_size(18))
 		toggle.button_pressed = preferences.options[key]; column.add_child(toggle)
 		toggle.toggled.connect(func(value): preferences.set_option(key,value))
-	var scale_button := Button.new(); scale_button.text = "Texto · %d%%"%roundi(preferences.text_scale*100); scale_button.custom_minimum_size.y = 42; column.add_child(scale_button)
+	var scale_button := Button.new(); scale_button.name = "TextScale"; scale_button.text = "Texto · %d%%"%roundi(preferences.text_scale*100); scale_button.custom_minimum_size.y = 42; column.add_child(scale_button)
 	scale_button.pressed.connect(func(): preferences.set_text_scale(1.0 if preferences.text_scale>=1.19 else preferences.text_scale+0.1); refresh())
 	text("As opções seguem contigo da infância à viagem. Start/Esc pausa; B/Esc volta. Remapear não altera os botões do controle.")
 	if not feedback.is_empty(): text(feedback)
+	if not preferences.binding_notice.is_empty(): text(preferences.binding_notice)
 	for action in preferences.bindings:
 		var caption: String = {"move_left":"Andar à esquerda","move_right":"Andar à direita","move_up":"Andar para cima","move_down":"Andar para baixo","interact":"Interagir","combat_move":"Combate · mover","combat_end":"Combate · fim do turno","combat_timing":"Combate · timing","combat_exit":"Sair de treino","journal":"Caderno","quick_save":"Guardar"}[action]
 		var binding := Button.new(); binding.name = "Binding_"+action
 		binding.text = caption+" · "+OS.get_keycode_string(preferences.bindings[action]); binding.custom_minimum_size.y = 42
 		binding.add_theme_font_size_override("font_size",preferences.font_size(18)); column.add_child(binding)
 		binding.pressed.connect(func(): pending_binding = action; feedback = "Prime a nova tecla para "+caption+". Esc/B cancela."; refresh())
-	var restore := Button.new(); restore.text = "Restaurar teclas"; restore.custom_minimum_size.y = 42; column.add_child(restore)
+	var restore := Button.new(); restore.name = "Restore"; restore.text = "Restaurar teclas"; restore.custom_minimum_size.y = 42; column.add_child(restore)
 	restore.pressed.connect(func(): preferences.bindings = preferences.DEFAULT_BINDINGS.duplicate(); preferences.apply_bindings(); preferences.commit(); feedback = "Teclas restauradas."; refresh())
-	var back := Button.new(); back.text = "Voltar"; back.custom_minimum_size.y = 42; column.add_child(back)
-	back.pressed.connect(close); back.grab_focus()
+	var back := Button.new(); back.name = "Back"; back.text = "Voltar"; back.custom_minimum_size.y = 42; column.add_child(back)
+	back.pressed.connect(close)
+	var target := column.get_node_or_null(NodePath(focus_id))
+	if target is Control: target.grab_focus()
+	else: back.grab_focus()
 func _process(_delta: float) -> void:
 	var viewport := get_viewport().get_visible_rect().size
 	var size := Vector2(minf(720,viewport.x-48),minf(column.get_combined_minimum_size().y+40,viewport.y-48))

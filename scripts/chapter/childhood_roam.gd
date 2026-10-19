@@ -143,6 +143,7 @@ func interact(requested: String = "") -> void:
 	if selected.begins_with("note:"): Convent.observe(ChapterProgress,selected.trim_prefix("note:")); save()
 	host.phase = "childhood_note"; control(false); host.view.panel.show(); host.view.next_button.show()
 	host.view.speaker.text = reading.speaker; host.view.body.text = reading.text
+	host.view.remember(host.view.speaker.text,host.view.body.text)
 	host.view.next_button.text = "Continuar a explorar"; host.view.next_button.grab_focus()
 func remember() -> void:
 	ChapterProgress.journey = {"kind":"childhood","target":0,"event":-1,"stage":"","area":"convent" if inside() else "square","position":[roundi(host.world.player.position.x),roundi(host.world.player.position.y)]}

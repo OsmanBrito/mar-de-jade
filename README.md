@@ -1,5 +1,7 @@
 # Mar de Jade — capítulo 1 jogável
 
+**Correções da revisão dos nove pontos:** conflitos de teclas, foco das opções, atualização da fonte do HUD, falas opcionais no histórico e suprimentos de Duarte em Lisboa. [Mudanças e 440 verificações](docs/correcoes-revisao-nove-pontos.md).
+
 **Interface, controles e áudio:** histórico de 200 falas entre cenas e saves, remapeamento completo no painel compartilhado, dicas marítimas por dispositivo e leitura ampliada a bordo. [Ponto 9 — mudanças e 566 verificações](docs/interface-controles-audio-ponto-09.md). Controle físico, mixagem percebida e aprovação de experiência continuam no playtest.
 
 **Combate, preparação e economia:** comparação de armas por manejo, passivas por pessoa, exercícios identificados e previsão de suprimentos corrigida. Cinco manejos venceram a primeira abordagem na simulação. [Ponto 8 — mudanças e 481 verificações](docs/combate-preparacao-economia-ponto-08.md). Validação com iniciantes permanece necessária.

@@ -152,6 +152,7 @@ func request_boarding() -> void:
 			if state!="completed": director.view.status.text = "Ainda tens pedidos em Lisboa. Podes continuar a explorar antes de embarcar."
 	if not before_meal() and not before_evaluation(): director.view.body.text += "\n\n"+preload("res://scripts/chapter/optional_arc.gd").boarding(ChapterProgress)
 	if before_evaluation(): director.view.status.text = "Sem prazo para os pedidos nesta pausa. A próxima cena começa na manhã seguinte."
+	director.view.remember(director.view.speaker.text,director.view.body.text)
 	director.view.hint.text = "Enter / A · escolher     Esc / B · voltar"
 	director.view.panel.offset_top = -350
 	director._option("Continuar a explorar",resume)

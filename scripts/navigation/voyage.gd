@@ -83,6 +83,7 @@ func _ready() -> void:
 	impact_voice = AudioStreamPlayer.new(); impact_voice.stream = load("res://assets/audio/combat/heavy_hit.wav"); impact_voice.volume_db = -23; impact_voice.pitch_scale = 0.75; add_child(impact_voice)
 	if ambience.enabled: shot_voice.bus = ambience.buses.effects; impact_voice.bus = ambience.buses.effects
 	_build_ui(); _build_boarding()
+	GamePreferences.changed.connect(_preferences_changed)
 	if resume and not model.last_error.is_empty(): show_message("Viagem",model.last_error)
 	elif not resume and not boarding_test:
 		show_message("Ao leme da Botafogo", "Madeira é a primeira escala para abastecer antes de Duas Águas e da busca pela caravela desaparecida. Vais como aprendiz sob Rodrigo.\n\nComeça pela manobra: W / cima aumenta a vela um nível; S / baixo reduz. A/D ou esquerda/direita viram o leme. Espaço / RB recolhe as velas para parar.\n\nOs 180 de ouro são o fundo de bordo para provisões, reparos e serviços. A tua carteira de Lisboa não foi gasta nem somada a esse fundo. Ajuda completa disponível na pausa.")
@@ -156,6 +157,8 @@ func open_personal(page: String = "inventory",feedback: String = "") -> void:
 	if not personal_safe(): text += "\nProcura um porto ou águas seguras para preparar equipamento e usar suprimentos."
 	var column := modal("personal","Personagem e bagagem",text,[["Conversas",open_conversations],["Bagagem",func(): open_personal("inventory")],["Equipamento",func(): open_personal("equipment")],["Técnicas e passivas",func(): open_personal("knowledge")],["Diário e pedidos",func(): open_personal("journal")],["Voltar à pausa",open_pause]])
 	if page=="journal":
+		if model.campaign_state.is_empty():
+			column.add_child(label("Esta viagem não tem um diário de campanha associado.",17,PAPER)); return
 		var journal = preload("res://scripts/chapter/campaign_journal.gd")
 		var entries: Array = journal.notes(personal)+journal.requests(personal)
 		if entries.is_empty(): column.add_child(label("Ainda não há descobertas ou pedidos registrados.",17,PAPER))
@@ -187,13 +190,14 @@ func open_personal_item(id: String) -> void:
 	var row: Dictionary = items.items()[id]
 	var text: String = row.description
 	if row.slot!=null: text += "\n"+items.describe_stats(row.stats)
+	if row.has("recovery"): text += "\n"+items.recovery_text(data,id)+"\n"+items.recovery_text(data,id,"duarte")
 	var column := modal("personal",row.name,text,[["Voltar à bagagem",open_personal]])
 	if not personal_safe(): column.add_child(label("Procura um porto ou águas seguras para preparar a bagagem.",17,PAPER)); return
 	if row.slot!=null or row.has("recovery"):
 		var equipped: bool = data.equipment.values().has(id)
 		var kind := "unequip" if equipped else "equip" if row.slot!=null else "use"
 		var reason: String = items.equip_reason(data,id) if kind=="equip" else items.use_reason(data,id) if kind=="use" else "Experimenta desarmado com Tomé antes de retirar a arma." if row.slot=="weapon" and not data.tested_styles.has("PU") else ""
-		var action := button("Retirar" if equipped else "Equipar" if kind=="equip" else "Usar 1 unidade",personal_action.bind(kind,id))
+		var action := button("Retirar" if equipped else "Equipar" if kind=="equip" else "Usar no protagonista",personal_action.bind(kind,id))
 		action.disabled = not reason.is_empty(); column.add_child(action)
 		if not reason.is_empty(): column.add_child(label(reason,17,PAPER))
 		if row.has("recovery"):
@@ -239,8 +243,18 @@ func _build_ui() -> void:
 	hint = label("",13,Color("a8beb0")); hint.position = Vector2(34,855); hint.size.x = 1370; hint.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS; ui.add_child(hint)
 	notice_label = label("",16,PAPER); notice_label.position = Vector2(35,736); notice_label.size = Vector2(1370,45); notice_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; ui.add_child(notice_label)
 	modal_root = Control.new(); modal_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); modal_root.mouse_filter = Control.MOUSE_FILTER_IGNORE; ui.add_child(modal_root)
+func _refresh_reading(node: Node) -> void:
+	for child in node.get_children():
+		if child is Control and child.has_meta("base_font_size"):
+			child.add_theme_font_size_override("font_size",GamePreferences.font_size(int(child.get_meta("base_font_size"))))
+		_refresh_reading(child)
+
+func _preferences_changed() -> void:
+	if is_instance_valid(ui): _refresh_reading(ui)
+
 func label(value: String,size: int,color: Color) -> Label:
 	var item := Label.new(); item.text = value; item.add_theme_font_size_override("font_size",GamePreferences.font_size(size)); item.add_theme_color_override("font_color",color); item.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	item.set_meta("base_font_size",size)
 	return item
 func box(fill: Color,border: Color) -> StyleBoxFlat:
 	var style := preload("res://scripts/ui/presentation.gd").panel(fill,border)
@@ -249,6 +263,7 @@ func box(fill: Color,border: Color) -> StyleBoxFlat:
 func button(title: String,action: Callable) -> Button:
 	var item := Button.new(); item.text = title; item.custom_minimum_size = Vector2(160,43); item.add_theme_font_size_override("font_size",GamePreferences.font_size(16)); item.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	item.add_theme_color_override("font_color",PAPER); item.add_theme_stylebox_override("normal",box(Color("183c44"),Color("52736b"))); item.add_theme_stylebox_override("hover",box(Color("2a514f"),GOLD)); item.add_theme_stylebox_override("focus",box(Color("315853"),GOLD))
+	item.set_meta("base_font_size",16)
 	item.set_meta("hint_source",title); item.text = GamePreferences.navigation_hint(title,model.phase=="naval")
 	item.pressed.connect(action); return item
 func notice(message: String) -> void:
@@ -761,6 +776,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event is InputEventKey and event.pressed and event.physical_keycode in [KEY_M,KEY_B]: clear_overlay()
 		return
 	if not overlay.is_empty(): return
+	if event is InputEventKey and event.is_action_pressed("journal") and model.phase in ["sea","deck","port","island"]:
+		open_personal("journal"); get_viewport().set_input_as_handled(); return
 	if event.is_action_pressed("quick_save"):
 		_save(true); get_viewport().set_input_as_handled(); return
 	if event.is_action_pressed("interact") and model.phase!="naval":

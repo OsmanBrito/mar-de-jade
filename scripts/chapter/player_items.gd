@@ -85,6 +85,27 @@ static func clamp_vitals(p) -> void:
 	var limits := stats(p)
 	for key in ["hp","qi","posture"]: p.vitals[key] = clampi(int(p.vitals[key]),0,int(limits[key]))
 
+static func recovery_preview(p,id: String,person: String = "hero") -> Dictionary:
+	var row: Dictionary = items().get(id,{})
+	if not row.has("recovery"): return {}
+	var limits: Dictionary = stats(p) if person=="hero" else preload("res://scripts/chapter/party_resources.gd").LIMITS.get(person,{})
+	if limits.is_empty(): return {}
+	var vitals: Dictionary = p.vitals if person=="hero" else p.companion_vitals.get(person,limits)
+	var result := {}
+	for key in row.recovery:
+		var dose: int = int(row.recovery[key])
+		var amount: int = mini(dose,maxi(0,int(limits[key])-int(vitals[key])))
+		result[key] = {"amount":amount,"capacity":dose,"waste":dose-amount}
+	return result
+
+static func recovery_text(p,id: String,person: String = "hero") -> String:
+	var rows: Array[String] = []
+	var preview := recovery_preview(p,id,person)
+	for key in preview:
+		var row: Dictionary = preview[key]
+		rows.append("%s +%d · excedente %d"%[STAT_NAMES.get(key,key),row.amount,row.waste])
+	return ("Duarte" if person=="duarte" else "Protagonista")+": "+" / ".join(rows)
+
 static func use_reason(p, id: String, person: String = "hero") -> String:
 	var row: Dictionary = items().get(id,{})
 	if row.is_empty() or int(p.inventory.get(id,0)) < 1: return "Não tens este objeto."

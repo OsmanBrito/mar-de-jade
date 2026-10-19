@@ -384,6 +384,7 @@ func inspect(row: Dictionary) -> void:
 	director.phase = "order_inspection"; director._lock_player(true); director._clear_options()
 	director.view.panel.show(); director.options_box.show(); director.view.next_button.hide()
 	director.view.speaker.text = row.title; director.view.body.text = row.text
+	director.view.remember(director.view.speaker.text,director.view.body.text)
 	director._option("Voltar à exploração",resume)
 	director.options_box.get_child(0).grab_focus()
 
@@ -393,6 +394,7 @@ func review_boarding() -> void:
 	director.view.speaker.text = "Duarte · Pontão da Botafogo"
 	director.view.body.text = "Madeira para mantimentos; depois Duas Águas e a busca pela caravela. Sobes como aprendiz. Ainda podes descer pela prancha antes de te apresentares ao capitão."
 	director.view.body.text += "\n\n"+preload("res://scripts/chapter/optional_arc.gd").boarding(ChapterProgress)
+	director.view.remember(director.view.speaker.text,director.view.body.text)
 	var pending:=preload("res://scripts/chapter/optional_arc.gd").pending(ChapterProgress)
 	director.view.status.text = "Confere a sacola e os assuntos de Lisboa antes da partida." if pending.is_empty() else "Pedidos por concluir em Lisboa: %d. Podes continuar a explorar."%pending.size()
 	director._option("Continuar a explorar",resume)
