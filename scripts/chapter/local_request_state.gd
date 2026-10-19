@@ -42,7 +42,7 @@ static func claim(p) -> bool:
 	return true
 
 static func valid(states, inventory: Dictionary) -> bool:
-	if not states is Dictionary or states.size()>3: return false
+	if not states is Dictionary or states.size()>1+preload("res://scripts/chapter/lisbon_errands.gd").DEFINITIONS.size(): return false
 	for id in states:
 		if id==ID:
 			if not states[id] is String or not STAGES.has(states[id]): return false

@@ -34,6 +34,7 @@ var observed_signals: Dictionary = {}
 var land_polygons: Array[PackedVector2Array] = []
 var warned_ahead := false
 var blocked_by_coast := false
+var campaign_state: Dictionary = {}
 var boarding_profile: Dictionary = {}
 var tutorials: Dictionary = {}
 
@@ -208,13 +209,13 @@ func safe_to_save() -> bool:
 func snapshot() -> Dictionary:
 	var ships := {}
 	for id in traffic: ships[id] = [traffic[id].x,traffic[id].y]
-	return {"version":1,"position":[position.x,position.y],"heading":heading,"supplies":supplies,"hull":hull,"coins":coins,"distance":distance,"elapsed":elapsed,"discovered":string_keys(discovered),"visited":string_keys(visited),"resolved":string_keys(resolved),"upgrades":string_keys(upgrades),"route_marks":string_keys(route_marks),"aid_used":string_keys(aid_used),"observed_signals":string_keys(observed_signals),"traffic":ships,"route_known":route_known,"made_landfall":made_landfall,"hero_name":hero_name,"style":style,"phase":phase,"port":port,"boarding_profile":boarding_profile.duplicate(true),"tutorials":tutorials.duplicate()}
+	return {"version":2,"campaign_state":campaign_state.duplicate(true),"position":[position.x,position.y],"heading":heading,"supplies":supplies,"hull":hull,"coins":coins,"distance":distance,"elapsed":elapsed,"discovered":string_keys(discovered),"visited":string_keys(visited),"resolved":string_keys(resolved),"upgrades":string_keys(upgrades),"route_marks":string_keys(route_marks),"aid_used":string_keys(aid_used),"observed_signals":string_keys(observed_signals),"traffic":ships,"route_known":route_known,"made_landfall":made_landfall,"hero_name":hero_name,"style":style,"phase":phase,"port":port,"boarding_profile":boarding_profile.duplicate(true),"tutorials":tutorials.duplicate()}
 func string_keys(data: Dictionary) -> Dictionary:
 	var result := {}
 	for key in data: result[str(key)] = data[key]
 	return result
 func restore(data: Dictionary) -> bool:
-	if data.get("version")!=1: return false
+	if data.get("version")!=1 and data.get("version")!=2: return false
 	var lessons: Variant = data.get("tutorials",{})
 	if not lessons is Dictionary or lessons.size()>5: return false
 	for key in lessons:
@@ -231,6 +232,8 @@ func restore(data: Dictionary) -> bool:
 	if data.get("phase") not in ["sea","port","island"]: return false
 	var kit: Variant = data.get("boarding_profile",{})
 	if not kit is Dictionary or (not kit.is_empty() and (not BoardingLoadout.valid(kit) or kit.style!=data.get("style"))): return false
+	kit = kit.duplicate(true)
+	if not kit.is_empty(): kit.companion_vitals = preload("res://scripts/chapter/party_resources.gd").normalized(kit.get("companion_vitals",{}))
 	if not data.get("hero_name") is String or data.hero_name.length()>24 or data.get("style") not in ["ES","LA","MC","FO","PU"]: return false
 	if not data.get("port") is String or (not data.port.is_empty() and place(data.port).is_empty()): return false
 	if data.phase in ["port","island"] and place(data.port).is_empty(): return false
@@ -260,6 +263,15 @@ func restore(data: Dictionary) -> bool:
 	for id in ships:
 		if not traffic.has(id) or not ships[id] is Array or ships[id].size()!=2: return false
 		if not number(ships[id][0]) or not number(ships[id][1]) or not water(point(ships[id])): return false
+	var campaign: Variant = data.get("campaign_state",{})
+	if not campaign is Dictionary: return false
+	if not campaign.is_empty():
+		var validator = load("res://scripts/chapter/chapter_progress.gd").new()
+		var valid: bool = validator.restore(campaign,false)==OK
+		validator.free()
+		if not valid or campaign.hero_name!=data.hero_name or campaign.style!=data.style: return false
+		if BoardingLoadout.capture(campaign)!=kit: return false
+	campaign_state = campaign.duplicate(true)
 	position = at; heading = data.heading; supplies = data.supplies; hull = data.hull; coins = int(data.coins); distance = data.distance; elapsed = data.elapsed
 	for key in ["discovered","visited","resolved","upgrades","route_marks","aid_used"]: set(key,data[key].duplicate())
 	route_known = data.route_known; made_landfall = data.made_landfall; hero_name = data.hero_name; style = data.style; phase = data.phase; port = data.port
@@ -274,6 +286,8 @@ func number(value) -> bool:
 func save_to(path: String) -> Error:
 	if not safe_to_save(): last_error = "Procura águas seguras ou um porto para guardar."; return ERR_BUSY
 	var data := snapshot()
+	var validator = get_script().new()
+	if not validator.restore(data): last_error = "O estado da viagem não é válido para guardar."; return ERR_INVALID_DATA
 	var file := FileAccess.open(path+".tmp",FileAccess.WRITE)
 	if file==null: last_error = "Não foi possível guardar a viagem."; return FileAccess.get_open_error()
 	file.store_string(JSON.stringify(data,"\t")); file.flush(); file.close()

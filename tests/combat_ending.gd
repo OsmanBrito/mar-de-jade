@@ -78,6 +78,7 @@ func run() -> void:
 			if game.phase=="dialogue": game.advance()
 			elif game.phase=="task": game.world.player.position = game.props.marker; game.interact_task()
 			elif game.phase=="styles": game.choose_style("ES")
+			elif game.phase=="roaming": check(await load("res://tests/lisbon_walk_driver.gd").new().reach(game),"Recovery returns physically to the courtyard before the maneuver trial")
 		if game.busy: await physics_frame
 		else: await process_frame
 	host = game.battle_host; host.set_process(false); v = host.tactical

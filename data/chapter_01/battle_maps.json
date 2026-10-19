@@ -1,4 +1,5 @@
 {
+  "forest": {"title":"CLAREIRA DO BOSQUE","floor":"forest","tint":"b6bea0","buildings":[],"training":false,"shore":false,"obstacle":"bench","obstacles":[],"dressing":"forest"},
   "plaza_child": {"title":"PRAÇA · INFÂNCIA","floor":"paving","tint":"d6d4bc","buildings":[0,3],"training":true,"shore":false,"obstacle":"bench","obstacles":[[3,2],[3,3],[3,4]],"dressing":"garden"},
   "plaza": {"title":"PRAÇA DE LISBOA","floor":"paving","tint":"d1cbb8","buildings":[3,0],"training":false,"shore":false,"obstacle":"bench","obstacles":[[2,2],[6,5],[6,6]],"dressing":"square"},
   "courtyard": {"title":"PÁTIO DO ABRIGO","floor":"paving","tint":"d9d3b9","buildings":[0,2],"training":true,"shore":false,"obstacle":"bench","obstacles":[[3,2],[3,3],[3,4]],"dressing":"garden"},

@@ -22,7 +22,7 @@ func begin(host,ok: bool) -> void:
 	duel = host.combat.encounter=="portugal_duel"
 	var mode: String = host.combat.get("mode") if host.combat.get("mode")!=null else ("child_attack" if host.combat.lesson==0 else "child_defense")
 	title = "EXERCÍCIO CONCLUÍDO"; detail = "Ataque básico praticado."
-	if duel: title = "LEONOR VENCEU"; detail = "O confronto terminou. A história continua."
+	if duel: title = "LEONOR VENCEU"; detail = "A avaliação terminou. A história continua com o auxílio de Duarte e Tomé; o treino virá depois da recuperação."
 	elif not ok: title = "VOLTAR A PRATICAR"; detail = "Observa a orientação e o sinal."
 	elif mode in ["child_defense","adult_defense"]: title = "DEFESA PRATICADA"; detail = "Defesa simples praticada."
 	elif mode=="school": title = "FUNDAMENTO PRATICADO"; detail = "Básico e técnica executados."

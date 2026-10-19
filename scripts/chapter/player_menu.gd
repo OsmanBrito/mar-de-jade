@@ -13,6 +13,8 @@ var listing: VBoxContainer
 var details: VBoxContainer
 var notice: Label
 var wallet: Label
+var summary_scroll: ScrollContainer
+var details_scroll: ScrollContainer
 var tabs: Dictionary = {}
 var page := "Personagem"
 var filter := "Todos"
@@ -38,27 +40,38 @@ func _ready() -> void:
 	var column := VBoxContainer.new(); column.add_theme_constant_override("separation",15); panel.add_child(column)
 	var header := HBoxContainer.new(); column.add_child(header)
 	var title := label("MAR DE JADE  /  PORTUGAL",25,Color("e6cb8d")); title.size_flags_horizontal = Control.SIZE_EXPAND_FILL; header.add_child(title)
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	wallet = label("",21,Color("e6cb8d")); header.add_child(wallet)
 	var resume_button := button(header,"Retomar  ·  Esc",func(): close_requested.emit())
 	resume_button.custom_minimum_size.x = 160
+	resume_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 	resume_button.autowrap_mode = TextServer.AUTOWRAP_OFF
 	var navigation := HFlowContainer.new(); navigation.add_theme_constant_override("h_separation",7); navigation.add_theme_constant_override("v_separation",5); column.add_child(navigation)
 	for name in tab_names:
 		tabs[name] = button(navigation,name,switch_page.bind(name)); tabs[name].size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		tabs[name].custom_minimum_size.x = tabs[name].get_theme_font("font").get_string_size(name,HORIZONTAL_ALIGNMENT_LEFT,-1,GamePreferences.font_size(17)).x+28
 	column.add_child(HSeparator.new())
 	content = HBoxContainer.new(); content.size_flags_vertical = Control.SIZE_EXPAND_FILL; content.add_theme_constant_override("separation",24); column.add_child(content)
 	var scroll := ScrollContainer.new(); scroll.custom_minimum_size.x = 270; scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; scroll.follow_focus = true; content.add_child(scroll)
+	summary_scroll = scroll
 	summary = VBoxContainer.new(); summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL; summary.add_theme_constant_override("separation",8); scroll.add_child(summary)
 	content.add_child(VSeparator.new())
 	var middle := ScrollContainer.new(); middle.size_flags_horizontal = Control.SIZE_EXPAND_FILL; middle.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; middle.follow_focus = true; content.add_child(middle)
 	listing = VBoxContainer.new(); listing.size_flags_horizontal = Control.SIZE_EXPAND_FILL; listing.add_theme_constant_override("separation",8); middle.add_child(listing)
 	content.add_child(VSeparator.new())
 	var right := ScrollContainer.new(); right.custom_minimum_size.x = 300; right.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; right.follow_focus = true; content.add_child(right)
+	details_scroll = right
 	details = VBoxContainer.new(); details.size_flags_horizontal = Control.SIZE_EXPAND_FILL; details.add_theme_constant_override("separation",14); right.add_child(details)
 	column.add_child(HSeparator.new())
 	notice = label("",16,Color("e6cb8d")); notice.custom_minimum_size.y = 24; column.add_child(notice)
 	column.add_child(label("Setas / comando · navegar     Enter / A · escolher     Esc / B · voltar",14,Color("a3bab0")))
 	screen.hide()
+	get_viewport().size_changed.connect(_resize_columns); _resize_columns()
+
+func _resize_columns() -> void:
+	var width := get_viewport().get_visible_rect().size.x
+	summary_scroll.custom_minimum_size.x = clampf(width*.19,160,270)
+	details_scroll.custom_minimum_size.x = clampf(width*.23,200,320)
 
 func label(value: String, font_size: int = 17, color := Color("e8dfc8")) -> Label:
 	var node := Label.new(); node.text = value; node.add_theme_font_size_override("font_size",GamePreferences.font_size(font_size))
@@ -71,6 +84,7 @@ func paragraph(parent: Control, value: String, color := Color("b4c7bd")) -> Labe
 
 func button(parent: Control, text: String, callback: Callable) -> Button:
 	var node := Button.new(); node.text = text; node.custom_minimum_size.y = 42
+	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	node.add_theme_font_size_override("font_size",GamePreferences.font_size(17))
 	node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	node.pressed.connect(callback); parent.add_child(node); return node
@@ -81,6 +95,7 @@ func clear(parent: Node) -> void:
 func open(initial: String = "Personagem") -> void:
 	page = initial; filter = "Todos"; selected = ""; pending_sale = ""; screen.show(); refresh()
 	notice.text = "Progresso guardado no início de cada etapa. A mochila conserva as tuas alterações."
+	if director.routes.active: notice.text = "O percurso conserva o local e o compromisso atual. A mochila conserva as tuas alterações."
 	tabs[page].grab_focus()
 
 func close() -> void:
@@ -117,10 +132,50 @@ func refresh() -> void:
 		"Conversas": history_page()
 
 func requests_page() -> void:
+	paragraph(listing,preload("res://scripts/chapter/optional_arc.gd").availability(ChapterProgress))
+	var story:=preload("res://scripts/chapter/adult_arc.gd").notes(ChapterProgress)
+	if not story.is_empty():listing.add_child(label("Acontecimentos conhecidos",22,Color("e6cb8d")))
+	for entry in story:
+		button(listing,entry.title,func():clear(details);paragraph(details,entry.title,Color("e6cb8d"));paragraph(details,entry.text))
+	var memories:=preload("res://scripts/chapter/optional_arc.gd").memories(ChapterProgress)
+	for memory in memories:
+		button(listing,memory.title,func(): clear(details); paragraph(details,memory.title,Color("e6cb8d")); paragraph(details,memory.text))
 	listing.add_child(label("Compromisso atual",25,Color("e6cb8d")))
 	paragraph(listing,preload("res://scripts/chapter/chapter_objectives.gd").current(director))
+	var house = preload("res://scripts/city/house_life.gd")
+	var young: bool = director.world.get("childhood")==true
+	if not house.stage(ChapterProgress,young).is_empty():
+		listing.add_child(label("A água da casa · Pedido opcional",22,Color("e6cb8d")))
+		paragraph(listing,house.objective(ChapterProgress,young))
 	listing.add_child(HSeparator.new())
+	var convent = preload("res://scripts/city/convent_plan.gd")
+	var discovered := false
+	for id in convent.NOTES:
+		if not convent.observed(ChapterProgress,id): continue
+		if not discovered: listing.add_child(label("Lugares conhecidos · Casa da Ordem",22,Color("e6cb8d"))); discovered = true
+		var note: Dictionary = convent.NOTES[id]
+		button(listing,note.title,func():
+			clear(details); paragraph(details,note.title,Color("e6cb8d")); paragraph(details,note.text))
+	var forest = preload("res://scripts/city/forest_plan.gd")
+	if not ChapterProgress.childhood_hunt.get("notes",[]).is_empty():
+		listing.add_child(label("Lugares conhecidos · Arredores de Lisboa",22,Color("e6cb8d")))
+		for id in ChapterProgress.childhood_hunt.notes:
+			var note: Dictionary = forest.DISCOVERIES[id]
+			button(listing,note.title,func(): clear(details); paragraph(details,note.title,Color("e6cb8d")); paragraph(details,note.text))
+	if discovered: listing.add_child(HSeparator.new())
+	var access = preload("res://scripts/city/lisbon_access.gd")
+	for id in access.ROWS:
+		if not access.observed(ChapterProgress,id): continue
+		var note: Dictionary = access.ROWS[id]
+		button(listing,note.title,func(): clear(details); paragraph(details,note.title,Color("e6cb8d")); paragraph(details,note.text))
 	var errands = preload("res://scripts/chapter/lisbon_errands.gd")
+	var district = preload("res://scripts/chapter/lisbon_district.gd")
+	var district_notes := false
+	for key in district.NOTES:
+		if not ChapterProgress.flags.get(key,false): continue
+		if not district_notes: listing.add_child(label("Lugares conhecidos · Ribeira de Lisboa",22,Color("e6cb8d"))); district_notes = true
+		var note: Dictionary = district.NOTES[key]
+		button(listing,note.title,func(): clear(details); paragraph(details,note.title,Color("e6cb8d")); paragraph(details,note.text))
 	for id in errands.DEFINITIONS:
 		var progress: String = errands.stage(ChapterProgress,id)
 		if progress.is_empty(): continue
@@ -132,8 +187,12 @@ func requests_page() -> void:
 	listing.add_child(label("Pedidos de Lisboa",25,Color("e6cb8d")))
 	var state: String = requests.stage(ChapterProgress)
 	if state.is_empty():
-		paragraph(listing,"Conversa com os moradores. O oficial da oficina precisa de ajuda com um carro imobilizado.")
-		paragraph(details,"Depois do socorro e antes do embarque podes explorar o cais. Duarte espera no pontão para seguir contigo.")
+		if ChapterProgress.flags.get("patient_helped",false):
+			paragraph(listing,"Conversa com os moradores. O oficial da oficina precisa de ajuda com um carro imobilizado.")
+			paragraph(details,"Depois do socorro e antes do embarque podes explorar os pedidos de Lisboa. São opcionais; o compromisso principal continua indicado no alto desta página.")
+		else:
+			paragraph(listing,"Os pedidos dos moradores do cais ficam disponíveis depois do socorro.")
+			paragraph(details,"O pedido da casa é opcional. O compromisso atual continua indicado no alto desta página; podes retomar a tarefa da água mais tarde.")
 		return
 	var row: Dictionary = requests.definition()
 	listing.add_child(label(row.title,23,Color("e6cb8d")))
@@ -168,12 +227,15 @@ func character_page() -> void:
 	details.add_child(label("Portugal · Capítulo 1",22,Color("e6cb8d")))
 	paragraph(details,director.blocks[director.scene_index].title)
 	paragraph(details,"O equipamento aumenta os atributos a partir dos treinos de Tomé. Trocar uma peça não recupera vida ou alento.")
-	paragraph(details,"Tomé repõe pelo menos 8 de alento no início de cada aula de manejo.")
+	paragraph(details,"Os exercícios de Tomé usam recursos próprios: começam com vida e postura completas e 8 de alento. Não gastam nem recuperam os recursos que levas para a viagem.")
 	paragraph(details,"O serviço no cais rende 40 de ouro, uma única vez.")
+	var companion: Dictionary = preload("res://scripts/chapter/party_progress.gd").member(ChapterProgress,"duarte")
+	paragraph(details,"Duarte · equipamento próprio fixo neste arco. Vida %d/120 · Alento %d/12 · Postura %d/100. Aprendizados e quatro vagas de passivas pertencem a ele."%[companion.vitals.hp,companion.vitals.qi,companion.vitals.posture])
 
 func shop_reason() -> String:
+	if director.world.has_meta("order_convent"): return "As provisões são vendidas pelo comerciante na Ribeira."
 	if director.busy or ChapterProgress.flags.get("injured",false): return "Termina esta sequência e recupera antes de visitar a loja."
-	if director.map_kind not in ["cais","service","plaza","courtyard"] or ChapterProgress.flags.get("embarked",false): return "A loja fica em Lisboa. Visita-a nas pausas no cais, na praça ou no pátio."
+	if director.map_kind not in ["cais","service","plaza","courtyard"] or (ChapterProgress.flags.get("embarked",false) and ChapterProgress.journey.get("kind","")!="port_visit"): return "A loja fica em Lisboa. Visita-a nas pausas no cais, na praça ou no pátio."
 	if director.phase not in ["block_end","styles","styles_result","equipment","exploration","roaming"]: return "Termina esta etapa para visitar a loja numa pausa segura."
 	return ""
 
@@ -186,6 +248,9 @@ func inventory_page() -> void:
 		var trade_tabs := HBoxContainer.new(); listing.add_child(trade_tabs)
 		for mode in ["Comprar","Vender"]: button(trade_tabs,("• " if trading == mode else "")+mode,func(): trading = mode; selected = ""; pending_sale = ""; refresh())
 		paragraph(listing,"Estoque limitado · preço por unidade · venda a metade do preço",Color("a3bab0"))
+		if trading=="Comprar":
+			var kit_cost := int(Items.items()["PT-C01"].price)+int(Items.items()["PT-C03"].price)
+			paragraph(listing,"Reserva pessoal: uma ligadura e uma água custam %d de ouro. A primeira arma é oferecida por Tomé ao concluir a escolha."%kit_cost,Color("a3bab0"))
 	var filters := HBoxContainer.new(); listing.add_child(filters)
 	for value in ["Todos","Peças","Usáveis","História"]:
 		button(filters,("• " if filter == value else "")+value,func(): filter = value; selected = ""; refresh())
@@ -232,16 +297,17 @@ func draw_item() -> void:
 		if row.has("style") and not ChapterProgress.tested_styles.has(row.style): paragraph(details,"Para equipar: experimenta "+Items.STYLES[row.style]+" com Tomé.")
 		var current: String = ChapterProgress.equipment.get(row.slot,"")
 		paragraph(details,"Equipado: "+(Items.items()[current].name if not current.is_empty() else "Livre"))
-		var delta: Dictionary = row.stats.duplicate()
-		if not current.is_empty():
-			for key in Items.items()[current].stats: delta[key] = int(delta.get(key,0))-int(Items.items()[current].stats[key])
+		var delta: Dictionary = Items.comparison(ChapterProgress,selected)
 		details.add_child(label("Se trocares:",16))
 		var differences := false
 		for key in delta:
 			if int(delta[key]) == 0: continue
 			differences = true
-			paragraph(details,"%s %+d" % [Items.STAT_NAMES.get(key,key),int(delta[key])],Color("8cd7b7") if delta[key] > 0 else Color("e4a598"))
+			paragraph(details,"%s %+d" % [("Potência do básico" if key=="power" else Items.STAT_NAMES.get(key,key)),int(delta[key])],Color("8cd7b7") if delta[key] > 0 else Color("e4a598"))
 		if not differences: paragraph(details,"Sem alteração de atributos.")
+		if row.has("style"):
+			var reach: int = preload("res://scripts/combat/campaign_rules.gd").STYLES[row.style].range
+			paragraph(details,"%s · alcance do básico: %d casa(s). A potência compara também a base do manejo; a previsão do combate considera defesa, orientação e timing."%[Items.STYLES[row.style],reach])
 	var p = ChapterProgress
 	if page == "Loja de Lisboa":
 		var reason := Items.buy_reason(p,selected) if trading == "Comprar" else Items.sell_reason(p,selected)
@@ -293,13 +359,13 @@ func knowledge_page() -> void:
 		var node := button(listing,("✓ " if passive and equipped.has(row.id) else "")+row.name+(" · Duarte" if row.id.begins_with("DU") else ""),show_knowledge.bind(row,passive))
 		node.icon = load(row.icon); node.expand_icon = true; node.add_theme_constant_override("icon_max_width",46); node.custom_minimum_size.y = 62
 	if count == 0: paragraph(listing,"Tomé ainda não ensinou estas práticas.")
-	paragraph(details,"Escolhe uma prática para consultar os detalhes.")
+	paragraph(details,"Escolhe uma prática para consultar os detalhes. Os exercícios C01-DEMO são temporários; as restantes técnicas do catálogo amplo pertencem a etapas posteriores.")
 
 func show_knowledge(row: Dictionary, passive: bool) -> void:
 	clear(details); paragraph(details,row.name,Color("e6cb8d")).add_theme_font_size_override("font_size",24)
 	paragraph(details,"Nv. %d · %s" % [row.rarity_level,row.rarity_name],Color(row.rarity_color))
 	if not passive:
-		paragraph(details,"Aprendida · "+("Duarte" if row.id.begins_with("DU") else CampaignProfile.hero_name))
+		paragraph(details,("Aprendida · " if preload("res://scripts/chapter/arc_content.gd").executable(row.id) else "Registro de catálogo antigo · não executável neste arco · ")+("Duarte" if row.id.begins_with("DU") else CampaignProfile.hero_name))
 		if row.id in ["ES07","LA07","MC08","FO07","PU07"]:
 			var style: String = row.id.substr(0,2)
 			var rules = preload("res://scripts/combat/campaign_rules.gd").new()
@@ -310,12 +376,14 @@ func show_knowledge(row: Dictionary, passive: bool) -> void:
 			if ChapterProgress.style != style: paragraph(details,"Equipa o manejo de "+Items.STYLES[style]+" para preparar esta técnica.")
 		elif row.id == "DP01": paragraph(details,"Reage no sinal do golpe inimigo. Bom/Perfeito dependem do timing e da orientação da guarda.")
 		elif row.id == "DU01": paragraph(details,"6 alento · alcance 1. Duarte prepara uma interceptação: 60% do residual para o aliado e 40% para si.")
-		elif row.id == "DU02": paragraph(details,"Prática de Duarte registada. Neste capítulo, o exercício de apoio disponibiliza o básico e Guarda Companheira.")
+		elif row.id == "DU02": paragraph(details,"Registro antigo conservado. Ponta da Guarda pertence ao catálogo de etapas posteriores; neste arco Duarte usa o básico e Guarda Companheira.")
 		paragraph(details,"A linha de ações do combate mostra as técnicas disponíveis em cada exercício.")
 		return
+	paragraph(details,"Conhecida · "+("Duarte" if row.owner=="duarte" else CampaignProfile.hero_name)+". Só produz efeito enquanto equipada; cada pessoa tem quatro vagas próprias.")
 	paragraph(details,row.effect); paragraph(details,row.limit)
 	var equipped: Array = ChapterProgress.duarte_equipped_passives if row.owner == "duarte" else ChapterProgress.equipped_passives
 	var active := equipped.has(row.id)
+	paragraph(details,"Equipada · ocupa uma vaga." if active else "Conhecida · ainda não equipada.")
 	var node := button(details,"Retirar passiva" if active else "Equipar passiva",func():
 		if equipped.has(row.id): equipped.erase(row.id)
 		elif equipped.size() < 4: equipped.append(row.id)
@@ -354,20 +422,20 @@ func system_page() -> void:
 	scale_button.tooltip_text = "Alterna 100%, 110% e 120%. Conversas e menus usam rolagem quando necessário."
 	details.add_child(label("Teclado",24,Color("e6cb8d")))
 	for action in GamePreferences.bindings:
-		var caption: String = {"move_left":"Andar à esquerda","move_right":"Andar à direita","move_up":"Andar para cima","move_down":"Andar para baixo","interact":"Interagir","combat_move":"Combate · mover","combat_end":"Combate · fim do turno","combat_timing":"Combate · timing","combat_exit":"Sair de treino"}[action]
+		var caption: String = {"move_left":"Andar à esquerda","move_right":"Andar à direita","move_up":"Andar para cima","move_down":"Andar para baixo","interact":"Interagir","combat_move":"Combate · mover","combat_end":"Combate · fim do turno","combat_timing":"Combate · timing","combat_exit":"Sair de treino","journal":"Caderno","quick_save":"Guardar"}[action]
 		button(details,caption+" · "+OS.get_keycode_string(GamePreferences.bindings[action]),func():
 			pending_binding = action; notice.text = "Prime a nova tecla para "+caption+". Esc cancela.")
 	button(details,"Restaurar teclas",func():
 		GamePreferences.bindings = GamePreferences.DEFAULT_BINDINGS.duplicate(); GamePreferences.apply_bindings(); GamePreferences.commit(); refresh())
-	paragraph(listing,"Carregar regressa ao início da etapa guardada, com os teus itens e moedas. Recomeçar repete a etapa atual.")
+	paragraph(listing,"Carregar retoma o local e o compromisso do percurso guardado. Recomeçar repete a etapa atual." if not ChapterProgress.journey.is_empty() else "Carregar regressa ao início da etapa guardada, com os teus itens e moedas. Recomeçar repete a etapa atual.")
 	button(listing,"Guardar capítulo",func(): save_requested.emit())
 	var load_button := button(listing,"Carregar último save",func():
-		clear(details); paragraph(details,"Regressar ao início da etapa guardada?")
+		clear(details); paragraph(details,"Retomar o percurso guardado?" if not ChapterProgress.journey.is_empty() else "Regressar ao início da etapa guardada?")
 		button(details,"Confirmar carregamento",func(): load_requested.emit()))
 	var restart_button := button(listing,"Recomeçar esta etapa",func():
 		clear(details); paragraph(details,"Repetir a etapa atual? Os teus objetos e moedas serão conservados.")
 		button(details,"Confirmar reinício",func(): restart_requested.emit()))
-	load_button.disabled = director.busy; restart_button.disabled = director.busy
+	load_button.disabled = director.busy; restart_button.disabled = director.busy or ChapterProgress.journey.get("kind","")=="port_visit"
 	if director.busy: paragraph(listing,"Retoma a cena antes de carregar ou recomeçar esta etapa.")
 
 func _input(event: InputEvent) -> void:

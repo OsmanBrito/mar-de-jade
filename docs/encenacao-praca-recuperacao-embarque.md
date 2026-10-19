@@ -1,5 +1,7 @@
 # Arco 1 — demonstração, recuperação e partida
 
+**Atualização de 19/10/2026:** [melhorias e validação do ponto 7](arco-adulto-encenacao-ponto-07.md), com objetivos por etapa, encenação do cuidado e da saída acompanhada, clareza dos confrontos e diário de acontecimentos. O texto abaixo registra as etapas anteriores.
+
 Entrega de 16/10/2026, continuando a [lista de direção](reviews/revisao-direcao-arco-01.md) e o [primeiro pedido de Lisboa](cais-pedidos.md).
 
 ## O que mudou

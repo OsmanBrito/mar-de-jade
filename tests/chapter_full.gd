@@ -111,15 +111,9 @@ func run() -> void:
 				"styles": game.choose_style("ES")
 				"styles_result": game.confirm_style()
 				"roaming":
-					var destination: Vector2 = game.routes.goal
-					if game.routes.area()!=game.routes.goal_area:
-						var next := "square" if game.routes.area() in ["room","cais"] else "cais"
-						if game.routes.area()=="square" and game.routes.goal_area=="room": next = "room"
-						if game.routes.area()=="cais" and game.routes.goal_area=="deck": next = "deck"
-						for exit in game.routes.exits:
-							if exit.to==next: destination = exit.point; break
-					check(await walk_near(destination,45),"Walks to the actual city passage or story meeting")
-					await press_interact()
+					var reached: bool = await load("res://tests/lisbon_walk_driver.gd").new().reach(game)
+					check(reached,"Walks through the continuous city to its story meeting")
+					if not reached: break
 				"rest_confirm": game.routes.rest()
 				"exploration":
 					check(await walk_near(game.harbor.GATE,70),"Walk through Lisbon to Duarte's boarding point")
@@ -138,7 +132,7 @@ func run() -> void:
 	check(root.get_node("ChapterProgress").inventory.has("PT-Q02"),"Bowl packed")
 	check(root.get_node("ChapterProgress").skills.has("DP01"),"Defensive lesson recorded")
 	check(root.get_node("ChapterProgress").choices.has("departure_response") and root.get_node("ChapterProgress").choices.has("promise_response"),"Adult narrative choices recorded")
-	check(battle_modes.size() == 7,"Every encounter kind exercised")
+	check(battle_modes.size() == 4 and not battle_modes.has("adult_basic") and not battle_modes.has("adult_defense") and not battle_modes.has("duarte_support"),"Campaign omits Duarte training while retaining Tomé lessons and Leonor duel")
 	var progress = root.get_node("ChapterProgress")
 	check(progress.save_to("res://tests/chapter-fixture.json") == OK,"Chapter save writes checkpoint")
 	var expected: Dictionary = progress.snapshot()

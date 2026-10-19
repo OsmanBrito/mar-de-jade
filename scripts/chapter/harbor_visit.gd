@@ -1,7 +1,7 @@
 extends RefCounted
 ## Optional shore leave between packing and the approved captain dialogue.
 const MERCHANT = preload("res://scripts/chapter/quay_merchant.gd")
-const GATE := Vector2(947,1014.5)
+const GATE := Vector2(1496,1120)
 const START := Vector2(517,880)
 var director
 var merchant
@@ -18,22 +18,25 @@ func _init(owner) -> void:
 
 func install(world) -> void:
 	active = false; merchant = null; gate_label = null
-	if director.map_kind not in ["cais","service"]: return
+	if director.map_kind not in ["cais","service"] and not world.has_meta("continuous_lisbon"): return
 	city.apply_world(world)
 	var stall = world.sorted_world.get_node_or_null("BancaDePeixe")
 	if stall == null: return
 	# Narrative rescue/meal scenes keep the market art without shop UI or a
 	# second shopkeeper crossing the actors. Shore leave installs the service.
-	if not building_visit: return
+	if not building_visit and not world.has_meta("continuous_lisbon"): return
 	merchant = MERCHANT.new(); merchant.name = "ComercianteDeLisboa"
 	merchant.position = stall.position+Vector2(-67,8); world.sorted_world.add_child(merchant)
+	for name in ["Provisoes","LisbonShopSign"]:
+		var old: Node = stall.get_node_or_null(name)
+		if old!=null: old.free()
 	# Existing goods art is displayed on the existing stall; source PNGs stay intact.
 	var goods := Node2D.new(); goods.name = "Provisoes"; goods.position = Vector2(0,-39); stall.add_child(goods)
 	for i in 3:
 		var icon := Sprite2D.new(); icon.texture = load("res://assets/art/items/portugal/"+["PT-C01","PT-C02","PT-C03"][i]+".png")
 		icon.position = Vector2((i-1)*23,(i-1)*-5); icon.scale = Vector2.ONE*24.0/icon.texture.get_width()
 		icon.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR; goods.add_child(icon)
-	var sign_label := Label.new(); sign_label.text = "PROVISÕES · LISBOA"; sign_label.position = Vector2(-85,-146)
+	var sign_label := Label.new(); sign_label.name = "LisbonShopSign"; sign_label.text = "PROVISÕES · LISBOA"; sign_label.position = Vector2(-85,-146)
 	sign_label.size.x = 170; sign_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; merchant.style_label(sign_label,12); stall.add_child(sign_label)
 
 func can_begin() -> bool:
@@ -147,6 +150,7 @@ func request_boarding() -> void:
 	if not before_meal() and not before_evaluation():
 		for state in ChapterProgress.local_requests.values():
 			if state!="completed": director.view.status.text = "Ainda tens pedidos em Lisboa. Podes continuar a explorar antes de embarcar."
+	if not before_meal() and not before_evaluation(): director.view.body.text += "\n\n"+preload("res://scripts/chapter/optional_arc.gd").boarding(ChapterProgress)
 	if before_evaluation(): director.view.status.text = "Sem prazo para os pedidos nesta pausa. A próxima cena começa na manhã seguinte."
 	director.view.hint.text = "Enter / A · escolher     Esc / B · voltar"
 	director.view.panel.offset_top = -350

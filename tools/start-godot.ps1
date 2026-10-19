@@ -1,4 +1,4 @@
-param([switch]$Editor)
+param([switch]$Editor, [switch]$MeasureChildhood)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $godotBinary = $env:GODOT_EXE
@@ -17,4 +17,5 @@ if (-not (Test-Path -LiteralPath $godotBinary -PathType Leaf)) {
 }
 $launchArguments = @('--path', ('"' + $projectRoot + '"'))
 if ($Editor) { $launchArguments += '--editor' }
+if ($MeasureChildhood -and -not $Editor) { $launchArguments += @('--', '--measure-childhood') }
 Start-Process -FilePath $godotBinary -ArgumentList $launchArguments

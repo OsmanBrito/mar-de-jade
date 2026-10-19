@@ -44,12 +44,13 @@ for s in scenes:
 by['C01-M04/S01']['map']='room'
 # Existing S01-S07 remain the authoritative playable childhood/entry scenes.
 remaining=[s for s in scenes if s['id']>='C01-M01/S08']
-e=by['C01-M01/S08']['events']; setevents('C01-M01/S08',e[:3]+[battle('adult_basic')]+e[3:7]+[battle('adult_defense')]+[stage('child_arrives')]+e[7:11]+[task('knot','Conclui o nó da sacola junto da criança.')]+e[11:])
-e=by['C01-M02/S01']['events']; setevents('C01-M02/S01',e[:4]+[task('lever','Usa a alavanca para levantar a madeira com Duarte.'),stage('green_sight')]+e[4:]+[task('fetch_tome','Vai buscar Tomé ao abrigo.','room')])
+e=by['C01-M01/S08']['events']; setevents('C01-M01/S08',e[:3]+[stage('child_arrives')]+e[3:7]+[task('knot','Aperta a correia da sacola junto da criança.')]+e[7:])
+e=by['C01-M02/S01']['events']; setevents('C01-M02/S01',[stage('rescue_arrival')]+e[:5]+[task('lever','Assenta a alavanca junto da viga; depois levanta a madeira com Duarte.'),stage('green_sight')]+e[5:]+[task('fetch_tome','Vai buscar Tomé ao abrigo.','room')])
 e=by['C01-M02/S02']['events']; setevents('C01-M02/S02',[stage('treatment')]+e[:5]+[stage('leonor_arrives')]+e[5:])
 e=by['C01-M02/S03']['events']; setevents('C01-M02/S03',e[:5]+[task('clear_passage','Retira o caixote e leva-o para o lado seco.')]+e[5:]+[stage('patient_departure')])
-e=by['C01-M02/S04']['events']; setevents('C01-M02/S04',[task('meal','Leva água e as duas porções à mesa.')]+e+[stage('clean_cloth')])
+e=by['C01-M02/S04']['events']; setevents('C01-M02/S04',[task('meal','Recolhe duas porções e água na cozinha da Ordem; leva-as a Leonor no refeitório.')]+e+[stage('clean_cloth')])
 by['C01-M02/S05']['events'][4]['flag']='departure_response'
+by['C01-M02/S05']['events'].append(stage('leave_refectory'))
 e=by['C01-M03/S01']['events']; setevents('C01-M03/S01',[stage('morning'),stage('master_demonstration')]+e[:4]+[stage('leonor_demonstration')]+e[4:])
 setevents('C01-M03/S02',[stage('afternoon'),stage('two_cups')]+by['C01-M03/S02']['events'])
 setevents('C01-M03/S03',[battle('duel'),stage('fallen')])

@@ -33,7 +33,7 @@ func refresh() -> void:
 		toggle.toggled.connect(func(value): preferences.set_option(key,value))
 	var scale_button := Button.new(); scale_button.text = "Texto · %d%%"%roundi(preferences.text_scale*100); scale_button.custom_minimum_size.y = 42; column.add_child(scale_button)
 	scale_button.pressed.connect(func(): preferences.set_text_scale(1.0 if preferences.text_scale>=1.19 else preferences.text_scale+0.1); refresh())
-	text("As opções seguem contigo de Portugal à viagem. No combate, Esc/Start pausa e permite alterar timing, efeitos e velocidade. O remapeamento do teclado fica no menu Sistema de Portugal.")
+	text("As opções seguem contigo de Portugal à viagem. No combate, Esc/Start pausa e permite alterar timing, efeitos e velocidade. Na infância, a pausa permite remapear interação, caderno e salvamento; os demais comandos ficam em Sistema de Portugal.")
 	var back := Button.new(); back.text = "Voltar"; back.custom_minimum_size.y = 42; column.add_child(back)
 	back.pressed.connect(close); back.grab_focus()
 func _process(_delta: float) -> void:

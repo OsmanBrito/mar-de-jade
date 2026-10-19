@@ -85,6 +85,11 @@ func run() -> void:
 	check(change_scene_to_file("res://scenes/chapter_01/plaza.tscn") == OK, "Next map loads with the chosen profile")
 	await scene_frames()
 	var plaza = current_scene
+	plaza.world.walk_to(Vector2(80,400))
+	for i in 900:
+		await physics_frame
+		if plaza.world.player.position.distance_to(Vector2(80,400))<20: break
+	plaza.roam.interact()
 	plaza.advance()
 	check(plaza.view.speaker.text == "João Miguel" and plaza.view.body.text == "Cabe mais uma.", "Chosen name survives the map transition")
 	plaza.restart()

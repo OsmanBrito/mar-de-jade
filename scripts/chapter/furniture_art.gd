@@ -9,6 +9,10 @@ static func texture(key: String) -> AtlasTexture:
 	if source == null:
 		var path := "res://assets/art/portugal-v2/furniture-v1.png"
 		source = load(path) if ResourceLoader.exists(path) else ImageTexture.create_from_image(Image.load_from_file(path))
+		var image := source.get_image(); image.fix_alpha_edges(); image.generate_mipmaps()
+		var filtered := CanvasTexture.new(); filtered.diffuse_texture = ImageTexture.create_from_image(image)
+		filtered.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		source = filtered
 	var region: Array = entries[key]
 	var atlas := AtlasTexture.new(); atlas.atlas = source
 	atlas.region = Rect2(region[0],region[1],region[2],region[3]); atlas.filter_clip = true
@@ -16,7 +20,7 @@ static func texture(key: String) -> AtlasTexture:
 	return atlas
 
 static func draw(canvas: Node2D,key: String,foot: Vector2,size: Vector2) -> void:
-	canvas.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	canvas.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	canvas.draw_texture_rect(texture(key),Rect2(foot-Vector2(size.x*0.5,size.y),size),false)
 
 static func place(parent: Node2D,key: String,foot: Vector2,size: Vector2) -> Node2D:
@@ -28,7 +32,7 @@ static func place(parent: Node2D,key: String,foot: Vector2,size: Vector2) -> Nod
 	var sprite := Sprite2D.new(); sprite.texture = texture(key)
 	sprite.position = -Vector2(0,size.y*0.5)
 	sprite.scale = size/sprite.texture.get_size()
-	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	node.add_child(sprite)
 	var body := StaticBody2D.new(); body.collision_mask = 0; node.add_child(body)
 	var shape := CollisionPolygon2D.new()

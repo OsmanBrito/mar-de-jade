@@ -25,7 +25,7 @@ func run() -> void:
 	flow.advance()
 	check(flow.event_index == stopped and paused,"Pause blocks narrative progression")
 	flow._menu()
-	check(not paused and flow.view.body.text == "O apoio saiu antes do golpe.","Menu restores previous dialogue")
+	check(not paused and flow.view.body.text == "A farinha chegou à cozinha?","Menu restores previous dialogue")
 	for index in [5,10]:
 		flow._load_block(index)
 		for i in 100:

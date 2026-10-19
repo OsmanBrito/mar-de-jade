@@ -4,6 +4,7 @@ const Requests = preload("res://scripts/chapter/local_request_state.gd")
 const Items = preload("res://scripts/chapter/player_items.gd")
 const Marker = preload("res://scripts/chapter/local_request_marker.gd")
 const Errands = preload("res://scripts/chapter/lisbon_errands.gd")
+const District = preload("res://scripts/chapter/lisbon_district.gd")
 const CART_HOME := Vector2(-115,811)
 const CART_FIXED := Vector2(-185,799)
 var visit_ref: WeakRef
@@ -19,16 +20,26 @@ var cursor := -1
 var actions: Array = []
 var conversation := ""
 var feedback := ""
+var social_turns: Dictionary = {}
+const Social = preload("res://scripts/city/city_conversations.gd")
+const Optional = preload("res://scripts/chapter/optional_arc.gd")
+
+func cart_home() -> Vector2:
+	return preload("res://scripts/city/lisbon_layout.gd").CART_HOME if is_instance_valid(world) and world.has_meta("continuous_lisbon") else CART_HOME
+func cart_fixed() -> Vector2:
+	return preload("res://scripts/city/lisbon_layout.gd").CART_FIXED if is_instance_valid(world) and world.has_meta("continuous_lisbon") else CART_FIXED
 
 func _init(visit) -> void:
 	visit_ref = weakref(visit)
 	director = visit.director
 
 func apply_world(map) -> void:
+	world = map
+	District.apply_world(map,ChapterProgress)
 	var vehicle = map.sorted_world.get_node_or_null("CarroDaOficina")
 	if vehicle == null: return
 	var fixed: bool = Requests.stage(ChapterProgress) in ["return","completed"]
-	vehicle.position = CART_FIXED if fixed else CART_HOME
+	vehicle.position = cart_fixed() if fixed else cart_home()
 	# Tilt the illustrated body, leaving its ground footprint stable.
 	for child in vehicle.get_children():
 		if child is Sprite2D: child.rotation = 0.0 if fixed else -0.075
@@ -51,12 +62,19 @@ func install(map) -> void:
 	}
 	for id in specs:
 		var spec: Array = specs[id]
+		if world.has_meta("continuous_lisbon"): spec[2] = preload("res://scripts/city/lisbon_layout.gd").stock_positions()[id]
 		var resident = world.sorted_world.get_node(spec[0])
 		resident.set_physics_process(false); resident.path.clear(); resident.velocity = Vector2.ZERO
 		resident.position = spec[2]; resident.presentation.walking = false; resident.presentation.facing = 0
 		residents[id] = resident
 		_add_marker(id,resident,spec[1])
 	_add_marker("cart",cart,"Carro da oficina")
+	if world.has_meta("continuous_lisbon"):
+		District.install(world)
+		for id in District.TARGETS:
+			var row: Dictionary = District.TARGETS[id]
+			residents[id] = world.sorted_world.get_node(row.node)
+			_add_marker(id,residents[id],row.title)
 	update()
 
 func _add_marker(id: String, node: Node2D, caption: String) -> void:
@@ -65,6 +83,7 @@ func _add_marker(id: String, node: Node2D, caption: String) -> void:
 	node.add_child(mark); markers[id] = mark
 
 func approach(id: String) -> Vector2:
+	if District.TARGETS.has(id): return District.TARGETS[id].approach
 	var node = cart if id == "cart" else residents.get(id)
 	if not is_instance_valid(node): return Vector2.INF
 	var offset := Vector2(0,42)
@@ -98,20 +117,37 @@ func update() -> void:
 		if id=="dock":
 			if Errands.stage(ChapterProgress,Errands.ACCOUNT)=="dock" or Errands.stage(ChapterProgress,Errands.KIT)=="prepare": markers[id].symbol = "!"
 			elif ChapterProgress.flags.get("recovered",false) and Errands.stage(ChapterProgress,Errands.KIT)=="": markers[id].symbol = "?"
+		if id=="workshop" and Requests.stage(ChapterProgress)=="completed": markers[id].symbol="✓"
+		if id=="fisher" and Errands.stage(ChapterProgress,Errands.ACCOUNT)=="completed": markers[id].symbol="✓"
+		if id=="dock" and Errands.stage(ChapterProgress,Errands.KIT)=="completed" and markers[id].symbol!="!": markers[id].symbol="✓"
 		if id=="cart": markers[id].symbol = "⌕"; markers[id].available = Requests.stage(ChapterProgress) not in ["return","completed"]
+		if District.TARGETS.has(id):
+			markers[id].symbol = "?" if id=="keeper" and Errands.stage(ChapterProgress,Errands.BATEL)=="" else "!" if id=="mooring" and Errands.stage(ChapterProgress,Errands.BATEL)=="solve" else "i" if id=="manifest" else "⌕" if id in ["tide","mooring"] else "…"
+
+		if id=="keeper" and Errands.stage(ChapterProgress,Errands.BATEL)=="completed": markers[id].symbol="✓"
 
 func prompt() -> String:
 	var id := focus()
 	if id.is_empty(): return ""
-	return "E / A · "+("examinar o carro" if id=="cart" else "falar com "+markers[id].caption)
+	return interaction_prompt(id)
+
+func interaction_prompt(id: String) -> String:
+	return "E / A · "+("examinar o carro" if id=="cart" else "examinar "+str(markers[id].caption) if id in ["tide","mooring","manifest"] else "falar com "+str(markers[id].caption))
 
 func objective() -> String:
 	return Requests.objective(ChapterProgress)
 
-func interact() -> bool:
-	var id := focus()
+func interact(requested: String = "") -> bool:
+	var id := focus() if requested.is_empty() else requested
+	if not requested.is_empty() and (not markers.has(id) or not near(id)): return false
 	if id.is_empty(): return false
 	conversation = id
+	if world.has_node("CityLife"): world.get_node("CityLife").hold(id)
+	if District.TARGETS.has(id):
+		var row := District.dialog(ChapterProgress,id)
+		if row.is_empty(): return false
+		_save("Observação guardada · "+str(row.speaker))
+		_message(row.speaker,row.text,row.options); return true
 	match id:
 		"workshop": _workshop()
 		"cart": _cart()
@@ -171,7 +207,13 @@ func _message(speaker: String,text: String,options: Array = []) -> void:
 	_open([[speaker,text]],options)
 
 func _open(turns: Array, options: Array = []) -> void:
-	lines = turns.duplicate(true); cursor = -1; actions = options if not options.is_empty() else [["Voltar à rua","close"]]
+	lines = turns.duplicate(true); cursor = -1; actions = options.duplicate(true) if not options.is_empty() else [["Voltar à rua","close"]]
+	if Social.TITLES.has(conversation):
+		var hello := Social.introduction(ChapterProgress,conversation)
+		if not hello.is_empty() and not lines.is_empty():
+			lines[0][1]=hello+"\n\n"+str(lines[0][1]);_save("Conversa guardada · "+str(Social.TITLES[conversation]))
+		actions.insert(maxi(0,actions.size()-1),["Conversar sobre a cidade e o trabalho","city_life"])
+		if not Optional.recall(ChapterProgress,conversation).is_empty(): actions.insert(maxi(0,actions.size()-1),["Recordar a floresta com Leonor","forest_memory"])
 	director.phase = "local_dialogue"; director._lock_player(true)
 	director.world.player.presentation.posture = "standing"
 	director.view.show(); director.view.panel.show(); director._clear_options()
@@ -182,6 +224,7 @@ func advance() -> void:
 	if cursor>=lines.size(): return
 	cursor += 1; director._clear_options()
 	director.view.status.text = feedback if not feedback.is_empty() else (Requests.definition().title+" · "+objective() if not Requests.stage(ChapterProgress).is_empty() else "Lisboa · Conversas do cais")
+	if District.TARGETS.has(conversation): director.view.status.text = Errands.DEFINITIONS[Errands.BATEL].title+" · "+str(Errands.DEFINITIONS[Errands.BATEL].objectives.get(Errands.stage(ChapterProgress,Errands.BATEL),"Observa antes de mexer.")) if conversation!="manifest" else "Lisboa · Registo das entregas"
 	director.view.hint.text = "Enter / espaço / A · continuar     Esc / B · voltar à rua     J · pedidos"
 	if cursor<lines.size():
 		director.view.speaker.text = CampaignProfile.speaker_name(lines[cursor][0])
@@ -201,10 +244,31 @@ func choose(action: String) -> void:
 		if option[1]==action: offered = true
 	if not offered: return
 	if action=="close": close(); return
+	if action=="forest_memory":
+		if not near(conversation): return
+		var memory:=Optional.recall(ChapterProgress,conversation)
+		if not memory.is_empty(): _open(memory)
+		return
+	if action=="city_life":
+		if not near(conversation) or not Social.TITLES.has(conversation): return
+		var key := conversation+":"+Social.event(ChapterProgress)
+		var turn := int(social_turns.get(key,0));social_turns[key]=turn+1
+		_message(Social.TITLES[conversation],Social.reply(ChapterProgress,conversation,turn));return
+	if action.begins_with("district_"):
+		if not District.TARGETS.has(conversation) or not near(conversation): return
+		var result := District.choose(ChapterProgress,conversation,action)
+		if result.is_empty(): return
+		_save(result.notice)
+		if action=="district_finish": await _animate_batel()
+		apply_world(world); _message(result.speaker,result.text); return
 	# Every result is checked again at commitment, not merely when a button appears.
 	match action:
 		"account_accept":
 			if not near("fisher") or not Errands.advance(ChapterProgress,Errands.ACCOUNT,"","dock"): return
+			if ChapterProgress.flags.get("lisbon_manifest_read",false):
+				ChapterProgress.local_requests[Errands.ACCOUNT] = "reconcile"
+				_save("Recibos já conferidos · explicar a conta à pescadora")
+				_message("Herói","Já conferi os dois recibos no armazém: cinco caixas chegaram à banca e duas à cozinha. Posso explicar a distribuição sem pedir outra entrega."); return
 			_save("Pedido iniciado · A conta das entregas"); _message("Pescadora","O pontão é junto à carga. Pergunta pelos destinos, não apenas pela quantidade.")
 		"account_dock":
 			if not near("dock") or not Errands.advance(ChapterProgress,Errands.ACCOUNT,"dock","kitchen"): return
@@ -260,13 +324,23 @@ func choose(action: String) -> void:
 			_save("Pedido concluído · +12 de ouro · +1 ração")
 			_message("Oficial da oficina","Aqui tens. O carro voltou ao trabalho; eu já não preciso de ocupar a rua com a carga parada.")
 
+func _animate_batel() -> void:
+	director.busy = true; director._clear_options(); director.view.panel.hide()
+	var boat = world.sorted_world.get_node("Batel")
+	var rope = world.sorted_world.get_node(District.TARGETS.mooring.node).get_child(0)
+	rope.released = true; rope.queue_redraw()
+	var tween = world.create_tween()
+	tween.tween_property(boat,"position",preload("res://scripts/city/lisbon_layout.gd").point(Vector2(173,761))+Vector2(-105,55),1.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await tween.finished
+	director.busy = false
+
 func _animate_repair() -> void:
 	director.busy = true; director._clear_options(); director.view.panel.hide()
 	var actor = residents.workshop
 	var workstation: Vector2 = actor.position
 	actor.presentation.walking = true; actor.presentation.facing = 3
 	var tween = director.create_tween()
-	tween.tween_property(actor,"position",CART_HOME+Vector2(42,15),0.65)
+	tween.tween_property(actor,"position",cart_home()+Vector2(42,15),0.65)
 	await tween.finished
 	actor.presentation.walking = false; actor.presentation.posture = "crouched"
 	world.player.presentation.posture = "crouched"
@@ -276,8 +350,8 @@ func _animate_repair() -> void:
 		if child is Sprite2D: child.rotation = 0
 	tween = director.create_tween().set_parallel(true)
 	actor.presentation.walking = true
-	tween.tween_property(cart,"position",CART_FIXED,1.0)
-	tween.tween_property(actor,"position",CART_FIXED+Vector2(42,15),1.0)
+	tween.tween_property(cart,"position",cart_fixed(),1.0)
+	tween.tween_property(actor,"position",cart_fixed()+Vector2(42,15),1.0)
 	await tween.finished
 	tween = director.create_tween()
 	actor.presentation.facing = 1

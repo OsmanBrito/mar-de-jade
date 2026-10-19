@@ -38,8 +38,10 @@ static func draw_actor(canvas: Node2D,id: String,facing: int,walking: bool,time:
 	if not use_pose and facing==3 and entry.get("east_flip",false): flip = true
 	canvas.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	canvas.draw_set_transform(origin,0,Vector2(-1 if flip else 1,1))
-	canvas.draw_texture_rect_region(textures[id],Rect2(Vector2(-pivot[0],-pivot[1])*factor,Vector2(rect[2],rect[3])*factor),Rect2(rect[0],rect[1],rect[2],rect[3]))
+	var artwork: Texture2D = textures[id]
+	if id=="duarte": artwork = preload("res://scripts/chapter/order_livery.gd").texture(canvas,artwork,entry)
+	canvas.draw_texture_rect_region(artwork,Rect2(Vector2(-pivot[0],-pivot[1])*factor,Vector2(rect[2],rect[3])*factor),Rect2(rect[0],rect[1],rect[2],rect[3]))
 	if id in ["hero_child","hero_story"]:
-		preload("res://scripts/chapter/hero_eyes.gd").draw(canvas,"child" if id=="hero_child" else "story",index,rect,pivot,factor,eye_glow)
+		preload("res://scripts/chapter/hero_eyes.gd").draw(canvas,"child" if id=="hero_child" else "story",index,rect,pivot,factor,eye_glow,flip)
 	canvas.draw_set_transform(Vector2.ZERO)
 	return true

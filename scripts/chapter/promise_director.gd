@@ -14,6 +14,7 @@ var completed := false
 var _status_before_pause := ""
 
 func _ready() -> void:
+	preload("res://scripts/chapter/childhood_pacing.gd").install(self)
 	world = get_node("Praca")
 	world.player.enabled = false
 	world.player.set_physics_process(false)
@@ -25,6 +26,7 @@ func _ready() -> void:
 	child = world.player.presentation
 	leonor = world.get_node("ActorsAndProps/Leonor")
 	sequence = JSON.parse_string(FileAccess.get_file_as_string(sequence_path))
+	sequence.events=preload("res://scripts/chapter/childhood_bond.gd").promise(ChapterProgress)+sequence.events
 	world.player.enabled = false
 	world.player.set_physics_process(false)
 	world.player.destination_path.clear()
@@ -39,6 +41,7 @@ func _ready() -> void:
 	world.player.camera.enabled = false
 	preload("res://scripts/chapter/chapter_framing.gd").install(self,[world.player,leonor],1.65)
 	restart()
+	preload("res://scripts/chapter/childhood_menu.gd").install(self)
 
 func restart() -> void:
 	if busy or paused:

@@ -3,57 +3,25 @@
   "scenes": [
     {
       "id": "C01-M01/S08",
-      "title": "Uma repetição, não outra estreia",
+      "title": "Antes de descer ao cais",
       "events": [
         {
           "type": "line",
           "speaker": "Duarte",
-          "text": "O apoio saiu antes do golpe.",
+          "text": "A farinha chegou à cozinha?",
           "tag": "Duarte"
         },
         {
           "type": "line",
           "speaker": "Herói",
-          "text": "Eu sei.",
+          "text": "Seca. E longe do peixe.",
           "tag": "Herói"
         },
         {
           "type": "line",
           "speaker": "Duarte",
-          "text": "Então não precisas que eu explique. Precisas repetir.",
+          "text": "Então ajuda-me com esta correia antes de irmos ao cais.",
           "tag": "Duarte"
-        },
-        {
-          "type": "battle",
-          "mode": "adult_basic"
-        },
-        {
-          "type": "line",
-          "speaker": "Herói",
-          "text": "Assim?",
-          "tag": "Herói [primeiro acerto]"
-        },
-        {
-          "type": "line",
-          "speaker": "Duarte",
-          "text": "Assim.",
-          "tag": "Duarte"
-        },
-        {
-          "type": "line",
-          "speaker": "Herói",
-          "text": "Agora vais dizer “outra vez”.",
-          "tag": "Herói"
-        },
-        {
-          "type": "line",
-          "speaker": "Duarte",
-          "text": "Já sabes.",
-          "tag": "Duarte"
-        },
-        {
-          "type": "battle",
-          "mode": "adult_defense"
         },
         {
           "type": "stage",
@@ -74,7 +42,7 @@
         {
           "type": "line",
           "speaker": "Duarte",
-          "text": "Ela aprende e eu espero?",
+          "text": "A sacola vai abrir se levares esse nó assim.",
           "tag": "Duarte"
         },
         {
@@ -86,12 +54,12 @@
         {
           "type": "task",
           "id": "knot",
-          "caption": "Conclui o nó da sacola junto da criança."
+          "caption": "Aperta a correia da sacola junto da criança."
         },
         {
           "type": "line",
           "speaker": "Trabalhador",
-          "text": "Precisamos de mãos. Caiu uma carga!",
+          "text": "A amarra cedeu no cais! Uma viga prendeu o braço de um homem. Precisamos de ajuda!",
           "tag": "Trabalhador"
         },
         {
@@ -103,15 +71,15 @@
         {
           "type": "line",
           "speaker": "Duarte",
-          "text": "Deixa a sacola aqui.",
+          "text": "Deixa a sacola com a criança. Eu seguro a carga; vem abrir a passagem comigo.",
           "tag": "Duarte"
         }
       ],
       "directions": [
-        "[No pátio, exercício adulto curto com Duarte: confirmar movimento, básico e defesa simples com o equipamento de treino. Não repetir toda a explicação infantil nem conceder Defesa Perfeita antes de M04.]",
+        "[A entrega terminou. Duarte encontra o herói no pátio da Ordem, sem aula ou combate.]",
         "[Uma criança do abrigo se aproxima da sacola e tenta apertar uma correia.]",
         "[Ele conclui sem prolongar uma desculpa. Um trabalhador chama do cais.]",
-        "[Partir para socorro. A familiaridade de Leonor não resolveu por ele a baixa aptidão ou o hábito de adiar.]"
+        "[Os dois seguem para o acidente visível no cais. Não há treino com Duarte nesta sequência.]"
       ],
       "map": "courtyard"
     },
@@ -119,6 +87,16 @@
       "id": "C01-M02/S01",
       "title": "Uma mão livre",
       "events": [
+        {
+          "type": "stage",
+          "action": "rescue_arrival"
+        },
+        {
+          "type": "line",
+          "speaker": "Trabalhador",
+          "text": "A viga está em cima do braço dele. Não conseguimos levantá-la sozinhos.",
+          "tag": "Trabalhador"
+        },
         {
           "type": "line",
           "speaker": "Trabalhador ferido",
@@ -140,13 +118,13 @@
         {
           "type": "line",
           "speaker": "Herói",
-          "text": "Um. Dois… agora.",
+          "text": "Primeiro assento a alavanca. Quando o apoio estiver firme, levantamos os dois.",
           "tag": "Herói"
         },
         {
           "type": "task",
           "id": "lever",
-          "caption": "Usa a alavanca para levantar a madeira com Duarte."
+          "caption": "Assenta a alavanca junto da viga; depois levanta a madeira com Duarte."
         },
         {
           "type": "stage",
@@ -202,6 +180,7 @@
         }
       ],
       "directions": [
+        "[Aproximação pelo caminho do cais. A câmera mostra o homem preso, a madeira e o ponto de apoio; só então começa a conversa.]",
         "[Executar alavanca e retirada. O verde evidencia pulsação sob o ferimento; ele perde o foco por um instante.]",
         "[Ele vai; atender a necessidade real não exige saber o que o olho mostra.]"
       ],
@@ -401,6 +380,18 @@
           "tag": "Herói"
         },
         {
+          "type": "line",
+          "speaker": "Leonor",
+          "text": "Ainda não comeste, pois não? A cozinha da Ordem guardou duas porções. Podemos terminar os registos no refeitório.",
+          "tag": "Leonor"
+        },
+        {
+          "type": "line",
+          "speaker": "Herói",
+          "text": "Vamos. Depois disto, também me faz falta sentar um pouco.",
+          "tag": "Herói"
+        },
+        {
           "type": "stage",
           "action": "patient_departure"
         }
@@ -420,7 +411,7 @@
         {
           "type": "task",
           "id": "meal",
-          "caption": "Leva água e as duas porções à mesa."
+          "caption": "Recolhe duas porções e água na cozinha da Ordem; leva-as a Leonor no refeitório."
         },
         {
           "type": "line",
@@ -431,7 +422,7 @@
         {
           "type": "line",
           "speaker": "Herói",
-          "text": "A cozinha mandou levar para quem ficou.",
+          "text": "O ajudante guardou as porções para quem ficou no socorro.",
           "tag": "Herói"
         },
         {
@@ -584,7 +575,7 @@
         }
       ],
       "directions": [
-        "[Depois do atendimento e da conferência, pequeno pátio de serviço. Ele traz água e duas porções da refeição reservada pela cozinha. Não encenar jantar romântico: roupas de trabalho, gente passando e pouco tempo.]",
+        "[Depois do atendimento, os dois regressam à casa da Ordem. Leonor espera no refeitório já existente, e o herói recolhe água e duas porções junto do ajudante da cozinha. A mesa e os bancos fazem parte do convento e permanecem no mapa antes e depois da conversa.]",
         "[Ele põe a porção ao alcance dela e se senta a uma distância familiar. Ela demora a deixar o registro; não sorri.]",
         "[Ela pousa o registro e come. O herói abre a própria porção.]",
         "[Ele tenta limpar uma pequena raspadura no punho. Ela desloca o pano limpo para perto dele.]",
@@ -705,6 +696,10 @@
           "speaker": "Leonor",
           "text": "Não inventes. Vem.",
           "tag": "Leonor"
+        },
+        {
+          "type": "stage",
+          "action": "leave_refectory"
         }
       ],
       "directions": [

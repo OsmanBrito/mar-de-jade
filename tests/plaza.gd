@@ -43,12 +43,19 @@ func run() -> void:
 	game = load("res://scenes/chapter_01/plaza.tscn").instantiate()
 	root.add_child(game)
 	await frames(3)
+	check(game.phase=="childhood_explore" and game.world.player.enabled,"Childhood begins with free exploration of the convent district")
+	game.world.walk_to(Vector2(80,400))
+	for i in 1000:
+		await physics_frame
+		if game.world.player.position.distance_to(Vector2(80,400))<40: break
+	check(game.world.player.position.distance_to(Vector2(80,400))<50,"The child reaches Leonor through the same physical city")
+	game.roam.interact(); await frames(3)
 	check(game.view.body.text == "Sai desse lado.", "Plaza begins with the approved bank dialogue")
 	check(not game.world.player.enabled, "Dialogue starts with movement locked")
 	check(game.world.player.z_index == 1, "Seated hero draws in front of the bench")
 	check(game.world.player.get_script() == load("res://scripts/chapter/child_player.gd"), "Child presentation reuses the approved controller")
-	check(game.world.player.camera.zoom == Vector2(1.25,1.25), "Approved initial camera zoom")
-	check(game.world.cells.size() == 100, "Plaza ground is serialized in the scene")
+	check(game.world.player.camera_zoom == 1.0, "The continuous district uses its human-scale exploration camera")
+	check(game.world.cells.size() > 100 and game.world.has_meta("continuous_lisbon"), "The same city provides the larger navigation floor")
 	var source = FileAccess.get_file_as_string("res://docs/narrativa/C01-portugal-aprovado.md")
 	var text = source.get_slice("### S02 — O banco da praça",1).get_slice("### S04",0)
 	var approved: Array[String] = []
@@ -151,7 +158,7 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	var opening = current_scene
-	for i in range(350):
+	for i in range(1200):
 		if opening.completed:
 			break
 		if not opening.busy:
@@ -159,10 +166,11 @@ func run() -> void:
 		await frames(1)
 	check(opening.completed, "Opening finishes before transition")
 	opening.next_button.pressed.emit()
-	await process_frame
-	await process_frame
+	for i in 120:
+		await physics_frame
+		if current_scene.scene_file_path=="res://scenes/chapter_01/plaza.tscn": break
 	check(current_scene.scene_file_path == "res://scenes/chapter_01/plaza.tscn", "Continue from the table mounts the real plaza scene")
-	check(current_scene.view.body.text == "Sai desse lado.", "Transition begins the approved next scene")
+	check(current_scene.phase == "childhood_explore", "The transition opens childhood exploration before the approved encounter")
 	var result = {"checks":checks,"failures":failures,"rendered":DisplayServer.get_name() != "headless"}
 	var file = FileAccess.open("res://tests/plaza-report.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(result,"\t"))

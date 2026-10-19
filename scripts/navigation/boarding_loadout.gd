@@ -3,7 +3,7 @@ extends RefCounted
 const Items = preload("res://scripts/chapter/player_items.gd")
 const FIRST := {"ES":"ES07","LA":"LA07","MC":"MC08","FO":"FO07","PU":"PU07"}
 static func practice(style: String = "ES") -> Dictionary:
-	var data := {"style":style,"flags":{"recovered":true,"perfect_defense":true},"skills":[FIRST[style],"DU01","DP01"],"inventory":{"PT-V02":1},"equipment":{"outfit":"PT-V02"},"vitals":{"hp":108,"qi":20,"posture":106},"equipped_passives":["GE21","GE22",style+"-P11"],"duarte_equipped_passives":["DU-P09"]}
+	var data := {"companion_vitals":{},"style":style,"flags":{"recovered":true,"perfect_defense":true},"skills":[FIRST[style],"DU01","DP01"],"inventory":{"PT-V02":1},"equipment":{"outfit":"PT-V02"},"vitals":{"hp":108,"qi":20,"posture":106},"equipped_passives":["GE21","GE22",style+"-P11"],"duarte_equipped_passives":["DU-P09"]}
 	for id in Items.items():
 		if Items.items()[id].get("style","")==style:
 			data.inventory[id] = 1; data.equipment.weapon = id; break
@@ -16,8 +16,11 @@ static func capture(data: Dictionary) -> Dictionary:
 	for key in ["style","skills","inventory","equipment","vitals","equipped_passives","duarte_equipped_passives"]:
 		if not data.has(key): return {}
 		result[key] = data[key]
+	if not preload("res://scripts/chapter/party_resources.gd").valid(data.get("companion_vitals",{})): return {}
+	result.companion_vitals = preload("res://scripts/chapter/party_resources.gd").normalized(data.get("companion_vitals",{}))
 	return result.duplicate(true) if valid(result) else {}
 static func valid(data: Dictionary) -> bool:
+	if not preload("res://scripts/chapter/party_resources.gd").valid(data.get("companion_vitals",{})): return false
 	if not data.get("style") is String or not FIRST.has(data.style): return false
 	for key in ["flags","inventory","equipment","vitals"]:
 		if not data.get(key) is Dictionary: return false

@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "source_root": "C:/Users/gamer/Documents/ChatGPT/jogo",
+  "source_layout_sha256": "5ad16ddff602168164891c0bd9b74ef6ca4c54e571601736484fd9f7fd315a11",
+  "layout": "scripts/city/ferro_lisbon.gd",
+  "adaptation": "Original layout and navigation, with local ground asset path. Jade opens a northern gate in the courtyard wall, replaces two cargo footprints with the rescue scene, and adds a connected convent district.",
+  "copies": [
+    {
+      "source": "assets/scenery/lisbon-ground-refined-v3.png",
+      "local": "assets/art/ferro-lisbon/lisbon-ground-refined-v3.png",
+      "sha256": "e4fb5f0f2778a52870ee49a7d0f253b8cc235dd4cd6f78396321234e6f50a79f"
+    },
+    {
+      "source": "assets/scenery/lisbon-shipyard-refined-v1.png",
+      "local": "assets/art/ferro-lisbon/lisbon-shipyard-refined-v1.png",
+      "sha256": "aba415b3693239592277da46fa30fdd3c2b37ed49518e714f8a73484c83f0293"
+    },
+    {
+      "source": "assets/scenery/lisbon-timber-refined-v1.png",
+      "local": "assets/art/ferro-lisbon/lisbon-timber-refined-v1.png",
+      "sha256": "5ca9f5c590371cedc3e7af86566b2e0ce5bbb1f574ebbd51d75320b82d6cb34c"
+    },
+    {
+      "source": "assets/scenery/lisbon-courtyard-wall-refined-v1.png",
+      "local": "assets/art/ferro-lisbon/lisbon-courtyard-wall-refined-v1.png",
+      "sha256": "f922b8c75ef088183bba7de8831e7b61da056b9aac1155e35307eb9ded351281"
+    },
+    {
+      "source": "assets/scenery/bruma-v2-house_limestone.png",
+      "local": "assets/art/ferro-lisbon/bruma-v2-house_limestone.png",
+      "sha256": "917015a59eda0b69b26baa624d006d97e94788ac1177ba78b95a2d3c074ca8ea"
+    },
+    {
+      "source": "assets/scenery/bruma-v2-house_teal.png",
+      "local": "assets/art/ferro-lisbon/bruma-v2-house_teal.png",
+      "sha256": "33f1eac111c695c2b80417ae9a5a291e40ab1b161896b1f724e6d03b49c3f289"
+    },
+    {
+      "source": "assets/scenery/bruma-v2-workshop.png",
+      "local": "assets/art/ferro-lisbon/bruma-v2-workshop.png",
+      "sha256": "ef0ce0ecea571bdc95e35ed4bc9993b9d96f0681c2fba5469b64b6cb6ccac5af"
+    },
+    {
+      "source": "assets/scenery/bruma-v2-warehouse.png",
+      "local": "assets/art/ferro-lisbon/bruma-v2-warehouse.png",
+      "sha256": "03dce30d85571410777e913d45f45cd3575a45adf1b9b62b30854f1466baf5e9"
+    },
+    {
+      "source": "assets/scenery/bruma-v2-pots.png",
+      "local": "assets/art/ferro-lisbon/bruma-v2-pots.png",
+      "sha256": "3b9110d804b48aa157f3b3ea0835be2efe74c7257f9408a6071b1997e0e1c072"
+    },
+    {
+      "source": "assets/scenery/bruma-v2-cart.png",
+      "local": "assets/art/ferro-lisbon/bruma-v2-cart.png",
+      "sha256": "91dee3578152a21c1bffcac25f3bd31fe505ca2775ee4a803ab62b34cbc16b25"
+    },
+    {
+      "source": "assets/scenery/bruma-v2-tree.png",
+      "local": "assets/art/ferro-lisbon/bruma-v2-tree.png",
+      "sha256": "28c4267d76251e09b3d1463687a38f9bc403e220ab43c613ae9a1eed7e490589"
+    },
+    {
+      "source": "assets/scenery/bruma-barrel.png",
+      "local": "assets/art/ferro-lisbon/bruma-barrel.png",
+      "sha256": "8cef11965a0a06509222d13578535579f299065db3bd3a1dcc81f7a2431b88b8"
+    },
+    {
+      "source": "assets/scenery/bruma-crate.png",
+      "local": "assets/art/ferro-lisbon/bruma-crate.png",
+      "sha256": "cd4411b166799f21b943bf723448a1feb044217d0ad91e578a4435c81d1038d5"
+    },
+    {
+      "source": "assets/scenery/bruma-nets.png",
+      "local": "assets/art/ferro-lisbon/bruma-nets.png",
+      "sha256": "214e6ff3070b99e7bfebfe400893ed31d9226ab14eb2985cf4032adbd557f2f6"
+    },
+    {
+      "source": "assets/scenery/bruma-market.png",
+      "local": "assets/art/ferro-lisbon/bruma-market.png",
+      "sha256": "fce75a2d9c06ac7c19ebc93907f0bb3792e108e70e21d5cd3aac4ec6b6d1eee0"
+    },
+    {
+      "source": "assets/scenery/bruma-boat.png",
+      "local": "assets/art/ferro-lisbon/bruma-boat.png",
+      "sha256": "64e445f809276d55b07f4d9bd380439579e5c6aa2e3a7f884b160af10199c094"
+    },
+    {
+      "source": "assets/scenery/regional-bench-illustrated-v1.png",
+      "local": "assets/art/ferro-lisbon/regional-bench-illustrated-v1.png",
+      "sha256": "0be927bf20af37b8c84c648defcd1d771a1439d130174145cf5e8d9877beb745"
+    },
+    {
+      "source": "assets/scenery/bruma-net-rack-illustrated-v1.png",
+      "local": "assets/art/ferro-lisbon/bruma-net-rack-illustrated-v1.png",
+      "sha256": "ff1ce6d350fa9db0bdffb3ceed59d5fd4298b20a7a5c86510d904b55bd93f836"
+    },
+    {
+      "source": "assets/scenery/bruma-market-goods-illustrated-v1.png",
+      "local": "assets/art/ferro-lisbon/bruma-market-goods-illustrated-v1.png",
+      "sha256": "b4a019c5d2e7f1089aaa4e70a2611fc457d52cc0133e8bb4292cb2de091a6b6c"
+    },
+    {
+      "source": "assets/scenery/bruma-pier-directed-v1.png",
+      "local": "assets/art/ferro-lisbon/bruma-pier-directed-v1.png",
+      "sha256": "6bd2bec88c2ae6415063dfc8c936e24561a05e5f52ce7955e0555c628fb966ef"
+    },
+    {
+      "source": "assets/scenery/bruma-paving-refined.png",
+      "local": "assets/art/ferro-lisbon/bruma-paving-refined.png",
+      "sha256": "1cf9af3e98dda68a5a29789f0726348800d8d19f8bc42faa4a4bf71a511e16c0"
+    },
+    {
+      "source": "assets/scenery/bruma-grass-refined.png",
+      "local": "assets/art/ferro-lisbon/bruma-grass-refined.png",
+      "sha256": "fba46751a42b977a95c062386a7700484f0dce76c594fe9198b4e8cd07e83c82"
+    },
+    {
+      "source": "assets/scenery/roman-well-refined-v1.png",
+      "local": "assets/art/ferro-lisbon/roman-well-refined-v1.png",
+      "sha256": "3fe883c51f5ca418c5365abc1c6c2682d7954e73fbea7b8f019553db04cfaa3a"
+    }
+  ]
+}

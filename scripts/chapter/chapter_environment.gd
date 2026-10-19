@@ -53,6 +53,7 @@ void fragment(){
 		sprite.position = spec[2]+Vector2(0,-r[3]*factor*0.5)
 		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 		dressing.add_child(sprite)
+	preload("res://scripts/chapter/order_house.gd").install_exterior(world,dressing)
 	# Planters use the existing painted foliage and tangible, matching bases.
 	for origin in [Vector2(-435,340),Vector2(435,340)]:
 		var plant := Node2D.new(); plant.position = origin; world.sorted_world.add_child(plant)

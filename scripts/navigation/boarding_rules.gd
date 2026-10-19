@@ -12,6 +12,8 @@ func start_encounter(_kind: String, hero_name: String, chosen_style: String = "E
 	encounter = "atlantic_boarding"; caption = "Abordagem · recuperar o convés"
 	lesson = 1; safe_training = false
 	units[0].cell = Vector2i(2,2); units[1].cell = Vector2i(2,3)
+	var companion: Dictionary = progress_override.get("companion_vitals",{}).get("duarte",{})
+	for key in companion: units[1][key] = int(companion[key])
 	units[2].name = "Corsário"; units[2].kind = "raider"; units[2].cell = Vector2i(6,1)
 	units[2].hp = 65; units[2].max_hp = 65; units[2].posture = 45; units[2].max_posture = 45
 	obstacles.assign([Vector2i(4,0),Vector2i(4,1)])
@@ -43,6 +45,8 @@ func support_preview(actor: int,skill: int,aim: Vector2i) -> Dictionary:
 		result.capacity = 25 if skill==6 else 5
 		result.amount = mini(result.capacity,maxi(0,int(units[result.target]["max_"+result.resource])-int(units[result.target][result.resource])))
 		result.waste = result.capacity-result.amount
+		# Keep the generic UI resource fields consistent with Jade's fixed doses.
+		result[result.resource] = result.amount
 	return result
 func perform(skill: int,aim: Vector2i,quality: int) -> Dictionary:
 	var result: Dictionary = super.perform(skill,aim,quality)

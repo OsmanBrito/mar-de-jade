@@ -27,6 +27,8 @@ func _plan() -> void:
 	if not path.is_empty(): path.append(route[route_index])
 func _physics_process(delta: float) -> void:
 	if not world.map_ready: return
+	if (is_instance_valid(world.player) and not world.player.enabled) or not is_visible_in_tree():
+		velocity=Vector2.ZERO;presentation.walking=false;presentation.queue_redraw();return
 	presentation.walking = false
 	if waiting>0:
 		waiting -= delta

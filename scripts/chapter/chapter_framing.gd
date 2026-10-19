@@ -8,6 +8,8 @@ static func install(director: Node,people: Array,scale_value: float = 1.6) -> No
 	var framing := Node.new(); framing.set_script(load("res://scripts/chapter/chapter_framing.gd"))
 	framing.name = "ConversationFraming"; framing.subjects = people; framing.zoom = scale_value
 	director.add_child(framing)
+	var world=director.get("world")
+	if is_instance_valid(world) and world.has_meta("continuous_lisbon"):world.set_meta("intimate_scene_people",people)
 	framing.camera = Camera2D.new(); framing.camera.name = "ConversationCamera"
 	framing.camera.zoom = Vector2.ONE*scale_value
 	director.add_child(framing.camera)

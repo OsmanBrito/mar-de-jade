@@ -8,6 +8,8 @@ static func data() -> Dictionary:
 	if manifest.is_empty(): manifest = JSON.parse_string(FileAccess.get_file_as_string("res://assets/art/combat/portugal/frames.json"))
 	return manifest.entries
 static func identity(model,unit: Dictionary) -> String:
+	if unit.kind in ["wolf","bear"]: return unit.kind
+	if model.encounter=="portugal_child_bear" and unit.id==0: return "leonor_child"
 	var child: bool = model.encounter.begins_with("portugal_child")
 	if unit.id==0: return "hero_child" if child else "hero"
 	if unit.kind=="leonor": return "leonor_child" if child else "leonor"
@@ -22,6 +24,8 @@ static func pose_frame(pose: String,time: float,style: String = "ES") -> int:
 		"attack","thrust","crush","shoot","sweep","punch": return Feel.frame(style,time)
 	return 0
 static func draw_actor(canvas: CanvasItem,id: String,point: Vector2,face_left: bool,pose: String,time: float,style: String,wooden: bool,flash: float = 0,reduced: bool = false,aim: Vector2 = Vector2.RIGHT,size_multiplier: float = 1.0) -> Vector2:
+	if id in ["wolf","bear"]:
+		return preload("res://scripts/city/forest_animal.gd").paint(canvas,id,point,(62 if id=="wolf" else 102)*size_multiplier,face_left,pose,time,flash)
 	var info: Dictionary = data()[id]
 	if not textures.has(id):
 		var source: Texture2D = load(info.source) if ResourceLoader.exists(info.source) else ImageTexture.create_from_image(Image.load_from_file(info.source))
@@ -40,9 +44,11 @@ static func draw_actor(canvas: CanvasItem,id: String,point: Vector2,face_left: b
 	canvas.draw_set_transform(point+body,lean*(-1 if face_left else 1),Vector2(-1 if face_left else 1,1))
 	var tint := Color.WHITE.lerp(Color("f0b3a4"),flash*0.40)
 	var tip := point
-	canvas.draw_texture_rect_region(textures[id],Rect2(Vector2(-pivot[0],-pivot[1])*scale_factor,Vector2(r[2],r[3])*scale_factor),Rect2(r[0],r[1],r[2],r[3]),tint)
+	var artwork: Texture2D = textures[id]
+	if id=="duarte": artwork = preload("res://scripts/chapter/order_livery.gd").texture(canvas,artwork,info,true)
+	canvas.draw_texture_rect_region(artwork,Rect2(Vector2(-pivot[0],-pivot[1])*scale_factor,Vector2(r[2],r[3])*scale_factor),Rect2(r[0],r[1],r[2],r[3]),tint)
 	if id in ["hero","hero_child"]:
-		preload("res://scripts/chapter/hero_eyes.gd").draw(canvas,"combat" if id=="hero" else "combat_child",frame,r,pivot,scale_factor)
+		preload("res://scripts/chapter/hero_eyes.gd").draw(canvas,"combat" if id=="hero" else "combat_child",frame,r,pivot,scale_factor,false,face_left)
 	if frame not in [7,8] and style!="PU":
 		var hand := Vector2(grip[0]-pivot[0],grip[1]-pivot[1])*scale_factor
 		var axis := Motion.weapon_axis("guard",time) if frame==6 else (Feel.weapon_axis(style,time) if frame in [3,4,5] else Vector2(0.50,-0.86))
@@ -57,7 +63,7 @@ static func draw_actor(canvas: CanvasItem,id: String,point: Vector2,face_left: b
 			tip = point+body+muzzle.rotated(lean*(-1 if face_left else 1))
 		# The fingers overlap the weapon shaft at the measured source point.
 		var patch := Rect2(grip[0]-6,grip[1]-6,12,12)
-		canvas.draw_texture_rect_region(textures[id],Rect2((Vector2(patch.position)-Vector2(pivot[0],pivot[1]))*scale_factor,patch.size*scale_factor),Rect2(Vector2(r[0],r[1])+patch.position,patch.size),tint)
+		canvas.draw_texture_rect_region(artwork,Rect2((Vector2(patch.position)-Vector2(pivot[0],pivot[1]))*scale_factor,patch.size*scale_factor),Rect2(Vector2(r[0],r[1])+patch.position,patch.size),tint)
 	canvas.draw_set_transform(Vector2.ZERO)
 	return tip
 static func draw_weapon(canvas: CanvasItem,hand: Vector2,axis: Vector2,style: String,wooden: bool,factor: float) -> void:

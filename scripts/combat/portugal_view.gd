@@ -84,6 +84,8 @@ func unit_position(id: int) -> Vector2:
 	return point
 
 func draw() -> void:
+	if phase=="cutin":
+		draw_board(); cutin.draw(host); return
 	weapon_tips.clear()
 	arena.draw_ground(model.encounter,motion_clock,host.progress.data.options.reduced_fx)
 	draw_board()
@@ -124,6 +126,7 @@ func draw_unit(id: int) -> void:
 	var vector: Vector2 = visual_direction(id,Vector2((direction.x-direction.y)*BOARD.STEP.x,(direction.x+direction.y)*BOARD.STEP.y).normalized())
 	var child: bool = model.encounter.begins_with("portugal_child")
 	var height := 44.0 if child else 60.0
+	if unit.kind in ["wolf","bear"]: height = 62 if unit.kind=="wolf" else 102
 	var reaction := damage_reaction(id)
 	draw_passive_pulse(id,p)
 	if unit.kind == "target":
@@ -210,6 +213,16 @@ func draw_icon_button(button_id: String,shortcut: int,skill: int,rect: Rect2,rar
 	host.button(button_id,"",rect,enabled)
 	host.buttons[-1]["inspect_skill"] = skill
 	host.draw_rect(Rect2(rect.position+Vector2(4,4),Vector2(2,rect.size.y-8)),rarity)
+	if rect.size.x<150:
+		presentation.draw_icon(host,icon_texture(model.current_id,skill),Rect2(rect.position+Vector2(rect.size.x-24,3),Vector2(18,18)))
+		host.text_at(str(shortcut)+" · "+detail,rect.position+Vector2(10,13),9,rarity)
+		var first := ""; var second := ""
+		for word in fallback_name.split(" "):
+			if second.is_empty() and host.font.get_string_size(first+" "+word,HORIZONTAL_ALIGNMENT_LEFT,-1,10).x<rect.size.x-20: first = (first+" "+word).strip_edges()
+			else: second = (second+" "+word).strip_edges()
+		host.text_at(first,rect.position+Vector2(10,28),10,PAPER if enabled else MUTED)
+		host.text_at(host.fit_text(second,rect.size.x-20,10),rect.position+Vector2(10,41),10,PAPER if enabled else MUTED)
+		return
 	presentation.draw_icon(host,icon_texture(model.current_id,skill),Rect2(rect.position+Vector2(12,5),Vector2(36,36)))
 	var key_label: String = str(shortcut)
 	if GamePreferences.controller: key_label = {1:"X",2:"Y",3:"Y → 2",4:"Y → 3",9:"Select"}.get(shortcut,str(shortcut))

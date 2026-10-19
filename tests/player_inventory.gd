@@ -57,7 +57,7 @@ func run() -> void:
 	p.flags.injured = false; p.vitals.qi = 8
 	Items.buy(p,"PT-V01"); Items.equip(p,"PT-V01"); Items.equip(p,"PT-W02")
 	var rules = load("res://scripts/combat/campaign_rules.gd").new(); rules.start_encounter("school","Joana","LA")
-	check(rules.units[0].max_hp == 112 and rules.units[0].hp == 85 and rules.units[0].defense == 2,"Live battle reads equipped stats and current health")
+	check(rules.units[0].max_hp == 112 and rules.units[0].hp == 112 and rules.units[0].defense == 2 and p.vitals.hp == 85,"Lesson reads equipped stats with a separate health budget")
 	check(rules.skill_def(0,0).power == 22,"Weapon bonus reaches actual basic attack")
 	check(rules.skill_def(0,1).power == 20,"Weapon bonus reaches actual technique")
 	var attack: Dictionary = {"kind":"attack","power":30,"posture":5,"cells":[rules.units[0].cell],"target":0,"targets":[0],"no_counter":true}

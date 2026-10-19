@@ -7,6 +7,7 @@ func check(ok: bool, message: String) -> void:
 	checks += 1
 	if not ok: failures.append(message); push_error(message)
 func run() -> void:
+	Engine.time_scale = 3.0
 	root.get_node("CampaignProfile").hero_name = "Inês"
 	var progress = root.get_node("ChapterProgress"); progress.reset(); progress.auto_save = false
 	progress.flags.injured = true
@@ -18,6 +19,7 @@ func run() -> void:
 		if not game.busy:
 			match game.phase:
 				"dialogue": game.advance()
+				"roaming": check(await load("res://tests/lisbon_walk_driver.gd").new().reach(game),"The current recovery route reaches the lesson")
 				"task": game.world.player.position = game.props.marker; game.interact_task()
 				"styles": game.choose_style(styles[selection]); selection += 1
 				"battle": driver.drive(game.battle_host)
@@ -27,9 +29,10 @@ func run() -> void:
 					else: game.confirm_style()
 				"block_end": break
 		if game.busy: await physics_frame
-		else: await process_frame
+		else: await physics_frame
 	check(progress.tested_styles.size() == 5,"All five styles can be tested in one visit")
-	check(progress.passives.size() == 8,"Eight passives taught with correct owner")
+	check(progress.passives.filter(func(id): return not id.begins_with("DU")).size() == 7 and ["GE21","GE22","ES-P11","LA-P11","MC-P11","FO-P11","PU-P11"].all(func(id): return progress.passives.has(id)),"The current five weapon lessons teach their seven passives")
+	check(progress.passives.has("DU-P09") and progress.skills.has("DU01"),"Duarte retains his own support learning alongside the seven protagonist passives")
 	check(progress.equipped_passives.is_empty() and progress.duarte_equipped_passives.is_empty(),"Learning does not auto-equip passives")
 	check(progress.style == "PU" and progress.inventory.has("PT-W05") and not progress.inventory.has("PT-W01"),"Chosen style changes initial weapon without duplicating loan weapons")
 	print("CHAPTER_STYLES_RESULT ",JSON.stringify({"checks":checks,"failures":failures}))

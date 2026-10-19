@@ -1,0 +1,406 @@
+{
+  "id": "C01-INF-CA-01",
+  "target_scope": "complete_childhood_including_convent_training_hunt_and_promise",
+  "target_minutes": [
+    30,
+    45
+  ],
+  "dialogs": {
+    "0": [
+      [
+        "Leonor criança",
+        "Um homem do caminho viu um corço branco junto da ribeira."
+      ],
+      [
+        "Herói criança",
+        "E acreditaste logo?"
+      ],
+      [
+        "Leonor criança",
+        "Não. Por isso é que vamos procurar."
+      ],
+      [
+        "Herói criança",
+        "Vamos?"
+      ],
+      [
+        "Leonor criança",
+        "Conheces alguém que veja pegadas melhor do que eu?"
+      ],
+      [
+        "Herói criança",
+        "Não disseste que precisavas de alguém que visse pegadas. Precisavas de alguém que acreditasse em ti."
+      ],
+      [
+        "Leonor criança",
+        "Posso precisar das duas coisas."
+      ],
+      [
+        "Herói criança",
+        "O Tomé sabe?"
+      ],
+      [
+        "Leonor criança",
+        "Sabe que vamos até à ponte. Voltamos antes da refeição."
+      ],
+      [
+        "Herói criança",
+        "Então temos de saber o caminho de volta."
+      ]
+    ],
+    "1": [
+      [
+        "Herói criança",
+        "Aqui. Duas marcas, uma ao lado da outra."
+      ],
+      [
+        "Leonor criança",
+        "Muito largas. São de uma carroça."
+      ],
+      [
+        "Herói criança",
+        "Estava a falar destas pequenas, no meio."
+      ],
+      [
+        "Leonor criança",
+        "Ah."
+      ],
+      [
+        "Herói criança",
+        "O teu caçador de pegadas afinal serve para alguma coisa."
+      ],
+      [
+        "Leonor criança",
+        "Não te habitues a ter razão."
+      ],
+      [
+        "Herói criança",
+        "Elas seguem para a sombra, não para a estrada."
+      ],
+      [
+        "Leonor criança",
+        "Então é pela sombra que vamos. Mas sem correr."
+      ]
+    ],
+    "2": [
+      [
+        "Leonor criança",
+        "Vês o ramo partido?"
+      ],
+      [
+        "Herói criança",
+        "Um corço consegue chegar tão alto?"
+      ],
+      [
+        "Leonor criança",
+        "Talvez tenha passado outro bicho antes."
+      ],
+      [
+        "Herói criança",
+        "Tu disseste que era um caminho seguro."
+      ],
+      [
+        "Leonor criança",
+        "Disse que conhecia o caminho até à ponte."
+      ],
+      [
+        "Herói criança",
+        "Não é bem a mesma coisa."
+      ],
+      [
+        "Leonor criança",
+        "Tens razão. Se virmos marcas maiores, paramos e olhamos antes de seguir."
+      ],
+      [
+        "Herói criança",
+        "E olhamos os dois."
+      ]
+    ],
+    "3": [
+      [
+        "Herói criança",
+        "A água parece mais rápida aqui."
+      ],
+      [
+        "Leonor criança",
+        "A tábua do meio mexe. Põe o pé junto das travessas."
+      ],
+      [
+        "Herói criança",
+        "Como sabes?"
+      ],
+      [
+        "Leonor criança",
+        "Porque já pus o pé no meio."
+      ],
+      [
+        "Herói criança",
+        "Sozinha?"
+      ],
+      [
+        "Leonor criança",
+        "Não tinha um caçador de pegadas comigo."
+      ],
+      [
+        "Herói criança",
+        "Hoje tens."
+      ]
+    ],
+    "4": [
+      [
+        "Leonor criança",
+        "Ali em cima! Vi alguma coisa clara."
+      ],
+      [
+        "Herói criança",
+        "Entre aquelas árvores?"
+      ],
+      [
+        "Leonor criança",
+        "Vou só espreitar pelo alto. Já volto."
+      ],
+      [
+        "Herói criança",
+        "Espera. Temos de contornar as raízes."
+      ],
+      [
+        "Leonor criança",
+        "Eu chego lá e mostro-te a passagem."
+      ],
+      [
+        "Narrador",
+        "Leonor sobe por entre os troncos. Por um instante ainda se vê a manga clara; depois, as folhas fecham-se."
+      ],
+      [
+        "Herói criança",
+        "Leonor?"
+      ],
+      [
+        "Narrador",
+        "Do lado da clareira, alguma coisa pisa um ramo seco."
+      ]
+    ],
+    "7": [
+      [
+        "Narrador",
+        "Na clareira alta, um corço de pelo muito claro ergue a cabeça. Entre o musgo e a luz, quase parece uma pedra branca."
+      ],
+      [
+        "Herói criança",
+        "Era verdade."
+      ],
+      [
+        "Leonor criança",
+        "Eu disse que podia ser."
+      ],
+      [
+        "Herói criança",
+        "Disseste que íamos procurar."
+      ],
+      [
+        "Leonor criança",
+        "E procurámos."
+      ],
+      [
+        "Herói criança",
+        "O que querias fazer quando o encontrasses?"
+      ],
+      [
+        "Leonor criança",
+        "Ainda não tinha pensado nessa parte."
+      ],
+      [
+        "Herói criança",
+        "Podemos pensar sem o assustar."
+      ]
+    ],
+    "8": [
+      [
+        "Leonor criança",
+        "A ponte está ali. Não perdemos o caminho."
+      ],
+      [
+        "Herói criança",
+        "Nem o corço."
+      ],
+      [
+        "Leonor criança",
+        "Ele é que não se deixou perder por nós."
+      ],
+      [
+        "Herói criança",
+        "Vais contar ao Tomé sobre o urso?"
+      ],
+      [
+        "Leonor criança",
+        "Vou contar que me afastei de ti. Essa parte é minha."
+      ],
+      [
+        "Herói criança",
+        "E eu conto a parte do lobo."
+      ],
+      [
+        "Leonor criança",
+        "Sem dizer que eram três."
+      ],
+      [
+        "Herói criança",
+        "Podiam ser dois."
+      ],
+      [
+        "Leonor criança",
+        "Era um."
+      ],
+      [
+        "Herói criança",
+        "Então conto um."
+      ],
+      [
+        "Narrador",
+        "O caminho para casa parece mais curto. A força de Leonor continua difícil de compreender, mas já não é a única coisa que o herói leva desta manhã."
+      ]
+    ],
+    "wolf_intro": [
+      [
+        "Narrador",
+        "Um lobo sai de trás das raízes, baixo e atento. A passagem de volta fica atrás dele."
+      ],
+      [
+        "Herói criança",
+        "Calma. Não corras."
+      ],
+      [
+        "Narrador",
+        "A frase que Leonor repetiu no treino ajuda a segurar o instrumento. O lobo avança."
+      ],
+      [
+        "Herói criança",
+        "Os olhos abertos. A guarda para ele."
+      ]
+    ],
+    "wolf_after": [
+      [
+        "Narrador",
+        "O lobo cai. O silêncio não dura: um corpo muito maior força os ramos na borda da clareira."
+      ],
+      [
+        "Herói criança",
+        "Não… Outro não."
+      ],
+      [
+        "Narrador",
+        "O urso ocupa a passagem. O herói tenta recompor a guarda, mas mal consegue firmar as mãos."
+      ],
+      [
+        "Leonor criança",
+        "Fica atrás de mim."
+      ],
+      [
+        "Herói criança",
+        "Leonor, ele é enorme!"
+      ],
+      [
+        "Leonor criança",
+        "Eu vi. Fica atrás."
+      ],
+      [
+        "Narrador",
+        "Leonor entra na clareira. Agora controlas Leonor; as suas técnicas lendárias e supremas estão disponíveis."
+      ]
+    ],
+    "bear_after": [
+      [
+        "Narrador",
+        "O urso cai antes de conseguir fechar a distância. Leonor baixa a arma e olha primeiro para o companheiro."
+      ],
+      [
+        "Leonor criança",
+        "Estás ferido?"
+      ],
+      [
+        "Herói criança",
+        "Eu… não. Acho que não."
+      ],
+      [
+        "Leonor criança",
+        "Olha para mim. Consegues mexer os dedos?"
+      ],
+      [
+        "Herói criança",
+        "Consigo."
+      ],
+      [
+        "Leonor criança",
+        "Então larga um pouco a mão. Estás a apertar isso com força demais."
+      ],
+      [
+        "Herói criança",
+        "Eu sabia que eras forte."
+      ],
+      [
+        "Leonor criança",
+        "Sabias."
+      ],
+      [
+        "Herói criança",
+        "Não sabia que era assim."
+      ],
+      [
+        "Leonor criança",
+        "O lobo foste tu que enfrentaste."
+      ],
+      [
+        "Herói criança",
+        "Demorou muito mais."
+      ],
+      [
+        "Leonor criança",
+        "E estavas sozinho. Não devia ter-me afastado."
+      ],
+      [
+        "Herói criança",
+        "Da próxima vez, vamos os dois. Mesmo que tu chegues primeiro."
+      ],
+      [
+        "Leonor criança",
+        "Os dois."
+      ]
+    ],
+    "observe": [
+      [
+        "Narrador",
+        "Os dois ficam quietos. O corço atravessa a luz sem pressa e desaparece entre as árvores."
+      ],
+      [
+        "Leonor criança",
+        "Agora temos de saber guardar este lugar."
+      ],
+      [
+        "Herói criança",
+        "Esse trabalho parece mais fácil do que lutar com ursos."
+      ],
+      [
+        "Leonor criança",
+        "Então fica contigo."
+      ]
+    ],
+    "approach": [
+      [
+        "Narrador",
+        "Avançam juntos, devagar. O corço espera mais um instante, depois salta para o bosque."
+      ],
+      [
+        "Herói criança",
+        "Chegaste a ver os olhos?"
+      ],
+      [
+        "Leonor criança",
+        "Vi. E tu?"
+      ],
+      [
+        "Herói criança",
+        "Também. Desta vez chegámos os dois."
+      ]
+    ]
+  }
+}

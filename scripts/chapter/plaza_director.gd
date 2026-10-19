@@ -16,8 +16,10 @@ var completed := false
 var blocked_hint_seen := false
 var _status_before_pause := ""
 var framing
+var roam
 
 func _ready() -> void:
+	preload("res://scripts/chapter/childhood_pacing.gd").install(self)
 	get_node("Praca").player.set_physics_process(false)
 	if CampaignProfile.hero_name.is_empty():
 		get_tree().change_scene_to_file.call_deferred("res://scenes/chapter_01/name_entry.tscn")
@@ -45,7 +47,9 @@ func _ready() -> void:
 	world.player.z_index = 1 # Seated body overlaps the bench's front edge.
 	world.player.presentation.position.y = 0
 	world.player.camera.reset_smoothing()
-	advance()
+	roam = preload("res://scripts/chapter/childhood_roam.gd").new(self)
+	roam.begin()
+	preload("res://scripts/chapter/childhood_menu.gd").install(self)
 
 func _set_staged(staged: bool) -> void:
 	if staged:
@@ -73,6 +77,8 @@ func _start_segment(id: String) -> void:
 	advance()
 
 func advance() -> void:
+	if phase=="childhood_note": roam.resume(); return
+	if phase=="childhood_explore": return
 	if busy or paused or completed or not walking_stage.is_empty():
 		return
 	var events: Array = data["segments"][segment]
@@ -158,6 +164,7 @@ func _target():
 	return world.get_node("Staging/FirstTarget" if walking_stage == "first" else "Staging/SecondTarget")
 
 func _physics_process(_delta: float) -> void:
+	if phase=="childhood_explore" and roam!=null: roam.update(); return
 	if paused or busy or walking_stage.is_empty():
 		return
 	var target = _target()
@@ -204,6 +211,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if view == null:
 		return
 	if event.is_action_pressed("ui_cancel") or (event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_START):
+		if phase in ["childhood_explore","childhood_note"]: roam.save()
 		if not paused:
 			_status_before_pause = view.status.text
 		paused = not paused
@@ -213,6 +221,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	if paused or busy:
+		return
+	if phase in ["childhood_explore","childhood_note"]:
+		if phase=="childhood_note":
+			if event.is_action_pressed("ui_accept"): roam.resume(); get_viewport().set_input_as_handled()
+			return
+		if event.is_action_pressed("interact"):
+			roam.interact(); get_viewport().set_input_as_handled(); return
+		if event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:
+			roam.click(world.get_global_transform_with_canvas().affine_inverse()*event.position); get_viewport().set_input_as_handled()
 		return
 	if walking_stage.is_empty():
 		if event.is_action_pressed("ui_accept"):

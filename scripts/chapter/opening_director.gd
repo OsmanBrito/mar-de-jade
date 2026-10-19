@@ -37,6 +37,7 @@ var _initial_child: Dictionary
 var _initial_tome: Dictionary
 
 func _ready() -> void:
+	preload("res://scripts/chapter/childhood_pacing.gd").install(self)
 	if CampaignProfile.hero_name.is_empty():
 		get_tree().change_scene_to_file.call_deferred("res://scenes/chapter_01/name_entry.tscn")
 		return
@@ -56,11 +57,14 @@ func _ready() -> void:
 	framing = preload("res://scripts/chapter/chapter_framing.gd").install(self,[child,tome],2.0)
 	framing.bias = Vector2(0,23); framing.camera.position = framing.target()
 	_build_interface()
+	preload("res://scripts/chapter/childhood_menu.gd").install(self)
 	advance()
 	Transition.reveal(self)
 
 func _build_interface() -> void:
-	view = preload("res://scripts/chapter/dialogue_view.gd").new(); add_child(view)
+	view = preload("res://scripts/chapter/dialogue_view.gd").new()
+	view.caption = "Lisboa · Casa da Ordem de Cristo · Infância\nUm lugar à mesa"
+	add_child(view)
 	speaker = view.speaker; body = view.body; status = view.status; panel = view.panel; next_button = view.next_button
 	view.continuation_requested.connect(_continue_pressed); view.replay_requested.connect(restart)
 	var controls: HBoxContainer = next_button.get_parent()
@@ -202,6 +206,7 @@ func _to_table() -> void:
 	_end_gesture()
 
 func _input(event: InputEvent) -> void:
+	if paused: return
 	# Handle both edges before the focused Button: otherwise key-down advances
 	# here and the Button's key-up activation advances the next spoken turn too.
 	if event.is_action("ui_accept"):

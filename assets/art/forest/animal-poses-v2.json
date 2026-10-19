@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "entries": {
+    "wolf": {
+      "source": "res://assets/art/forest/wolf-poses-v2.png",
+      "reference_height": 406,
+      "frames": [
+        [
+          37,
+          89,
+          470,
+          406
+        ],
+        [
+          531,
+          85,
+          489,
+          392
+        ],
+        [
+          1036,
+          95,
+          488,
+          379
+        ],
+        [
+          37,
+          587,
+          473,
+          352
+        ],
+        [
+          522,
+          601,
+          496,
+          327
+        ],
+        [
+          1026,
+          737,
+          498,
+          182
+        ]
+      ],
+      "anchor": "bottom_center",
+      "shared_scale": true
+    },
+    "bear": {
+      "source": "res://assets/art/forest/bear-poses-v3.png",
+      "reference_height": 318,
+      "frames": [
+        [
+          73,
+          114,
+          365,
+          318
+        ],
+        [
+          577,
+          112,
+          385,
+          322
+        ],
+        [
+          1098,
+          115,
+          385,
+          320
+        ],
+        [
+          81,
+          527,
+          341,
+          414
+        ],
+        [
+          509,
+          596,
+          471,
+          314
+        ],
+        [
+          1082,
+          691,
+          410,
+          198
+        ]
+      ],
+      "anchor": "bottom_center",
+      "shared_scale": true
+    },
+    "deer": {
+      "source": "res://assets/art/forest/deer-poses-v2.png",
+      "reference_height": 498,
+      "frames": [
+        [
+          74,
+          11,
+          383,
+          498
+        ],
+        [
+          590,
+          12,
+          359,
+          496
+        ],
+        [
+          1055,
+          162,
+          432,
+          336
+        ],
+        [
+          58,
+          516,
+          438,
+          458
+        ],
+        [
+          578,
+          516,
+          423,
+          451
+        ],
+        [
+          1044,
+          531,
+          477,
+          382
+        ]
+      ],
+      "anchor": "bottom_center",
+      "shared_scale": true
+    }
+  }
+}

@@ -72,10 +72,11 @@ func reload_visit() -> bool:
 	check(error==OK and p.snapshot()==expected,"Request and inventory round-trip together")
 	if error!=OK: return false
 	game = load("res://scenes/chapter_01/chapter_flow.tscn").instantiate(); root.add_child(game); await frames(5)
-	check(game.phase=="exploration" and game.scene_index==expected.checkpoint,"Reload returns to free exploration, without repeating dialogue")
+	check(game.phase=="roaming" and game.scene_index==expected.checkpoint,"Reload returns to city walking, without repeating dialogue")
 	return true
 
 func run() -> void:
+	Engine.time_scale = 3.0
 	for path in ["user://capitulo-01.json","user://campanha-perfil.json","user://navegacao.json"]:
 		user_hashes[path] = FileAccess.get_sha256(path) if FileAccess.file_exists(path) else "absent"
 	p = root.get_node("ChapterProgress"); p.auto_save = false; p.reset()
@@ -83,21 +84,21 @@ func run() -> void:
 	p.flags = {"patient_helped":true,"patient_stable":true,"cargo_freed":true,"harbor_pause":true}
 	Items.pay_service(p)
 	game = load("res://scenes/chapter_01/chapter_flow.tscn").instantiate(); game.start_block = 3; root.add_child(game); await frames(5)
-	check(game.phase=="exploration" and game.harbor.before_meal(),"New city interval opens after the rescue, before the meal")
-	check(game.actors.keys()==["Duarte"],"Story actors never duplicate or reappear during the visit")
-	check(game.harbor.city.residents.size()==4,"Four existing city residents offer interactions")
+	check(game.phase=="roaming" and game.routes.state.target==4,"City walking follows the rescue and points to the kitchen")
+	check(not game.actors["Trabalhador ferido"].visible,"The treated patient does not return when city walking begins")
+	check(["workshop","dock","fisher","neighbor"].all(func(id): return game.harbor.city.residents.has(id)),"Four existing city residents retain their interactions")
 	var original_cart: Vector2 = game.harbor.city.cart.position
 	if not await talk("neighbor"): await finish(); return
 	check(game.view.body.text.contains("oficina"),"Resident points toward an actual city activity")
 	await pad(JOY_BUTTON_B)
-	check(game.phase=="exploration" and game.world.player.enabled,"Controller B closes local conversation without losing control")
+	check(game.phase=="roaming" and game.world.player.enabled,"Controller B closes local conversation without losing control")
 	if not await talk("workshop"): await finish(); return
 	await capture("offer"); await choose("close")
 	check(Requests.stage(p).is_empty(),"Declining leaves the optional request undiscovered and repeatable")
 	await key(KEY_E); await choose("accept",true)
 	check(Requests.stage(p)=="inspect" and p.coins==40,"Acceptance starts the objective without granting a reward; stage="+Requests.stage(p)+" phase="+game.phase+" cursor="+str(game.harbor.city.cursor)+" conversation="+game.harbor.city.conversation)
 	await choose("close")
-	check(game.phase=="exploration" and game.world.player.enabled,"Closing acceptance returns control; phase="+game.phase)
+	check(game.phase=="roaming" and game.world.player.enabled,"Closing acceptance returns control; phase="+game.phase)
 	if not await talk("cart"): await finish(); return
 	await capture("inspect"); await choose("wrong_rope")
 	check(Requests.stage(p)=="inspect","Wrong diagnosis explains the clue without completing the step")
@@ -153,22 +154,17 @@ func run() -> void:
 	# Restore actual completed state and leave the early visit through the real gate.
 	p.local_requests = clean.local_requests.duplicate()
 	game.harbor.city.close()
-	game.world.walk_to(game.harbor.GATE+Vector2(-55,20))
-	for i in 1200:
-		await physics_frame
-		if game.harbor.near_gate(): break
-	check(game.harbor.near_gate(),"City route reconnects to Duarte")
-	await key(KEY_E)
-	var at_meal: bool = game.phase=="boarding" and game.options_box.get_child_count()==2 and game.options_box.get_child(1).text=="Levar a refeição"
-	check(at_meal,"Early visit offers the meal rather than accidental departure; phase="+game.phase)
+	check(await load("res://tests/lisbon_walk_driver.gd").new().reach(game),"City route reaches the kitchen on foot")
+	var at_meal: bool = game.phase=="task" and game.task_id=="meal"
+	check(at_meal,"The kitchen begins the meal rather than accidental departure; phase="+game.phase)
 	if not at_meal: await finish(); return
-	game.options_box.get_child(1).grab_focus(); await key(KEY_ENTER)
 	check(game.scene_index==4 and game.map_kind=="service","Exploration resumes the exact approved meal scene")
-	check(game.world.sorted_world.get_node("CarroDaOficina").position!=original_cart,"World consequence also persists in subsequent narrative maps")
+	check(Requests.stage(p)=="completed","Entering the convent preserves the city request")
 	# Revisit the final shore interval with the same completed request.
 	p.flags.recovered = true; p.flags.packed = true; p.flags.harbor_pause = true
 	game._load_block(15); await frames(5)
-	check(game.phase=="exploration" and Requests.stage(p)=="completed","Final visit preserves the earlier completed request")
+	check(game.phase=="roaming" and Requests.stage(p)=="completed","Final walk to the ship preserves the earlier completed request")
+	check(await load("res://tests/lisbon_walk_driver.gd").new().reach(game,"cais"),"Final visit reaches the market through the city passages")
 	for size in [Vector2i(1024,768),Vector2i(1280,800)]:
 		root.size = size; game._menu("Pedidos"); await frames(6)
 		for tab in game.player_menu.tabs.values(): check(root.get_visible_rect().encloses(tab.get_global_rect()),"Journal navigation stays inside "+str(size))

@@ -2,6 +2,8 @@
 
 17/10/2026 · projeto principal: `C:/Users/gamer/Documents/GitHub/mar-de-jade`.
 
+**Atualização de 18/10:** o [percurso a pé em Lisboa](../lisboa-percurso-jogavel.md) substitui as pausas isoladas por circulação entre áreas conectadas. Entrega, busca de Tomé, regresso ao abrigo, descanso, encontros e embarque passam a depender de deslocamento e interação no destino. Esta página conserva a matriz e os resultados da entrega anterior.
+
 Esta página é o registro atual dos 43 pontos da [revisão](revisao-direcao-arco-01.md), considerando as [correções do usuário](arco-01-diretrizes-revisadas.md). As páginas das entregas anteriores conservam resultados históricos. “Implementado” descreve comportamento disponível e verificado; não equivale a aprovação de ritmo, emoção ou diversão por jogadores.
 
 ## O que jogar agora

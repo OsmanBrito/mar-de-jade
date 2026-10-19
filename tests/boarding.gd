@@ -67,8 +67,8 @@ func run() -> void:
 		original.current_id = 0; boarding.current_id = 0
 		check(boarding.skill_def(0,0)==original.skill_def(0,0),style+": basic attack exactly matches Portugal's learned weapon and equipment")
 		check(boarding.skill_def(0,1)==original.skill_def(0,1),style+": technique retains Portugal's full definition, not a renamed generic damage skill")
-		check(boarding.units[0].hp==original.units[0].hp and boarding.units[0].max_hp==original.units[0].max_hp and boarding.units[0].qi==original.units[0].qi,style+": hero stats match the same prepared Portugal character")
-		check(boarding.commands(0)==[0,1] and boarding.commands(1)==[0,4] and boarding.perfect_defense_enabled,style+": learned commands and perfect defense remain available")
+		check(boarding.units[0].hp==prepared.vitals.hp and boarding.units[0].max_hp==original.units[0].max_hp and boarding.units[0].qi==prepared.vitals.qi and boarding.units[0].max_qi==original.units[0].max_qi,style+": equipment limits match Portugal while boarding retains the real carried resources")
+		check(boarding.commands(0)==[0,1,-1] and boarding.commands(1)==[0,4,-1] and boarding.perfect_defense_enabled,style+": learned commands, retreat and perfect defense remain available")
 		# Sequence is executed, not just compared as metadata: a basic in the last
 		# own turn discounts the first technique, just as in Portugal.
 		boarding.units[0].cell = Vector2i(2,2); boarding.units[2].cell = Vector2i(3,2)
@@ -95,7 +95,7 @@ func run() -> void:
 	check(b.ai_plan().target==1,"A corsair can target nearby Duarte instead of using the child lesson's hero-only AI")
 	var unlearned: Dictionary = Loadout.practice(); unlearned.skills = []; unlearned.flags.perfect_defense = false
 	b = Boarding.new(); b.progress_override = unlearned; b.start_encounter("boarding","Aprendiz")
-	check(b.commands(0)==[0] and b.commands(1)==[0] and not b.perfect_defense_enabled,"Campaign characters do not gain techniques or perfect defense they have not learned")
+	check(b.commands(0)==[0,-1] and b.commands(1)==[0,-1] and not b.perfect_defense_enabled,"Unlearned characters retain only basic attack and retreat, without perfect defense")
 	var arena = load("res://scripts/navigation/boarding_arena.gd").new(); var all_on_deck := true
 	for x in Layout.SIZE.x:
 		for y in Layout.SIZE.y:
@@ -185,7 +185,7 @@ func run() -> void:
 	game._prepare_boarding_profile("res://tests/boarding-chapter-kit.json")
 	check(game.model.style=="FO" and game.model.boarding_profile.vitals.hp==62 and game.model.boarding_profile.skills.has("FO07"),"Legacy campaign voyages recover their actual kit from the chapter file without replaying Portugal")
 	game.begin_boarding()
-	check(game.battle_host.combat.style=="FO" and game.battle_host.combat.units[0].hp==62 and game.battle_host.combat.commands(0)==[0,1],"Resumed campaign boarding uses the saved character instead of a replacement test character")
+	check(game.battle_host.combat.style=="FO" and game.battle_host.combat.units[0].hp==62 and game.battle_host.combat.commands(0)==[0,1,-1],"Resumed campaign boarding uses the saved character instead of a replacement test character")
 	# A real enemy strike at failed defensive timing must also complete safely.
 	game.model.style = "ES"; game.model.boarding_profile = Loadout.practice()
 	game.begin_boarding()

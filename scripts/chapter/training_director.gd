@@ -17,6 +17,7 @@ var battle_layer: CanvasLayer
 var battle_container: SubViewportContainer
 
 func _ready() -> void:
+	preload("res://scripts/chapter/childhood_pacing.gd").install(self)
 	world = get_node("Praca")
 	world.player.enabled = false
 	world.player.set_physics_process(false)
@@ -57,6 +58,7 @@ func _ready() -> void:
 	_resize_battle()
 	battle_container.hide()
 	_dialogue(0,0,7,"battle")
+	preload("res://scripts/chapter/childhood_menu.gd").install(self)
 
 func _resize_battle() -> void:
 	preload("res://scripts/combat/battle_stage.gd").fit(battle_container,get_viewport_rect().size)
@@ -77,7 +79,7 @@ func _dialogue(id: int, start: int, end: int, next: String) -> void:
 func advance() -> void:
 	if paused: return
 	if phase == "complete":
-		get_tree().change_scene_to_file("res://scenes/chapter_01/promise.tscn")
+		get_tree().change_scene_to_file("res://scenes/chapter_01/promise.tscn" if ChapterProgress.flags.get("hunt_completed",false) else "res://scenes/chapter_01/forest_hunt.tscn")
 		return
 	if phase != "dialogue": return
 	line_index += 1
@@ -94,7 +96,7 @@ func advance() -> void:
 			phase = "complete"; completed = true
 			view.speaker.text = "Treino concluído"
 			view.body.text = "Ataque básico e defesa simples praticados."
-			view.next_button.text = "Continuar para a promessa"
+			view.next_button.text = "Ir com Leonor aos arredores"
 			view.replay_button.hide()
 			view.next_button.grab_focus()
 			scene_finished.emit("C01-M01/S05")

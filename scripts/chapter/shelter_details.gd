@@ -15,6 +15,7 @@ static func install(room: Node2D) -> void:
 	room.add_child(floor); ground.hide()
 	var dressing := Node2D.new(); dressing.set_script(load("res://scripts/chapter/shelter_dressing.gd"))
 	dressing.name = "TecidosELuz"; room.add_child(dressing)
+	preload("res://scripts/chapter/order_house.gd").install_interior(room)
 	var sorted: Node2D = room.get_node("ActorsAndProps")
 	var art = preload("res://scripts/chapter/furniture_art.gd")
 	art.place(sorted,"cupboard",Vector2(-228,162),Vector2(103,134))

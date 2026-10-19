@@ -17,6 +17,7 @@ var voices: Array[AudioStreamPlayer] = []
 var voice_index := 0
 var drop_count := 0
 var rescue
+var focus_bias := Vector2(0,70)
 
 func _ready() -> void:
 	world = get_parent()
@@ -60,7 +61,8 @@ func configure(kind: String,id: String) -> void:
 			world.player.presentation.facing = 3; director.actors.Leonor.facing = 1
 		if id=="C01-M03/S06": frame([world.player,director.actors.Duarte],1.9)
 		elif director.actors.Leonor.visible: frame([world.player,director.actors.Leonor],2.0 if id in ["C01-M03/S02","C01-M03/S04","C01-M03/S05"] else 1.65)
-	elif kind=="service": frame([world.player,director.actors.Leonor],1.85)
+	elif kind=="service":
+		focus_bias = Vector2(40,-85); frame([world.player,director.actors.Leonor],1.45)
 	elif kind=="deck": frame([world.player,director.actors.Rodrigo,director.actors.Beatriz],1.35)
 	elif kind=="cais" and director.scene_index in [1,2,3]:
 		director.actors.Trabalhador.position = Vector2(665,860)
@@ -73,6 +75,7 @@ func configure(kind: String,id: String) -> void:
 
 func frame(people: Array,zoom: float) -> void:
 	subjects = people; framed = true
+	if world.has_meta("continuous_lisbon"):world.set_meta("intimate_scene_people",people)
 	camera.zoom = Vector2.ONE*zoom; camera.position = focus_point()
 	camera.enabled = true; camera.make_current()
 
@@ -80,7 +83,7 @@ func focus_point() -> Vector2:
 	var center := Vector2.ZERO; var count := 0
 	for person in subjects:
 		if is_instance_valid(person) and person.visible: center += person.position; count += 1
-	return center/maxi(1,count)+Vector2(0,70)
+	return center/maxi(1,count)+focus_bias
 
 func set_control_locked(locked: bool) -> void:
 	if not framed: return
@@ -98,6 +101,39 @@ func support_cargo() -> void:
 	rescue.supported = true; rescue.queue_redraw()
 	director.actors.Duarte.posture = "crouched"
 	mark("cargo_supported"); sound("footstep_wood",-29); await wait(0.5)
+
+func rescue_arrival() -> void:
+	director.view.panel.hide()
+	director.view.status.text = "A amarra partiu. O trabalhador está preso sob a viga; Duarte segura a carga."
+	frame([director.actors["Trabalhador ferido"],director.actors.Duarte,world.player],1.75)
+	mark("rescue_situation_shown"); await wait(.9); director.view.panel.show()
+
+func sit_refectory() -> void:
+	director.view.panel.hide(); director.view.status.text = "Pousas as porções e sentas-te junto de Leonor."
+	var from: Vector2i = world._nearest_id(world.player.position)
+	var to: Vector2i = world._nearest_id(Vector2(482,70))
+	if from.x>=0 and to.x>=0:
+		var path: PackedVector2Array = world.navigation.get_point_path(from,to)
+		for point in path:
+			var origin: Vector2 = world.player.position
+			var tween := create_tween()
+			tween.tween_method(func(t: float):
+				world.player.position = origin.lerp(point,t)
+				world.player.presentation.walking = true; world.player.presentation.frame_time += .12
+				world.player.presentation.facing = 3 if point.x>origin.x else 1,0.0,1.0,maxf(.02,origin.distance_to(point)/155))
+			await tween.finished
+	world.player.presentation.walking = false
+	var seat := create_tween(); seat.tween_property(world.player,"position",Vector2(526,35),.35); await seat.finished
+	mark("seated_in_existing_refectory")
+
+func stand_refectory() -> void:
+	director.view.panel.hide(); director.view.status.text = "A refeição terminou. Levantam-se para deixar a mesa livre."
+	world.player.presentation.posture = "standing"; world.player.presentation.seat_support = false
+	director.actors.Leonor.posture = "standing"; director.actors.Leonor.seat_support = false
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(world.player,"position",Vector2(486,84),.55)
+	tween.tween_property(director.actors.Leonor,"position",Vector2(640,90),.55)
+	await tween.finished; mark("stood_before_leaving_refectory")
 
 func lift_cargo() -> void:
 	director.view.panel.hide(); world.player.presentation.posture = "crouched"
@@ -131,15 +167,30 @@ func ordinary_treatment() -> void:
 	await move(tome,patient.position+Vector2(-38,-2),65)
 	tome.posture = "crouched"
 	director.actors["Mulher do cais"].facing = 3
-	mark("cloth_and_ordinary_care"); await wait(1.0)
+	var cloth:=Sprite2D.new();cloth.name="OrdinaryDressing";cloth.texture=preload("res://scripts/chapter/dining_art.gd").texture("napkin")
+	cloth.scale=Vector2.ONE*15.0/cloth.texture.get_width();patient.add_child(cloth)
+	cloth.position=tome.position-patient.position+Vector2(8,-28)
+	director.view.status.text="Tomé aplica o pano e presta o cuidado. A percepção não fechou o ferimento."
+	mark("cloth_and_ordinary_care")
+	var dressing:=create_tween();dressing.tween_property(cloth,"position",Vector2(6,-34),.65);await dressing.finished
+	await wait(.35)
 	director.actors.Observador.position += Vector2(-30,-20)
 	mark("observer_steps_back")
 
 func leave_with_family() -> void:
 	var patient = director.actors["Trabalhador ferido"]
 	patient.posture = "standing"; patient.injured = true
+	var family=director.actors.get("Familiar")
+	director.view.panel.hide();director.view.status.text="O trabalhador sai acompanhado. A passagem fica livre para o atendimento e para a carga."
+	frame([patient,family,world.player] if is_instance_valid(family) else [patient,world.player],1.7)
+	if is_instance_valid(family):
+		family.position=patient.position+Vector2(30,10);family.show();family.facing=1
+		mark("family_supports_patient")
+		Walk.along(family,[Vector2(412,927)],self,50)
 	await move(patient,Vector2(382,917),50)
-	patient.hide(); mark("patient_leaves_with_support")
+	patient.hide()
+	if is_instance_valid(family):family.hide()
+	mark("patient_leaves_with_support");director.view.panel.show()
 
 func assisted_return() -> void:
 	director.view.panel.hide(); director.view.status.text = "Duarte e Tomé ajudam no regresso ao abrigo."
@@ -148,6 +199,7 @@ func assisted_return() -> void:
 	tome.posture = "standing"; duarte.posture = "standing"
 	world.player.presentation.posture = "standing"; world.player.presentation.injured = true; world.player.presentation.facing = 1
 	tome.position = world.player.position+Vector2(30,12); duarte.position = world.player.position+Vector2(-32,8)
+	world.player.presentation.walking=true;tome.walking=true;duarte.walking=true
 	mark("assisted_return_begins")
 	var tween := create_tween().set_parallel(true)
 	var destination := Vector2(-190,315)
@@ -155,7 +207,12 @@ func assisted_return() -> void:
 	tween.tween_property(tome,"position",destination+Vector2(30,12),2.8)
 	tween.tween_property(duarte,"position",destination+Vector2(-32,8),2.8)
 	tome.facing = 1; duarte.facing = 1
-	await tween.finished; mark("assisted_return_leaves_square")
+	tween.tween_method(func(t:float):
+		world.player.presentation.frame_time=t*12;tome.frame_time=t*12;duarte.frame_time=t*12
+		world.player.presentation.queue_redraw();tome.queue_redraw();duarte.queue_redraw(),0.0,1.0,2.8)
+	await tween.finished
+	world.player.presentation.walking=false;tome.walking=false;duarte.walking=false
+	mark("assisted_return_leaves_square")
 
 func wait(seconds: float) -> void:
 	await get_tree().create_timer(seconds,false).timeout
@@ -211,6 +268,7 @@ func master_demonstration() -> void:
 	director.view.hint.text = "Esc / Start · pausar"
 	var master = director.actors.Mestre; var fighter = director.actors.Combatente
 	master.facing = 3; fighter.facing = 1
+	director.view.status.text="Demonstração pública · O mestre da praça recebe o ataque do combatente."
 	mark("master_guard"); await wait(0.55)
 	await move(master,Vector2(-35,205),110)
 	mark("fighter_attacks"); await strike(fighter,Vector2(40,205),0.45)
@@ -236,9 +294,11 @@ func leonor_demonstration() -> void:
 	leonor.facing = 1; master.facing = 3
 	master.rotation = -0.05; await wait(0.35); master.rotation = 0
 	leonor.tool_angle = -0.2; await wait(0.45)
+	director.view.status.text="Demonstração pública · Leonor recebe a primeira tentativa do mestre."
 	mark("master_first_attempt"); await strike(master,Vector2(1,205),0.36)
 	leonor.tool_angle = -0.9; effects.contact(Vector2(38,166)); sound("guard",-24,1.1)
 	await wait(0.3); await move(master,Vector2(-36,215),115); master.facing = 3
+	director.view.status.text="O mestre recompõe a guarda antes de tentar novamente."
 	mark("master_regroups"); master.tool_angle = -1.2; await wait(0.8)
 	mark("master_second_attempt"); await strike(master,Vector2(7,210),0.33)
 	leonor.position = Vector2(65,205); leonor.tool_angle = 0.08
@@ -246,6 +306,7 @@ func leonor_demonstration() -> void:
 	await move(master,Vector2(-12,215),80); master.facing = 3
 	leonor.tool_angle = 0.08; leonor.rotation = 0
 	mark("leonor_disarms_master"); react(); await wait(1.0)
+	director.view.status.text="Leonor desarmou o mestre e mantém a ponta. A tua avaliação ainda será no fim da tarde."
 	mark("leonor_holds_point"); await wait(0.7)
 	director.view.panel.show()
 

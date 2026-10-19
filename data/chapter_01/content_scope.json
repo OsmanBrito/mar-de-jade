@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "scope": "C01 Portugal e primeira viagem",
+  "skills": {
+    "DP01": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "DU01": {
+      "owner": "duarte",
+      "status": "implemented",
+      "acquisition": "departure"
+    },
+    "DU02": {
+      "owner": "duarte",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "ES01": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "ES07": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "ES08": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "ES09": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "FO01": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "FO07": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "FO08": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "FO09": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "LA01": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "LA07": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "LA08": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "LA09": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "MC01": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "MC07": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "MC08": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "MC09": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "PU01": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "PU07": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "PU08": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "PU09": {
+      "owner": "hero",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    }
+  },
+  "passives": {
+    "GE21": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "GE22": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "ES-P11": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "LA-P11": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "MC-P11": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "FO-P11": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "PU-P11": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "DU-P09": {
+      "owner": "duarte",
+      "status": "implemented"
+    }
+  },
+  "items": [
+    "PT-W01",
+    "PT-V01",
+    "PT-V02",
+    "PT-V03",
+    "PT-A01",
+    "PT-A02",
+    "PT-W02",
+    "PT-W03",
+    "PT-W04",
+    "PT-W05",
+    "PT-C01",
+    "PT-C02",
+    "PT-C03",
+    "PT-Q01",
+    "PT-Q02",
+    "PT-Q03",
+    "PT-T01",
+    "PT-T02",
+    "PT-T03",
+    "FERRO:dock_knife",
+    "FERRO:coat",
+    "FERRO:oilskin",
+    "FERRO:mail",
+    "FERRO:silk",
+    "FERRO:charm",
+    "FERRO:rope_bracelet",
+    "FERRO:shell"
+  ],
+  "demos": {
+    "status": "practice_only",
+    "ids": [
+      "C01-DEMO-ES-01",
+      "C01-DEMO-ES-02",
+      "C01-DEMO-LA-01",
+      "C01-DEMO-LA-02",
+      "C01-DEMO-MC-01",
+      "C01-DEMO-MC-02",
+      "C01-DEMO-FO-01",
+      "C01-DEMO-FO-02",
+      "C01-DEMO-PU-01",
+      "C01-DEMO-PU-02"
+    ]
+  },
+  "party": {
+    "hero": {
+      "equipment": "personal_inventory",
+      "rewards": "personal_wallet"
+    },
+    "duarte": {
+      "equipment": "fixed_story_kit",
+      "rewards": "shared_inventory",
+      "kit": "Arma e vestuário de Duarte; kit próprio fixo no primeiro arco."
+    },
+    "leonor": {
+      "equipment": "scripted_encounters",
+      "progression": "not_a_persistent_party_member_in_C01"
+    }
+  }
+}

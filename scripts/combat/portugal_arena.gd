@@ -82,7 +82,10 @@ func draw_ground(_encounter: String,time: float,reduced: bool) -> void:
 		c.draw_polygon(screen,PackedColorArray([Color("89a7a1")]),uv,water_material)
 	var land := quad(Vector2(-28,-28),Vector2(10.4,28)) if theme.shore else screen
 	# Fixed-size repetitions, never a whole painting stretched to the window.
-	draw_surface(land,floor_wood if theme.floor=="wood" else paving,tint,Vector2(180,135) if theme.floor=="wood" else Vector2(210,157.5),theme.floor=="wood")
+	if theme.floor=="forest":
+		draw_surface(land,preload("res://scripts/city/lisbon_scenery.gd").texture("bruma-grass-refined.png",false),tint,Vector2(220,165))
+	else:
+		draw_surface(land,floor_wood if theme.floor=="wood" else paving,tint,Vector2(180,135) if theme.floor=="wood" else Vector2(210,157.5),theme.floor=="wood")
 	if theme.shore:
 		var a := project(Vector2(10.4,-28)); var b := project(Vector2(10.4,28))
 		c.draw_line(a+Vector2(0,9),b+Vector2(0,9),Color("405b54"),12,true)
@@ -95,6 +98,11 @@ func draw_ground(_encounter: String,time: float,reduced: bool) -> void:
 		prop("details",3,project(Vector2(-1,8.7)),99)
 		prop("details",3,project(Vector2(10,2.5)),91)
 		prop("details",1,project(Vector2(8,-2)),50)
+	if theme.dressing=="forest":
+		var tree = preload("res://scripts/city/lisbon_scenery.gd").texture("bruma-v2-tree.png")
+		for at in [Vector2(-2,2),Vector2(3,-3),Vector2(10,5),Vector2(2,10)]:
+			var foot := project(at); var size := tree.get_size()*150/tree.get_width()
+			c.draw_texture_rect(tree,Rect2(foot-Vector2(size.x*.5,size.y),size),false,Color("c5cdb4"))
 	if theme.dressing=="cargo":
 		sprite(cargo,cargo_rect,project(Vector2(8,-2)),Vector2(92,75))
 		prop("details",2,project(Vector2(-2,7)),115)

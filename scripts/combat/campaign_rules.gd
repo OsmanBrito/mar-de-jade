@@ -84,11 +84,12 @@ func start_encounter(kind: String, hero_name: String, chosen_style: String = "ES
 			equipment_bonus.attack = 0
 		for key in ["hp","qi","posture"]:
 			units[0]["max_"+key] = stats[key]
-			units[0][key] = mini(int(stats[key]),int(combat_progress().vitals[key]))
-		# Instruction remains repeatable across all five loan maneuvers. Tomé
-		# restores the minimum lesson budget; equipment swaps themselves never do.
-		if kind == "school": units[0].qi = maxi(int(units[0].qi),8)
-		units[0].hp = maxi(1,int(units[0].hp)); units[0].posture = maxi(1,int(units[0].posture))
+			units[0][key] = mini(int(stats[key]),int(combat_progress().vitals[key])) if kind=="boarding" else int(stats[key])
+		# Lessons use a separate exercise budget. Comparing or retrying weapons
+		# must neither exhaust nor heal the resources carried into the voyage.
+		if kind!="boarding": units[0].qi = mini(8,int(stats.qi))
+		if kind!="boarding":
+			units[0].hp = maxi(1,int(units[0].hp)); units[0].posture = maxi(1,int(units[0].posture))
 		units[0].defense = stats.defense; units[0].speed = stats.speed
 		rebuild_order()
 

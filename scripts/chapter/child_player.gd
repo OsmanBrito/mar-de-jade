@@ -11,7 +11,7 @@ func _ready() -> void:
 	step_voice = AudioStreamPlayer.new(); step_voice.volume_db = -30; step_voice.bus = GamePreferences.effects_bus; add_child(step_voice)
 	var map: Node = get_parent()
 	if map.name=="ActorsAndProps": map = map.get_parent()
-	var wood: bool = map.get("map_id") in ["abrigo_infancia","abrigo_adulto","botafogo_departure"]
+	var wood: bool = map.get("map_id") in ["abrigo_infancia","abrigo_adulto","botafogo_departure","forest_hunt_map"]
 	step_voice.stream = AudioStreamWAV.load_from_file("res://assets/audio/combat/footstep_wood.wav" if wood else "res://assets/audio/chapter/foley/stone_step.wav")
 
 func _physics_process(delta: float) -> void:

@@ -29,7 +29,7 @@ func _ready() -> void:
 	get_node("Camera").enabled = false
 	preload("res://scripts/chapter/chapter_framing.gd").install(self,[hero,$Abrigo/ActorsAndProps/Tome,$Abrigo/ActorsAndProps/Duarte],1.45)
 	view = preload("res://scripts/chapter/dialogue_view.gd").new()
-	view.caption = "Portugal · Presente · 19 anos\nA correia e o prazo"
+	view.caption = "Lisboa · Casa da Ordem de Cristo · 19 anos\nA correia e o prazo"
 	add_child(view)
 	view.continuation_requested.connect(_continue_pressed)
 	view.replay_requested.connect(func(): get_tree().reload_current_scene())

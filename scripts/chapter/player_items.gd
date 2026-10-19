@@ -1,5 +1,6 @@
 extends RefCounted
-## Campaign inventory/economy. Reference combat and its foreign catalog stay isolated.
+## Single personal economy for Jade, including explicitly adapted source content.
+const CATALOGS := ["res://data/chapter_01/items.json", "res://data/integration/ferro-items.json"]
 const SLOTS := {"weapon":"Arma", "outfit":"Traje", "feet":"Calçado", "accessory":"Acessório"}
 const STYLES := {"ES":"Espada", "LA":"Lança", "MC":"Machado", "FO":"Arma de fogo", "PU":"Desarmado"}
 const BASE := {"hp":100,"qi":20,"posture":100,"defense":0,"speed":18}
@@ -9,9 +10,18 @@ static var catalog: Dictionary = {}
 
 static func items() -> Dictionary:
 	if catalog.is_empty():
-		for row in JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/items.json")).items:
-			catalog[row.id] = row
+		for path in CATALOGS:
+			for row in JSON.parse_string(FileAccess.get_file_as_string(path)).items:
+				assert(not catalog.has(row.id), "Duplicate campaign item: "+str(row.id))
+				catalog[row.id] = row
 	return catalog
+
+static func migrate_stock(saved: Dictionary) -> Dictionary:
+	var result := saved.duplicate(true)
+	for id in items():
+		if id.begins_with("FERRO:") and not result.has(id):
+			result[id] = int(items()[id].get("stock",0))
+	return result
 
 static func stock() -> Dictionary:
 	var result := {}
@@ -29,6 +39,20 @@ static func stats(p, loadout: Dictionary = {}) -> Dictionary:
 		for key in row.stats: result[key] = int(result.get(key,0))+int(row.stats[key])
 	result.power = int(POWER[p.style])+int(result.attack)
 	return result
+
+static func comparison(p, id: String) -> Dictionary:
+	var row: Dictionary = items()[id]
+	if row.slot == null: return {}
+	var proposed: Dictionary = p.equipment.duplicate()
+	proposed[row.slot] = id
+	var before := stats(p)
+	var after := stats(p,proposed)
+	# Changing a weapon also changes the base power of the chosen style.
+	after.power = POWER[row.get("style",p.style)] + after.attack
+	var delta := {}
+	for key in ["power","hp","qi","posture","defense","speed"]:
+		delta[key] = int(after[key])-int(before[key])
+	return delta
 
 static func equip_reason(p, id: String) -> String:
 	var row: Dictionary = items().get(id,{})
@@ -61,22 +85,27 @@ static func clamp_vitals(p) -> void:
 	var limits := stats(p)
 	for key in ["hp","qi","posture"]: p.vitals[key] = clampi(int(p.vitals[key]),0,int(limits[key]))
 
-static func use_reason(p, id: String) -> String:
+static func use_reason(p, id: String, person: String = "hero") -> String:
 	var row: Dictionary = items().get(id,{})
 	if row.is_empty() or int(p.inventory.get(id,0)) < 1: return "Não tens este objeto."
 	if not row.has("recovery"): return "Este objeto não é consumível."
 	if p.flags.get("injured",false) or not p.flags.get("recovered",false): return "O tratamento de Tomé precisa de terminar primeiro."
-	var limits := stats(p)
+	var limits: Dictionary = stats(p) if person=="hero" else preload("res://scripts/chapter/party_resources.gd").LIMITS.get(person,{})
+	if limits.is_empty(): return "Companheiro desconhecido."
+	var vitals: Dictionary = p.vitals if person=="hero" else p.companion_vitals.get(person,limits).duplicate()
 	for key in row.recovery:
-		if int(p.vitals[key]) < int(limits[key]): return ""
+		if int(vitals[key]) < int(limits[key]): return ""
 	return "Já estás recuperado; o suprimento não será gasto."
 
-static func use(p, id: String) -> String:
-	var reason := use_reason(p,id)
+static func use(p, id: String, person: String = "hero") -> String:
+	var reason := use_reason(p,id,person)
 	if not reason.is_empty(): return reason
 	var row: Dictionary = items()[id]
-	var limits := stats(p)
-	for key in row.recovery: p.vitals[key] = mini(int(limits[key]),int(p.vitals[key])+int(row.recovery[key]))
+	var limits: Dictionary = stats(p) if person=="hero" else preload("res://scripts/chapter/party_resources.gd").LIMITS.get(person,{})
+	if limits.is_empty(): return "Companheiro desconhecido."
+	var vitals: Dictionary = p.vitals if person=="hero" else p.companion_vitals.get(person,limits).duplicate()
+	for key in row.recovery: vitals[key] = mini(int(limits[key]),int(vitals[key])+int(row.recovery[key]))
+	if person!="hero": p.companion_vitals[person] = vitals
 	p.inventory[id] -= 1
 	return persist(p,"Usado: "+row.name+".")
 

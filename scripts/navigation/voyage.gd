@@ -69,6 +69,10 @@ func _ready() -> void:
 		var error: Error = model.load_from(save_path)
 		if error!=OK: model.last_error = "A viagem guardada não pôde ser lida. Iniciada uma nova viagem; o ficheiro anterior foi preservado."
 	_prepare_boarding_profile()
+	if Launch.mode=="campaign":
+		Launch.travel_path = save_path
+		if preload("res://scripts/navigation/shore_bridge.gd").is_visit(model.campaign_state):
+			get_tree().change_scene_to_file.call_deferred("res://scenes/chapter_01/chapter_flow.tscn"); return
 	model.safe_state = model.snapshot()
 	ocean = ColorRect.new(); ocean.size = get_viewport_rect().size; ocean.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var material := ShaderMaterial.new(); material.shader = load("res://assets/shaders/navigation_ocean.gdshader"); ocean.material = material; add_child(ocean)
@@ -91,16 +95,136 @@ func _start_boarding_test() -> void:
 	model.position = model.point(current_enemy.pos)-Vector2(260,0); model.immunity = 30
 	begin_boarding()
 func _prepare_boarding_profile(chapter_path: String = ChapterProgress.SAVE_PATH) -> void:
-	if not model.boarding_profile.is_empty(): return
-	if Launch.mode=="test": model.boarding_profile = BoardingLoadout.practice(model.style); return
+	if Launch.mode=="test":
+		if model.boarding_profile.is_empty(): model.boarding_profile = BoardingLoadout.practice(model.style)
+		return
+	if not model.campaign_state.is_empty():
+		ChapterProgress.restore(model.campaign_state)
+		return
 	var source: Dictionary = ChapterProgress.snapshot()
-	# Old voyage files had no character kit. Read the chapter checkpoint without
-	# loading its scene or mutating the user's live campaign/profile singletons.
-	if not source.flags.get("recovered",false) and FileAccess.file_exists(chapter_path):
-		var stored: Variant = JSON.parse_string(FileAccess.get_file_as_string(chapter_path))
-		if stored is Dictionary and not BoardingLoadout.capture(stored).is_empty(): source = stored
-	model.boarding_profile = BoardingLoadout.capture(source)
-	if not model.boarding_profile.is_empty(): model.style = model.boarding_profile.style
+	# Legacy trips recover narrative/economy only from their own completed chapter.
+	if source.hero_name!=model.hero_name or not source.flags.get("recovered",false):
+		if FileAccess.file_exists(chapter_path):
+			var stored: Variant = JSON.parse_string(FileAccess.get_file_as_string(chapter_path))
+			if stored is Dictionary and stored.get("hero_name","")==model.hero_name and ChapterProgress.restore(stored,false)==OK:
+				source = stored
+			elif stored is Dictionary and not stored.has("schema_version") and BoardingLoadout.valid(stored):
+				# Compatibility with the old isolated character-kit fixture/format.
+				if model.boarding_profile.is_empty(): model.boarding_profile = stored.duplicate(true); model.style = stored.style
+				return
+	if source.hero_name!=model.hero_name or not source.flags.get("recovered",false): return
+	if model.boarding_profile.is_empty(): model.boarding_profile = BoardingLoadout.capture(source)
+	if model.boarding_profile.is_empty(): return
+	if not model.boarding_profile.has("companion_vitals"): model.boarding_profile.companion_vitals = {}
+	for key in ["style","skills","inventory","equipment","vitals","equipped_passives","duarte_equipped_passives","companion_vitals"]:
+		source[key] = model.boarding_profile[key].duplicate(true) if model.boarding_profile[key] is Array or model.boarding_profile[key] is Dictionary else model.boarding_profile[key]
+	for key in ["recovered","perfect_defense"]:
+		if source.flags.get(key,false)!=model.boarding_profile.flags[key]: source.flags[key] = model.boarding_profile.flags[key]
+	if ChapterProgress.restore(source,false)!=OK: return
+	model.style = model.boarding_profile.style
+	ChapterProgress.restore(source)
+	model.campaign_state = ChapterProgress.snapshot()
+	model.boarding_profile = BoardingLoadout.capture(model.campaign_state)
+
+func _apply_personal_state() -> void:
+	if Launch.mode!="campaign" or model.campaign_state.is_empty(): return
+	# The voyage checkpoint is authoritative until the next land chapter.
+	if not model.boarding_profile.has("companion_vitals"): model.boarding_profile.companion_vitals = {}
+	for key in ["style","skills","inventory","equipment","vitals","equipped_passives","duarte_equipped_passives","companion_vitals"]:
+		model.campaign_state[key] = model.boarding_profile[key].duplicate(true) if model.boarding_profile[key] is Array or model.boarding_profile[key] is Dictionary else model.boarding_profile[key]
+	ChapterProgress.restore(model.campaign_state)
+
+func personal_safe() -> bool:
+	if Launch.mode!="campaign" or model.campaign_state.is_empty(): return false
+	var current: String = model.phase
+	if current=="deck": model.phase = return_phase
+	var safe: bool = model.safe_to_save()
+	model.phase = current
+	return safe
+
+func open_personal(page: String = "inventory",feedback: String = "") -> void:
+	var items = preload("res://scripts/chapter/player_items.gd")
+	var personal: Dictionary = model.campaign_state if not model.campaign_state.is_empty() else model.boarding_profile
+	if personal.is_empty():
+		show_message("Personagem e bagagem","A preparação desta viagem antiga não está disponível. O arquivo original foi preservado."); return
+	var limits: Dictionary = items.stats(personal)
+	var text := "%s · %s\nVida %d/%d · Alento %d/%d · Postura %d/%d"%[model.hero_name,items.STYLES[personal.style],personal.vitals.hp,limits.hp,personal.vitals.qi,limits.qi,personal.vitals.posture,limits.posture]
+	if personal.has("coins"): text += "\nCarteira pessoal: %d de ouro · Fundo de bordo: %d de ouro"%[personal.coins,model.coins]
+	var companion: Dictionary = personal.get("companion_vitals",{}).get("duarte",preload("res://scripts/chapter/party_resources.gd").LIMITS.duarte)
+	text += "\nDuarte · Vida %d/120 · Alento %d/12 · Postura %d/100\nDuarte conserva equipamento próprio fixo neste arco; técnicas e passivas pertencem a ele."%[companion.hp,companion.qi,companion.posture]
+	if not feedback.is_empty(): text += "\n\n"+feedback
+	if not personal_safe(): text += "\nProcura um porto ou águas seguras para preparar equipamento e usar suprimentos."
+	var column := modal("personal","Personagem e bagagem",text,[["Bagagem",func(): open_personal("inventory")],["Equipamento",func(): open_personal("equipment")],["Técnicas e passivas",func(): open_personal("knowledge")],["Diário e pedidos",func(): open_personal("journal")],["Voltar à pausa",open_pause]])
+	if page=="journal":
+		var journal = preload("res://scripts/chapter/campaign_journal.gd")
+		var entries: Array = journal.notes(personal)+journal.requests(personal)
+		if entries.is_empty(): column.add_child(label("Ainda não há descobertas ou pedidos registrados.",17,PAPER))
+		for row in entries:
+			var note := label(row.title+" · "+row.text,17,PAPER)
+			note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; note.custom_minimum_size.x = 650
+			column.add_child(note)
+		return
+	if page=="knowledge":
+		for row in JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/skill_icons.json")).skills:
+			if personal.skills.has(row.id):
+				var note := label(row.name+(" · Registro de catálogo antigo; não executável neste arco." if not preload("res://scripts/chapter/arc_content.gd").executable(row.id) else " · "+row.get("description","")),17,PAPER)
+				note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; note.custom_minimum_size.x = 650; column.add_child(note)
+		for row in JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/passives.json")).passives:
+			if not personal.get("passives",[]).has(row.id): continue
+			var equipped: Array = personal.duarte_equipped_passives if row.id.begins_with("DU") else personal.equipped_passives
+			var action := button(("✓ " if equipped.has(row.id) else "")+row.name+(" · Duarte" if row.id.begins_with("DU") else ""),personal_action.bind("passive",row.id))
+			action.disabled = not personal_safe(); column.add_child(action)
+		return
+	for id in personal.inventory:
+		if int(personal.inventory[id])<=0: continue
+		var row: Dictionary = items.items()[id]
+		if page=="equipment" and row.slot==null: continue
+		column.add_child(button(("✓ " if personal.equipment.values().has(id) else "")+"%d × %s"%[personal.inventory[id],row.name],open_personal_item.bind(id)))
+
+func open_personal_item(id: String) -> void:
+	var items = preload("res://scripts/chapter/player_items.gd")
+	var data: Dictionary = model.campaign_state if not model.campaign_state.is_empty() else model.boarding_profile
+	var row: Dictionary = items.items()[id]
+	var text: String = row.description
+	if row.slot!=null: text += "\n"+items.describe_stats(row.stats)
+	var column := modal("personal",row.name,text,[["Voltar à bagagem",open_personal]])
+	if not personal_safe(): column.add_child(label("Procura um porto ou águas seguras para preparar a bagagem.",17,PAPER)); return
+	if row.slot!=null or row.has("recovery"):
+		var equipped: bool = data.equipment.values().has(id)
+		var kind := "unequip" if equipped else "equip" if row.slot!=null else "use"
+		var reason: String = items.equip_reason(data,id) if kind=="equip" else items.use_reason(data,id) if kind=="use" else "Experimenta desarmado com Tomé antes de retirar a arma." if row.slot=="weapon" and not data.tested_styles.has("PU") else ""
+		var action := button("Retirar" if equipped else "Equipar" if kind=="equip" else "Usar 1 unidade",personal_action.bind(kind,id))
+		action.disabled = not reason.is_empty(); column.add_child(action)
+		if not reason.is_empty(): column.add_child(label(reason,17,PAPER))
+		if row.has("recovery"):
+			var companion_action := button("Usar em Duarte",personal_action.bind("duarte_use",id))
+			companion_action.disabled = not items.use_reason(data,id,"duarte").is_empty(); column.add_child(companion_action)
+
+func personal_action(kind: String,id: String) -> void:
+	if not personal_safe(): open_personal("inventory","Procura águas seguras ou um porto para preparar a bagagem."); return
+	var items = preload("res://scripts/chapter/player_items.gd")
+	var data: Dictionary = model.campaign_state.duplicate(true); data.auto_save = false
+	var feedback := ""
+	match kind:
+		"use": feedback = items.use(data,id)
+		"duarte_use": feedback = items.use(data,id,"duarte")
+		"equip": feedback = items.equip(data,id)
+		"unequip": feedback = items.unequip(data,items.items()[id].slot)
+		"passive":
+			if not data.passives.has(id): return
+			var equipped: Array = data.duarte_equipped_passives if id.begins_with("DU") else data.equipped_passives
+			if equipped.has(id): equipped.erase(id)
+			elif equipped.size()<4: equipped.append(id)
+			else: feedback = "Há quatro passivas preparadas. Retira uma antes de preparar outra."
+		_: return
+	data.erase("auto_save")
+	if ChapterProgress.restore(data,false)!=OK: return
+	var kit: Dictionary = BoardingLoadout.capture(data)
+	if kit.is_empty(): return
+	model.campaign_state = data; model.boarding_profile = kit; model.style = data.style
+	_apply_personal_state()
+	if auto_save and _save(false)!=OK: feedback += " Não foi possível guardar; tenta Guardar novamente."
+	open_personal("knowledge" if kind=="passive" else "inventory",feedback)
 
 func _build_ui() -> void:
 	var layer := CanvasLayer.new(); layer.layer = 5; add_child(layer)
@@ -143,7 +267,9 @@ func modal(kind: String,title: String,body: String,actions: Array) -> VBoxContai
 	var shade := ColorRect.new(); shade.color = Color(0.015,0.045,0.055,0.75); shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); modal_root.add_child(shade)
 	var center := CenterContainer.new(); center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); modal_root.add_child(center)
 	var card := PanelContainer.new(); card.custom_minimum_size.x = 700; card.add_theme_stylebox_override("panel",box(INK,GOLD)); center.add_child(card)
-	var column := VBoxContainer.new(); column.custom_minimum_size.x = 650; column.add_theme_constant_override("separation",12); card.add_child(column)
+	var scroll := ScrollContainer.new(); scroll.follow_focus = true; scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; scroll.custom_minimum_size = Vector2(650,0); card.add_child(scroll)
+	var column := VBoxContainer.new(); column.custom_minimum_size.x = 650; column.add_theme_constant_override("separation",12); scroll.add_child(column)
+	if kind=="personal": scroll.custom_minimum_size.y = minf(620,get_viewport_rect().size.y-100)
 	column.add_child(label(title,26,GOLD))
 	var paragraph := label(body,17,PAPER); paragraph.custom_minimum_size.x = 650; paragraph.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; column.add_child(paragraph)
 	for action in actions:
@@ -177,8 +303,8 @@ func _refresh_controls() -> void:
 	else:
 		controls.add_child(button("Carta · M",open_chart))
 		controls.add_child(button("Convés · C" if model.phase=="sea" else "Voltar ao mar · B",enter_deck if model.phase=="sea" else leave_stage))
-		interact_button = button("Interagir · E",interact); controls.add_child(interact_button)
-		controls.add_child(button("Guardar · F5",func(): _save(true)))
+		interact_button = button(GamePreferences.hint_text("Interagir · E / A"),interact); controls.add_child(interact_button)
+		controls.add_child(button(GamePreferences.hint_text("Guardar · F5 / menu"),func(): _save(true)))
 		controls.add_child(button("Menu · Esc",open_pause))
 		if model.phase=="sea":
 			sail_button = button("Parar · Espaço",stop_sailing); controls.add_child(sail_button)
@@ -299,7 +425,7 @@ func _refresh_status() -> void:
 	if model.phase in ["naval","naval_result"] and naval!=null:
 		hint.text = "W ↑ vela · S ↓ vela · A/D leme  |  "+sail_name()+"  |  "+naval.note
 	else:
-		hint.text = "W ↑ vela · S ↓ vela · A/D leme  |  Espaço parar  |  M carta · C convés · V retomar rumo · E interagir  |  "+sail_name()
+		hint.text = "W ↑ vela · S ↓ vela · A/D leme  |  Espaço parar  |  M carta · C convés · V retomar rumo · E / A interagir  |  "+sail_name()
 		if not model.tutorials.get("stop",false): hint.text = "W ↑ vela · S ↓ vela · A/D leme · Espaço parar  |  "+sail_name()+"  |  Esc · ajuda"
 		if sail_button!=null: sail_button.text = "Parar · Espaço"
 		if course_button!=null: course_button.text = "Águas seguras · V" if model.danger>0 else "Retomar rumo · V"
@@ -308,6 +434,7 @@ func _refresh_status() -> void:
 			interact_button.disabled = near.is_empty()
 			if not near.is_empty(): hint.text = "E / A · "+near.name+"    |    "+hint.text
 		if model.phase in ["deck","port","island"]: hint.text = "WASD / analógico ou clique: caminhar  ·  E / A: conversar  ·  B: voltar ao mar  ·  Esc: menu"
+		hint.text = GamePreferences.hint_text(hint.text)
 
 func open_chart() -> void:
 	if model.phase not in ["sea","deck","port","island"]: return
@@ -375,7 +502,7 @@ func interact() -> void:
 				walker = Vector2(700,560); walker_goal = Vector2.ZERO; waypoint = Vector2.ZERO
 				notice("Em terra · "+entry.name+". Aproxima-te das pessoas e usa E / A para interagir.")
 				_save(false)
-				show_message(entry.name,"Chegaste à primeira escala. Explora o porto, repõe o que precisares e procura novas informações. Duas Águas continua como destino da missão." if entry.id=="madeira" else entry.detail)
+				show_message(entry.name,"Regressaste a Lisboa. O comerciante do cais permite entrar na cidade; podes voltar à Botafogo e continuar esta viagem quando quiseres." if entry.id=="lisboa" and Launch.mode=="campaign" else "Chegaste à primeira escala. Explora o porto, repõe o que precisares e procura novas informações. Duas Águas continua como destino da missão." if entry.id=="madeira" else entry.detail)
 			"merchant": open_services(false)
 			"fisher":
 				model.reveal("porto_santo","sighted"); model.reveal("current_1","rumor")
@@ -401,7 +528,10 @@ func interact() -> void:
 					show_message("Sobrevivente","A espuma dividia-se junto da primeira marca. Mais adiante, as aves ficavam sobre a corrente calma. A terceira marca era o abrigo entre os recifes. Regista as três e consegues reconhecer a passagem.")
 		else:
 			match person.id:
-				"worker": open_services(false)
+				"worker":
+					if model.port=="lisboa" and Launch.mode=="campaign":
+						modal("lisbon","Lisboa · Visita à cidade","Podes regressar à Ribeira, consultar os moradores e preparar a bagagem. O capítulo concluído e o estado do navio são conservados.",[["Entrar em Lisboa",enter_lisbon],["Serviços do navio",func(): open_services(false)],["Continuar no cais",func(): pass]])
+					else: open_services(false)
 				"master": open_services(true)
 				"beatriz": leave_stage()
 				"attendant":
@@ -509,7 +639,11 @@ func _boarding_completed(success: bool) -> void:
 		var profile: Dictionary = model.boarding_profile
 		for key in ["hp","qi","posture"]: profile.vitals[key] = int(battle_host.combat.units[0][key])
 		profile.inventory = battle_host.combat.progress_override.inventory.duplicate(true)
-	if success: finish_encounter(true)
+		profile.companion_vitals = {"duarte":{}}
+		for key in ["hp","qi","posture"]: profile.companion_vitals.duarte[key] = int(battle_host.combat.units[1][key])
+	if success:
+		_apply_personal_state()
+		finish_encounter(true)
 	else: game_over("O grupo foi vencido na abordagem. A viagem regressa ao último ponto seguro.")
 func game_over(reason: String) -> void:
 	model.phase = "game_over"; model.velocity = Vector2.ZERO
@@ -522,6 +656,7 @@ func restore_safe() -> void:
 	notice("Viagem retomada do último ponto seguro."); _refresh_controls()
 func _save(feedback: bool) -> Error:
 	if not auto_save: return OK
+	_apply_personal_state()
 	var original: String = model.phase
 	if model.phase=="deck": model.phase = return_phase
 	var result: Error = model.save_to(save_path)
@@ -534,6 +669,7 @@ func open_pause() -> void:
 	if model.phase=="game_over": return
 	modal("pause","Viagem em pausa","O mar espera. Consulta a carta ou retoma a última viagem guardada.",[
 		["Continuar",func(): pass],
+		["Personagem e bagagem",open_personal],
 		["Ajuda ao leme e missão",open_help],
 		["Som e música",open_audio],
 		["Guardar viagem",func(): _save(true)],
@@ -575,7 +711,7 @@ func _input(event: InputEvent) -> void:
 	if model.phase in ["sea","naval"]:
 		for action in ["move_left","move_right","move_up","move_down"]:
 			if event.is_action(action): get_viewport().set_input_as_handled(); return
-	if (event is InputEventKey and event.pressed and not event.echo and event.physical_keycode in [KEY_E,KEY_SPACE]) or (event is InputEventJoypadButton and event.pressed and event.button_index==JOY_BUTTON_A):
+	if event.is_action("interact") or (event is InputEventKey and event.pressed and not event.echo and event.physical_keycode==KEY_SPACE) or (event is InputEventJoypadButton and event.pressed and event.button_index==JOY_BUTTON_A):
 		_unhandled_input(event); get_viewport().set_input_as_handled()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -593,6 +729,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event is InputEventKey and event.pressed and event.physical_keycode in [KEY_M,KEY_B]: clear_overlay()
 		return
 	if not overlay.is_empty(): return
+	if event.is_action_pressed("quick_save"):
+		_save(true); get_viewport().set_input_as_handled(); return
+	if event.is_action_pressed("interact") and model.phase!="naval":
+		interact(); get_viewport().set_input_as_handled(); return
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.physical_keycode:
 			KEY_ESCAPE: open_pause()
@@ -604,7 +744,6 @@ func _unhandled_input(event: InputEvent) -> void:
 				if model.phase in ["deck","port","island"]: leave_stage()
 			KEY_E:
 				if model.phase=="naval": fire(1)
-				else: interact()
 			KEY_Q: fire(0)
 			KEY_SPACE:
 				if model.phase=="naval": open_orders()
@@ -615,7 +754,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_1,KEY_2,KEY_3:
 				if model.phase=="naval": naval.target_part = {KEY_1:"hull",KEY_2:"sails",KEY_3:"guns"}[event.physical_keycode]
 				elif model.phase=="sea": waypoint = Vector2.ZERO; sail_level = {KEY_1:1,KEY_2:2,KEY_3:3}[event.physical_keycode]
-			KEY_F5: _save(true)
 			KEY_F9: restore_safe()
 	elif event is InputEventJoypadButton and event.pressed:
 		match event.button_index:
@@ -645,3 +783,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				if at.distance_to(model.place_position(entry))<105: mark_contact(entry.id); picked = true; break
 			if not picked and model.water(at): waypoint = at; focus_id = ""; sail_level = maxi(sail_level,2)
 		elif model.phase in ["deck","port","island"]: walker_goal = event.position
+
+func enter_lisbon() -> void:
+	_apply_personal_state()
+	var error: Error = preload("res://scripts/navigation/shore_bridge.gd").enter(model,save_path)
+	if error!=OK: show_message("Lisboa","Não foi possível guardar o desembarque. A viagem anterior foi preservada."); return
+	get_tree().change_scene_to_file("res://scenes/chapter_01/chapter_flow.tscn")

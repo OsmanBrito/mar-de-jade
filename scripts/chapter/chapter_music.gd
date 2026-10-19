@@ -39,8 +39,9 @@ func context_for(scene: Node) -> String:
 	if not is_instance_valid(scene) or scene.get_script()==null: return ""
 	var script_path: String = scene.get_script().resource_path
 	match script_path.get_file():
+		"forest_hunt_director.gd": return "training" if scene.phase=="battle" else "forest"
 		"name_entry.gd", "opening_director.gd", "adult_opening_director.gd": return "shelter"
-		"plaza_director.gd": return "city"
+		"plaza_director.gd": return "shelter" if is_instance_valid(scene.world) and scene.world.has_meta("order_convent") else "city"
 		"promise_director.gd": return "promise"
 		"training_director.gd":
 			return "training" if scene.battle_container.visible else "city"
@@ -48,8 +49,11 @@ func context_for(scene: Node) -> String:
 			if scene.battle_container!=null and scene.battle_container.visible:
 				return "duel" if scene.battle_host.combat.encounter=="portugal_duel" else "training"
 			if scene.scene_index in [9,10,11,12]: return "recovery"
+			if is_instance_valid(scene.world) and scene.world.has_meta("order_convent"): return "shelter"
+			if scene.routes!=null and scene.routes.continuous():
+				return "harbor" if scene.routes.area()=="cais" else "city"
 			if scene.map_kind in ["cais","service","deck"]: return "harbor"
-			return "shelter" if scene.map_kind=="room" else "city"
+			return "shelter" if scene.map_kind in ["room","convent"] else "city"
 		"combat_study.gd": return "duel" if scene.encounter=="duel" else "training"
 	# In particular, voyage.gd owns its existing maritime music. Fade ours out.
 	return ""
@@ -59,7 +63,7 @@ func follow_scene(scene: Node) -> void:
 	target_duck_db = 0
 	if not is_instance_valid(scene): return
 	var script_path: String = scene.get_script().resource_path if scene.get_script()!=null else ""
-	if script_path.get_file() in ["opening_director.gd","plaza_director.gd","promise_director.gd","adult_opening_director.gd","training_director.gd","chapter_flow.gd"]:
+	if script_path.get_file() in ["opening_director.gd","plaza_director.gd","promise_director.gd","adult_opening_director.gd","training_director.gd","forest_hunt_director.gd","chapter_flow.gd"]:
 		if scene.paused: target_duck_db = -10
 		# Opening and promise have no phase property. The resolved music context
 		# already tells us whether a real battle is currently on screen.
@@ -68,6 +72,7 @@ func follow_scene(scene: Node) -> void:
 func stream_for(id: String) -> AudioStream:
 	if cache.has(id): return cache[id]
 	if not tracks.has(id): return null
+	if not tracks[id].get("enabled",true): return null
 	var path: String = ROOT+tracks[id].file
 	var stream: AudioStream
 	if path.get_extension()=="mp3":
@@ -90,6 +95,7 @@ func set_context(id: String) -> void:
 	current_track = id
 	starts.assign(weights); fade = 0
 	if id.is_empty(): active_slot = -1; return
+	if not tracks[id].get("enabled",true): active_slot = -1; return
 	if not enabled: active_slot = -1; return
 	# Reversing a transition reuses the still-playing voice, without restarting it.
 	for i in voices.size():

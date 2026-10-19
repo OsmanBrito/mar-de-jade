@@ -17,6 +17,8 @@ func run() -> void:
 	root.get_node("CampaignProfile").hero_name = "Inês"
 	# A real keyboard transition from the completed promise scene.
 	change_scene_to_file("res://scenes/chapter_01/promise.tscn")
+	await process_frame
+	await process_frame
 	await frames(3)
 	current_scene.completed = true
 	current_scene._unhandled_input(enter())

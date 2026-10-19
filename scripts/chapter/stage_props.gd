@@ -12,6 +12,7 @@ var green_sight := false
 var packed := false
 var crate_task := false
 var meal_ready := false
+var meal_surface_offset := Vector2.ZERO
 var delivery_active := false
 var clock := 0.0
 var hero: Node2D
@@ -40,6 +41,7 @@ func _draw() -> void:
 		if carrying:
 			Dining.draw(self,"bowl",p,22)
 		elif meal_ready:
+			p += meal_surface_offset
 			Dining.draw(self,"napkin",p+Vector2(-6,-28),24)
 			Dining.draw(self,"bread",p+Vector2(3,-36),26)
 			Dining.draw(self,"cup",p+Vector2(-37,-25),12)

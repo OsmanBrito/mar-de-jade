@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=4]
 
-[ext_resource type="Script" path="res://scripts/chapter/plaza_world.gd" id="1_gpd2k"]
+[ext_resource type="Script" path="res://scripts/city/lisbon_world.gd" id="1_gpd2k"]
 [ext_resource type="PackedScene" path="res://scenes/chapter_01/child_player.tscn" id="2_u5ehp"]
 [ext_resource type="TileSet" path="res://data/terrain/ground.tres" id="3_fkhis"]
 [ext_resource type="PackedScene" path="res://scenes/chapter_01/bench.tscn" id="4_5vywc"]

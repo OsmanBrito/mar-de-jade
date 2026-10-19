@@ -1,6 +1,7 @@
 {
   "cais": {"title":"Lisboa · Cais e mercado", "exits":[{"to":"square","label":"Rua da praça e do abrigo","at":[-230,870]}]},
-  "square": {"title":"Lisboa · Praça e pátio", "exits":[{"to":"cais","label":"Descer ao cais","at":[650,288]},{"to":"room","label":"Entrar no abrigo","at":[-365,75]}]},
-  "room": {"title":"Lisboa · Abrigo", "exits":[{"to":"square","label":"Sair para a praça e o pátio","at":[-40,390]}]},
+  "square": {"title":"Lisboa · Praça e pátio da Ordem de Cristo", "exits":[{"to":"cais","label":"Descer ao cais","at":[650,288]},{"to":"room","label":"Entrar na casa de acolhimento da Ordem","at":[-770,65]},{"to":"convent","label":"Entrar nas arcadas · claustro, capela e enfermaria","at":[238,140]}]},
+  "room": {"title":"Lisboa · Casa de Acolhimento da Ordem de Cristo", "exits":[{"to":"square","label":"Sair para a praça e o pátio da Ordem","at":[-40,390]},{"to":"convent","label":"Passar ao claustro da Ordem","at":[250,255]}]},
+  "convent": {"title":"Ordem de Cristo · Claustro do acolhimento", "exits":[{"to":"square","label":"Sair pela portaria · praça de Lisboa","at":[0,870]},{"to":"room","label":"Entrar no acolhimento · procurar Tomé","at":[-310,680]}]},
   "deck": {"title":"Botafogo · Convés", "exits":[{"to":"cais","label":"Descer ao pontão","at":[-170,395]}]}
 }
