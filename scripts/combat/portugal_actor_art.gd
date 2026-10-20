@@ -36,11 +36,14 @@ static func draw_actor(canvas: CanvasItem,id: String,point: Vector2,face_left: b
 		var filtered := CanvasTexture.new(); filtered.diffuse_texture = ImageTexture.create_from_image(image); filtered.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 		textures[id] = filtered
 	var frame := pose_frame(pose,time,style)
-	if id=="hero_firearm" and Feel.attacking(pose): frame = 3 if time<Feel.RELEASE else 4 if time<0.58 else 5 if time<1.12 else 0
+	if id=="hero_firearm" and (Feel.attacking(pose) or pose=="firearm_guard"): frame = Feel.firearm_sample(Feel.firearm_skill(pose),time).frame
 	var r: Array = info.frames[frame]; var pivot: Array = info.pivots[frame]; var grip: Array = info.get("grips",info.pivots)[frame]
 	var scale_factor: float = float(info.height)/float(info.reference_height)*size_multiplier
 	var body := Feel.body_offset(style,time) if Feel.attacking(pose) else Vector2(0,Motion.body_drop(pose,time)*0.45)
 	var lean := Feel.tilt(style,time) if Feel.attacking(pose) else 0.0
+	if id=="hero_firearm" and (Feel.attacking(pose) or pose=="firearm_guard"):
+		var sample := Feel.firearm_sample(Feel.firearm_skill(pose),time)
+		body = sample.body; lean = sample.lean
 	if reduced: body *= 0.45; lean = 0
 	canvas.draw_set_transform(point,0,Vector2(1,0.36)); canvas.draw_circle(Vector2.ZERO,15 if not id.ends_with("_child") else 11,Color(0.06,0.08,0.05,0.27)); canvas.draw_set_transform(Vector2.ZERO)
 	canvas.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR

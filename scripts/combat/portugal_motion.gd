@@ -10,7 +10,7 @@ const PROFILES := {
 	"PU":{"release":0.34,"strike":0.39,"follow":0.53,"recover":0.88,"step":11.0,"drawback":1.5,"tilt":0.030,"pause":0.040}
 }
 static func profile(style: String) -> Dictionary: return PROFILES.get(style,PROFILES.ES)
-static func attacking(pose: String) -> bool: return pose in ["attack","thrust","crush","shoot","sweep","punch"]
+static func attacking(pose: String) -> bool: return pose in ["attack","thrust","crush","shoot","sweep","punch","shoot_measured","shoot_prepared","shoot_passage"]
 static func extension(style: String,time: float) -> float:
 	var p := profile(style)
 	return smoothstep(p.release,IMPACT,time)*(1.0-smoothstep(p.follow,p.recover,time))
@@ -58,3 +58,37 @@ static func hit_pause(style: String,result: Dictionary,reduced: bool,child: bool
 		if hit.get("breaks",false): pause = maxf(pause,0.12)
 	if child: pause = minf(pause,0.065)
 	return minf(pause,0.025) if reduced else pause
+
+# Technique presentation shares the exact release/impact clocks with combat and audio.
+static func firearm_pose(skill: int) -> String:
+	return {0:"shoot",1:"shoot_measured",2:"shoot_prepared",3:"shoot_passage",8:"firearm_guard"}.get(skill,"shoot")
+static func firearm_skill(pose: String) -> int:
+	return {"shoot":0,"shoot_measured":1,"shoot_prepared":2,"shoot_passage":3,"firearm_guard":8}.get(pose,0)
+static func firearm_sample(skill: int,time: float) -> Dictionary:
+	var recoil := kick(time)
+	var settle := 1.0-smoothstep(0.72,1.12,time)
+	var frame := 3 if time<RELEASE else 4 if time<0.58 else 5 if time<1.12 else 0
+	var body := Vector2(-recoil*1.5,0)
+	var lean := -recoil*0.028
+	var displacement := -recoil*3.5
+	match skill:
+		1: # Raise deliberately, short controlled recoil, lower early.
+			frame = 0 if time<0.10 else 3 if time<RELEASE else 4 if time<0.49 else 5 if time<0.85 else 0
+			body = Vector2(-recoil*0.8,smoothstep(0.06,0.2,time)*settle*0.6)
+			lean = -recoil*0.014; displacement = -recoil*2.0
+		2: # Plant the stock, shoulder and hold through the heavier report.
+			frame = 6 if time<0.14 else 3 if time<RELEASE else 4 if time<0.68 else 5 if time<1.12 else 0
+			body = Vector2(-recoil*2.3,smoothstep(0,0.15,time)*settle*1.4)
+			lean = -0.018*smoothstep(0,0.14,time)*settle-recoil*0.035
+			displacement = -recoil*5.0
+		3: # Quick shoulder, compact recovery; the view performs the real side step.
+			frame = 2 if time<0.09 else 3 if time<RELEASE else 4 if time<0.49 else 5 if time<0.76 else 1+posmod(int((time-0.76)/0.14),2) if time<1.12 else 0
+			body = Vector2(-recoil, -sin(clampf(time/0.76,0,1)*PI)*0.8)
+			lean = -recoil*0.020; displacement = -recoil*2.5
+		8: # Lift the barrel across the body and settle; never a firing frame.
+			frame = 0 if time<0.10 else 6
+			body = Vector2(0,smoothstep(0.08,0.24,time)*1.2)
+			lean = 0.025*smoothstep(0.08,0.24,time); displacement = 0.0
+	return {"frame":frame,"body":body,"lean":lean,"displacement":displacement}
+static func firearm_offset(skill: int,time: float,direction: Vector2,reduced: bool) -> Vector2:
+	return direction*float(firearm_sample(skill,time).displacement)*(0.45 if reduced else 1.0)

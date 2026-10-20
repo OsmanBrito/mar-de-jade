@@ -10,9 +10,10 @@ func stream(event: String) -> AudioStreamWAV:
 func action_event(style: String,child: bool,support: bool = false) -> String:
 	if support: return "gesture_cover_windup"
 	if child: return "swing"
-	return {"ES":"swing","LA":"gesture_thrust_windup","MC":"heavy_swing","FO":"menu_confirm","PU":"fast_swing"}.get(style,"swing")
-func release_event(style: String) -> String:
-	return "powder-training" if style=="FO" else ""
+	return {"ES":"swing","LA":"gesture_thrust_windup","MC":"heavy_swing","FO":"gesture_thrust_windup","PU":"fast_swing"}.get(style,"swing")
+func release_event(style: String,skill: int = 0) -> String:
+	if style!="FO" or skill==8: return ""
+	return {0:"firearm-basic",1:"firearm-measured",2:"firearm-prepared",3:"firearm-passage"}.get(skill,"firearm-basic")
 func impact_events(style: String,child: bool,result: Dictionary,grades: Dictionary) -> Array[String]:
 	var events: Array[String] = []
 	var hit := false

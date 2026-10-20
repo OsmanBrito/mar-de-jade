@@ -131,5 +131,24 @@ func run():
 	v.update(0.6)
 	check(v.unit_position(0).is_equal_approx(v.screen(game.host.combat.units[0].cell)),"Recovery ends on the actual landing cell")
 	game.free(); await frames()
+	var soundbank = load("res://scripts/combat/portugal_audio.gd").new()
+	var reports: Array[String] = []
+	for action in [0,1,2,3]:
+		var event: String = soundbank.release_event("FO",action)
+		check(not reports.has(event) and soundbank.stream(event).get_length()>0.1,"Each firing action has a distinct loadable report: "+str(action))
+		reports.append(event)
+	check(soundbank.release_event("FO",8).is_empty() and soundbank.release_event("ES",0).is_empty(),"Cano guard and other weapons never release a firearm report")
+
+	var Feel = load("res://scripts/combat/portugal_motion.gd")
+	var signatures: Array[String] = []
+	for action in [0,1,2,3,8]:
+		var signature := ""
+		for moment in [0.05,0.12,0.3,0.42,0.62,0.9]: signature += str(Feel.firearm_sample(action,moment).frame)
+		check(not signatures.has(signature),"Each firearm action has a distinct pose sequence: "+str(action))
+		signatures.append(signature)
+		if action!=8:
+			check(Feel.firearm_sample(action,Feel.RELEASE-0.001).frame==3 and Feel.firearm_sample(action,Feel.RELEASE+0.001).frame==4,"Every technique releases at the unchanged sound and muzzle clock")
+		else: check(Feel.firearm_sample(action,0.42).frame==6,"Guard lifts the barrel without a firing pose")
+	check(Feel.firearm_offset(2,0.42,Vector2.RIGHT,true).length()<Feel.firearm_offset(2,0.42,Vector2.RIGHT,false).length(),"Reduced effects preserve technique poses with smaller recoil")
 	print("FIREARM_RESULT ",JSON.stringify({"checks":checks,"failures":failures}))
 	quit(0 if failures.is_empty() else 1)

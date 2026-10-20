@@ -217,8 +217,8 @@ func combat_impact_sound(result: Dictionary,_plan: Dictionary,grades: Dictionary
 	var style: String = combat.style if result.get("actor",-1)==0 and combat.get("style")!=null else "ES"
 	for event in combat_audio.impact_events(style,combat.encounter.begins_with("portugal_child"),result,grades): play_effect(event,-17)
 
-func combat_release_sound(style: String) -> void:
-	var event: String = combat_audio.release_event(style)
+func combat_release_sound(style: String,skill: int = 0) -> void:
+	var event: String = combat_audio.release_event(style,skill)
 	if not event.is_empty(): play_effect(event,-15)
 
 

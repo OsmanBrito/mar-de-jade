@@ -42,3 +42,25 @@ Para uma revisão independente, abrir [firearm_study.tscn](../scenes/art/firearm
 610 verificações aprovadas: firearm (119), weapon_choice (43), practice_freedom (127), combat_field (23), combat_economy (65), combat_presentation (19), combat_feel (36), boarding (78), navigation_campaign_entry (12) e navigation (88). Cobrem regras, custo e passivas, alvo e dano previsto, contato frontal, passo posterior ao tiro, controle, aprendizado, continuidade e migração de saves. Onze imagens nativas do Godot foram geradas e a galeria e as previsões foram inspecionadas.
 
 A suíte geral integration_closure não concluiu o retorno a Lisboa porque tenta gravar o checkpoint em `user://`, fora da área gravável desta sessão: o diagnóstico retornou erro 12 na pasta padrão e sucesso ao gravar o mesmo estado em `.qa-runtime`. Essa suíte não está incluída nas 610 aprovações. Não foi alterada a permissão nem o caminho de saves do jogador. Os registros também conservam o aviso do ambiente sobre certificados e o aviso anterior de objetos retidos em combat_economy. A verificação de controle foi automatizada; equilíbrio e sensação ainda podem ser refinados com uma partida humana.
+
+
+## Sons por técnica — 20/10/2026
+
+O básico, Disparo de Medida, Tiro Preparado e Tiro de Passagem têm quatro efeitos distintos, derivados de gravações CC0 do Freesound, o mesmo banco usado no projeto atual de Mar de Ferro. Fontes: [Musket Shot.wav — mlsulli](https://freesound.org/people/mlsulli/sounds/234869/), [musket.wav — fennelliott](https://freesound.org/people/fennelliott/sounds/347647/) e [Musket Explosion — Willlewis](https://freesound.org/people/Willlewis/sounds/244345/).
+
+O básico tem estampido e cauda natural; Disparo de Medida usa outra gravação, mais curta; Tiro Preparado tem corpo mais grave e cauda maior; Tiro de Passagem é mais breve e agudo. São diferenças de timbre, sem alterar dano, ações ou timing. Guarda do Cano conserva apenas o manejo de proteção, sem tiro. O início do manejo usa o efeito existente de preparação em vez de confirmação de menu.
+
+A escolha usa a técnica efetivamente executada, inclusive na abordagem, na liberação sincronizada com a boca do cano. O impacto no alvo continua separado. O som antigo de treino permanece disponível para o uso naval existente. Os efeitos respeitam o volume de efeitos e a pausa do jogo.
+
+Originais, URLs, licença e transformações estão em `assets/audio/combat/sources/` e `firearm-credits.json`. `tools/build_firearm_audio.py` reproduz a conversão mono 44,1 kHz, corte do silêncio inicial, normalização e fade. Não há geração por IA. Comparação: [básico → Medida → Preparado → Passagem](firearm-audio-comparison.wav).
+
+Validação: 124 verificações de arma de fogo e 36 de resposta de combate aprovadas. Os quatro arquivos carregam no Godot e a guarda não seleciona estampido. A escolha final de timbre e volume fica disponível para audição do jogador.
+
+
+## Animações por técnica — 20/10/2026
+
+As poses ilustradas existentes agora compõem cinco sequências: básico com preparação direta; Disparo de Medida com elevação gradual e recuo curto; Tiro Preparado com coronha firmada, corpo assentado e recuo mais forte; Tiro de Passagem com ombro rápido e recuperação compacta antes do deslocamento real; Guarda do Cano com elevação para a posição transversal, sem pose de disparo.
+
+Cada sequência tem seus próprios tempos de poses, inclinação e recuo. A liberação do projétil, o som, o impacto e as regras permanecem sincronizados no tempo original. O passo lateral conserva origem e destino reais; efeitos reduzidos diminuem recuo e inclinação, preservando as poses que distinguem as técnicas. As mesmas sequências são usadas em terra e nas abordagens. Os pivôs dos pés e a boca do cano continuam calculados a partir do quadro ilustrado.
+
+[Comparação animada das cinco sequências](arma-de-fogo-animacoes.gif), reproduzível por `tools/capture_firearm_animations.gd`. Trata-se de composição e movimento das poses existentes; não foram geradas novas ilustrações. Validação: **249 verificações aprovadas** nas suítes de arma de fogo, resposta de combate e abordagem, incluindo sequências distintas, liberação sincronizada e redução de recuo.

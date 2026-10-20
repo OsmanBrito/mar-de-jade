@@ -60,7 +60,7 @@ func update(delta: float) -> void:
 	if host.ending.running(): host.update_ending(delta); return
 	if attacking_animation() and not release_sound_played and weapon_style(result.actor)=="FO" and clock+maxf(0,delta-hit_pause)>=FEEL.RELEASE:
 		release_sound_played = true
-		host.combat_release_sound(weapon_style(result.actor))
+		host.combat_release_sound(weapon_style(result.actor),int(result.skill))
 	super.update(delta)
 
 func apply_impact() -> void:
@@ -79,10 +79,11 @@ func unit_position(id: int) -> Vector2:
 	var reduced: bool = host.progress.data.options.reduced_fx
 	if id==result.actor:
 		if result.has("firearm_origin"):
-			return screen(result.firearm_origin).lerp(screen(result.firearm_landing),smoothstep(0.76,1.12,clock))+FEEL.actor_offset("FO",clock,strike_direction(id),reduced)
+			return screen(result.firearm_origin).lerp(screen(result.firearm_landing),smoothstep(0.76,1.12,clock))+FEEL.firearm_offset(int(result.skill),clock,strike_direction(id),reduced)
 		var origin: Vector2i = result.get("movement_origin",model.units[id].cell)
 		if origin==result.get("movement_destination",origin) and not result.has("reposition_path"):
 			point = screen(model.units[id].cell)+FEEL.actor_offset(weapon_style(id),clock,strike_direction(id),reduced)
+			if weapon_style(id)=="FO": point = screen(model.units[id].cell)+FEEL.firearm_offset(int(result.skill),clock,strike_direction(id),reduced)
 	else:
 		for hit in result.get("hits",[]):
 			if hit.id==id and hit.damage>0:
@@ -148,6 +149,7 @@ func draw_unit(id: int) -> void:
 		if phase=="walk" and walk_actor==id: pose = "walk"; pose_time = clock
 		if phase.begins_with("animate") and result.get("actor",-1)==id:
 			pose = "guard" if effect_kind(id,result.skill) in ["cover","brace","root","breath"] else {"LA":"thrust","MC":"crush","FO":"shoot","PU":"punch"}.get(style,"attack")
+			if style=="FO": pose = FEEL.firearm_pose(int(result.skill))
 			pose_time = clock
 			if result.has("firearm_origin") and clock>=0.76: pose = "walk"; pose_time = clock-0.76
 		elif phase=="timing_defend" and plan.get("targets",[]).has(id): pose = "parry"; pose_time = 0.2
