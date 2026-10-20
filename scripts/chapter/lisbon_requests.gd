@@ -20,7 +20,6 @@ var cursor := -1
 var actions: Array = []
 var conversation := ""
 var feedback := ""
-var social_turns: Dictionary = {}
 const Social = preload("res://scripts/city/city_conversations.gd")
 const Optional = preload("res://scripts/chapter/optional_arc.gd")
 
@@ -36,6 +35,7 @@ func _init(visit) -> void:
 func apply_world(map) -> void:
 	world = map
 	District.apply_world(map,ChapterProgress)
+	preload("res://scripts/city/work_results.gd").apply(map,ChapterProgress)
 	var vehicle = map.sorted_world.get_node_or_null("CarroDaOficina")
 	if vehicle == null: return
 	var fixed: bool = Requests.stage(ChapterProgress) in ["return","completed"]
@@ -204,7 +204,23 @@ func _say(key: String, options: Array = []) -> void:
 	_open(Requests.data().dialogue[key],options)
 
 func _message(speaker: String,text: String,options: Array = []) -> void:
+	if Social.TITLES.has(conversation):
+		var known:=false
+		for row in ChapterProgress.dialogue_history:
+			if row.speaker==CampaignProfile.speaker_name(speaker) and str(row.text).ends_with(text):known=true;break
+		if known:
+			var brief:=repeat_direction()
+			if not brief.is_empty():text=brief
 	_open([[speaker,text]],options)
+
+func repeat_direction() -> String:
+	if conversation=="fisher":
+		var stage: String=Errands.stage(ChapterProgress,Errands.ACCOUNT)
+		if not stage.is_empty() and stage!="completed":return Errands.DEFINITIONS[Errands.ACCOUNT].objectives[stage]
+	if conversation=="workshop" and Requests.stage(ChapterProgress) not in ["","completed"]:return Requests.objective(ChapterProgress)
+	if conversation=="dock" and Errands.stage(ChapterProgress,Errands.KIT)=="prepare":return "Uma ligadura e uma água, na tua sacola. Mostra-me ambas para conferir a reserva."
+	if conversation=="neighbor" and Errands.stage(ChapterProgress,Errands.ACCOUNT)=="kitchen":return "Duas caixas na cozinha e cinco na banca. Podes anotar a entrega e explicar a conta."
+	return ""
 
 func _open(turns: Array, options: Array = []) -> void:
 	lines = turns.duplicate(true); cursor = -1; actions = options.duplicate(true) if not options.is_empty() else [["Voltar à rua","close"]]
@@ -251,9 +267,9 @@ func choose(action: String) -> void:
 		return
 	if action=="city_life":
 		if not near(conversation) or not Social.TITLES.has(conversation): return
-		var key := conversation+":"+Social.event(ChapterProgress)
-		var turn := int(social_turns.get(key,0));social_turns[key]=turn+1
-		_message(Social.TITLES[conversation],Social.reply(ChapterProgress,conversation,turn));return
+		var text := Social.take_reply(ChapterProgress,conversation)
+		_open([[Social.TITLES[conversation],text]])
+		_save("Conversa guardada · "+str(Social.TITLES[conversation]));return
 	if action.begins_with("district_"):
 		if not District.TARGETS.has(conversation) or not near(conversation): return
 		var result := District.choose(ChapterProgress,conversation,action)
@@ -362,6 +378,7 @@ func _animate_repair() -> void:
 
 func _save(message: String) -> void:
 	feedback = Items.persist(ChapterProgress,message)
+	if is_instance_valid(world):preload("res://scripts/city/work_results.gd").apply(world,ChapterProgress)
 
 func close() -> void:
 	if director.busy: return

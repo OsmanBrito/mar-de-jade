@@ -4,6 +4,7 @@ signal close_requested
 signal save_requested
 signal load_requested
 signal restart_requested
+const Weapons = preload("res://scripts/chapter/weapon_choices.gd")
 const Items = preload("res://scripts/chapter/player_items.gd")
 var director
 var screen: Control
@@ -24,7 +25,7 @@ var row_buttons: Dictionary = {}
 var action_button: Button
 var pending_sale := ""
 var pending_binding := ""
-var tab_names := ["Personagem","Inventário","Equipamento","Técnicas","Passivas","Pedidos","Conversas","Loja de Lisboa","Sistema"]
+var tab_names := ["Personagem","Evolução","Armas","Inventário","Equipamento","Técnicas","Passivas","Pedidos","Conversas","Loja de Lisboa","Sistema"]
 
 func _ready() -> void:
 	layer = 30; process_mode = Node.PROCESS_MODE_ALWAYS
@@ -93,6 +94,7 @@ func clear(parent: Node) -> void:
 	for child in parent.get_children(): parent.remove_child(child); child.queue_free()
 
 func open(initial: String = "Personagem") -> void:
+	ChapterProgress.sync_development()
 	page = initial; filter = "Todos"; selected = ""; pending_sale = ""; screen.show(); refresh()
 	notice.text = "Progresso guardado no início de cada etapa. A mochila conserva as tuas alterações."
 	if director.routes.active: notice.text = "O percurso conserva o local e o compromisso atual. A mochila conserva as tuas alterações."
@@ -115,16 +117,21 @@ func refresh() -> void:
 	summary.add_child(label("19 anos  ·  Aprendiz",16))
 	var art := preload("res://scripts/chapter/hero_portrait.gd").new(); art.custom_minimum_size = Vector2(244,160); summary.add_child(art)
 	summary.add_child(label(Items.STYLES[p.style],22,Color("e6cb8d")))
-	paragraph(summary,"Em recuperação · aguarda o tratamento de Tomé." if p.flags.get("injured",false) else "Fundamento" if p.flags.get("recovered",false) else "Antes do ensino de Tomé")
+	paragraph(summary,"Em recuperação · aguarda o tratamento de Tomé." if p.flags.get("injured",false) else "%s %d"%[Items.Development.RANKS[int(p.development.members.hero.cultivation.rank)],p.development.members.hero.cultivation.step] if p.flags.get("recovered",false) else "Antes do ensino de Tomé")
 	var stats := Items.stats(p)
 	for key in ["hp","qi","posture"]:
 		var value := "%d / %d" % [int(p.vitals[key]),int(stats[key])]
 		summary.add_child(label(Items.STAT_NAMES[key]+"    "+value,18))
 		var meter := ProgressBar.new(); meter.max_value = stats[key]; meter.value = p.vitals[key]; meter.show_percentage = false; meter.custom_minimum_size.y = 7; summary.add_child(meter)
-	paragraph(summary,"Potência %d   ·   Proteção %d\nVelocidade %d   ·   Movimento 5" % [stats.power,stats.defense,stats.speed])
+	paragraph(summary,"Potência %d   ·   Proteção %d\nIniciativa %d   ·   Movimento 5" % [stats.power,stats.defense,stats.speed])
+	var development = preload("res://scripts/chapter/character_development.gd")
+	var record: Dictionary = development.member(p)
+	paragraph(summary,"Nível %d · %d ponto(s) disponível(is)"%[development.level_of(int(record.xp)),development.available_points(record)])
 	paragraph(summary,"Passivas  %d/4   ·   Duarte  %d/4" % [p.equipped_passives.size(),p.duarte_equipped_passives.size()])
 	match page:
 		"Personagem": character_page()
+		"Evolução": evolution_page()
+		"Armas": weapons_page()
 		"Inventário","Equipamento","Loja de Lisboa": inventory_page()
 		"Técnicas","Passivas": knowledge_page()
 		"Sistema": system_page()
@@ -215,6 +222,8 @@ func history_page() -> void:
 		line.focus_mode = Control.FOCUS_ALL
 
 func character_page() -> void:
+	paragraph(listing,"Arma do herói · "+Weapons.current(ChapterProgress),Color("8cd7b7"))
+	button(listing,"Escolher arma do herói",switch_page.bind("Armas"))
 	listing.add_child(label("Preparação para a viagem",25,Color("e6cb8d")))
 	paragraph(listing,"Os teus equipamentos, técnicas aprendidas e suprimentos seguem contigo.")
 	listing.add_child(HSeparator.new())
@@ -223,6 +232,8 @@ func character_page() -> void:
 		button(listing,Items.SLOTS[slot]+"  ·  "+(Items.items()[id].name if not id.is_empty() else "Livre"),func():
 			switch_page("Equipamento")
 			if not id.is_empty(): select_item(id))
+	paragraph(details,preload("res://scripts/navigation/boarding_loadout.gd").readiness(preload("res://scripts/navigation/boarding_loadout.gd").capture(ChapterProgress.snapshot())))
+	button(listing,"Nível, atributos e repertório",switch_page.bind("Evolução"))
 	button(listing,"Abrir a sacola",switch_page.bind("Inventário"))
 	button(listing,"Ver técnicas e passivas",switch_page.bind("Técnicas"))
 	details.add_child(label("Portugal · Capítulo 1",22,Color("e6cb8d")))
@@ -231,7 +242,8 @@ func character_page() -> void:
 	paragraph(details,"Os exercícios de Tomé usam recursos próprios: começam com vida e postura completas e 8 de alento. Não gastam nem recuperam os recursos que levas para a viagem.")
 	paragraph(details,"O serviço no cais rende 40 de ouro, uma única vez.")
 	var companion: Dictionary = preload("res://scripts/chapter/party_progress.gd").member(ChapterProgress,"duarte")
-	paragraph(details,"Duarte · equipamento próprio fixo neste arco. Vida %d/120 · Alento %d/12 · Postura %d/100. Aprendizados e quatro vagas de passivas pertencem a ele."%[companion.vitals.hp,companion.vitals.qi,companion.vitals.posture])
+	var companion_limits: Dictionary = preload("res://scripts/chapter/party_resources.gd").limits("duarte",ChapterProgress)
+	paragraph(details,"Duarte · equipamento próprio fixo neste arco. Vida %d/%d · Alento %d/%d · Postura %d/%d. Aprendizados e quatro vagas de passivas pertencem a ele."%[companion.vitals.hp,companion_limits.hp,companion.vitals.qi,companion_limits.qi,companion.vitals.posture,companion_limits.posture])
 
 func shop_reason() -> String:
 	if director.world.has_meta("order_convent"): return "As provisões são vendidas pelo comerciante na Ribeira."
@@ -241,6 +253,7 @@ func shop_reason() -> String:
 	return ""
 
 func inventory_page() -> void:
+	if page=="Equipamento": button(listing,"Escolher arma do herói",switch_page.bind("Armas"))
 	var shopping := page == "Loja de Lisboa"
 	listing.add_child(label("Provisões de Lisboa" if shopping else page,25,Color("e6cb8d")))
 	if shopping:
@@ -252,8 +265,8 @@ func inventory_page() -> void:
 		if trading=="Comprar":
 			var kit_cost := int(Items.items()["PT-C01"].price)+int(Items.items()["PT-C03"].price)
 			paragraph(listing,"Reserva pessoal: uma ligadura e uma água custam %d de ouro. A primeira arma é oferecida por Tomé ao concluir a escolha."%kit_cost,Color("a3bab0"))
-	var filters := HBoxContainer.new(); listing.add_child(filters)
-	for value in ["Todos","Peças","Usáveis","História"]:
+	var filters := HFlowContainer.new(); listing.add_child(filters)
+	for value in ["Todos","Armas","Peças","Usáveis","História"]:
 		button(filters,("• " if filter == value else "")+value,func(): filter = value; selected = ""; refresh())
 	var count := 0
 	for id in Items.items():
@@ -263,6 +276,7 @@ func inventory_page() -> void:
 			if not row.tradeable or row.price == null: continue
 		elif amount <= 0: continue
 		if page == "Equipamento" and row.slot == null: continue
+		if filter == "Armas" and row.slot != "weapon": continue
 		if filter == "Peças" and row.slot == null: continue
 		if filter == "Usáveis" and not row.has("recovery"): continue
 		if filter == "História" and row.tradeable: continue
@@ -322,11 +336,13 @@ func draw_item() -> void:
 		var reason := Items.equip_reason(p,selected)
 		if equipped and row.slot == "weapon" and not p.tested_styles.has("PU"): reason = "Experimenta desarmado com Tomé antes de retirar a arma."
 		action_button = button(details,"Retirar" if equipped else "Equipar",func():
+			if not development_safe(): notice.text = "Procura uma pausa segura para trocar equipamento."; return
 			var message := Items.unequip(p,row.slot) if equipped else Items.equip(p,selected)
 			refresh(); notice.text = message
 			if row_buttons.has(selected): row_buttons[selected].grab_focus())
-		action_button.disabled = not reason.is_empty()
+		action_button.disabled = not reason.is_empty() or not development_safe()
 		if not reason.is_empty(): paragraph(details,reason)
+		elif not development_safe(): paragraph(details,"Troca de equipamento disponível numa pausa segura.")
 	elif row.has("recovery"):
 		var hero_preview := paragraph(details,Items.recovery_text(p,selected))
 		var duarte_preview := paragraph(details,Items.recovery_text(p,selected,"duarte"))
@@ -360,6 +376,7 @@ func trade_selected() -> void:
 func knowledge_page() -> void:
 	var passive := page == "Passivas"
 	listing.add_child(label("Passivas · quatro vagas por pessoa" if passive else "Técnicas aprendidas",24,Color("e6cb8d")))
+	if not passive: button(listing,"Organizar as seis vagas ativas",switch_page.bind("Evolução"))
 	var rows: Array = JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/"+("passives.json" if passive else "skill_icons.json")))["passives" if passive else "skills"]
 	var owned: Array = ChapterProgress.passives if passive else ChapterProgress.skills
 	var count := 0
@@ -377,17 +394,25 @@ func show_knowledge(row: Dictionary, passive: bool) -> void:
 	paragraph(details,"Nv. %d · %s" % [row.rarity_level,row.rarity_name],Color(row.rarity_color))
 	if not passive:
 		paragraph(details,("Aprendida · " if preload("res://scripts/chapter/arc_content.gd").executable(row.id) else "Registro de catálogo antigo · não executável neste arco · ")+("Duarte" if row.id.begins_with("DU") else CampaignProfile.hero_name))
-		if row.id in ["ES07","LA07","MC08","FO07","PU07"]:
+		if row.id in ["ES07","LA07","MC08","FO07","FO01","FO08","FO09","PU07"]:
 			var style: String = row.id.substr(0,2)
 			var rules = preload("res://scripts/combat/campaign_rules.gd").new()
 			rules.start_encounter("school",CampaignProfile.hero_name,style)
-			var definition: Dictionary = rules.skill_def(0,1)
-			paragraph(details,"%s · %d alento\nPotência %d · Alcance %d" % [Items.STYLES[style],definition.cost,definition.power,definition.range])
+			var action: int = {"FO01":2,"FO08":8,"FO09":3}.get(row.id,1)
+			var definition: Dictionary = rules.skill_def(0,action)
+			paragraph(details,"%s · %d alento\nPotência %d · Alcance %s" % [Items.STYLES[style],definition.cost,definition.power,"próprio" if definition.shape=="self" else str(definition.range)])
 			paragraph(details,definition.description)
 			if ChapterProgress.style != style: paragraph(details,"Equipa o manejo de "+Items.STYLES[style]+" para preparar esta técnica.")
 		elif row.id == "DP01": paragraph(details,"Reage no sinal do golpe inimigo. Bom/Perfeito dependem do timing e da orientação da guarda.")
-		elif row.id == "DU01": paragraph(details,"6 alento · alcance 1. Duarte prepara uma interceptação: 60% do residual para o aliado e 40% para si.")
+		elif row.id == "DU01":
+			var rules = preload("res://scripts/combat/campaign_rules.gd").new(); rules.start_encounter("duarte_support",CampaignProfile.hero_name,ChapterProgress.style)
+			var definition: Dictionary = rules.skill_def(1,4)
+			paragraph(details,"%d alento · alcance 1. Grau %s. Duarte prepara uma interceptação: 60%% do residual para o aliado e 40%% para si."%[definition.cost,["I","II","III"][int(definition.level)-1]])
 		elif row.id == "DU02": paragraph(details,"Registro antigo conservado. Ponta da Guarda pertence ao catálogo de etapas posteriores; neste arco Duarte usa o básico e Guarda Companheira.")
+		if row.id!="DP01" and preload("res://scripts/chapter/arc_content.gd").executable(row.id):
+			var owner := preload("res://scripts/chapter/arc_content.gd").owner(row.id)
+			paragraph(details,"Preparada numa das seis vagas." if Items.Development.equipped(ChapterProgress,row.id,owner) else "Aprendida, mas não preparada numa das seis vagas.")
+			button(details,"Organizar repertório",switch_page.bind("Evolução"))
 		paragraph(details,"A linha de ações do combate mostra as técnicas disponíveis em cada exercício.")
 		return
 	paragraph(details,"Conhecida · "+("Duarte" if row.owner=="duarte" else CampaignProfile.hero_name)+". Só produz efeito enquanto equipada; cada pessoa tem quatro vagas próprias.")
@@ -396,11 +421,12 @@ func show_knowledge(row: Dictionary, passive: bool) -> void:
 	var active := equipped.has(row.id)
 	paragraph(details,"Equipada · ocupa uma vaga." if active else "Conhecida · ainda não equipada.")
 	var node := button(details,"Retirar passiva" if active else "Equipar passiva",func():
+		if not development_safe(): return
 		if equipped.has(row.id): equipped.erase(row.id)
 		elif equipped.size() < 4: equipped.append(row.id)
 		var message := Items.persist(ChapterProgress,"Passivas atualizadas.")
 		refresh(); show_knowledge(row,true); notice.text = message; tabs[page].grab_focus())
-	node.disabled = (not active and equipped.size() >= 4) or not ChapterProgress.flags.get("recovered",false)
+	node.disabled = (not active and equipped.size() >= 4) or not ChapterProgress.flags.get("recovered",false) or not development_safe()
 	details.move_child(node,2)
 	if not active and equipped.size() >= 4: paragraph(details,"Retira uma passiva antes de equipar outra.")
 
@@ -442,7 +468,7 @@ func system_page() -> void:
 	paragraph(listing,"Carregar retoma o local e o compromisso do percurso guardado. Recomeçar repete a etapa atual." if not ChapterProgress.journey.is_empty() else "Carregar regressa ao início da etapa guardada, com os teus itens e moedas. Recomeçar repete a etapa atual.")
 	button(listing,"Guardar capítulo",func(): save_requested.emit())
 	var load_button := button(listing,"Carregar último save",func():
-		clear(details); paragraph(details,"Retomar o percurso guardado?" if not ChapterProgress.journey.is_empty() else "Regressar ao início da etapa guardada?")
+		clear(details); paragraph(details,preload("res://scripts/chapter/save_summary.gd").chapter(ChapterProgress))
 		button(details,"Confirmar carregamento",func(): load_requested.emit()))
 	var restart_button := button(listing,"Recomeçar esta etapa",func():
 		clear(details); paragraph(details,"Repetir a etapa atual? Os teus objetos e moedas serão conservados.")
@@ -459,3 +485,68 @@ func _input(event: InputEvent) -> void:
 		pending_binding = ""; refresh(); notice.text = message; return
 	if event.is_action_pressed("ui_cancel") or (event is InputEventJoypadButton and event.pressed and event.button_index in [JOY_BUTTON_B,JOY_BUTTON_START]):
 		get_viewport().set_input_as_handled(); close_requested.emit()
+
+
+func weapons_page() -> void:
+	listing.add_child(label("Armas do herói",25,Color("e6cb8d")))
+	paragraph(listing,"Em uso: "+Weapons.current(ChapterProgress),Color("8cd7b7"))
+	paragraph(listing,"Escolhe uma opção e confirma em Equipar no herói.")
+	for row in Weapons.rows(ChapterProgress):
+		var suffix:String=" · EM USO" if row.active else " · não tens" if not row.owned else " · sem arma" if row.id==Weapons.UNARMED else " · na sacola"
+		var entry:=button(listing,row.name+suffix,select_weapon.bind(row.id))
+		entry.alignment=HORIZONTAL_ALIGNMENT_LEFT
+		row_buttons[row.id]=entry
+	if selected.is_empty():selected=ChapterProgress.equipment.get("weapon",Weapons.UNARMED if ChapterProgress.style=="PU" else Weapons.FIRST.get(ChapterProgress.style,"PT-W01"))
+	draw_weapon()
+
+func draw_weapon() -> void:
+	var unarmed:bool=selected==Weapons.UNARMED
+	var row:Dictionary={} if unarmed else Items.items()[selected]
+	var style:String="PU" if unarmed else row.style
+	paragraph(details,"Desarmado" if unarmed else row.name,Color("e6cb8d")).add_theme_font_size_override("font_size",GamePreferences.font_size(23))
+	paragraph(details,Weapons.TIPS[style])
+	var active:bool=ChapterProgress.style=="PU" and not ChapterProgress.equipment.has("weapon") if unarmed else ChapterProgress.equipment.get("weapon","")==selected
+	var owned:bool=unarmed or int(ChapterProgress.inventory.get(selected,0))>0
+	var reason:String=Weapons.reason(ChapterProgress,selected)
+	if owned:
+		action_button=button(details,"Em uso no herói" if active else "Lutar desarmado" if unarmed else "Equipar no herói",func():
+			if not development_safe(): notice.text = "Procura uma pausa segura para trocar de arma."; return
+			var message:String=Weapons.choose(ChapterProgress,selected)
+			refresh();notice.text=message
+			if row_buttons.has(selected):row_buttons[selected].grab_focus())
+		action_button.disabled=active or not reason.is_empty() or not development_safe()
+	else:
+		paragraph(details,"Não tens esta arma. Preço em Lisboa: %d de ouro."%int(row.price))
+		action_button=button(details,"Ver armas na loja",func():switch_page("Loja de Lisboa");filter="Armas";refresh())
+	if not reason.is_empty():paragraph(details,reason,Color("e6cb8d"))
+	if not ChapterProgress.tested_styles.has(style):paragraph(details,"Tomé ensina este uso de arma durante as aulas no pátio.")
+	if not unarmed and owned and not active:
+		paragraph(details,"Troca em relação a "+Weapons.current(ChapterProgress)+":")
+		var comparison:Dictionary=Items.comparison(ChapterProgress,selected)
+		for key in comparison:
+			var delta:int=comparison[key]
+			if delta!=0:paragraph(details,"%s %+d"%[("Potência do básico" if key=="power" else Items.STAT_NAMES.get(key,key)),delta])
+	if not unarmed:paragraph(details,row.description)
+	paragraph(details,"As armas desta página são do herói. Duarte usa o seu próprio equipamento.")
+
+func select_weapon(id: String) -> void:
+	selected=id;refresh();details_scroll.scroll_vertical=0
+	if action_button!=null and not action_button.disabled:action_button.grab_focus()
+	elif row_buttons.has(id):row_buttons[id].grab_focus()
+
+func development_safe() -> bool:
+	return not director.busy and not ChapterProgress.flags.get("injured",false) and director.phase in ["block_end","styles","styles_result","equipment","exploration","roaming","completed"]
+func evolution_page() -> void:
+	var editor = preload("res://scripts/chapter/development_panel.gd").new()
+	listing.add_child(editor); editor.setup(ChapterProgress.snapshot(),development_safe())
+	editor.committed.connect(func(data: Dictionary):
+		if not development_safe() or ChapterProgress.restore(data,false)!=OK: return
+		ChapterProgress.development = data.development.duplicate(true)
+		ChapterProgress.vitals = data.vitals.duplicate(true)
+		ChapterProgress.companion_vitals = data.companion_vitals.duplicate(true)
+		var message := Items.persist(ChapterProgress,"Atributos e repertório confirmados.")
+		refresh(); notice.text = message; tabs[page].grab_focus())
+	paragraph(details,"Nível, cultivo, proficiência e domínio são progressões distintas.",Color("e6cb8d"))
+	paragraph(details,"Ganhas três pontos por nível. Distribui na prévia e confirma quando estiveres satisfeito. Podes conservar pontos sem gastar.")
+	paragraph(details,"Cada pessoa prepara até seis técnicas e quatro passivas. Básico, itens e defesa por reação não ocupam vagas ativas.")
+	paragraph(details,"Grau II: oito usos válidos. Grau III: vinte. Guardas só contam quando protegem um contacto real; preparação sem uso não concede domínio.")

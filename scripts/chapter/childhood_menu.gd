@@ -84,6 +84,7 @@ func refresh() -> void:
 			var caption: String = {"interact":"Interagir","journal":"Caderno","quick_save":"Guardar"}[action]
 			button(caption+" · "+OS.get_keycode_string(GamePreferences.bindings[action]),func(): pending_binding = action; message = "Prime a nova tecla. Esc/B cancela."; refresh())
 	text("Guardar conserva o percurso livre. Falas e combates retomam o início da etapa.")
+	if page=="pause":text(preload("res://scripts/chapter/save_summary.gd").chapter(progress))
 	if page in ["journal","history"]: column.get_child(0).grab_focus()
 	else: back.grab_focus()
 

@@ -1,0 +1,32 @@
+{
+  "source": "res://assets/art/portraits/supporting-busts-v2.png",
+  "entries": {
+    "injured_worker": [
+      4.0,
+      4,
+      564,
+      679
+    ],
+    "observer": [
+      576.0,
+      4,
+      565,
+      679
+    ],
+    "shelter_child": [
+      4.0,
+      691,
+      564,
+      679
+    ],
+    "combatant": [
+      576.0,
+      691,
+      565,
+      679
+    ]
+  },
+  "tool": "built-in image_gen",
+  "prompt": "Create ONE new companion RPG portrait ATLAS, exact 2 columns x 2 rows of four equal 5:6 cells (whole image 5:6). First four images are IDENTITY references; fifth image is STYLE reference only. Match the painterly illustrated portrait style, restrained warm upper-left lighting, facial detail, clothing material and bust scale of fifth reference. Draw each subject chest-up, entire head and hair fully in its own cell, chest may end at cell bottom. Leave a clear 7% transparent safety margin around each bust and a small transparent separation at cell boundaries so nobody's sleeve or clothing intrudes into another cell. No borders, no lettering, no labels, no new symbols, no watermarks. Transparent background. Top-left: injured worker from image1, middle-aged light-brown slightly receding hair, short beard, muted olive shirt, his forearm has clean linen bandage, tired but stable, NO blood. Top-right: observer from image2, adult male dark wavy medium hair short beard, ochre tunic and weathered green-gray hooded shoulder cape. Bottom-left: shelter child from image3, clearly a young boy age8 brown short slightly wavy hair, warm curious face, patched rust-red sleeveless tunic and ivory shirt. Bottom-right: combatant from image4, adult male short curly dark hair stubble, mustard ochre waistcoat ivory sleeves dark belt and wrist bracers, alert neutral face. Preserve appearance/identity/costume, do not turn the boy into a woman or adult. Aim maximum useful resolution. Separate characters, no fragments from neighboring cells, consistent full-head framing.",
+  "sha256": "dd55c344651236d7b7b3df3ed332e91df1a65764131d1dd454cc118df57dd06d"
+}

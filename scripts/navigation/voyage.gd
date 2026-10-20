@@ -117,7 +117,8 @@ func _prepare_boarding_profile(chapter_path: String = ChapterProgress.SAVE_PATH)
 	if model.boarding_profile.is_empty(): model.boarding_profile = BoardingLoadout.capture(source)
 	if model.boarding_profile.is_empty(): return
 	if not model.boarding_profile.has("companion_vitals"): model.boarding_profile.companion_vitals = {}
-	for key in ["style","skills","inventory","equipment","vitals","equipped_passives","duarte_equipped_passives","companion_vitals"]:
+	if not model.boarding_profile.has("development"): model.boarding_profile.development = preload("res://scripts/chapter/character_development.gd").migrate(model.boarding_profile)
+	for key in ["style","skills","inventory","equipment","vitals","equipped_passives","duarte_equipped_passives","companion_vitals","development"]:
 		source[key] = model.boarding_profile[key].duplicate(true) if model.boarding_profile[key] is Array or model.boarding_profile[key] is Dictionary else model.boarding_profile[key]
 	for key in ["recovered","perfect_defense"]:
 		if source.flags.get(key,false)!=model.boarding_profile.flags[key]: source.flags[key] = model.boarding_profile.flags[key]
@@ -131,7 +132,8 @@ func _apply_personal_state() -> void:
 	if Launch.mode!="campaign" or model.campaign_state.is_empty(): return
 	# The voyage checkpoint is authoritative until the next land chapter.
 	if not model.boarding_profile.has("companion_vitals"): model.boarding_profile.companion_vitals = {}
-	for key in ["style","skills","inventory","equipment","vitals","equipped_passives","duarte_equipped_passives","companion_vitals"]:
+	if not model.boarding_profile.has("development"): model.boarding_profile.development = preload("res://scripts/chapter/character_development.gd").migrate(model.boarding_profile)
+	for key in ["style","skills","inventory","equipment","vitals","equipped_passives","duarte_equipped_passives","companion_vitals","development"]:
 		model.campaign_state[key] = model.boarding_profile[key].duplicate(true) if model.boarding_profile[key] is Array or model.boarding_profile[key] is Dictionary else model.boarding_profile[key]
 	ChapterProgress.restore(model.campaign_state)
 
@@ -144,6 +146,8 @@ func personal_safe() -> bool:
 	return safe
 
 func open_personal(page: String = "inventory",feedback: String = "") -> void:
+	if page=="weapons": open_hero_weapons(feedback);return
+	if page=="development": open_development(feedback);return
 	var items = preload("res://scripts/chapter/player_items.gd")
 	var personal: Dictionary = model.campaign_state if not model.campaign_state.is_empty() else model.boarding_profile
 	if personal.is_empty():
@@ -151,11 +155,12 @@ func open_personal(page: String = "inventory",feedback: String = "") -> void:
 	var limits: Dictionary = items.stats(personal)
 	var text := "%s · %s\nVida %d/%d · Alento %d/%d · Postura %d/%d"%[model.hero_name,items.STYLES[personal.style],personal.vitals.hp,limits.hp,personal.vitals.qi,limits.qi,personal.vitals.posture,limits.posture]
 	if personal.has("coins"): text += "\nCarteira pessoal: %d de ouro · Fundo de bordo: %d de ouro"%[personal.coins,model.coins]
-	var companion: Dictionary = personal.get("companion_vitals",{}).get("duarte",preload("res://scripts/chapter/party_resources.gd").LIMITS.duarte)
-	text += "\nDuarte · Vida %d/120 · Alento %d/12 · Postura %d/100\nDuarte conserva equipamento próprio fixo neste arco; técnicas e passivas pertencem a ele."%[companion.hp,companion.qi,companion.posture]
+	var companion_limits: Dictionary = preload("res://scripts/chapter/party_resources.gd").limits("duarte",personal)
+	var companion: Dictionary = personal.get("companion_vitals",{}).get("duarte",companion_limits)
+	text += "\nDuarte · Vida %d/%d · Alento %d/%d · Postura %d/%d\nDuarte conserva equipamento próprio fixo neste arco; técnicas e passivas pertencem a ele."%[companion.hp,companion_limits.hp,companion.qi,companion_limits.qi,companion.posture,companion_limits.posture]
 	if not feedback.is_empty(): text += "\n\n"+feedback
 	if not personal_safe(): text += "\nProcura um porto ou águas seguras para preparar equipamento e usar suprimentos."
-	var column := modal("personal","Personagem e bagagem",text,[["Conversas",open_conversations],["Bagagem",func(): open_personal("inventory")],["Equipamento",func(): open_personal("equipment")],["Técnicas e passivas",func(): open_personal("knowledge")],["Diário e pedidos",func(): open_personal("journal")],["Voltar à pausa",open_pause]])
+	var column := modal("personal","Personagem e bagagem",text,[["Evolução do grupo",func():open_personal("development")],["Armas do herói",func():open_personal("weapons")],["Conversas",open_conversations],["Bagagem",func(): open_personal("inventory")],["Equipamento",func(): open_personal("equipment")],["Técnicas e passivas",func(): open_personal("knowledge")],["Diário e pedidos",func(): open_personal("journal")],["Voltar à pausa",open_pause]])
 	if page=="journal":
 		if model.campaign_state.is_empty():
 			column.add_child(label("Esta viagem não tem um diário de campanha associado.",17,PAPER)); return
@@ -212,6 +217,7 @@ func personal_action(kind: String,id: String) -> void:
 	match kind:
 		"use": feedback = items.use(data,id)
 		"duarte_use": feedback = items.use(data,id,"duarte")
+		"weapon": feedback = preload("res://scripts/chapter/weapon_choices.gd").choose(data,id)
 		"equip": feedback = items.equip(data,id)
 		"unequip": feedback = items.unequip(data,items.items()[id].slot)
 		"passive":
@@ -228,7 +234,7 @@ func personal_action(kind: String,id: String) -> void:
 	model.campaign_state = data; model.boarding_profile = kit; model.style = data.style
 	_apply_personal_state()
 	if auto_save and _save(false)!=OK: feedback += " Não foi possível guardar; tenta Guardar novamente."
-	open_personal("knowledge" if kind=="passive" else "inventory",feedback)
+	open_personal("weapons" if kind=="weapon" else "knowledge" if kind=="passive" else "inventory",feedback)
 
 func _build_ui() -> void:
 	var layer := CanvasLayer.new(); layer.layer = 5; add_child(layer)
@@ -621,7 +627,7 @@ func open_orders() -> void:
 	])
 func _naval_victory() -> void:
 	model.phase = "naval_result"; model.hull = naval.hull
-	modal("result","Embarcação incapacitada","Podes abordar para enfrentar a tripulação e recuperar mais recursos, ou recolher apenas o salvado e continuar a viagem.",[
+	modal("result","Embarcação incapacitada","Podes abordar para enfrentar a tripulação e recuperar mais recursos, ou recolher apenas o salvado e continuar a viagem.\n\n"+BoardingLoadout.readiness(model.boarding_profile),[
 		["Abordar · combate por turnos",begin_boarding],
 		["Recolher salvado e continuar",func(): finish_encounter(false)]
 	])
@@ -671,11 +677,23 @@ func _boarding_completed(success: bool) -> void:
 	battle_container.hide()
 	if success:
 		var profile: Dictionary = model.boarding_profile
-		for key in ["hp","qi","posture"]: profile.vitals[key] = int(battle_host.combat.units[0][key])
+		for key in ["hp","qi","posture"]: profile.vitals[key] = maxi(1,int(battle_host.combat.units[0][key])) if key=="hp" else int(battle_host.combat.units[0][key])
 		profile.inventory = battle_host.combat.progress_override.inventory.duplicate(true)
 		profile.companion_vitals = {"duarte":{}}
-		for key in ["hp","qi","posture"]: profile.companion_vitals.duarte[key] = int(battle_host.combat.units[1][key])
+		for key in ["hp","qi","posture"]: profile.companion_vitals.duarte[key] = maxi(1,int(battle_host.combat.units[1][key])) if key=="hp" else int(battle_host.combat.units[1][key])
 	if success:
+		var dev = preload("res://scripts/chapter/character_development.gd")
+		var carried: Dictionary = model.boarding_profile
+		dev.ensure(carried)
+		var reward_id: String = "boarding:"+str(current_enemy.id)
+		if not carried.development.claimed.has(reward_id):
+			for person in battle_host.combat.battle_practice:
+				dev.practice(carried,person,model.style if person=="hero" else "LA",battle_host.combat.battle_practice[person])
+			var normal: bool = GamePreferences.options.get("difficulty","normal")!="challenging"
+			var gained: Dictionary = dev.award(carried,reward_id,35,normal)
+			if normal and gained.levels.has("hero") and int(carried.vitals.hp)>0:
+				var limits: Dictionary = preload("res://scripts/chapter/player_items.gd").stats(carried)
+				carried.vitals.hp = limits.hp; carried.vitals.qi = limits.qi
 		_apply_personal_state()
 		finish_encounter(true)
 	else: game_over("O grupo foi vencido na abordagem. A viagem regressa ao último ponto seguro.")
@@ -712,8 +730,9 @@ func open_pause() -> void:
 	if model.phase=="boarding": return
 	if model.phase=="naval": open_orders(); return
 	if model.phase=="game_over": return
-	modal("pause","Viagem em pausa","O mar espera. Consulta a carta ou retoma a última viagem guardada.",[
+	modal("pause","Viagem em pausa","O mar espera. Consulta a carta ou retoma a última viagem guardada.\n\n"+preload("res://scripts/chapter/save_summary.gd").voyage(save_path),[
 		["Continuar",func(): pass],
+		["Armas do herói",func():open_personal("weapons")],
 		["Personagem e bagagem",open_personal],
 		["Ajuda ao leme e missão",open_help],
 		["Som e música",open_audio],
@@ -838,3 +857,39 @@ func enter_lisbon() -> void:
 	var error: Error = preload("res://scripts/navigation/shore_bridge.gd").enter(model,save_path)
 	if error!=OK: show_message("Lisboa","Não foi possível guardar o desembarque. A viagem anterior foi preservada."); return
 	get_tree().change_scene_to_file("res://scenes/chapter_01/chapter_flow.tscn")
+
+func open_hero_weapons(feedback: String = "") -> void:
+	var choices=preload("res://scripts/chapter/weapon_choices.gd")
+	var data:Dictionary=model.campaign_state if not model.campaign_state.is_empty() else model.boarding_profile
+	if data.is_empty():open_personal();return
+	var text:String="Em uso: "+choices.current(data)+"\nEscolhe a arma do herói. Duarte conserva o seu próprio equipamento."
+	if not feedback.is_empty():text+="\n"+feedback
+	var column:=modal("personal","Armas do herói",text,[["Voltar à bagagem",open_personal]])
+	for row in choices.rows(data):
+		var reason:String=choices.reason(data,row.id)
+		var caption:String=row.name+(" · EM USO" if row.active else " · não tens" if not row.owned else " · equipar no herói")
+		var action:=button(caption,personal_action.bind("weapon",row.id))
+		action.disabled=row.active or not row.owned or not reason.is_empty() or not personal_safe();column.add_child(action)
+		if not row.owned:column.add_child(label("Compra esta arma em Lisboa.",16,PAPER))
+		elif not reason.is_empty():column.add_child(label(reason,16,PAPER))
+	if not personal_safe():column.add_child(label("Procura um porto ou águas seguras para trocar de arma.",17,PAPER))
+
+func _commit_development(data: Dictionary) -> void:
+	if not personal_safe() or ChapterProgress.restore(data,false)!=OK: return
+	var kit: Dictionary = BoardingLoadout.capture(data)
+	if kit.is_empty(): return
+	model.campaign_state = data.duplicate(true); model.boarding_profile = kit
+	_apply_personal_state()
+	var feedback := "Atributos e repertório confirmados."
+	if auto_save and _save(false)!=OK: feedback += " Não foi possível guardar; tenta novamente."
+	open_personal("development",feedback)
+
+func open_development(feedback: String = "") -> void:
+	var data: Dictionary = model.campaign_state if not model.campaign_state.is_empty() else model.boarding_profile
+	if data.is_empty(): open_personal(); return
+	var text := "Distribui pontos e organiza o repertório. A prévia só é aplicada ao confirmar."
+	if not feedback.is_empty(): text += "\n"+feedback
+	var column := modal("personal","Evolução do grupo",text,[["Voltar à bagagem",open_personal]])
+	var editor = preload("res://scripts/chapter/development_panel.gd").new()
+	column.add_child(editor); editor.setup(data,personal_safe())
+	editor.committed.connect(_commit_development)

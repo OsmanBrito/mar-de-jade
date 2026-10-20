@@ -55,6 +55,7 @@ static func install(map: Node2D) -> void:
 	if map.has_node("FerroRibeira"): return
 	var floor := Node2D.new(); floor.name = "FerroRibeira"; floor.set_script(load("res://scripts/city/lisbon_scenery.gd")); floor.world = map; floor.z_index = -4
 	map.add_child(floor)
+	var landmarks := preload("res://scripts/city/city_landmarks.gd").new(); landmarks.name="StreetLandmarks";map.sorted_world.add_child(landmarks)
 	var finish := preload("res://scripts/city/lisbon_finish.gd").new(); finish.name = "WorkingGround"; finish.z_index = -3; map.add_child(finish)
 	for edge in [-1280,1870]:
 		for y in [-440,-170,100,370,640]:
@@ -120,6 +121,7 @@ static func install(map: Node2D) -> void:
 	for name in names:
 		var person = template.get_node("ActorsAndProps/"+name); person.get_parent().remove_child(person)
 		person.owner = null
+		if name=="Vizinha": person.npc_id = "dock_woman"
 		person.position = positions[names[name]]; person.route = PackedVector2Array([person.position]); map.sorted_world.add_child(person)
 	template.free()
 	for old_tree in ["pine_01","pine_02"]:

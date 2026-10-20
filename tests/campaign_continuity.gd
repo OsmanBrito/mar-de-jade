@@ -18,7 +18,8 @@ func prepare() -> void:
 	p.coins = 73; p.inventory["PT-C01"] = 2; p.inventory["PT-C03"] = 2
 	p.inventory["PT-V02"] = 1; p.passives.assign(["GE21","DU-P09"])
 	p.inventory["PT-W04"] = 1
-	p.skills.assign(["ES07","FO07","DP01"]); p.tested_styles.assign(["ES","FO"])
+	p.skills.assign(["ES07","FO07","FO01","FO08","FO09","DP01"]); p.tested_styles.assign(["ES","FO"])
+	p.development = preload("res://scripts/chapter/character_development.gd").initial(p.skills)
 	p.vitals = {"hp":80,"qi":8,"posture":90}; p.choices.origin_response = "assumir"
 	p.completed = true; p.checkpoint = 16; p.entry_scene = "res://scenes/chapter_01/chapter_flow.tscn"
 func mount(resume: bool = false) -> void:

@@ -1,5 +1,11 @@
 # Mar de Jade — capítulo 1 jogável
 
+**Desenvolvimento do personagem:** nível, cinco atributos com prévia e confirmação, repertório de seis técnicas, domínio, proficiência e cultivo para protagonista e Duarte. Portugal concede 400 XP no percurso principal. [Funcionamento e validação](docs/desenvolvimento-personagem.md).
+
+**Arma de fogo:** arcabuz ilustrado com nove poses e quatro técnicas ensinadas por Tomé: Disparo de Medida, Tiro Preparado, Guarda do Cano e Tiro de Passagem. Inclui ícones, efeitos, passo lateral previsto, abordagens e atualização de aulas em saves antigos. [Arte, funcionamento e validação](docs/arma-de-fogo.md).
+
+**Refinamento final dos nove pontos:** salvamento explicado, ruas identificadas, retratos próprios dos interlocutores, rotinas e conversas persistentes, resultados dos pedidos, pistas e preparação do grupo. [Mudanças, 1.250 verificações e validações humanas restantes](docs/refinamento-final-nove-pontos.md).
+
 **Correções da revisão dos nove pontos:** conflitos de teclas, foco das opções, atualização da fonte do HUD, falas opcionais no histórico e suprimentos de Duarte em Lisboa. [Mudanças e 440 verificações](docs/correcoes-revisao-nove-pontos.md).
 
 **Interface, controles e áudio:** histórico de 200 falas entre cenas e saves, remapeamento completo no painel compartilhado, dicas marítimas por dispositivo e leitura ampliada a bordo. [Ponto 9 — mudanças e 566 verificações](docs/interface-controles-audio-ponto-09.md). Controle físico, mixagem percebida e aprovação de experiência continuam no playtest.
@@ -103,7 +109,7 @@ Nome → abrigo/infância → praça/movimento → treino infantil → promessa 
 
 A derrota contra Leonor resulta do combate e da diferença de atributos, sem game over ou golpes impostos por uma sequência fixa. Ela não ataca o protagonista caído. O treino só regressa depois da recuperação. O capítulo termina como aprendiz sob Rodrigo, sem antecipar África ou novo encontro com Leonor.
 
-No pátio é possível experimentar espada, lança, machado, arma de fogo e desarmado antes da escolha inicial. Cada manejo tem um fundamento aprendível e dois exercícios extras exclusivos da demonstração, além do básico. R / Select interrompe o treino e permite trocar de arma sem conceder aprendizado de uma aula incompleta. Há oito passivas aprendíveis, preparação de até quatro passivas por personagem e um exercício de proteção com Duarte. Aprender não equipa automaticamente; as passivas de Duarte permanecem dele. A escolha inicial conserva a possibilidade de aprender outros manejos posteriormente.
+No pátio é possível experimentar espada, lança, machado, arma de fogo e desarmado antes da escolha inicial. Espada, lança, machado e desarmado têm um fundamento aprendível e dois exercícios extras exclusivos da demonstração, além do básico. A arma de fogo oferece quatro técnicas, ensinadas por Tomé ao escolhê-la. R / Select interrompe o treino e permite trocar de arma sem conceder aprendizado de uma aula incompleta. Há oito passivas aprendíveis, preparação de até quatro passivas por personagem e um exercício de proteção com Duarte. Aprender uma passiva não a equipa automaticamente; as passivas de Duarte permanecem dele. A escolha inicial conserva a possibilidade de aprender outros manejos posteriormente.
 
 ## Guardar e rever
 

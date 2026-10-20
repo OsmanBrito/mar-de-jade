@@ -1,4 +1,7 @@
 extends "res://scripts/combat/portugal_rules.gd"
+const Development = preload("res://scripts/chapter/character_development.gd")
+var battle_practice: Dictionary = {}
+const Firearm = preload("res://scripts/combat/firearm_skills.gd")
 const STYLES := {"ES":{"name":"Espada","range":1,"power":22},"LA":{"name":"Lança","range":2,"power":20},"MC":{"name":"Machado","range":1,"power":28},"FO":{"name":"Arma de fogo","range":4,"power":20},"PU":{"name":"Desarmado","range":1,"power":18}}
 const FIRST := {"ES":"ES07","LA":"LA07","MC":"MC08","FO":"FO07","PU":"PU07"}
 ## Local practice drills, not entries or unlocks from the canonical skill catalogue.
@@ -24,6 +27,8 @@ var prepared_contact := false
 var approach_weakened := false
 var weakened_target := -1
 var equipment_bonus: Dictionary = {}
+var firearm_guard := false
+var firearm_moved := false
 ## Optional read-only snapshot for encounters outside Portugal (e.g. quick tests).
 var progress_override: Dictionary = {}
 func combat_progress():
@@ -34,6 +39,8 @@ func companion_support_available() -> bool: return mode in ["duarte_support","bo
 func start_encounter(kind: String, hero_name: String, chosen_style: String = "ES") -> void:
 	super.start_lesson(1,hero_name)
 	mode = kind; style = chosen_style
+	battle_practice.clear()
+	firearm_guard = false; firearm_moved = false
 	moved_in_battle = false; correct_sequence = false; previous_action = -1; previous_action_turn = -1
 	technique_evaluated = false; technique_used = false; support_used = false
 	stationary_eligible = false; protective_ready = false; contact_weakened = false; preparation = false; prepared_contact = false; approach_weakened = false
@@ -69,6 +76,8 @@ func start_encounter(kind: String, hero_name: String, chosen_style: String = "ES
 	for row in JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/skill_icons.json")).skills:
 		skill_names[row.id] = row.name
 	if kind=="practice":
+		if style=="FO":
+			units[0].cell = Vector2i(4,3); units[0].turn_origin = units[0].cell; units[0].home = units[0].cell
 		caption = "Prática livre · "+STYLES[style].name
 		units[0].qi = 40; units[0].max_qi = 40
 		units[2].hp = 9999; units[2].max_hp = 9999; units[2].posture = 9999; units[2].max_posture = 9999
@@ -91,21 +100,40 @@ func start_encounter(kind: String, hero_name: String, chosen_style: String = "ES
 		if kind!="boarding":
 			units[0].hp = maxi(1,int(units[0].hp)); units[0].posture = maxi(1,int(units[0].posture))
 		units[0].defense = stats.defense; units[0].speed = stats.speed
+		if companion_support_available() and not Development.member(combat_progress(),"duarte").is_empty():
+			var companion: Dictionary = Development.base_stats(combat_progress(),"duarte")
+			for key in ["hp","qi","posture"]:
+				units[1]["max_"+key] = companion[key]; units[1][key] = companion[key]
+			units[1].defense = companion.defense; units[1].speed = companion.speed
 		rebuild_order()
 
 func passive_active(id: String) -> bool:
 	return combat_progress().equipped_passives.has(id) and mode in ["school","perfect_defense","duarte_support","boarding"]
 
 func commands(actor: int) -> Array:
+	if actor==0 and style=="FO" and weapon_techniques_available():
+		var actions: Array = [0]
+		for action in Firearm.IDS:
+			if mode in ["school","practice"] or (combat_progress().skills.has(Firearm.IDS[action]) and Development.equipped(combat_progress(),Firearm.IDS[action])): actions.append(action)
+		return actions
 	if actor==0 and mode=="practice": return [0,1,2,3]
-	if actor == 1 and companion_support_available(): return [0,4] if mode!="boarding" or combat_progress().skills.has("DU01") else [0]
-	return [0,1] if weapon_techniques_available() and (mode!="boarding" or combat_progress().skills.has(FIRST[style])) else [0]
+	if actor == 1 and companion_support_available(): return [0,4] if mode!="boarding" or (combat_progress().skills.has("DU01") and Development.equipped(combat_progress(),"DU01","duarte")) else [0]
+	return [0,1] if weapon_techniques_available() and (mode!="boarding" or (combat_progress().skills.has(FIRST[style]) and Development.equipped(combat_progress(),FIRST[style]))) else [0]
 
 func skill_def(actor: int, skill: int) -> Dictionary:
 	if actor >= 2: return super.skill_def(actor,skill)
 	var definition: Dictionary = Catalog.HERO_SKILLS[1][0].duplicate(true)
 	definition.name = "Ataque básico"; definition.description = "Ataque básico com alcance do manejo. Recupera 1 energia."
 	definition.uses_opening = false
+	if actor==0 and style=="FO" and (skill==0 or (Firearm.IDS.has(skill) and weapon_techniques_available())):
+		definition = Firearm.definition(skill,definition,not firearm_moved and units[actor].cell==units[actor].turn_origin)
+		if Firearm.IDS.has(skill) and passive_active("GE22") and not technique_evaluated and previous_action==0 and previous_action_turn==current().turns-1: definition.cost -= 1
+		if skill==2 and not Development.member(combat_progress()).is_empty():
+			definition.power = 21
+			definition.chapter_power_factor = 1.15 if not firearm_moved and units[actor].cell==units[actor].turn_origin else 1.0
+		if skill==1 and passive_active("FO-P11") and not firearm_moved and units[actor].cell==units[actor].turn_origin: definition.chapter_power_factor = 1.05
+		if definition.power>0: definition.power += int(equipment_bonus.get("attack",0))
+		return mastered(actor,skill,definition)
 	definition.power = STYLES[style].power if actor == 0 else 20
 	definition.range = STYLES[style].range if actor == 0 else 1
 	definition.effect = "ranged" if style == "FO" and actor == 0 else "cut"
@@ -120,7 +148,7 @@ func skill_def(actor: int, skill: int) -> Dictionary:
 		if passive_active("GE22") and not technique_evaluated and previous_action == 0 and previous_action_turn == current().turns-1:
 			definition.cost = maxi(1,definition.cost-1)
 		if (style == "LA" and passive_active("LA-P11")) or (style == "FO" and passive_active("FO-P11")):
-			if current().cell == current().turn_origin: definition.power = roundi(definition.power*1.05)
+			if not firearm_moved and current().cell == current().turn_origin: definition.chapter_power_factor = 1.05
 	elif skill == 4 and actor == 1 and companion_support_available():
 		definition.name = "Guarda Companheira"; definition.content_id = "DU01"
 		definition.cost = 5 if not support_used and combat_progress().duarte_equipped_passives.has("DU-P09") else 6
@@ -165,8 +193,8 @@ func availability_reason(skill: int) -> String:
 
 func attack_reason(skill: int, aim: Vector2i) -> String:
 	var reason: String = super.attack_reason(skill,aim)
-	if reason.is_empty() and mode=="practice" and style=="FO" and skill==2 and current().cell!=current().turn_origin:
-		return "Tiro Preparado exige ficar imóvel neste turno."
+	if reason.is_empty() and current_id==0 and style=="FO" and skill==3 and Firearm.side_step(self,0,aim)==Vector2i(-1,-1):
+		return "Tiro de Passagem exige uma casa lateral livre."
 	if reason.is_empty() and weapon_techniques_available() and skill == 1 and style == "LA" and distance(current().cell,aim) != 2:
 		return "Ponta de Medida exige exatamente duas casas."
 	if reason.is_empty() and weapon_techniques_available() and skill == 1 and style == "FO" and aim.x != current().cell.x and aim.y != current().cell.y:
@@ -175,6 +203,7 @@ func attack_reason(skill: int, aim: Vector2i) -> String:
 
 func move_to(destination: Vector2i) -> Array[Vector2i]:
 	var result: Array[Vector2i] = super.move_to(destination)
+	if current_id==0 and not result.is_empty(): firearm_moved = true
 	if current_id == 0 and not result.is_empty(): moved_in_battle = true; stationary_eligible = false
 	return result
 
@@ -182,12 +211,25 @@ func perform(skill: int, aim: Vector2i, quality: int) -> Dictionary:
 	var qualifying: bool = previous_action == 0 and previous_action_turn == current().turns-1
 	var definition: Dictionary = skill_def(current_id,skill)
 	var actor := current_id
+	var firing_origin: Vector2i = current().cell
+	var landing: Vector2i = Firearm.side_step(self,0,aim) if actor==0 and style=="FO" and skill==3 else Vector2i(-1,-1)
 	var result: Dictionary = super.perform(skill,aim,quality)
 	if result.has("error"): return result
+	if definition.power>0 and result.get("hits",[]).any(func(h): return h.get("damage",0)>0): _record_development_use(actor,skill)
+	if actor==0 and style=="FO":
+		if Firearm.IDS.has(skill):
+			if definition.cost<Firearm.COSTS[skill]: record_passive(0,"GE22",{"qi":1})
+			if skill!=1: technique_evaluated = true; technique_used = true
+		if skill==8:
+			firearm_guard = true; current().guard = false
+		if skill==3:
+			current().cell = landing; moved_in_battle = true; stationary_eligible = false; firearm_moved = true
+			result.firearm_origin = firing_origin; result.firearm_landing = landing
+			result.text += " · passo lateral após o disparo"
 	if actor==0 and skill==1:
-		if definition.cost<(7 if style=="MC" else 4): record_passive(0,"GE22",{"qi":1})
-		if style in ["LA","FO"] and passive_active(style+"-P11") and current().cell==current().turn_origin:
-			record_passive(0,style+"-P11",{"damage_base":int(definition.power)-18-int(equipment_bonus.get("attack",0))})
+		if style!="FO" and definition.cost<(7 if style=="MC" else 4): record_passive(0,"GE22",{"qi":1})
+		if style in ["LA","FO"] and passive_active(style+"-P11") and not firearm_moved and current().cell==current().turn_origin:
+			record_passive(0,style+"-P11",{"damage_base":int(definition.get("passive_power_bonus",0))})
 	if actor==1 and skill==4 and definition.cost==5: record_passive(1,"DU-P09",{"qi":1})
 	if current_id == 0:
 		if skill == 1:
@@ -245,11 +287,12 @@ func defense_preview(actor: int, target: int, attack: Dictionary, grade: int) ->
 	if stationary_eligible and units[0].cell == stationary_cell and attack.kind != "ranged": reduction += 0.05
 	if reduction>0: active_ids.append("GE21")
 	if result.side == "Frente" and attack.kind != "ranged":
+		if firearm_guard: result.damage = roundi(result.damage*(1.0-_guard_protection("FO08")))
 		if protective_ready: reduction += 0.05
 		if protective_ready: active_ids.append(style+"-P11")
 		if preparation and passive_active("MC-P11"): reduction += 0.05
 		if preparation and passive_active("MC-P11"): active_ids.append("MC-P11")
-		if preparation: result.damage = roundi(result.damage*0.7)
+		if preparation: result.damage = roundi(result.damage*(1.0-_guard_protection("MC08")))
 	result.chapter_passives = {}
 	for i in active_ids.size():
 		result.chapter_passives[active_ids[i]] = roundi(result.damage*(1.0-i*0.05))-roundi(result.damage*(1.0-(i+1)*0.05))
@@ -259,12 +302,22 @@ func defense_preview(actor: int, target: int, attack: Dictionary, grade: int) ->
 	return result
 
 func resolve_enemy(plan: Dictionary, grades: Dictionary) -> Dictionary:
+	var consumes_firearm_guard: bool = firearm_guard and plan.get("targets",[]).has(0) and plan.get("kind","")!="ranged" and flank(current_id,0)=="Frente"
 	var passive_changes: Dictionary = {}
 	if plan.get("targets",[]).has(0):
 		passive_changes = defense_preview(current_id,0,plan,int(grades.get(0,0))).get("chapter_passives",{})
 	var had_support: bool = companion_support_available() and units[1].cover_target == 0
+	var had_preparation: bool = preparation and plan.get("targets",[]).has(0) and plan.get("kind","")!="ranged" and flank(current_id,0)=="Frente"
 	if weapon_techniques_available() and style == "MC" and preparation and plan.get("targets",[]).has(0): prepared_contact = true
 	var result: Dictionary = super.resolve_enemy(plan,grades)
+	if not result.has("error"):
+		var hero_hit: bool = result.get("hits",[]).any(func(h): return h.get("id",-1)==0 and h.get("damage",0)>0)
+		var companion_hit: bool = result.get("hits",[]).any(func(h): return h.get("id",-1)==1 and h.get("damage",0)>0)
+		if consumes_firearm_guard and hero_hit: _record_development_use(0,8)
+		if had_preparation and hero_hit: _record_development_use(0,1)
+		if had_support and companion_hit: _record_development_use(1,4)
+	if consumes_firearm_guard and not result.has("error"):
+		firearm_guard = false; result.text += " · Guarda do Cano consumida"
 	if not result.has("error"):
 		for id in passive_changes:
 			record_passive(0,id,{"mitigated_damage":passive_changes[id],"condition":1})
@@ -298,6 +351,7 @@ func next_turn() -> Dictionary:
 	var result: Dictionary = super.next_turn()
 	if mode=="practice" and current_id==0: current().qi = current().max_qi
 	if current_id == 0:
+		firearm_guard = false; firearm_moved = false
 		stationary_eligible = false; protective_ready = false; preparation = false
 	return result
 
@@ -310,3 +364,50 @@ func role_name(id: int) -> String:
 	if id == 1: return "Companheiro"
 	if mode == "duel": return "Plenitude 3"
 	return "Alvo imóvel" if units[id].kind == "target" else "Instrutor"
+
+func mastered(actor: int,skill: int,definition: Dictionary) -> Dictionary:
+	var d: Dictionary = super.mastered(actor,skill,definition)
+	if actor>=2 or d.is_empty() or mode not in ["school","practice","perfect_defense","duarte_support","boarding"]: return d
+	var person := "hero" if actor==0 else "duarte"
+	if Development.member(combat_progress(),person).is_empty():
+		var legacy_power: int = int(d.get("power",0))
+		d.power = roundi(legacy_power*float(d.get("chapter_power_factor",1.0)))
+		d.passive_power_bonus = int(d.power)-legacy_power
+		return d
+	var id: String = d.get("content_id","")
+	var rank := Development.grade(combat_progress(),id,person)
+	d.level = rank
+	if id in ["FO08","MC08"]:
+		d.protection = _guard_protection(id)
+		d.description = d.description.replace("30%",str(roundi(d.protection*100))+"%")
+	if int(d.get("power",0))>0:
+		var weapon_style := style if actor==0 else "LA"
+		var original_power: float = STYLES[weapon_style].power if actor==0 else 20.0
+		var gear: int = int(equipment_bonus.get("attack",0)) if actor==0 else 0
+		var attribute_power := Development.power(combat_progress(),weapon_style,person)
+		var technique_power: float = (int(d.power)-gear)*attribute_power/original_power
+		if Development.SKILL_PROFILES.has(id):
+			var profile: Array = Development.SKILL_PROFILES[id]
+			technique_power = float(profile[0])*Development.power(combat_progress(),weapon_style,person,{},[profile[1],profile[2]])
+		var before_passive: float = (technique_power+gear)*(1.0+0.05*(rank-1))
+		d.power = floori(before_passive*float(d.get("chapter_power_factor",1.0)))
+		d.passive_power_bonus = int(d.power)-floori(before_passive)
+		if actor==0: d.posture += int((int(Development.member(combat_progress()).attributes.FOR)-5)*0.7)
+	if id=="DU01" and rank>1: d.cost = maxi(4,int(d.cost)-(rank-1))
+	if not id.is_empty():
+		var influence := "apoio"
+		if int(d.get("power",0))>0:
+			var pair: Array = Development.INFLUENCES[style if actor==0 else "LA"]
+			if Development.SKILL_PROFILES.has(id): pair = Development.SKILL_PROFILES[id].slice(1)
+			influence = "/".join(pair)
+		d.description += " Grau %s · %s."%[["I","II","III"][rank-1],influence]
+	return d
+func _guard_protection(id: String) -> float:
+	var rank := Development.grade(combat_progress(),id)
+	return 0.30+(0.05 if rank==3 else 0.03 if rank==2 else 0.0)
+func _record_development_use(actor: int,skill: int) -> void:
+	if actor not in [0,1]: return
+	var person := "hero" if actor==0 else "duarte"
+	if not battle_practice.has(person): battle_practice[person] = {}
+	var id: String = skill_def(actor,skill).get("content_id","basic")
+	battle_practice[person][id] = mini(6,int(battle_practice[person].get(id,0))+1)

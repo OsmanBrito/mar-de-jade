@@ -1,0 +1,118 @@
+{
+  "source": "res://assets/art/portraits/cast-busts-v2.png",
+  "entries": {
+    "leonor_child": [
+      15.25,
+      10,
+      300.0,
+      360
+    ],
+    "leonor_adult": [
+      345.75,
+      10,
+      300.0,
+      360
+    ],
+    "tome_young": [
+      676.25,
+      10,
+      300.0,
+      360
+    ],
+    "tome_adult": [
+      1006.75,
+      10,
+      300.0,
+      360
+    ],
+    "duarte": [
+      15.25,
+      410,
+      300.0,
+      360
+    ],
+    "master": [
+      345.75,
+      410,
+      300.0,
+      360
+    ],
+    "rodrigo": [
+      676.25,
+      410,
+      300.0,
+      360
+    ],
+    "beatriz": [
+      1006.75,
+      410,
+      300.0,
+      360
+    ],
+    "worker": [
+      15.25,
+      802,
+      300.0,
+      360
+    ],
+    "dock_woman": [
+      345.75,
+      802,
+      300.0,
+      360
+    ],
+    "family": [
+      676.25,
+      802,
+      300.0,
+      360
+    ],
+    "attendant": [
+      1006.75,
+      802,
+      300.0,
+      360
+    ],
+    "injured_worker": [
+      3.0833333333333144,
+      4,
+      565.8333333333334,
+      679
+    ],
+    "observer": [
+      575.5833333333333,
+      4,
+      565.8333333333334,
+      679
+    ],
+    "shelter_child": [
+      3.0833333333333144,
+      691,
+      565.8333333333334,
+      679
+    ],
+    "combatant": [
+      575.5833333333333,
+      691,
+      565.8333333333334,
+      679
+    ]
+  },
+  "sha256": "5ca0e4a16343930907c9bd252a7a796e5866bc61af0151ba582ad506015e043f",
+  "tool": "built-in image_gen",
+  "prompt": "Create ONE production RPG portrait atlas for Mar de Jade, using the five supplied sprite sheets for the first five characters; the other seven are specified below from their existing sprite appearances as identity references IN EXACT INPUT ORDER for the first five. This is a NEW supporting portrait asset, do not modify the sheets. The atlas is an EXACT 4-column by 3-row grid of TWELVE equal cells, no borders, no gutters, no text or labels, no watermarks. Entire image aspect ratio 10:9, each cell portrait aspect ratio 5:6. Crisp richly detailed painterly historical adventure game illustration, restrained warm natural light from upper left, clean silhouettes, consistent head scale and shoulder framing, waist/chest-up bust, frontal slight three-quarter view, ALL heads fully inside their own cell with 7% top safety space. Transparent background outside every bust, no scenery or opaque tiles. Identities left to right top to bottom: row1 Leonor CHILD (reference1, unmistakably child, brown pinned hair, lilac sleeves and ivory fitted vest); Leonor age19 young adult(reference2, same identity matured, same costume); Tomé younger(reference3, middle-aged brown-haired bearded friar brown habit rope belt wooden cross); Tomé older(reference4, same face aged with gray hair beard). Row2 Duarte(reference5, young dark-haired sturdy man russet waistcoat ivory shirt); Mestre(existing sprite 6, receding dark hair tied back, pointed beard, olive doublet ivory sleeves); Rodrigo(existing sprite 7, older gray bearded captain brown beret navy coat); Beatriz(existing sprite 8, dark braid navy headscarf waistcoat ivory blouse). Row3 worker(existing sprite 9, short dark beard red kerchief weathered blue vest); dock woman(existing sprite 10, ivory kerchief, blue bodice, cream apron russet skirt); family member(existing sprite 11 is a MAN: middle-aged curly brown hair, short beard, mauve waistcoat); attendant(existing sprite 12 is a MAN: metal brimmed helmet, dark beard, navy jerkin ivory sleeves). Preserve each reference's facial identity, apparent age, sex, hairstyle and costume. No new fantasy armor or modern elements. Use the SAME polished portrait rendering across all cells. The subjects must be separate and uncropped by cell edges except at bottom of bust. Highest practical resolution, aim 4000x3600.",
+  "references": [
+    "leonor_child",
+    "leonor_adult",
+    "tome_young",
+    "tome_adult",
+    "duarte"
+  ],
+  "other_identities": "Text descriptions based on the inspected current sprite sheets; existing sources preserved.",
+  "source_overrides": {
+    "injured_worker": "res://assets/art/portraits/supporting-busts-v2.png",
+    "observer": "res://assets/art/portraits/supporting-busts-v2.png",
+    "shelter_child": "res://assets/art/portraits/supporting-busts-v2.png",
+    "combatant": "res://assets/art/portraits/supporting-busts-v2.png"
+  }
+}

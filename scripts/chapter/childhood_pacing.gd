@@ -37,7 +37,7 @@ func _process(_delta:float) -> void:
 	var counting_pause:bool=get_tree().paused
 	var scene=get_tree().current_scene
 	var menu=scene.get_node_or_null("ChildhoodMenu") if is_instance_valid(scene) else null
-	if menu!=null and menu.opened and menu.page=="journal" and not menu.settings_open:counting_pause=false
+	if menu!=null and menu.opened and menu.page in ["journal","history"] and not menu.settings_open:counting_pause=false
 	sample(str(p.entry_scene).get_file(),elapsed,counting_pause)
 	elapsed_write+=elapsed
 	if (finished and not before) or elapsed_write>=10:

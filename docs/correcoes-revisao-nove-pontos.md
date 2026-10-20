@@ -54,3 +54,6 @@ Captura nativa conferida: `.qa-runtime/review-fixes/recovery.png`. Logs e backup
 ## Continuação
 
 Os refinamentos recomendados de rotinas mais longas, variedade visual, duração dos percursos, leitura das pistas, ritmo emocional e comparação entre estratégias de combate requerem a passagem jogada prevista no ponto 10. Não foram declarados aprovados por estes testes técnicos.
+
+
+Atualização posterior: os refinamentos implementáveis dessa continuação foram executados em [Refinamento final dos nove pontos](refinamento-final-nove-pontos.md). A aprovação por partida natural continua separada.

@@ -30,9 +30,9 @@ func run() -> void:
 	for style in ["LA","FO"]:
 		progress.equipped_passives.assign([style+"-P11"])
 		b.start_encounter("school","Inês",style)
-		check(b.skill_def(0,1).power == 19,style+" stationary technique power bonus")
+		check(b.skill_def(0,1).power == (22 if style=="LA" else 21),style+" stationary technique power bonus")
 		b.current().cell += Vector2i.LEFT
-		check(b.skill_def(0,1).power == 18,style+" movement removes power bonus")
+		check(b.skill_def(0,1).power == (21 if style=="LA" else 20),style+" movement removes power bonus")
 	progress.equipped_passives.assign(["MC-P11"])
 	b.start_encounter("school","Inês","MC"); b.perform(0,b.units[2].cell,1); b.end_turn(0)
 	b.resolve_enemy(b.ai_plan(),{0:1}); b.next_turn(); b.perform(1,b.current().cell,1); b.end_turn(0)

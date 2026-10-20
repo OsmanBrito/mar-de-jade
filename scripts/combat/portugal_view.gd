@@ -24,6 +24,7 @@ func timing_windows() -> Vector2:
 
 func begin() -> void:
 	release_sound_played = false
+	selected_skill = 0
 	if arena.c==null: arena.setup(host)
 	battlefield = arena
 	super.begin()
@@ -43,7 +44,7 @@ func attacking_animation() -> bool:
 	return phase.begins_with("animate") and not result.is_empty() and effect_kind(result.actor,result.skill) not in ["cover","brace","root","breath","heal","qi","charge","signal"]
 
 func strike_direction(actor: int) -> Vector2:
-	var origin: Vector2 = screen(result.get("movement_origin",model.units[actor].cell))
+	var origin: Vector2 = screen(result.get("firearm_origin",result.get("movement_origin",model.units[actor].cell)))
 	var aim: Vector2i = selected_cell if result.skill>=0 else (plan.cells[0] if not plan.get("cells",[]).is_empty() else model.units[actor].cell)
 	var direction := (screen(aim)-origin).normalized() if model.inside(aim) else Vector2.ZERO
 	if direction==Vector2.ZERO:
@@ -67,11 +68,18 @@ func apply_impact() -> void:
 	if not (sequence_active and plan.get("no_counter",false)):
 		hit_pause = FEEL.hit_pause(weapon_style(result.actor),result,host.progress.data.options.reduced_fx,model.encounter.begins_with("portugal_child"))
 
+func undo_move() -> void:
+	super.undo_move()
+	if model.get("style")=="FO" and model.current_id==0:
+		model.firearm_moved = not move_history.is_empty() or model.current().cell!=model.current().turn_origin
+
 func unit_position(id: int) -> Vector2:
 	var point: Vector2 = super.unit_position(id)
 	if not attacking_animation(): return point
 	var reduced: bool = host.progress.data.options.reduced_fx
 	if id==result.actor:
+		if result.has("firearm_origin"):
+			return screen(result.firearm_origin).lerp(screen(result.firearm_landing),smoothstep(0.76,1.12,clock))+FEEL.actor_offset("FO",clock,strike_direction(id),reduced)
 		var origin: Vector2i = result.get("movement_origin",model.units[id].cell)
 		if origin==result.get("movement_destination",origin) and not result.has("reposition_path"):
 			point = screen(model.units[id].cell)+FEEL.actor_offset(weapon_style(id),clock,strike_direction(id),reduced)
@@ -134,12 +142,14 @@ func draw_unit(id: int) -> void:
 		height = 59
 	else:
 		var pose := "ready"
+		if id==0 and model.get("firearm_guard")==true: pose = "guard"
 		var pose_time := motion_clock
 		var style := weapon_style(id)
 		if phase=="walk" and walk_actor==id: pose = "walk"; pose_time = clock
 		if phase.begins_with("animate") and result.get("actor",-1)==id:
 			pose = "guard" if effect_kind(id,result.skill) in ["cover","brace","root","breath"] else {"LA":"thrust","MC":"crush","FO":"shoot","PU":"punch"}.get(style,"attack")
 			pose_time = clock
+			if result.has("firearm_origin") and clock>=0.76: pose = "walk"; pose_time = clock-0.76
 		elif phase=="timing_defend" and plan.get("targets",[]).has(id): pose = "parry"; pose_time = 0.2
 		elif phase.begins_with("animate") and result.get("impacted",false):
 			for hit in result.get("hits",[]):
@@ -147,6 +157,13 @@ func draw_unit(id: int) -> void:
 		if reaction>0: pose = "hurt"; pose_time = maxf(0,clock-ActorMotion.IMPACT)
 		if unit.hp<=0 and reaction<0.3: pose = "kneel"
 		weapon_tips[id] = draw_combat_actor(unit,p,vector,pose,pose_time,style,reaction)
+		if id==0 and model.get("firearm_guard")==true: host.centered("GUARDA DO CANO · %d%%"%roundi(model._guard_protection("FO08")*100),p.y+31,9,JADE,p.x)
+	var statuses: Array[String] = []
+	if unit.get("broken",false): statuses.append("POSTURA QUEBRADA")
+	if int(unit.get("stun",0))>0: statuses.append("ATORDOADO · "+str(unit.stun))
+	if int(unit.get("bleed",0))>0: statuses.append("SANGRAMENTO · "+str(unit.bleed))
+	if unit.get("exposed",false): statuses.append("EXPOSTO")
+	if not statuses.is_empty(): host.centered(" / ".join(statuses),p.y+20,8,RED,p.x)
 	var arrow := p+vector*19
 	host.draw_colored_polygon(PackedVector2Array([arrow+vector*4,arrow-vector*3+vector.orthogonal()*3,arrow-vector*3-vector.orthogonal()*3]),GOLD if id==model.current_id else colour)
 	if id == model.current_id:
@@ -163,7 +180,8 @@ func icon_texture(actor: int, skill: int) -> Texture2D:
 		for row in JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/skill_icons.json")).skills: icon_paths[row.id] = row.icon
 	var key := "basic"
 	if skill==0:
-		key = {"ES":"ES01","LA":"LA01","MC":"MC07","FO":"FO07","PU":"PU07"}.get(weapon_style(actor),"ES01")
+		key = {"ES":"ES01","LA":"LA01","MC":"MC07","FO":"FO01","PU":"PU07"}.get(weapon_style(actor),"ES01")
+	if actor==0 and model.get("style")=="FO" and model.Firearm.IDS.has(skill): key = model.Firearm.IDS[skill]
 	if skill in [6,7]:
 		var items: Dictionary = preload("res://scripts/chapter/player_items.gd").items()
 		for entry in items.values():
@@ -173,7 +191,7 @@ func icon_texture(actor: int, skill: int) -> Texture2D:
 				return portugal_icons[item_path]
 	if skill==4 and actor==1: key = "DU01"
 	elif skill==1 and model.get("style")!=null: key = model.FIRST[model.style]
-	elif skill in [2,3] and model.get("mode")=="practice": key = model.FIRST[model.style]
+	elif skill in [2,3] and model.get("mode")=="practice" and model.style!="FO": key = model.FIRST[model.style]
 	var path: String = "res://assets/art/combat/portugal/basic-attack.png" if key=="basic" else icon_paths.get(key,"")
 	if path.is_empty(): return null
 	if not portugal_icons.has(path): portugal_icons[path] = load(path) if ResourceLoader.exists(path) else ImageTexture.create_from_image(Image.load_from_file(path))
@@ -213,9 +231,17 @@ func draw_icon_button(button_id: String,shortcut: int,skill: int,rect: Rect2,rar
 	host.button(button_id,"",rect,enabled)
 	host.buttons[-1]["inspect_skill"] = skill
 	host.draw_rect(Rect2(rect.position+Vector2(4,4),Vector2(2,rect.size.y-8)),rarity)
+	if model.get("style")=="FO" and model.current_id==0:
+		presentation.draw_icon(host,icon_texture(0,skill),Rect2(rect.position+Vector2(10,8),Vector2(30,30)))
+		var key: String = {1:"X",2:"Y",3:"Y → 2",4:"Y → 3",5:"Y → 4",9:"Select"}.get(shortcut,str(shortcut)) if GamePreferences.controller else str(shortcut)
+		host.text_at(key+" · "+detail,rect.position+Vector2(49,12),9,rarity)
+		var lines := wrap_hint(fallback_name,rect.size.x-58,12,2)
+		for i in lines.size(): host.text_at(lines[i],rect.position+Vector2(49,27+i*14),12,PAPER if enabled else MUTED)
+		return
 	if rect.size.x<150:
 		presentation.draw_icon(host,icon_texture(model.current_id,skill),Rect2(rect.position+Vector2(rect.size.x-24,3),Vector2(18,18)))
-		host.text_at(str(shortcut)+" · "+detail,rect.position+Vector2(10,13),9,rarity)
+		var short_key: String = {1:"X",2:"Y",3:"Y → 2",4:"Y → 3",5:"Y → 4",9:"Select"}.get(shortcut,str(shortcut)) if GamePreferences.controller else str(shortcut)
+		host.text_at(short_key+" · "+detail,rect.position+Vector2(10,13),9,rarity)
 		var first := ""; var second := ""
 		for word in fallback_name.split(" "):
 			if second.is_empty() and host.font.get_string_size(first+" "+word,HORIZONTAL_ALIGNMENT_LEFT,-1,10).x<rect.size.x-20: first = (first+" "+word).strip_edges()
@@ -225,7 +251,7 @@ func draw_icon_button(button_id: String,shortcut: int,skill: int,rect: Rect2,rar
 		return
 	presentation.draw_icon(host,icon_texture(model.current_id,skill),Rect2(rect.position+Vector2(12,5),Vector2(36,36)))
 	var key_label: String = str(shortcut)
-	if GamePreferences.controller: key_label = {1:"X",2:"Y",3:"Y → 2",4:"Y → 3",9:"Select"}.get(shortcut,str(shortcut))
+	if GamePreferences.controller: key_label = {1:"X",2:"Y",3:"Y → 2",4:"Y → 3",5:"Y → 4",9:"Select"}.get(shortcut,str(shortcut))
 	host.text_at(host.fit_text("%s · %s"%[key_label,fallback_name],rect.size.x-80,14),rect.position+Vector2(60,21),14,PAPER if enabled else MUTED)
 	host.text_at(host.fit_text(detail,rect.size.x-72,10),rect.position+Vector2(60,38),10,MUTED)
 
@@ -234,6 +260,7 @@ func timing_title() -> String:
 	return super.timing_title()
 
 func effect_kind(actor: int,skill: int) -> String:
+	if actor==0 and model.get("style")=="FO" and skill>=0: return model.skill_def(actor,skill).get("effect","ranged")
 	if actor==0 and skill in [0,1] and model.get("style")!=null:
 		if skill==1 and model.style=="MC": return "brace"
 		return {"ES":"cut","LA":"line","MC":"heavy","FO":"ranged","PU":"punch"}.get(model.style,"cut")
@@ -283,6 +310,9 @@ func draw_skill_travel(kind: String,actor: Vector2,aim: Vector2,direction: Vecto
 			var progress := (clock-ActorMotion.PROJECTILE_RELEASE)/(ActorMotion.IMPACT-ActorMotion.PROJECTILE_RELEASE)
 			host.draw_line(muzzle,muzzle.lerp(aim,progress),Color(GOLD,0.7*(1-progress)),1.5,true)
 			host.draw_circle(muzzle,4*(1-progress),Color(1,0.84,0.45,0.8*(1-progress)))
+			var flare := 11.0 if result.skill==2 else 7.0
+			if not reduced:
+				for side in [-1,1]: host.draw_line(muzzle,muzzle+direction*flare*(1-progress)+direction.orthogonal()*side*3*(1-progress),Color(1,0.78,0.36,0.7*(1-progress)),1.6,true)
 			if not reduced: host.draw_circle(muzzle+Vector2(progress*7,-progress*8),3+progress*5,Color(0.83,0.81,0.7,0.18*(1-progress)))
 		if not reduced and clock>=ActorMotion.PROJECTILE_RELEASE and clock<0.9:
 			var age := (clock-ActorMotion.PROJECTILE_RELEASE)/(0.9-ActorMotion.PROJECTILE_RELEASE)
@@ -444,6 +474,13 @@ func draw_timing() -> void:
 func defense_instruction() -> String:
 	return "ESPAÇO no centro estreito · Defesa Perfeita" if model.perfect_defense_enabled else "ESPAÇO na faixa larga · defesa simples"
 
+func draw_support_preview(definition: Dictionary) -> void:
+	if definition.get("content_id","")!="FO08": super.draw_support_preview(definition); return
+	host.text_at("Proteção de contacto",Vector2(29,180),15,JADE)
+	var lines := ["Reduz %d%% do primeiro golpe"%roundi(float(definition.get("protection",0.3))*100),"de contacto pela frente.","Não protege de projéteis,","flancos ou costas.","Expira no teu próximo turno.","Sem dano ou tiro extra.","Consome a ação principal."]
+	for i in lines.size(): host.text_at(lines[i],Vector2(29,207+i*22),11,PAPER)
+	host.text_at("Enter confirma a preparação",Vector2(29,381),10,JADE)
+
 func tutorial_tip() -> Array:
 	if phase=="timing_defend":
 		return ["DEFESA PERFEITA" if model.perfect_defense_enabled else "DEFESA SIMPLES",defense_instruction(),"Confirma apenas uma vez.","A orientação final importa."]
@@ -454,6 +491,10 @@ func tutorial_tip() -> Array:
 	return ["UMA AÇÃO POR TURNO","Mover não consome o ataque.","Confirma alcance e alvo antes de agir.","A defesa acontece no turno inimigo."]
 
 func input_event(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and phase in ["choose","move","aim"] and detail_skill<0 and event.physical_keycode>=KEY_1 and event.physical_keycode<=KEY_9:
+		var actions: Array = model.commands(model.current_id)
+		var slot: int = event.physical_keycode-KEY_1
+		if slot<actions.size() and int(actions[slot])<0: open_items(); return
 	if model.encounter=="atlantic_boarding" and event is InputEventKey and event.pressed and not event.echo and event.physical_keycode==KEY_9:
 		open_items(); return
 	# BattleHost maps viewport pixels back to the reference's 960×540 coordinates.

@@ -13,6 +13,7 @@ func battle(style: String):
  var p=root.get_node("ChapterProgress")
  p.reset();p.auto_save=false;p.flags.recovered=true;p.style=style
  p.tested_styles.assign([style]);p.skills.assign([Rules.FIRST[style],"DU01","DP01"])
+ p.development=Rules.Development.initial(p.skills,true)
  p.flags.perfect_defense=true
  Items.pay_service(p)
  for id in Items.items():
@@ -103,9 +104,9 @@ func run():
  b=battle("ES")
  p.tested_styles.assign(["ES","MC","PU"]);p.inventory["PT-W03"]=1;p.inventory["PT-W05"]=1
  var delta: Dictionary=Items.comparison(p,"PT-W03")
- check(delta.power==7,"Cross-style comparison includes axe base power and weapon bonus")
+ check(delta.power==1,"Cross-style comparison includes attribute-based power and weapon bonus")
  Items.equip(p,"PT-W03")
- check(Items.comparison(p,"PT-W05").power==-13,"Unarmed comparison includes loss of axe base power and bonus")
+ check(Items.comparison(p,"PT-W05").power==-3,"Unarmed comparison includes attribute-based power and loss of weapon bonus")
  p.inventory["PT-C02"]=1;p.vitals={"hp":80,"qi":18,"posture":100}
  Items.use(p,"PT-C02")
  check(p.vitals.hp==95 and p.vitals.qi==20 and p.inventory.get("PT-C02",0)==0,"Ration restores both resources with caps outside combat")
@@ -122,7 +123,7 @@ func run():
  var text:=""
  for child in game.player_menu.details.get_children():
   if child is Label:text+=child.text+"\n"
- check(text.contains("Potência do básico +7") and text.contains("alcance do básico: 1"),"Actual inventory displays cross-style power and basic range")
+ check(text.contains("Potência do básico +1") and text.contains("alcance do básico: 1"),"Actual inventory displays cross-style power and basic range")
  if DisplayServer.get_name()!="headless":
   await RenderingServer.frame_post_draw
   root.get_texture().get_image().save_png("res://.qa-runtime/balance-close/equipment.png")

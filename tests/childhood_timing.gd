@@ -16,6 +16,10 @@ func run() -> void:
 	var diary_before:float=timer.report().total_seconds
 	game.get_node("ChildhoodMenu").open("journal");await frames(20)
 	check(timer.report().total_seconds>diary_before,"Natural diary reading is counted even though world simulation pauses")
+	game.get_node("ChildhoodMenu").open("history");await frames(2)
+	var history_before:float=timer.report().total_seconds
+	await frames(20)
+	check(timer.report().total_seconds>history_before,"Reading past conversations counts as natural reading")
 	game.get_node("ChildhoodMenu").close()
 	paused=true
 	var before:float=timer.report().total_seconds

@@ -66,6 +66,9 @@ func area() -> String:
 	if continuous(): return preload("res://scripts/city/lisbon_layout.gd").area(director.world.player.position)
 	return zone(director.map_kind)
 func location_title() -> String:
+	if continuous():
+		var landmark: String=preload("res://scripts/city/city_landmarks.gd").location(director.world.player.position)
+		if not landmark.is_empty():return landmark
 	return Convent.title(director.world.player.position) if area()=="convent" else str(definitions[area()].title)
 static func zone(kind: String) -> String:
 	return "square" if kind in ["plaza","courtyard"] else "convent" if kind=="service" else kind

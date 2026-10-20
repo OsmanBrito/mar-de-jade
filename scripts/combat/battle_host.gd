@@ -110,8 +110,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event is InputEventJoypadButton and event.pressed:
 			var key = InputEventKey.new()
 			key.pressed = true
-			var practice_skill: int = 1 if tactical.selected_skill<=0 or tactical.selected_skill>=3 else tactical.selected_skill+1
-			key.physical_keycode = {JOY_BUTTON_A:KEY_SPACE if tactical.phase.begins_with("timing") else KEY_ENTER,JOY_BUTTON_B:KEY_ESCAPE,JOY_BUTTON_X:KEY_1,JOY_BUTTON_Y:KEY_1+practice_skill if combat.get("mode")=="practice" else KEY_2,JOY_BUTTON_LEFT_STICK:KEY_F,JOY_BUTTON_RIGHT_STICK:KEY_Z,JOY_BUTTON_BACK:KEY_9,JOY_BUTTON_LEFT_SHOULDER:KEY_Q if tactical.phase=="facing" else KEY_G,JOY_BUTTON_RIGHT_SHOULDER:KEY_E if tactical.phase=="facing" else KEY_T,JOY_BUTTON_DPAD_LEFT:KEY_LEFT,JOY_BUTTON_DPAD_RIGHT:KEY_RIGHT,JOY_BUTTON_DPAD_UP:KEY_UP,JOY_BUTTON_DPAD_DOWN:KEY_DOWN}.get(event.button_index,0)
+			var techniques: Array = combat.commands(combat.current_id).filter(func(action): return action>0)
+			if event.button_index==JOY_BUTTON_Y and techniques.is_empty():
+				notify_player("Nenhuma técnica preparada para este manejo. O básico continua disponível."); return
+			var practice_skill: int = 1
+			if not techniques.is_empty():
+				var selected: int = techniques.find(tactical.selected_skill)
+				var next_action: int = techniques[(selected+1)%techniques.size()]
+				practice_skill = combat.commands(combat.current_id).find(next_action)
+			key.physical_keycode = {JOY_BUTTON_A:KEY_SPACE if tactical.phase.begins_with("timing") else KEY_ENTER,JOY_BUTTON_B:KEY_ESCAPE,JOY_BUTTON_X:KEY_1,JOY_BUTTON_Y:KEY_1+practice_skill,JOY_BUTTON_LEFT_STICK:KEY_F,JOY_BUTTON_RIGHT_STICK:KEY_Z,JOY_BUTTON_BACK:KEY_9,JOY_BUTTON_LEFT_SHOULDER:KEY_Q if tactical.phase=="facing" else KEY_G,JOY_BUTTON_RIGHT_SHOULDER:KEY_E if tactical.phase=="facing" else KEY_T,JOY_BUTTON_DPAD_LEFT:KEY_LEFT,JOY_BUTTON_DPAD_RIGHT:KEY_RIGHT,JOY_BUTTON_DPAD_UP:KEY_UP,JOY_BUTTON_DPAD_DOWN:KEY_DOWN}.get(event.button_index,0)
 			if key.physical_keycode == KEY_ESCAPE: tactical.cancel()
 			else: tactical.input_event(key)
 		else: tactical.input_event(event)
@@ -205,7 +212,7 @@ func tone(frequency: float,_seconds: float) -> void:
 	play_effect("menu_confirm",-27,0.92 if frequency<400 else 1.10 if frequency>800 else 1.0)
 func combat_action_sound(skill: int,actor: int,_stage: String,_plan: Dictionary) -> void:
 	var style: String = combat.style if actor==0 and combat.get("style")!=null else "ES"
-	play_effect(combat_audio.action_event(style,combat.encounter.begins_with("portugal_child"),skill==4),-19)
+	play_effect(combat_audio.action_event(style,combat.encounter.begins_with("portugal_child"),skill==4 or (style=="FO" and skill==8)),-19)
 func combat_impact_sound(result: Dictionary,_plan: Dictionary,grades: Dictionary) -> void:
 	var style: String = combat.style if result.get("actor",-1)==0 and combat.get("style")!=null else "ES"
 	for event in combat_audio.impact_events(style,combat.encounter.begins_with("portugal_child"),result,grades): play_effect(event,-17)

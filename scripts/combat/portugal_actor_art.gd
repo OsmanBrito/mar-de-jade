@@ -5,7 +5,9 @@ const Feel = preload("res://scripts/combat/portugal_motion.gd")
 static var manifest: Dictionary = {}
 static var textures: Dictionary = {}
 static func data() -> Dictionary:
-	if manifest.is_empty(): manifest = JSON.parse_string(FileAccess.get_file_as_string("res://assets/art/combat/portugal/frames.json"))
+	if manifest.is_empty():
+		manifest = JSON.parse_string(FileAccess.get_file_as_string("res://assets/art/combat/portugal/frames.json"))
+		manifest.entries.hero_firearm = JSON.parse_string(FileAccess.get_file_as_string("res://assets/art/combat/portugal/firearm-frames.json"))
 	return manifest.entries
 static func identity(model,unit: Dictionary) -> String:
 	if unit.kind in ["wolf","bear"]: return unit.kind
@@ -26,6 +28,7 @@ static func pose_frame(pose: String,time: float,style: String = "ES") -> int:
 static func draw_actor(canvas: CanvasItem,id: String,point: Vector2,face_left: bool,pose: String,time: float,style: String,wooden: bool,flash: float = 0,reduced: bool = false,aim: Vector2 = Vector2.RIGHT,size_multiplier: float = 1.0) -> Vector2:
 	if id in ["wolf","bear"]:
 		return preload("res://scripts/city/forest_animal.gd").paint(canvas,id,point,(62 if id=="wolf" else 102)*size_multiplier,face_left,pose,time,flash)
+	if id=="hero" and style=="FO": id = "hero_firearm"
 	var info: Dictionary = data()[id]
 	if not textures.has(id):
 		var source: Texture2D = load(info.source) if ResourceLoader.exists(info.source) else ImageTexture.create_from_image(Image.load_from_file(info.source))
@@ -33,7 +36,8 @@ static func draw_actor(canvas: CanvasItem,id: String,point: Vector2,face_left: b
 		var filtered := CanvasTexture.new(); filtered.diffuse_texture = ImageTexture.create_from_image(image); filtered.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 		textures[id] = filtered
 	var frame := pose_frame(pose,time,style)
-	var r: Array = info.frames[frame]; var pivot: Array = info.pivots[frame]; var grip: Array = info.grips[frame]
+	if id=="hero_firearm" and Feel.attacking(pose): frame = 3 if time<Feel.RELEASE else 4 if time<0.58 else 5 if time<1.12 else 0
+	var r: Array = info.frames[frame]; var pivot: Array = info.pivots[frame]; var grip: Array = info.get("grips",info.pivots)[frame]
 	var scale_factor: float = float(info.height)/float(info.reference_height)*size_multiplier
 	var body := Feel.body_offset(style,time) if Feel.attacking(pose) else Vector2(0,Motion.body_drop(pose,time)*0.45)
 	var lean := Feel.tilt(style,time) if Feel.attacking(pose) else 0.0
@@ -49,7 +53,12 @@ static func draw_actor(canvas: CanvasItem,id: String,point: Vector2,face_left: b
 	canvas.draw_texture_rect_region(artwork,Rect2(Vector2(-pivot[0],-pivot[1])*scale_factor,Vector2(r[2],r[3])*scale_factor),Rect2(r[0],r[1],r[2],r[3]),tint)
 	if id in ["hero","hero_child"]:
 		preload("res://scripts/chapter/hero_eyes.gd").draw(canvas,"combat" if id=="hero" else "combat_child",frame,r,pivot,scale_factor,false,face_left)
-	if frame not in [7,8] and style!="PU":
+	if id=="hero_firearm":
+		var muzzle: Array = info.muzzles[frame]
+		var local_tip := Vector2(muzzle[0]-pivot[0],muzzle[1]-pivot[1])*scale_factor
+		if face_left: local_tip.x = -local_tip.x
+		tip = point+body+local_tip.rotated(lean*(-1 if face_left else 1))
+	elif frame not in [7,8] and style!="PU":
 		var hand := Vector2(grip[0]-pivot[0],grip[1]-pivot[1])*scale_factor
 		var axis := Motion.weapon_axis("guard",time) if frame==6 else (Feel.weapon_axis(style,time) if frame in [3,4,5] else Vector2(0.50,-0.86))
 		if Feel.attacking(pose) and frame in [3,4,5,6]:

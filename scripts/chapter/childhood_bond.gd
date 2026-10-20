@@ -11,3 +11,13 @@ static func apology(p) -> Array:
 static func promise(p) -> Array:
 	if not p.flags.get("hunt_completed",false):return []
 	return [{"type":"line","speaker":"Narrador","text":"De volta à praça, os dois pousaram os instrumentos. A água chegou depois da poeira do caminho."},{"type":"line","speaker":"Herói criança","text":"Consegui enfrentar o lobo. Ainda estou a pensar no urso."},{"type":"line","speaker":"Leonor criança","text":"E eu no momento em que te deixei sozinho. Amanhã treinamos outra vez."}]
+
+static func environment_hint(stage: int,at: Vector2) -> String:
+	var clues: Dictionary={
+		1:[Vector2(600,1050),"Dois cascos finos cruzam os sulcos largos da carroça."],
+		2:[Vector2(1000,700),"Um ramo claro está partido à altura do dorso de um animal pequeno."],
+		3:[Vector2(1460,730),"As tábuas claras unem as duas margens; a água continua para os lados."],
+		7:[Vector2(2350,350),"Os cascos estreitos sobem a clareira; a marca larga ficou para trás."]
+	}
+	if not clues.has(stage) or at.distance_to(clues[stage][0])>260:return ""
+	return clues[stage][1]

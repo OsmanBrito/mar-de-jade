@@ -272,12 +272,21 @@ func restore(data: Dictionary) -> bool:
 		if not valid or campaign.hero_name!=data.hero_name or campaign.style!=data.style: return false
 		if BoardingLoadout.capture(campaign)!=kit: return false
 	campaign_state = campaign.duplicate(true)
+	if not campaign_state.is_empty():
+		if not campaign_state.has("development"): preload("res://scripts/combat/firearm_skills.gd").upgrade_lesson(campaign_state.skills)
+		campaign_state.development = preload("res://scripts/chapter/character_development.gd").normalized(preload("res://scripts/chapter/character_development.gd").migrate(campaign_state))
+		campaign_state.schema_version = 13
 	position = at; heading = data.heading; supplies = data.supplies; hull = data.hull; coins = int(data.coins); distance = data.distance; elapsed = data.elapsed
 	for key in ["discovered","visited","resolved","upgrades","route_marks","aid_used"]: set(key,data[key].duplicate())
 	route_known = data.route_known; made_landfall = data.made_landfall; hero_name = data.hero_name; style = data.style; phase = data.phase; port = data.port
 	for id in traffic: traffic[id] = point(ships[id]) if ships.has(id) else point(place(id).pos)
 	observed_signals = signs.duplicate()
-	boarding_profile = kit.duplicate(true)
+	boarding_profile = BoardingLoadout.capture(campaign_state) if not campaign_state.is_empty() else kit.duplicate(true)
+	if not boarding_profile.is_empty() and not boarding_profile.has("development"):
+		preload("res://scripts/combat/firearm_skills.gd").upgrade_lesson(boarding_profile.skills)
+		boarding_profile.development = preload("res://scripts/chapter/character_development.gd").normalized(preload("res://scripts/chapter/character_development.gd").migrate(boarding_profile))
+	if not boarding_profile.is_empty(): preload("res://scripts/combat/firearm_skills.gd").upgrade_lesson(boarding_profile.skills)
+	if not campaign_state.is_empty(): preload("res://scripts/combat/firearm_skills.gd").upgrade_lesson(campaign_state.skills)
 	tutorials = lessons.duplicate()
 	velocity = Vector2.ZERO; danger = 0; immunity = 8; warned_ahead = false; blocked_by_coast = false
 	return true

@@ -34,7 +34,7 @@ func run():
  view=View.new();root.add_child(view);await frames()
  check(view.history.size()==1,"A new scene view reads the same transcript")
  var saved: Dictionary=p.snapshot()
- check(saved.schema_version==11 and saved.dialogue_history.size()==1,"Version 11 save contains the transcript")
+ check(saved.schema_version==13 and saved.dialogue_history.size()==1,"Version 13 save contains the transcript and character development")
  check(p.save_to("user://qa-interface.json")==OK,"Transcript saves through actual chapter writer")
  p.reset();check(p.load_from("user://qa-interface.json")==OK and p.dialogue_history.size()==1,"Disk load restores viewed lines")
  var stable: Dictionary=p.snapshot()
@@ -87,7 +87,7 @@ func run():
  check(p.dialogue_history.size()==before+1 and game.model.campaign_state.dialogue_history==p.dialogue_history,"New ship conversation joins the carried campaign transcript")
  game.save_path="user://qa-interface-voyage.json"
  game.model.phase="sea";game.clear_overlay()
- check(game.model.save_to(game.save_path)==OK,"Voyage save accepts the version 11 transcript")
+ check(game.model.save_to(game.save_path)==OK,"Voyage save accepts the version 12 transcript")
  var saved_history: Array=p.dialogue_history.duplicate(true)
  game.model.campaign_state.dialogue_history=[]
  check(game.model.load_from(game.save_path)==OK and game.model.campaign_state.dialogue_history==saved_history,"Voyage load retains both land and ship conversations")

@@ -3,9 +3,10 @@ extends RefCounted
 const CATALOGS := ["res://data/chapter_01/items.json", "res://data/integration/ferro-items.json"]
 const SLOTS := {"weapon":"Arma", "outfit":"Traje", "feet":"Calçado", "accessory":"Acessório"}
 const STYLES := {"ES":"Espada", "LA":"Lança", "MC":"Machado", "FO":"Arma de fogo", "PU":"Desarmado"}
+const Development = preload("res://scripts/chapter/character_development.gd")
 const BASE := {"hp":100,"qi":20,"posture":100,"defense":0,"speed":18}
 const POWER := {"ES":22,"LA":20,"MC":28,"FO":20,"PU":18}
-const STAT_NAMES := {"hp":"Vida", "qi":"Alento", "posture":"Postura", "defense":"Proteção", "speed":"Velocidade", "attack":"Potência"}
+const STAT_NAMES := {"hp":"Vida", "qi":"Alento", "posture":"Postura", "defense":"Proteção", "speed":"Iniciativa", "attack":"Potência"}
 static var catalog: Dictionary = {}
 
 static func items() -> Dictionary:
@@ -30,14 +31,14 @@ static func stock() -> Dictionary:
 	return result
 
 static func stats(p, loadout: Dictionary = {}) -> Dictionary:
-	var result := BASE.duplicate()
+	var result := Development.base_stats(p)
 	result.attack = 0
 	var gear: Dictionary = p.equipment if loadout.is_empty() else loadout
 	for id in gear.values():
 		var row: Dictionary = items().get(id,{})
 		if row.is_empty() or int(p.inventory.get(id,0)) < 1: continue
 		for key in row.stats: result[key] = int(result.get(key,0))+int(row.stats[key])
-	result.power = int(POWER[p.style])+int(result.attack)
+	result.power = floori(Development.power(p,p.style))+int(result.attack)
 	return result
 
 static func comparison(p, id: String) -> Dictionary:
@@ -48,7 +49,7 @@ static func comparison(p, id: String) -> Dictionary:
 	var before := stats(p)
 	var after := stats(p,proposed)
 	# Changing a weapon also changes the base power of the chosen style.
-	after.power = POWER[row.get("style",p.style)] + after.attack
+	after.power = floori(Development.power(p,row.get("style",p.style))) + after.attack
 	var delta := {}
 	for key in ["power","hp","qi","posture","defense","speed"]:
 		delta[key] = int(after[key])-int(before[key])
@@ -88,7 +89,7 @@ static func clamp_vitals(p) -> void:
 static func recovery_preview(p,id: String,person: String = "hero") -> Dictionary:
 	var row: Dictionary = items().get(id,{})
 	if not row.has("recovery"): return {}
-	var limits: Dictionary = stats(p) if person=="hero" else preload("res://scripts/chapter/party_resources.gd").LIMITS.get(person,{})
+	var limits: Dictionary = stats(p) if person=="hero" else preload("res://scripts/chapter/party_resources.gd").limits(person,p)
 	if limits.is_empty(): return {}
 	var vitals: Dictionary = p.vitals if person=="hero" else p.companion_vitals.get(person,limits)
 	var result := {}
@@ -111,9 +112,10 @@ static func use_reason(p, id: String, person: String = "hero") -> String:
 	if row.is_empty() or int(p.inventory.get(id,0)) < 1: return "Não tens este objeto."
 	if not row.has("recovery"): return "Este objeto não é consumível."
 	if p.flags.get("injured",false) or not p.flags.get("recovered",false): return "O tratamento de Tomé precisa de terminar primeiro."
-	var limits: Dictionary = stats(p) if person=="hero" else preload("res://scripts/chapter/party_resources.gd").LIMITS.get(person,{})
+	var limits: Dictionary = stats(p) if person=="hero" else preload("res://scripts/chapter/party_resources.gd").limits(person,p)
 	if limits.is_empty(): return "Companheiro desconhecido."
 	var vitals: Dictionary = p.vitals if person=="hero" else p.companion_vitals.get(person,limits).duplicate()
+	if int(vitals.hp)<=0: return "Este personagem está incapacitado; consumíveis comuns não o levantam."
 	for key in row.recovery:
 		if int(vitals[key]) < int(limits[key]): return ""
 	return "Já estás recuperado; o suprimento não será gasto."
@@ -122,7 +124,7 @@ static func use(p, id: String, person: String = "hero") -> String:
 	var reason := use_reason(p,id,person)
 	if not reason.is_empty(): return reason
 	var row: Dictionary = items()[id]
-	var limits: Dictionary = stats(p) if person=="hero" else preload("res://scripts/chapter/party_resources.gd").LIMITS.get(person,{})
+	var limits: Dictionary = stats(p) if person=="hero" else preload("res://scripts/chapter/party_resources.gd").limits(person,p)
 	if limits.is_empty(): return "Companheiro desconhecido."
 	var vitals: Dictionary = p.vitals if person=="hero" else p.companion_vitals.get(person,limits).duplicate()
 	for key in row.recovery: vitals[key] = mini(int(limits[key]),int(vitals[key])+int(row.recovery[key]))
@@ -194,7 +196,7 @@ static func valid_state(data: Dictionary) -> bool:
 	for id in data.shop_stock:
 		if not items().has(id) or not items()[id].tradeable or not whole(data.shop_stock[id],999): return false
 	if data.vitals.size() != 3: return false
-	var limits := BASE.duplicate()
+	var limits := Development.base_stats(data)
 	for id in data.equipment.values():
 		for key in items()[id].stats:
 			if limits.has(key): limits[key] += int(items()[id].stats[key])

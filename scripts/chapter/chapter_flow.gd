@@ -23,6 +23,7 @@ var task_id := ""
 var task_step := 0
 var task_start := Vector2.ZERO
 var choice_event: Dictionary = {}
+var lesson_choice
 var style_options: Array = []
 var pending_style := ""
 var pending_style_lines: Array = []
@@ -49,6 +50,7 @@ var practice_resume_index := -1
 var practice_events: Array = []
 
 func _ready() -> void:
+	ChapterProgress.development_awarded.connect(_show_development_notice)
 	if CampaignProfile.hero_name.is_empty():
 		CampaignProfile.name_entry_destination = "res://scenes/chapter_01/chapter_flow.tscn"
 		get_tree().change_scene_to_file.call_deferred("res://scenes/chapter_01/name_entry.tscn")
@@ -368,6 +370,7 @@ func _lock_player(lock: bool) -> void:
 		world.player.camera.enabled=true;world.player.camera.make_current();world.player.camera.reset_smoothing()
 
 func _clear_options() -> void:
+	if is_instance_valid(lesson_choice): lesson_choice.close()
 	for child in options_box.get_children():
 		options_box.remove_child(child)
 		child.queue_free()
@@ -394,6 +397,7 @@ func advance() -> void:
 			view.speaker.text = CampaignProfile.speaker_name(current_event.speaker)
 			view.body.text = current_event.text; view.status.text = ""
 			view.remember(view.speaker.text,view.body.text)
+			if is_instance_valid(staging):staging.attend(current_event.speaker)
 			view.hint.text = "Enter / espaço / A · continuar     Esc · menu     F5 / menu · guardar"
 			view.next_button.grab_focus()
 		"choice": _show_choice(current_event)
@@ -409,6 +413,9 @@ func advance() -> void:
 		"styles": _show_styles(current_event.options)
 
 func _finish_block() -> void:
+	if RULES.Development.STORY.has(blocks[scene_index].id):
+		ChapterProgress.award_development("story:"+blocks[scene_index].id,RULES.Development.STORY[blocks[scene_index].id])
+	ChapterProgress.sync_development()
 	# Keep the approved defeat and its first dialogue together, under the curtain.
 	if continue_after_duel and scene_index+1<blocks.size():
 		continue_after_duel = false
@@ -614,6 +621,9 @@ func _battle_finished(success: bool) -> void:
 		ChapterProgress.flags.perfect_defense = true; ChapterProgress.learn("DP01")
 	elif mode == "school" and success:
 		ChapterProgress.learn(battle_host.combat.FIRST[ChapterProgress.style])
+		RULES.Development.training(ChapterProgress,ChapterProgress.style)
+		if ChapterProgress.style=="FO":
+			for id in RULES.Firearm.LEARNED: ChapterProgress.learn(id)
 		ChapterProgress.learn("GE21","passive"); ChapterProgress.learn("GE22","passive")
 		ChapterProgress.learn(ChapterProgress.style+"-P11","passive")
 	elif mode == "duarte_support" and success:
@@ -631,12 +641,35 @@ func _battle_finished(success: bool) -> void:
 func _show_styles(options: Array) -> void:
 	phase = "styles"; style_options = options; _clear_options(); options_box.show(); _lock_player(true)
 	view.panel.show(); view.next_button.hide(); view.speaker.text = "Tomé"
-	view.body.text = "Armas emprestadas por Tomé. A aula ensina o fundamento; a prática livre permite comparar três técnicas sem concedê-las. Os exercícios não gastam a tua vida, alento ou suprimentos da viagem. R / Select sai a qualquer momento."
-	for option in options: _option(option.label+ (" · testado" if ChapterProgress.tested_styles.has(option.style) else ""),choose_style.bind(option.style))
+	view.body.text = "Escolhe a arma que queres aprender a usar. Depois da aula, confirma a escolha para equipar a tua arma e continuar. A primeira é oferecida por Tomé. Podes experimentar outras antes de decidir. Os treinos usam armas emprestadas e não gastam os teus suprimentos. R / Select volta à escolha."
+	for option in options: _option("Treinar "+option.label+ (" · já experimentado" if ChapterProgress.tested_styles.has(option.style) else ""),choose_style.bind(option.style))
 	_option("Comparar armas em prática livre",_free_practice_menu)
 	if ChapterProgress.tested_styles.has(ChapterProgress.style) and ChapterProgress.skills.has(RULES.FIRST[ChapterProgress.style]): _option("Continuar com "+RULES.STYLES[ChapterProgress.style].name,confirm_style)
 	# Returning from a completed lesson should offer onward progress first.
 	options_box.get_child(options_box.get_child_count()-1 if ChapterProgress.tested_styles.has(ChapterProgress.style) and ChapterProgress.skills.has(RULES.FIRST[ChapterProgress.style]) else 0).grab_focus()
+	if not is_instance_valid(lesson_choice):
+		lesson_choice=preload("res://scripts/chapter/weapon_lesson_choice.gd").new();add_child(lesson_choice)
+		lesson_choice.chosen.connect(_choose_lesson_weapon)
+		lesson_choice.practice_requested.connect(_free_practice_menu)
+	view.panel.hide();lesson_choice.open(options)
+
+
+func _choose_lesson_weapon(style: String) -> void:
+	if paused or phase!="styles":return
+	if not style_options.any(func(option):return option.style==style):return
+	var item:String=preload("res://scripts/chapter/weapon_lesson_choice.gd").FIRST[style]
+	if ChapterProgress.flags.get("initial_weapon_received",false) and style!="PU" and int(ChapterProgress.inventory.get(item,0))<1:
+		lesson_choice.preview.text="A primeira arma já foi recebida. Compra esta em Lisboa ou escolhe uma que já tens."
+		return
+	ChapterProgress.style=style
+	# Tomé gives the selected foundation directly; comparison fights are optional.
+	if not ChapterProgress.tested_styles.has(style):ChapterProgress.tested_styles.append(style)
+	ChapterProgress.learn(RULES.FIRST[style])
+	RULES.Development.training(ChapterProgress,style)
+	if style=="FO":
+		for id in RULES.Firearm.LEARNED: ChapterProgress.learn(id)
+	for id in ["GE21","GE22",style+"-P11"]:ChapterProgress.learn(id,"passive")
+	confirm_style()
 
 func choose_style(style: String) -> void:
 	if paused or phase != "styles": return
@@ -649,17 +682,19 @@ func choose_style(style: String) -> void:
 func _style_result() -> void:
 	phase = "styles_result"; _clear_options(); options_box.show(); view.panel.show(); view.next_button.hide()
 	view.speaker.text = "Fundamento · "+RULES.STYLES[ChapterProgress.style].name
-	view.body.text = "Fundamento aprendido. Tens quatro vagas de passivas por pessoa; aprender não equipa. Escolhe uma passiva para ver o efeito e confirmar a preparação. As de Duarte só ocupam vagas dele."
+	view.body.text = "Aprendeste a usar "+Items.STYLES[ChapterProgress.style]+". Confirma abaixo para ficar com esta escolha e continuar. Também podes experimentar outra arma. As passivas são uma preparação opcional."
 	view.status.text = "Ativas: %d/4 tuas · %d/4 de Duarte"%[ChapterProgress.equipped_passives.size(),ChapterProgress.duarte_equipped_passives.size()]
+	_option("Ficar com "+Items.STYLES[ChapterProgress.style]+(" · receber arma e continuar" if not ChapterProgress.flags.get("initial_weapon_received",false) else " · equipar e continuar"),confirm_style)
 	_option("Preparar passivas · escolher as ativas",func(): _menu("Passivas"))
 	_option("Experimentar outro manejo",func():
 		if not paused: _show_styles(style_options))
 	_option("Prática livre · fundamento e dois exercícios",_free_practice_menu)
-	_option("Escolher este manejo e continuar"+(" sem passivas ativas" if ChapterProgress.equipped_passives.is_empty() else ""),confirm_style)
 	options_box.get_child(0).grab_focus()
 
 func _free_practice_menu() -> void:
 	if paused: return
+	if is_instance_valid(lesson_choice):lesson_choice.close()
+	view.panel.show()
 	_clear_options(); options_box.show(); phase = "styles"
 	view.body.text = "Prática livre com armas emprestadas: ataque básico, um fundamento e dois exercícios temporários. Não concede aprendizado, itens ou aprovação. R / Select regressa à escolha de armas."
 	for style in RULES.STYLES:
@@ -749,7 +784,8 @@ func _stage(action: String) -> void:
 		"time_passes": await staging.recovery_time()
 		"recovered":
 			ChapterProgress.flags.injured = false; ChapterProgress.flags.recovered = true
-			ChapterProgress.vitals = {"hp":100,"qi":8,"posture":100}
+			var limits: Dictionary = preload("res://scripts/chapter/player_items.gd").stats(ChapterProgress)
+			ChapterProgress.vitals = {"hp":limits.hp,"qi":mini(8,int(limits.qi)),"posture":limits.posture}
 		"return_courtyard":
 			routes.waiting_stage = true; routes.begin("stage",scene_index,"return_courtyard")
 			await routes.stage_arrived; routes.waiting_stage = false
@@ -900,3 +936,16 @@ func _leave_equipment() -> void:
 
 
 
+
+func _show_development_notice(message: String) -> void:
+	var old := get_node_or_null("DevelopmentNotice")
+	if old!=null: remove_child(old); old.queue_free()
+	var layer := CanvasLayer.new(); layer.name = "DevelopmentNotice"; layer.layer = 24; add_child(layer)
+	var anchor := Control.new(); anchor.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); anchor.mouse_filter = Control.MOUSE_FILTER_IGNORE; layer.add_child(anchor)
+	var panel := PanelContainer.new(); panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	panel.offset_left = -220; panel.offset_right = 220; panel.offset_top = 74; panel.offset_bottom = 128; panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_theme_stylebox_override("panel",preload("res://scripts/ui/presentation.gd").panel(Color("173630"),Color("b39b65"))); anchor.add_child(panel)
+	var label := Label.new(); label.text = message; label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_color_override("font_color",Color("e6cb8d")); label.add_theme_font_size_override("font_size",GamePreferences.font_size(18)); panel.add_child(label)
+	await get_tree().create_timer(3.5,false).timeout
+	if is_instance_valid(layer): layer.queue_free()

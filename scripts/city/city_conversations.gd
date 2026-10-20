@@ -38,3 +38,19 @@ static func reply(p,id: String,turn: int) -> String:
 	var context := event(p)
 	if turn==0 and REACTIONS.has(context): return REACTIONS[context][id]
 	return WORK[id][posmod(turn-(1 if REACTIONS.has(context) else 0),WORK[id].size())]
+
+static func valid_topics(value: Variant) -> bool:
+	if not value is Dictionary or value.size()>30: return false
+	for key in value:
+		if not key is String: return false
+		var parts: PackedStringArray=key.split(":")
+		if parts.size()!=2 or not TITLES.has(parts[0]) or parts[1] not in ["","accident","rescue","demonstration","departure","return"]: return false
+		var count: Variant=value[key]
+		if not (count is int or count is float) or not is_finite(float(count)) or float(count)!=int(count) or count<0 or count>3: return false
+	return true
+static func take_reply(p,id: String) -> String:
+	if not TITLES.has(id): return ""
+	var key:=id+":"+event(p)
+	var turn:=int(p.city_topics.get(key,0))
+	p.city_topics[key]=turn+1 if turn<3 else 2
+	return reply(p,id,turn)

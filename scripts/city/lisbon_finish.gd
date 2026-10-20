@@ -14,6 +14,9 @@ func _draw() -> void:
 	patch(Vector2(120,825),Vector2(130,38),Color(.53,.44,.27,.17))
 	patch(Vector2(590,1000),Vector2(135,40),Color(.19,.31,.28,.23))
 	patch(Vector2(1335,925),Vector2(120,44),Color(.55,.39,.20,.19))
+	# Each descent has a different ground use, leaving the central walking strip clear.
+	for at in [Vector2(-900,510),Vector2(-900,730)]:patch(at,Vector2(34,95),Color(.41,.34,.22,.19))
+	for at in [Vector2(1660,550),Vector2(1660,770)]:patch(at,Vector2(32,90),Color(.52,.46,.32,.14))
 	var rng:=RandomNumberGenerator.new();rng.seed=231019
 	for area in [Vector2(-430,920),Vector2(1335,925)]:
 		for n in 26:

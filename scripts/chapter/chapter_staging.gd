@@ -94,6 +94,17 @@ func set_control_locked(locked: bool) -> void:
 func _process(delta: float) -> void:
 	if camera.enabled and framed: camera.position = camera.position.lerp(focus_point(),1.0-exp(-delta*5))
 
+func attend(who: String) -> void:
+	if not framed or subjects.size()>3:return
+	var speaker_node=world.player if who in ["Herói","Herói adulto",CampaignProfile.hero_name] else director.actors.get(who)
+	if not is_instance_valid(speaker_node):return
+	for person in subjects:
+		if not is_instance_valid(person) or person==speaker_node or not person.visible:continue
+		var offset: Vector2=speaker_node.position-person.position
+		if offset.length()<3 or offset.length()>700:continue
+		var body=person.presentation if person.get("presentation")!=null else person
+		body.facing=(3 if offset.x>0 else 1) if absf(offset.x)>absf(offset.y)*1.15 else (0 if offset.y>0 else 2)
+
 func mark(id: String) -> void:
 	beat = id; beats.append(id); beat_changed.emit(id)
 

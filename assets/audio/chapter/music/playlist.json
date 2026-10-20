@@ -2,17 +2,80 @@
   "source_project": "Maré de Ferro — projeto local jogo, seleção conferida na implementação atual de music.gd e no catálogo musical.",
   "copy_policy": "Arquivos originais copiados sem edição; nenhum download ou geração externa.",
   "available_library": {
-    "Tides_of_the_Gilded_Horizon.mp3": {"title":"Tides of the Gilded Horizon","source":"user-provided · Downloads/Tides_of_the_Gilded_Horizon.mp3"},
-    "Steel_Against_the_Tide.mp3": {"title":"Steel Against the Tide","source":"user-provided · Downloads/Steel_Against_the_Tide.mp3"}
+    "Tides_of_the_Gilded_Horizon.mp3": {
+      "title": "Tides of the Gilded Horizon",
+      "source": "user-provided · Downloads/Tides_of_the_Gilded_Horizon.mp3"
+    },
+    "Steel_Against_the_Tide.mp3": {
+      "title": "Steel Against the Tide",
+      "source": "user-provided · Downloads/Steel_Against_the_Tide.mp3"
+    }
   },
   "tracks": {
-    "shelter": {"file":"Echoes_of_the_Templar_City.mp3","title":"Echoes of the Templar City","source":"Mar de Ferro · assets/audio/Echoes_of_the_Templar_City.mp3","gain_db":-12.0},
-    "city": {"file":"porto_morning_tides.mp3","title":"Porto Morning Tides","source":"Mar de Ferro · assets/audio/porto_morning_tides.mp3","gain_db":-12.0},
-    "harbor": {"file":"porto_morning_tides.mp3","title":"Porto Morning Tides","source":"assets/audio/porto_morning_tides.mp3","gain_db":-12.0},
-    "forest": {"file":"Under_the_Ancient_Canopy.mp3","title":"Under the Ancient Canopy","source":"user-provided · Downloads/Under_the_Ancient_Canopy.mp3","gain_db":-12.0},
-    "promise": {"file":"celestial_pages.mp3","title":"Celestial Pages","source":"Mar de Ferro · assets/audio/celestial_pages.mp3","gain_db":-12.0},
-    "recovery": {"file":"mare_do_destino.mp3","title":"Maré do Destino","source":"Mar de Ferro · assets/audio/mare_do_destino.mp3","gain_db":-12.0},
-    "training": {"file":"steel_on_saltwind.mp3","title":"Steel on Saltwind","source":"Mar de Ferro · assets/audio/steel_on_saltwind.mp3","gain_db":-12.0},
-    "duel": {"file":"Duel_at_the_Atlantic_Edge.mp3","title":"Duel at the Atlantic Edge","source":"Mar de Ferro · assets/audio/Duel_at_the_Atlantic_Edge.mp3","gain_db":-12.0}
-  }
+    "shelter": {
+      "file": "Echoes_of_the_Templar_City.mp3",
+      "title": "Echoes of the Templar City",
+      "source": "Mar de Ferro · assets/audio/Echoes_of_the_Templar_City.mp3",
+      "gain_db": -7.47,
+      "input_lufs": -14.53,
+      "input_true_peak_db": -1.79
+    },
+    "city": {
+      "file": "porto_morning_tides.mp3",
+      "title": "Porto Morning Tides",
+      "source": "Mar de Ferro · assets/audio/porto_morning_tides.mp3",
+      "gain_db": -7.77,
+      "input_lufs": -14.23,
+      "input_true_peak_db": 0.02
+    },
+    "harbor": {
+      "file": "porto_morning_tides.mp3",
+      "title": "Porto Morning Tides",
+      "source": "assets/audio/porto_morning_tides.mp3",
+      "gain_db": -7.77,
+      "input_lufs": -14.23,
+      "input_true_peak_db": 0.02
+    },
+    "forest": {
+      "file": "Under_the_Ancient_Canopy.mp3",
+      "title": "Under the Ancient Canopy",
+      "source": "user-provided · Downloads/Under_the_Ancient_Canopy.mp3",
+      "gain_db": -9.78,
+      "input_lufs": -12.22,
+      "input_true_peak_db": 0.35
+    },
+    "promise": {
+      "file": "celestial_pages.mp3",
+      "title": "Celestial Pages",
+      "source": "Mar de Ferro · assets/audio/celestial_pages.mp3",
+      "gain_db": -8.19,
+      "input_lufs": -13.81,
+      "input_true_peak_db": -1.55
+    },
+    "recovery": {
+      "file": "mare_do_destino.mp3",
+      "title": "Maré do Destino",
+      "source": "Mar de Ferro · assets/audio/mare_do_destino.mp3",
+      "gain_db": -10.53,
+      "input_lufs": -11.47,
+      "input_true_peak_db": 0.12
+    },
+    "training": {
+      "file": "steel_on_saltwind.mp3",
+      "title": "Steel on Saltwind",
+      "source": "Mar de Ferro · assets/audio/steel_on_saltwind.mp3",
+      "gain_db": -7.23,
+      "input_lufs": -14.77,
+      "input_true_peak_db": -0.18
+    },
+    "duel": {
+      "file": "Duel_at_the_Atlantic_Edge.mp3",
+      "title": "Duel at the Atlantic Edge",
+      "source": "Mar de Ferro · assets/audio/Duel_at_the_Atlantic_Edge.mp3",
+      "gain_db": -10.78,
+      "input_lufs": -11.22,
+      "input_true_peak_db": 0.52
+    }
+  },
+  "loudness_analysis": "FFmpeg 8.1 loudnorm input integrated LUFS/true peak. Constant playback gain only; target -22 LUFS before narrative duck and personal volume; true peak ceiling -2 dBTP. Originals unchanged."
 }

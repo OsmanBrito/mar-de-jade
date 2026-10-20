@@ -44,6 +44,8 @@ func snapshot(view) -> Dictionary:
 				if not state.feedback.is_empty(): state.reason = state.feedback.label
 				# Do not promise damage for a target rejected by a maneuver's extra constraints.
 				if state.valid: state.area = model.area(model.current_id,view.selected_skill,focus)
+				if state.valid and model.get("style")=="FO" and model.current_id==0 and view.selected_skill==3:
+					state.firearm_landing = model.Firearm.side_step(model,0,focus)
 	if view.phase in ["telegraph","timing_defend","timing_volley"]: state.threats = view.plan.get("cells",[])
 	return state
 
@@ -73,6 +75,10 @@ func contour(canvas: Node2D,cells: Dictionary,colour: Color,dashed: bool = false
 func draw_ground(view,state: Dictionary) -> void:
 	var canvas: Node2D = view.host
 	var model = view.model
+	if state.has("firearm_landing"):
+		corners(canvas,state.firearm_landing,JADE)
+		canvas.draw_dashed_line(Board.screen(state.origin),Board.screen(state.firearm_landing),JADE,1.8,4,true)
+		view.host.centered("PASSO APÓS O TIRO",Board.screen(state.firearm_landing).y+18,8,JADE,Board.screen(state.firearm_landing).x)
 	if view.phase=="move":
 		for cell in state.reachable:
 			canvas.draw_colored_polygon(Board.polygon(cell,1),Color(JADE,0.11))

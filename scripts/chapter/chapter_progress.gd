@@ -1,13 +1,18 @@
 extends Node
 ## Chapter checkpoints contain IDs and values, never scene nodes or combat instances.
 const SAVE_PATH := "user://capitulo-01.json"
-const SCHEMA_VERSION := 11
+const SCHEMA_VERSION := 13
+const Development = preload("res://scripts/chapter/character_development.gd")
+signal development_awarded(message: String)
+var last_development_notice := ""
+var development: Dictionary = Development.initial()
 const CAMPAIGN_ID := "mar_de_jade"
 const Items = preload("res://scripts/chapter/player_items.gd")
 const LocalRequests = preload("res://scripts/chapter/local_request_state.gd")
 var run_id := Crypto.new().generate_random_bytes(16).hex_encode()
 var local_requests: Dictionary = {}
 var dialogue_history: Array[Dictionary] = []
+var city_topics: Dictionary = {}
 var journey: Dictionary = {}
 var childhood_hunt: Dictionary = {}
 var coins := 0
@@ -33,7 +38,10 @@ var auto_save := true
 var last_error := ""
 
 func reset() -> void:
+	development = Development.initial()
+	last_development_notice = ""
 	run_id = Crypto.new().generate_random_bytes(16).hex_encode()
+	city_topics.clear()
 	dialogue_history.clear()
 	companion_vitals.clear()
 	local_requests.clear()
@@ -48,9 +56,10 @@ func _ready() -> void:
 	shop_stock = Items.stock()
 
 func snapshot() -> Dictionary:
-	return {"schema_version":SCHEMA_VERSION,"dialogue_history":dialogue_history.duplicate(true),"campaign_id":CAMPAIGN_ID,"run_id":run_id,"hero_name":CampaignProfile.hero_name,"checkpoint":checkpoint,"entry_scene":entry_scene,"flags":string_keys(flags),"choices":string_keys(choices),"style":style,"tested_styles":tested_styles.duplicate(),"skills":skills.duplicate(),"passives":passives.duplicate(),"equipped_passives":equipped_passives.duplicate(),"duarte_equipped_passives":duarte_equipped_passives.duplicate(),"inventory":inventory.duplicate(true),"completed":completed,"coins":coins,"equipment":equipment.duplicate(),"shop_stock":shop_stock.duplicate(),"payments":payments.duplicate(),"vitals":vitals.duplicate(),"companion_vitals":companion_vitals.duplicate(true),"local_requests":local_requests.duplicate(),"journey":journey.duplicate(true),"childhood_hunt":childhood_hunt.duplicate(true)}
+	return {"schema_version":SCHEMA_VERSION,"development":development.duplicate(true),"dialogue_history":dialogue_history.duplicate(true),"city_topics":city_topics.duplicate(),"campaign_id":CAMPAIGN_ID,"run_id":run_id,"hero_name":CampaignProfile.hero_name,"checkpoint":checkpoint,"entry_scene":entry_scene,"flags":string_keys(flags),"choices":string_keys(choices),"style":style,"tested_styles":tested_styles.duplicate(),"skills":skills.duplicate(),"passives":passives.duplicate(),"equipped_passives":equipped_passives.duplicate(),"duarte_equipped_passives":duarte_equipped_passives.duplicate(),"inventory":inventory.duplicate(true),"completed":completed,"coins":coins,"equipment":equipment.duplicate(),"shop_stock":shop_stock.duplicate(),"payments":payments.duplicate(),"vitals":vitals.duplicate(),"companion_vitals":companion_vitals.duplicate(true),"local_requests":local_requests.duplicate(),"journey":journey.duplicate(true),"childhood_hunt":childhood_hunt.duplicate(true)}
 
 func save_to(path: String = SAVE_PATH) -> Error:
+	sync_development()
 	if path==SAVE_PATH and preload("res://scripts/navigation/shore_bridge.gd").is_visit(snapshot()):
 		var travel_error: Error = preload("res://scripts/navigation/shore_bridge.gd").sync(snapshot())
 		if travel_error!=OK:
@@ -82,7 +91,7 @@ func load_from(path: String = SAVE_PATH) -> Error:
 func restore(source_data: Dictionary, apply: bool = true) -> Error:
 	var data := source_data.duplicate(true)
 	# JSON stores numbers as floats; Array.has uses strict Variant types.
-	if data.get("schema_version") != 1 and data.get("schema_version") != 2 and data.get("schema_version") != 3 and data.get("schema_version") != 4 and data.get("schema_version") != 5 and data.get("schema_version") != 6 and data.get("schema_version") != 7 and data.get("schema_version") != 8 and data.get("schema_version") != 9 and data.get("schema_version") != 10 and data.get("schema_version") != SCHEMA_VERSION: return ERR_INVALID_DATA
+	if data.get("schema_version") != 1 and data.get("schema_version") != 2 and data.get("schema_version") != 3 and data.get("schema_version") != 4 and data.get("schema_version") != 5 and data.get("schema_version") != 6 and data.get("schema_version") != 7 and data.get("schema_version") != 8 and data.get("schema_version") != 9 and data.get("schema_version") != 10 and data.get("schema_version") != 11 and data.get("schema_version") != 12 and data.get("schema_version") != SCHEMA_VERSION: return ERR_INVALID_DATA
 	if data.schema_version >= 4 and data.get("campaign_id") != CAMPAIGN_ID: return ERR_INVALID_DATA
 	if not data.get("hero_name") is String or not CampaignProfile.name_error(data.hero_name).is_empty(): return ERR_INVALID_DATA
 	if not data.get("checkpoint") is float and not data.get("checkpoint") is int: return ERR_INVALID_DATA
@@ -120,6 +129,13 @@ func restore(source_data: Dictionary, apply: bool = true) -> Error:
 		if not data.passives.has(id) or id.begins_with("DU"): return ERR_INVALID_DATA
 	for id in data.duarte_equipped_passives:
 		if not data.passives.has(id) or id != "DU-P09": return ERR_INVALID_DATA
+	if data.schema_version>=13 and not data.has("development"): return ERR_INVALID_DATA
+	if data.has("development") and not data.development is Dictionary: return ERR_INVALID_DATA
+	if data.schema_version<13 and not data.has("development"):
+		preload("res://scripts/combat/firearm_skills.gd").upgrade_lesson(data.skills)
+	var developed: Dictionary = Development.migrate(data)
+	if not Development.valid(developed,data.skills): return ERR_INVALID_DATA
+	data.development = developed
 	# Validate the complete new economy before mutating any live state.
 	if data.schema_version >= 2 and not Items.valid_state(data): return ERR_INVALID_DATA
 	if data.schema_version >= 3 and not data.has("local_requests"): return ERR_INVALID_DATA
@@ -146,11 +162,16 @@ func restore(source_data: Dictionary, apply: bool = true) -> Error:
 	var identity: Variant = data.get("run_id",("legacy:"+data.hero_name).sha256_text())
 	if not identity is String or identity.length() not in [32,64] or not identity.is_valid_hex_number(false): return ERR_INVALID_DATA
 	if data.schema_version>=10 and not data.has("run_id"): return ERR_INVALID_DATA
-	if not preload("res://scripts/chapter/party_resources.gd").valid(data.get("companion_vitals",{})): return ERR_INVALID_DATA
+	if not preload("res://scripts/chapter/party_resources.gd").valid(data.get("companion_vitals",{}),developed): return ERR_INVALID_DATA
 	var transcript: Variant = data.get("dialogue_history",[])
 	if data.schema_version>=11 and not data.has("dialogue_history"): return ERR_INVALID_DATA
 	if not preload("res://scripts/chapter/dialogue_log.gd").valid(transcript): return ERR_INVALID_DATA
+	if data.schema_version>=12 and not data.has("city_topics"): return ERR_INVALID_DATA
+	if not preload("res://scripts/city/city_conversations.gd").valid_topics(data.get("city_topics",{})): return ERR_INVALID_DATA
 	if not apply: return OK
+	development = Development.normalized(developed)
+	city_topics = {}
+	for key in data.get("city_topics",{}): city_topics[key] = int(data.city_topics[key])
 	dialogue_history.assign(transcript)
 	companion_vitals = preload("res://scripts/chapter/party_resources.gd").normalized(data.get("companion_vitals",{}))
 	run_id = identity
@@ -158,6 +179,7 @@ func restore(source_data: Dictionary, apply: bool = true) -> Error:
 	CampaignProfile.hero_name = data.hero_name
 	checkpoint = int(data.checkpoint); entry_scene = data.entry_scene; flags = data.flags; choices = data.choices; style = data.style
 	tested_styles.assign(data.tested_styles); skills.assign(data.skills); passives.assign(data.passives)
+	preload("res://scripts/combat/firearm_skills.gd").upgrade_lesson(skills)
 	equipped_passives.assign(data.equipped_passives); duarte_equipped_passives.assign(data.duarte_equipped_passives); inventory = {}
 	for key in data.inventory: inventory[str(key)] = int(data.inventory[key])
 	coins = int(data.get("coins",0)); equipment = data.get("equipment",Items.legacy_equipment(inventory,style))
@@ -183,7 +205,9 @@ func restore(source_data: Dictionary, apply: bool = true) -> Error:
 func learn(id: String, kind: String = "skill") -> void:
 	if kind not in ["skill","passive"] or not preload("res://scripts/chapter/arc_content.gd").executable(id,kind): return
 	var list = skills if kind == "skill" else passives
-	if not list.has(id): list.append(id)
+	if not list.has(id):
+		list.append(id)
+		if kind=="skill": Development.learned(self,id)
 
 func string_keys(values: Dictionary) -> Dictionary:
 	var result: Dictionary = {}
@@ -198,3 +222,22 @@ func enter_scene(path: String) -> void:
 
 
 
+
+func award_development(id: String,amount: int) -> Dictionary:
+	var normal: bool = GamePreferences.options.get("difficulty","normal")!="challenging"
+	var result := Development.award(self,id,amount,normal)
+	if normal and result.levels.has("hero") and int(vitals.hp)>0 and not flags.get("injured",false):
+		var limits := Items.stats(self); vitals.hp = limits.hp; vitals.qi = limits.qi
+	if result.xp>0:
+		last_development_notice = "+%d XP de jornada"%result.xp
+		for person in result.levels:
+			last_development_notice += " · %s nível %d"%[CampaignProfile.hero_name if person=="hero" else "Duarte",Development.level_of(int(Development.member(self,person).xp))]
+		development_awarded.emit(last_development_notice)
+	return result
+func sync_development() -> void:
+	if entry_scene not in ["res://scenes/chapter_01/chapter_flow.tscn","res://scenes/chapter_01/adult_opening.tscn"]: return
+	for id in local_requests:
+		if local_requests[id]=="completed": award_development("request:"+id,25)
+	for id in ["lisbon_tide_read","lisbon_rope_read","lisbon_manifest_read"]:
+		if flags.get(id,false): award_development("discovery:"+id,10)
+	if skills.any(func(id): return id in ["ES07","LA07","MC08","FO07","PU07"]): development.members.hero.cultivation.step = 2

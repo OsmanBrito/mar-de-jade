@@ -193,6 +193,9 @@ func _process(delta: float) -> void:
 	var selected := focus(); marker.highlighted = selected=="goal"
 	view.caption_label.text = "Infância · "+Plan.title(world.player.position)
 	view.status.text = "E / A · "+("Falar com Leonor · regressar juntos" if selected=="return" else Plan.LABELS[int(state.stage)] if selected=="goal" else Plan.DISCOVERIES[selected.trim_prefix("note:")].title) if not selected.is_empty() else Plan.LABELS[int(state.stage)]
+	if selected.is_empty():
+		var clue: String=Bond.environment_hint(int(state.stage),world.player.position)
+		if not clue.is_empty():view.status.text += "\n"+clue
 	view.guide.track(world,Vector2(1460,730) if int(state.stage)==8 and world.player.position.x>1520 else Plan.GOALS[int(state.stage)])
 	var arrived := intent.poll(world)
 	if not arrived.is_empty(): interact(arrived); return

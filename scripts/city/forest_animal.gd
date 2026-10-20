@@ -33,6 +33,11 @@ static func art(id: String,index: int=0) -> Texture2D:
 	var frame: Array=row.frames[index]
 	var atlas:=AtlasTexture.new();atlas.atlas=sheets[id];atlas.region=Rect2(frame[0],frame[1],frame[2],frame[3]);atlas.filter_clip=true
 	textures[key]=atlas;return atlas
+static func walk_blend(id: String,pose: String,time: float) -> Dictionary:
+	if pose!="walk":return {"next":frame_for(id,pose,time),"weight":0.0}
+	var duration:=.18 if id=="deer" else .16
+	return {"next":frame_for(id,pose,time+duration),"weight":smoothstep(duration-.04,duration,fposmod(time,duration))}
+
 static func paint(canvas: CanvasItem,id: String,point: Vector2,height: float,left: bool,pose: String,time: float,flash: float=0) -> Vector2:
 	canvas.texture_filter=CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	var texture:=art(id,frame_for(id,pose,time))
@@ -44,7 +49,14 @@ static func paint(canvas: CanvasItem,id: String,point: Vector2,height: float,lef
 	canvas.draw_set_transform(point,0,Vector2(1,.35))
 	for ring in range(4,0,-1): canvas.draw_circle(Vector2.ZERO,base_width*(.20+ring*.025),Color(0,0,0,.035))
 	canvas.draw_set_transform(point+offset,0,Vector2(1 if left else -1,1))
-	canvas.draw_texture_rect(texture,Rect2(Vector2(-drawn.x*.5,-drawn.y),drawn),false,Color.WHITE.lerp(Color("dfaaa0"),flash*.5))
+	var blend:=walk_blend(id,pose,time)
+	var tint:=Color.WHITE.lerp(Color("dfaaa0"),flash*.5)
+	if blend.weight>0:
+		canvas.draw_texture_rect(texture,Rect2(Vector2(-drawn.x*.5,-drawn.y),drawn),false,Color(tint,1.0-blend.weight))
+		var next_texture:=art(id,blend.next)
+		var next_size:=next_texture.get_size()*factor
+		canvas.draw_texture_rect(next_texture,Rect2(Vector2(-next_size.x*.5,-next_size.y),next_size),false,Color(tint,blend.weight))
+	else:canvas.draw_texture_rect(texture,Rect2(Vector2(-drawn.x*.5,-drawn.y),drawn),false,tint)
 	canvas.draw_set_transform(Vector2.ZERO);return point+offset
 func _process(delta: float) -> void:
 	if not visible: return

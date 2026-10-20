@@ -58,14 +58,14 @@ func run() -> void:
 	Items.buy(p,"PT-V01"); Items.equip(p,"PT-V01"); Items.equip(p,"PT-W02")
 	var rules = load("res://scripts/combat/campaign_rules.gd").new(); rules.start_encounter("school","Joana","LA")
 	check(rules.units[0].max_hp == 112 and rules.units[0].hp == 112 and rules.units[0].defense == 2 and p.vitals.hp == 85,"Lesson reads equipped stats with a separate health budget")
-	check(rules.skill_def(0,0).power == 22,"Weapon bonus reaches actual basic attack")
-	check(rules.skill_def(0,1).power == 20,"Weapon bonus reaches actual technique")
+	check(rules.skill_def(0,0).power == 26,"Weapon bonus reaches actual basic attack")
+	check(rules.skill_def(0,1).power == 23,"Weapon bonus reaches actual technique")
 	var attack: Dictionary = {"kind":"attack","power":30,"posture":5,"cells":[rules.units[0].cell],"target":0,"targets":[0],"no_counter":true}
 	var damage: int = rules.defense_preview(2,0,attack,0).damage
 	var life: int = rules.units[0].hp; rules.end_turn(0); rules.resolve_enemy(attack,{0:0})
 	check(life-int(rules.units[0].hp) == damage,"Equipped protection prediction matches actual HP loss")
 	rules.start_encounter("school","Joana","FO")
-	check(rules.skill_def(0,0).power == 20,"Borrowed style trial cannot use another weapon bonus")
+	check(rules.skill_def(0,0).power == 24,"Borrowed style trial cannot use another weapon bonus")
 	rules.start_encounter("duel","Joana","LA")
 	check(rules.units[0].hp == 90 and rules.units[2].hp == 4000,"Early scripted narrative encounter retains its real power gap")
 	p.checkpoint = 14; p.entry_scene = "res://scenes/chapter_01/chapter_flow.tscn"

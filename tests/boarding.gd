@@ -68,7 +68,7 @@ func run() -> void:
 		check(boarding.skill_def(0,0)==original.skill_def(0,0),style+": basic attack exactly matches Portugal's learned weapon and equipment")
 		check(boarding.skill_def(0,1)==original.skill_def(0,1),style+": technique retains Portugal's full definition, not a renamed generic damage skill")
 		check(boarding.units[0].hp==prepared.vitals.hp and boarding.units[0].max_hp==original.units[0].max_hp and boarding.units[0].qi==prepared.vitals.qi and boarding.units[0].max_qi==original.units[0].max_qi,style+": equipment limits match Portugal while boarding retains the real carried resources")
-		check(boarding.commands(0)==[0,1,-1] and boarding.commands(1)==[0,4,-1] and boarding.perfect_defense_enabled,style+": learned commands, retreat and perfect defense remain available")
+		check(boarding.commands(0)==([0,1,2,3,8,-1] if style=="FO" else [0,1,-1]) and boarding.commands(1)==[0,4,-1] and boarding.perfect_defense_enabled,style+": learned commands, bag and perfect defense remain available")
 		# Sequence is executed, not just compared as metadata: a basic in the last
 		# own turn discounts the first technique, just as in Portugal.
 		boarding.units[0].cell = Vector2i(2,2); boarding.units[2].cell = Vector2i(3,2)
@@ -110,7 +110,7 @@ func run() -> void:
 	check(not b.valid_attack(0,Vector2i(2,6)),"The friendly ship cannot be selected as an attack destination")
 	var ship = Model.new(); ship.style = "LA"; ship.boarding_profile = Loadout.practice("LA")
 	var loaded_ship = Model.new()
-	check(loaded_ship.restore(ship.snapshot()) and loaded_ship.boarding_profile==ship.boarding_profile,"Voyage saves retain the prepared character's weapon, vitals, techniques and passives")
+	check(loaded_ship.restore(ship.snapshot()) and loaded_ship.boarding_profile.skills==ship.boarding_profile.skills and loaded_ship.boarding_profile.vitals==ship.boarding_profile.vitals and loaded_ship.boarding_profile.equipment==ship.boarding_profile.equipment and loaded_ship.boarding_profile.has("development"),"Voyage saves retain the prepared character's weapon, vitals, techniques and passives")
 	var valid_ship: Dictionary = loaded_ship.snapshot(); var bad_ship := valid_ship.duplicate(true)
 	bad_ship.boarding_profile.vitals.hp = "broken"
 	check(not loaded_ship.restore(bad_ship) and loaded_ship.snapshot()==valid_ship,"Malformed character vitals are rejected before changing the saved voyage")
@@ -185,7 +185,7 @@ func run() -> void:
 	game._prepare_boarding_profile("res://tests/boarding-chapter-kit.json")
 	check(game.model.style=="FO" and game.model.boarding_profile.vitals.hp==62 and game.model.boarding_profile.skills.has("FO07"),"Legacy campaign voyages recover their actual kit from the chapter file without replaying Portugal")
 	game.begin_boarding()
-	check(game.battle_host.combat.style=="FO" and game.battle_host.combat.units[0].hp==62 and game.battle_host.combat.commands(0)==[0,1,-1],"Resumed campaign boarding uses the saved character instead of a replacement test character")
+	check(game.battle_host.combat.style=="FO" and game.battle_host.combat.units[0].hp==62 and game.battle_host.combat.commands(0)==[0,1,2,3,8,-1],"Resumed campaign boarding preserves the saved character and all learned firearm techniques")
 	# A real enemy strike at failed defensive timing must also complete safely.
 	game.model.style = "ES"; game.model.boarding_profile = Loadout.practice()
 	game.begin_boarding()

@@ -39,8 +39,8 @@
     },
     "FO01": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "lesson"
     },
     "FO07": {
       "owner": "hero",
@@ -49,13 +49,13 @@
     },
     "FO08": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "lesson"
     },
     "FO09": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "lesson"
     },
     "LA01": {
       "owner": "hero",
