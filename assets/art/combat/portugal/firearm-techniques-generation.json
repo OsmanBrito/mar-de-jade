@@ -1,0 +1,8 @@
+{
+  "tool": "imagegen integrado",
+  "source": "hero-firearm-techniques-v2.png",
+  "reference": "hero-firearm-v1.png",
+  "layout": "3 columns x 4 rows: anticipation, contact, recovery",
+  "prompt": "Create a NEW production sprite atlas for the exact same hero and matchlock arquebus. Preserve curly brown hair, ivory rolled sleeves, teal waistcoat, brown trousers and boots, hand-painted RPG style and transparent background. Twelve full-body poses in three columns and four rows. Row 1: tall upright precision with narrow stance, raising to shoulder, standing firing, lowering muzzle. Row 2: supported prepared shot on one knee, lowering to knee, kneeling supported aim, rising with gun down. Row 3: wide low side lunge, loading rear leg, low lateral shot, crossing recovery step. Row 4: barrel guard across front, lifting, bracing diagonally upright, outward deflection. Same anatomy scale, entire firearm and feet, transparent gutters, no labels, no smoke, no muzzle flash baked in. Silhouettes must remain visibly different at 60 px.",
+  "integration": "Own rows for FO07, FO01, FO09, FO08. Existing atlas retained for basic and locomotion. Metadata measured without changing source pixels."
+}

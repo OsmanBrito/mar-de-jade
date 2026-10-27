@@ -1,5 +1,15 @@
 # Mar de Jade — capítulo 1 jogável
 
+**Lisboa, revisão integrada (27/10):** promessa e saída adulta com caminhada encenada, conversas dos moradores ligadas aos acontecimentos, pedidos diferenciados, treino livre acompanhado e caderno acessível durante a exploração. [Percurso, interface e validação completa](docs/lisboa-fechamento-jogavel.md).
+
+**Nova abertura da infância (24/10):** uma campanha nova começa pela descoberta do convento como criança, com acolhimento de Tomé, exploração, memórias da Ordem, treino opcional e passagem para Leonor. Cenário e cavaleiro animado criados no Blender, com apresentação pixelada. [Como jogar, fontes e limites desta primeira versão](docs/abertura-infancia-convento.md).
+
+**Liderança e estudos da Ordem:** audiência com o Grão-Mestre na Sala do Capítulo, investigação de uma carga, avaliação de serviço, vale e compra de cinco manuais com técnicas executáveis. [Como encontrar, comprar e estudar](docs/lideranca-e-estudos-ordem.md).
+
+**Interior da Ordem:** secretaria, estudo e armaria funcionais, preparação de equipamento, prática livre e um serviço opcional de cozinha com entrega e objetivo por etapa. Irmãos, instrutor e servidores têm trajes ilustrados próprios e poses de caminhada. [Planta, personagens, atividades e referência](docs/ordem-interior-vivo.md).
+
+**Primeiro serviço da Ordem:** a abertura adulta apresenta a casa de Lisboa e Duarte, antecipa a escolha de arma e reserva, leva à enfermaria e ao relato, e apresenta a primeira secundária com orientação por etapa. Duarte tem traje ilustrado próprio da Ordem de Cristo. [Mudanças, imagens e 979 verificações](docs/primeiro-servico-da-ordem.md).
+
 **Desenvolvimento do personagem:** nível, cinco atributos com prévia e confirmação, repertório de seis técnicas, domínio, proficiência e cultivo para protagonista e Duarte. Portugal concede 400 XP no percurso principal. [Funcionamento e validação](docs/desenvolvimento-personagem.md).
 
 **Arma de fogo:** arcabuz ilustrado com nove poses e quatro técnicas ensinadas por Tomé: Disparo de Medida, Tiro Preparado, Guarda do Cano e Tiro de Passagem. Inclui ícones, efeitos, passo lateral previsto, abordagens e atualização de aulas em saves antigos. [Arte, funcionamento e validação](docs/arma-de-fogo.md).

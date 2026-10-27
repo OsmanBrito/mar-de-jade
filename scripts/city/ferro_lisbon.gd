@@ -7,13 +7,15 @@ const COMPANION_SPAWN:=Vector2(236,582)
 # A recessed teal house and a forward workshop open distinct working courts.
 const BUILDINGS:=[Rect2(138,354,250,76),Rect2(421,262,174,60),Rect2(805,283,258,79),Rect2(1090,350,236,78)]
 const BUILDING_KEYS:=["house_limestone","house_teal","warehouse","workshop"]
-const BUILDING_SIZES:=[Vector2(285,301),Vector2(204,301),Vector2(300,300),Vector2(285,260)]
+# Per-building framing, referenced to the 84px adult, not a district-wide zoom.
+# Native aspect is preserved by Scenery.prop. Ground anchors remain unchanged.
+const BUILDING_SIZES:=[Vector2(258,273),Vector2(174,257),Vector2(280,280),Vector2(268,245)]
 # Low boundaries join the building plots while leaving the working courts open.
 const COURTYARD_WALLS:=[Rect2(587,318,219,44),Rect2(80,340,75,15),Rect2(1320,340,100,20)]
-const CARGO:=[Rect2(441,473,64,45),Rect2(505,494,31,24),Rect2(786,451,64,48),Rect2(800,499,64,34),Rect2(1060,489,84,33)]
+const CARGO:=[Rect2(875,466,64,45),Rect2(939,487,31,24),Rect2(786,451,64,48),Rect2(800,499,64,34),Rect2(1060,489,84,33)]
 # Each column is sorted by its ground foot; upper crates never claim floor space.
 const CARGO_PILES:=[
-	[Vector2(456,492),2],[Vector2(488,492),1],[Vector2(456,516),1],[Vector2(488,516),2],[Vector2(520,516),1],
+	[Vector2(890,485),2],[Vector2(922,485),1],[Vector2(890,509),1],[Vector2(922,509),2],[Vector2(954,509),1],
 	[Vector2(801,474),2],[Vector2(833,474),2],[Vector2(815,498),1],[Vector2(847,498),1],[Vector2(831,531),1],
 	[Vector2(1076,509),2],[Vector2(1108,509),1],[Vector2(1128,521),1]]
 const SHIPYARD:=Rect2(66,451,113,34)

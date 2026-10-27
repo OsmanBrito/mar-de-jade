@@ -27,6 +27,9 @@ var battle_container: SubViewportContainer
 var battle_kind := ""
 const Bond=preload("res://scripts/chapter/childhood_bond.gd")
 var return_marker:Node2D
+var trail_line:=""
+var trail_seconds:=0.0
+var framing
 var progress:
 	get: return get_node("/root/ChapterProgress")
 func _ready() -> void:
@@ -46,6 +49,8 @@ func _ready() -> void:
 	bear = creature("bear",Vector2(2470,1030),130)
 	deer = creature("deer",Vector2(2390,315),80)
 	view = preload("res://scripts/chapter/dialogue_view.gd").new(); add_child(view)
+	view.independent_exploration_hud=true
+	framing=preload("res://scripts/chapter/chapter_framing.gd").install(self,[world.player,leonor],1.55)
 	view.caption_label.text = "Infância · À procura do corço branco"
 	view.continuation_requested.connect(advance)
 	view.replay_button.hide()
@@ -59,7 +64,9 @@ func _ready() -> void:
 	if int(state.stage)==6: dialogue(data.dialogs.wolf_after,"battle:bear")
 	elif int(state.stage)==9: complete()
 	elif int(state.stage)>0: dialogue([["Narrador","Retomas o caminho onde o deixaste. "+Bond.hint(int(state.stage))]],"resume")
-	else: dialogue([["Narrador","Depois do treino, Leonor propõe uma saída pelos arredores de Lisboa. Dizem que um corço branco atravessa o vale da ponte. Há tempo para procurar os sinais do animal e conhecer o caminho juntos."]],"resume")
+	elif progress.flags.get("child_forest_invited",false):resume()
+	else: dialogue([["Leonor criança","É por aqui. O homem que viu o corço vinha da ponte."],["Herói criança","E se já se foi embora?"],["Leonor criança","Vamos ver se deixou pegadas."]],"resume")
+	preload("res://scripts/chapter/scene_transition.gd").reveal(self)
 func companion_point() -> Vector2:
 	for offset in [Vector2(45,-10),Vector2(-45,10),Vector2(0,45),Vector2(0,-45)]:
 		var at:Vector2=world.player.position+offset
@@ -79,6 +86,8 @@ func _sync() -> void:
 	if step<9: marker.position = Plan.GOALS[step]+Vector2(0,28); marker.caption = Plan.LABELS[step]
 func resume() -> void:
 	intent.cancel(); phase = "explore"; world.player.enabled = true; world.player.set_physics_process(true)
+	follow_path.clear();follow_clock=0.0
+	framing.activate(false);world.player.camera.enabled=true;world.player.camera.make_current();world.player.camera.reset_smoothing()
 	view.show(); view.panel.hide(); choices.hide(); view.next_button.hide()
 	view.caption_label.text = "Infância · "+Plan.title(world.player.position)
 	view.hint.text = "WASD / setas · mover     Clique · aproximar e interagir     E / A · examinar     J / Y · caderno     F5 / menu · guardar     Esc / Start · pausa"
@@ -88,14 +97,20 @@ func resume() -> void:
 func dialogue(rows: Array,then: String) -> void:
 	intent.cancel(); phase = "dialogue"; after = then; lines = rows; cursor = -1
 	leonor.walking = false
+	if leonor.visible:
+		var direction:Vector2=world.player.position-leonor.position
+		leonor.facing=(3 if direction.x>0 else 1) if absf(direction.x)>absf(direction.y)*1.15 else (0 if direction.y>0 else 2)
+		world.player.facing=(leonor.facing+2)%4
+		world.player.presentation.facing=world.player.facing
 	view.status.text = ""
 	world.player.enabled = false; world.player.destination_path.clear(); world.player.velocity = Vector2.ZERO
+	world.player.camera.enabled=false;framing.camera.global_position=framing.target();framing.activate(true)
 	view.show(); view.panel.show(); choices.hide(); view.next_button.show(); view.next_button.text = "Continuar"; view.next_button.grab_focus()
 	view.hint.text = "Enter / espaço / A · continuar     Esc / Start · pausa"
 	advance()
 func advance() -> void:
 	if paused: return
-	if phase=="complete": get_tree().change_scene_to_file("res://scenes/chapter_01/promise.tscn"); return
+	if phase=="complete": preload("res://scripts/chapter/scene_transition.gd").travel(get_tree(),"res://scenes/chapter_01/promise.tscn"); return
 	if phase!="dialogue": return
 	cursor += 1
 	if cursor<lines.size():
@@ -170,13 +185,14 @@ func interact(id: String = "") -> void:
 		if step==5: dialogue(data.dialogs.wolf_intro,"battle:wolf")
 		else:
 			var rows:Array=data.dialogs[str(step)].duplicate(true)
+			if step==0:rows=Bond.departure(progress,rows)
 			if step==4:rows.insert(3,Bond.parting(progress)[0]);rows.insert(4,Bond.parting(progress)[1])
 			dialogue(rows,"choice:departure" if step==0 else "choice:bridge" if step==3 else "choice:deer" if step==7 else "finish" if step==8 else "next")
 	elif id.begins_with("note:"):
 		var key := id.trim_prefix("note:")
 		if not Plan.DISCOVERIES.has(key) or not near(Plan.DISCOVERIES[key].at): return
 		if not state.notes.has(key): state.notes.append(key)
-		dialogue([[Plan.DISCOVERIES[key].title,Plan.DISCOVERIES[key].text]],"resume"); save()
+		dialogue(Bond.discovery(key),"resume"); save()
 func save() -> void:
 	if not is_instance_valid(world): return
 	state.position = [roundi(world.player.position.x),roundi(world.player.position.y)]
@@ -184,34 +200,55 @@ func save() -> void:
 	if progress.auto_save: progress.save_to()
 func complete() -> void:
 	state.stage = 9; progress.flags.hunt_completed = true; save(); completed = true; phase = "complete"
-	world.player.enabled = false; view.panel.show(); view.next_button.show(); view.next_button.text = "Continuar com Leonor"
-	view.speaker.text = "Uma manhã com Leonor"; view.body.text = "Encontraram o corço branco e regressam juntos. O lobo foi vencido pelo herói; a força de Leonor mudou aquilo que ele julgava conhecer. Ainda têm uma tarde para partilhar em Lisboa."
-	marker.hide()
+	world.player.enabled = false; view.panel.show(); view.next_button.show(); view.next_button.text = "Regressar à praça"
+	view.speaker.text = "Leonor criança"; view.body.text = "Anda. Ainda temos de devolver as varas."
+	view.remember(view.speaker.text,view.body.text);marker.hide();return_marker.hide()
 func _process(delta: float) -> void:
 	if paused or not is_instance_valid(world) or not is_instance_valid(view): return
 	if phase!="explore": return
+	trail_seconds=maxf(0,trail_seconds-delta)
+	if int(state.stage)==2 and not progress.flags.get("hunt_tracking_chat",false):
+		progress.flags.hunt_tracking_chat=true;trail_line="Leonor olha outra vez para a lama. «As pequenas. Já percebi.»";trail_seconds=5.0;save()
 	var selected := focus(); marker.highlighted = selected=="goal"
 	view.caption_label.text = "Infância · "+Plan.title(world.player.position)
-	view.status.text = "E / A · "+("Falar com Leonor · regressar juntos" if selected=="return" else Plan.LABELS[int(state.stage)] if selected=="goal" else Plan.DISCOVERIES[selected.trim_prefix("note:")].title) if not selected.is_empty() else Plan.LABELS[int(state.stage)]
+	var prompt:String="E / A · "+("Falar com Leonor · regressar juntos" if selected=="return" else Plan.LABELS[int(state.stage)] if selected=="goal" else Plan.DISCOVERIES[selected.trim_prefix("note:")].title) if not selected.is_empty() else trail_line if trail_seconds>0 else ""
+	var objective:String=Plan.LABELS[int(state.stage)]
 	if selected.is_empty():
 		var clue: String=Bond.environment_hint(int(state.stage),world.player.position)
-		if not clue.is_empty():view.status.text += "\n"+clue
+		if not clue.is_empty():objective += "\n"+clue
+	view.set_exploration_prompt(objective,prompt)
 	view.guide.track(world,Vector2(1460,730) if int(state.stage)==8 and world.player.position.x>1520 else Plan.GOALS[int(state.stage)])
 	var arrived := intent.poll(world)
 	if not arrived.is_empty(): interact(arrived); return
 	if leonor.visible:
 		follow_clock -= delta
-		var target: Vector2 = world.player.position+Vector2(-55,20)
-		if follow_clock<=0 and leonor.position.distance_to(target)>65:
+		var target:Vector2=companion_target()
+		if follow_clock<=0 and leonor.position.distance_to(target)>35:
 			follow_clock = .4
 			var start: Vector2i = world._nearest_id(leonor.position); var end: Vector2i = world._nearest_id(target)
 			if start.x>=0 and end.x>=0: follow_path = world.navigation.get_point_path(start,end)
 		var before: Vector2 = leonor.position
+		while not follow_path.is_empty() and leonor.position.distance_to(follow_path[0])<3:follow_path.remove_at(0)
 		if not follow_path.is_empty():
 			var next: Vector2 = leonor.position.move_toward(follow_path[0],185*delta)
 			if world.point_clear(next) and world.segment_clear(leonor.position,next): leonor.position = next
-			if leonor.position.distance_to(follow_path[0])<8: follow_path.remove_at(0)
-		leonor.walking = before.distance_to(leonor.position)>.1; leonor.facing = 1 if leonor.position.x<before.x else 3; leonor.frame_time += delta*7
+			if leonor.position.distance_to(follow_path[0])<3: follow_path.remove_at(0)
+		var movement:Vector2=leonor.position-before
+		leonor.walking=movement.length()>.1
+		if leonor.walking:
+			leonor.facing=(1 if movement.x<0 else 3) if absf(movement.x)>absf(movement.y)*1.15 else (2 if movement.y<0 else 0)
+			leonor.frame_time=fposmod(leonor.frame_time+movement.length()/13.0,3.0)
+
+func companion_target() -> Vector2:
+	var child:Vector2=world.player.position
+	var goal:Vector2=Plan.GOALS[mini(8,int(state.stage))]
+	var direction:Vector2=child.direction_to(goal)
+	# She helps find the next clue, but stays within speaking distance. On the
+	# bridge an unsafe shoulder position is rejected rather than crossing water.
+	for offset in [direction*55+direction.orthogonal()*28,direction*55-direction.orthogonal()*28,Vector2(-45,20),Vector2(45,20),-direction*48]:
+		var at:Vector2=child+offset
+		if world.point_clear(at) and world.segment_clear(child,at):return at
+	return leonor.position
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_instance_valid(view) or phase=="battle": return
 	if event.is_action_pressed("ui_cancel"):

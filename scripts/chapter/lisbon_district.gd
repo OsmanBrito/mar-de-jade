@@ -44,9 +44,9 @@ static func dialog(p,id: String) -> Dictionary:
 	match id:
 		"keeper":
 			if state.is_empty():
-				text = "A maré está a mudar e este batel já puxa pelo cabeço. Podes ver a marca no poste e examinar o cabo? Fico deste lado a segurar a embarcação. Depois ajustamos a amarra ali mesmo, sem andar a buscar ferramentas."
+				text = "Este cabo não estava assim há pouco. Vês como puxa pelo cabeço? Espreita a marca de água no poste e a amarra, ali na ponta. Eu seguro o batel deste lado; depois acertamos a folga."
 				options = [["Observar a água e o cabo","district_accept"],["Agora não","close"]]
-			elif state=="completed": text = "O batel já pode afastar-se sem puxar pelo pontão. Obrigado por olhar para a água antes de mexer no cabo. O estaleiro fica mesmo ali; a rua poente leva-te de volta à casa da Ordem."
+			elif state=="completed": text = "Já o deixei descer um pouco e não puxou pelo pontão. Ficou bem. Se vais à casa da Ordem, sobe pela rua poente; poupas a volta pelo mercado."
 			else: text = Errands.DEFINITIONS[Errands.BATEL].objectives[state]+" Eu mantenho o batel firme enquanto conferes."
 		"tide":
 			p.flags.lisbon_tide_read = true; text = NOTES.lisbon_tide_read.text
@@ -73,7 +73,7 @@ static func choose(p,id: String,action: String) -> Dictionary:
 		"district_accept":
 			if id!="keeper" or not state.is_empty(): return {}
 			p.local_requests[Errands.BATEL] = "solve" if observed(p) else "observe"
-			return {"speaker":"Marinheiro do batel","text":"Olha para a marca de água e para o trecho tenso. A decisão é ali, junto à amarra; não precisas voltar aqui para a confirmar.","notice":"Pedido iniciado · A maré e a amarra"}
+			return {"speaker":"Marinheiro do batel","text":"Obrigado. Vê primeiro a água, depois o cabo. Quando souberes o que fazer, diz-me dali; eu oiço-te.","notice":"Pedido iniciado · A maré e a amarra"}
 		"district_finish":
 			if id!="mooring" or state!="solve" or not observed(p): return {}
 			p.local_requests[Errands.BATEL] = "completed"; p.coins = mini(1000000,p.coins+6)
@@ -84,5 +84,5 @@ static func choose(p,id: String,action: String) -> Dictionary:
 		"district_receipt":
 			if id!="manifest" or not p.flags.get("lisbon_manifest_read",false) or Errands.stage(p,Errands.ACCOUNT) not in ["dock","kitchen"]: return {}
 			p.local_requests[Errands.ACCOUNT] = "reconcile"
-			return {"speaker":"Herói","text":"Os dois destinos confirmaram a receção: cinco e duas. Posso explicar à pescadora com base nos recibos, sem fazer de novo o percurso entre os moradores.","notice":"Dois recibos conferidos · explicar a conta à pescadora"}
+			return {"speaker":"Herói","text":"Cinco na banca, duas na cozinha. Estão aqui as duas assinaturas. Vou mostrar isto à pescadora.","notice":"Dois recibos conferidos · explicar a conta à pescadora"}
 	return {}

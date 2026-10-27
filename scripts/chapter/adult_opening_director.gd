@@ -11,6 +11,7 @@ var paused := false
 var completed := false
 var sack_position := Vector2.ZERO
 var sack_ready := false
+var carrying_sack := false
 var choices: HBoxContainer
 
 func _ready() -> void:
@@ -29,7 +30,7 @@ func _ready() -> void:
 	get_node("Camera").enabled = false
 	preload("res://scripts/chapter/chapter_framing.gd").install(self,[hero,$Abrigo/ActorsAndProps/Tome,$Abrigo/ActorsAndProps/Duarte],1.45)
 	view = preload("res://scripts/chapter/dialogue_view.gd").new()
-	view.caption = "Lisboa · Casa da Ordem de Cristo · 19 anos\nA correia e o prazo"
+	view.caption = "Lisboa · Casa da Ordem de Cristo · 19 anos\nO primeiro serviço da Ordem"
 	add_child(view)
 	view.continuation_requested.connect(_continue_pressed)
 	view.replay_requested.connect(func(): get_tree().reload_current_scene())
@@ -46,6 +47,7 @@ func _ready() -> void:
 		choices.add_child(button)
 	choices.hide()
 	sack_position = $SackOnTable.position
+	preload("res://scripts/chapter/scene_transition.gd").reveal(self)
 	advance()
 
 func advance() -> void:
@@ -53,11 +55,10 @@ func advance() -> void:
 	line_index += 1
 	var lines: Array = data.segments[segment]
 	if line_index < lines.size():
-		if segment == "common" and line_index == 8:
+		if segment == "common" and lines[line_index].get("sack_move",false):
 			busy = true
 			view.next_button.disabled = true
-			var tween = $Abrigo.create_tween()
-			tween.tween_property(hero,"position",$HeroBySack.position,0.5)
+			var tween = preload("res://scripts/chapter/staged_walk.gd").along(hero,[$HeroBySack.position],$Abrigo,65.0)
 			await tween.finished
 			busy = false
 			view.next_button.disabled = false
@@ -78,15 +79,18 @@ func advance() -> void:
 	else:
 		busy = true
 		view.next_button.disabled = true
-		var tween = $Abrigo.create_tween().set_parallel(true)
-		tween.tween_property(hero,"position",$HeroAtDoor.position,0.8)
-		tween.tween_property(self,"sack_position",$SackAtDoor.position,0.8)
+		view.panel.hide()
+		carrying_sack = true
+		var tween = preload("res://scripts/chapter/staged_walk.gd").along(hero,[$HeroAtDoor.position],$Abrigo,80.0)
 		await tween.finished
+		carrying_sack = false
+		sack_position = $SackAtDoor.position
 		busy = false
 		completed = true
 		phase = "complete"
-		view.speaker.text = "A correia e o prazo"
-		view.body.text = "A sacola está pronta. Termina a entrega no cais e regressa ao pátio de Duarte."
+		view.speaker.text = "O primeiro serviço da Ordem"
+		view.panel.show()
+		view.body.text = "A farinha segue contigo. Faz a entrega no cais; depois regressa ao pátio da Ordem, onde Tomé e Duarte te esperam."
 		view.next_button.show()
 		view.next_button.disabled = false
 		view.next_button.text = "Sair para Lisboa"
@@ -106,6 +110,8 @@ func choose(id: String) -> void:
 	advance()
 
 func _process(_delta: float) -> void:
+	if carrying_sack and is_instance_valid(hero):
+		sack_position = hero.position+($SackAtDoor.position-$HeroAtDoor.position)
 	queue_redraw()
 
 func _draw() -> void:
@@ -129,9 +135,10 @@ func _unhandled_input(event: InputEvent) -> void:
 func _continue_pressed() -> void:
 	if busy or paused: return
 	if completed:
+		ChapterProgress.flags.order_intro_started = true
 		ChapterProgress.choices.origin_response = CampaignProfile.origin_response
 		if sack_ready and not ChapterProgress.flags.get("delivery_finished",false): ChapterProgress.flags.delivery_pending = true
-		get_tree().change_scene_to_file("res://scenes/chapter_01/chapter_flow.tscn")
+		preload("res://scripts/chapter/scene_transition.gd").travel(get_tree(),"res://scenes/chapter_01/chapter_flow.tscn")
 	else: advance()
 
 

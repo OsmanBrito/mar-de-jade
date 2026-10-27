@@ -140,7 +140,8 @@ func run() -> void:
 	await choose("close")
 	await key(KEY_J)
 	check(paused and game.player_menu.page=="Pedidos","J opens the request journal")
-	check(game.player_menu.listing.get_children().any(func(node): return node is Label and node.text=="A roda presa"),"Journal identifies the completed request")
+	game.player_menu.mission_category = "Concluídas"; game.player_menu.refresh(); await frames()
+	check(game.player_menu.listing.get_children().any(func(node): return node is Button and node.text.begins_with("A roda presa\nCONCLUÍDA")),"Completed mission filter identifies the finished request")
 	await capture("journal"); await pad(JOY_BUTTON_B)
 	# Corrupt quest data must be rejected atomically, including item/state mismatch.
 	var clean: Dictionary = p.snapshot()

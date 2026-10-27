@@ -4,6 +4,7 @@ const POINTS := {"wheel":Vector2(-950,600),"ropes":Vector2(1725,700)}
 static func location(at: Vector2) -> String:
  if at.x< -750 and at.y>300:return "Lisboa · Rua da roda · estaleiro e pontão poente"
  if at.x>1500 and at.y>400 and at.y<1000:return "Lisboa · Rua das cordas · armazém e oficina"
+ if at.x>500 and at.y>210 and at.y<520:return "Lisboa · Rua dos mercadores · bairro da Ribeira"
  return ""
 var kind:=""
 func _ready() -> void:

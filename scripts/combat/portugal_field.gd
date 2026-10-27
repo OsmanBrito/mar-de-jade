@@ -46,6 +46,11 @@ func snapshot(view) -> Dictionary:
 				if state.valid: state.area = model.area(model.current_id,view.selected_skill,focus)
 				if state.valid and model.get("style")=="FO" and model.current_id==0 and view.selected_skill==3:
 					state.firearm_landing = model.Firearm.side_step(model,0,focus)
+	if view.phase=="aim" and model.has_method("medida_command") and model.medida_command(view.selected_skill) and state.valid:
+		var id: String=model.Medida.Book.id_for(view.selected_skill)
+		var landing: Vector2i=model.Medida.landing(model,id,focus)
+		if landing!=Vector2i(-1,-1) and landing!=origin: state.medida_landing=landing
+		if id in ["LA13","PU13"]: state.medida_escort=model.Medida.escort(model,model.unit_at(focus))
 	if view.phase in ["telegraph","timing_defend","timing_volley"]: state.threats = view.plan.get("cells",[])
 	return state
 
@@ -75,6 +80,21 @@ func contour(canvas: Node2D,cells: Dictionary,colour: Color,dashed: bool = false
 func draw_ground(view,state: Dictionary) -> void:
 	var canvas: Node2D = view.host
 	var model = view.model
+	if model.has_method("medida_command"):
+		for cover in model.low_cover:
+			var point: Vector2=Board.screen(cover)
+			canvas.draw_line(point+Vector2(-14,-5),point+Vector2(14,-5),Color("b6a17a"),6,true)
+	if model.has_method("medida_command") and model.medida_state.has("watch"):
+		var watch: Dictionary=model.medida_state.watch
+		for exit in watch.get("exits",[]): corners(canvas,exit.to,GOLD)
+		for i in range(1,int(watch.range)+1) if watch.id!="FO57" else []:
+			var cell: Vector2i=watch.origin+model.DIRECTIONS[int(watch.face)]*i
+			if model.inside(cell): outline(canvas,cell,GOLD,1.8)
+	if state.has("medida_landing"):
+		corners(canvas,state.medida_landing,JADE)
+		canvas.draw_dashed_line(Board.screen(state.origin),Board.screen(state.medida_landing),JADE,1.8,4,true)
+		view.host.centered("DESTINO DO PASSO",Board.screen(state.medida_landing).y+18,8,JADE,Board.screen(state.medida_landing).x)
+	for destination in state.get("medida_escort",[]): corners(canvas,destination,JADE)
 	if state.has("firearm_landing"):
 		corners(canvas,state.firearm_landing,JADE)
 		canvas.draw_dashed_line(Board.screen(state.origin),Board.screen(state.firearm_landing),JADE,1.8,4,true)

@@ -9,7 +9,7 @@ func frames(n:int=12) -> void:
 	for i in n:await process_frame
 func run() -> void:
 	var p=root.get_node("ChapterProgress");p.auto_save=false;p.reset();root.get_node("CampaignProfile").hero_name="Miguel"
-	var game=load("res://scenes/chapter_01/opening.tscn").instantiate();root.add_child(game);current_scene=game;await frames()
+	var game=load("res://scenes/chapter_01/childhood_home.tscn").instantiate();root.add_child(game);current_scene=game;await frames()
 	check(root.has_node("ChildhoodPacing"),"Explicit launch flag installs one local timer")
 	var timer=root.get_node("ChildhoodPacing")
 	check(timer.report().total_seconds>0 and timer.report().by_scene_seconds.has("opening.tscn"),"Actual shelter frames are counted")

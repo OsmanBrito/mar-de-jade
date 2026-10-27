@@ -39,6 +39,7 @@ func context_for(scene: Node) -> String:
 	if not is_instance_valid(scene) or scene.get_script()==null: return ""
 	var script_path: String = scene.get_script().resource_path
 	match script_path.get_file():
+		"childhood_home_director.gd":return "training" if scene.phase=="battle" else "shelter"
 		"forest_hunt_director.gd": return "training" if scene.phase=="battle" else "forest"
 		"name_entry.gd", "opening_director.gd", "adult_opening_director.gd": return "shelter"
 		"plaza_director.gd": return "shelter" if is_instance_valid(scene.world) and scene.world.has_meta("order_convent") else "city"

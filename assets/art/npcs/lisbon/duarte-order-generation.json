@@ -1,0 +1,19 @@
+{
+  "tool": "imagegen integrado",
+  "date": "2026-10-20",
+  "assets": [
+    {
+      "source": "res://assets/art/npcs/lisbon/duarte-order-v2.png",
+      "reference": "res://assets/art/npcs/lisbon/duarte-v1.png",
+      "frames": 20,
+      "prompt": "Edit the exact four-column five-row Duarte atlas. Preserve all twenty full-body poses, layout, clean-shaven adult face, short dark hair, anatomy, directions and painterly RPG style. Replace civilian brown vest in every cell with ivory-white knee-length split Order of Christ tabard over dark gambeson, subtle chainmail sleeves, broad leather belt, brown boots and short white shoulder mantle. Large red Order of Christ cross with white inner cross on chest, visible red cross on back. Real cloth skirt and mantle silhouette, not a recolored vest. No helmet, weapons, labels, shadows or new props. Transparent background and generous gutters."
+    },
+    {
+      "source": "res://assets/art/combat/portugal/duarte-order-v2.png",
+      "reference": "res://assets/art/combat/portugal/duarte-v1.png",
+      "frames": 9,
+      "prompt": "Edit the exact three-column three-row combat atlas. Preserve Duarte identity, all nine ready/walk/windup/thrust/recovery/guard/hurt/kneeling poses, same positions and relative scale. Replace civilian vest with ivory-white knee-length split tabard/surcoat, short shoulder mantle, dark gambeson with chainmail accents, leather belt, brown trousers and boots. Large red Order of Christ cross with white inner cross visible on chest. Distinct white cloth skirt below belt, not a white patch. Empty hands for runtime weapon drawing. Transparent background, no helmet, labels, flashes or ground shadow."
+    }
+  ],
+  "measurement": "tools/build_duarte_order_frames.py reads source alpha and retains original source pixels. Costume replaces shader overlay in both production libraries."
+}

@@ -150,5 +150,17 @@ func run():
 			check(Feel.firearm_sample(action,Feel.RELEASE-0.001).frame==3 and Feel.firearm_sample(action,Feel.RELEASE+0.001).frame==4,"Every technique releases at the unchanged sound and muzzle clock")
 		else: check(Feel.firearm_sample(action,0.42).frame==6,"Guard lifts the barrel without a firing pose")
 	check(Feel.firearm_offset(2,0.42,Vector2.RIGHT,true).length()<Feel.firearm_offset(2,0.42,Vector2.RIGHT,false).length(),"Reduced effects preserve technique poses with smaller recoil")
+
+	var art = load("res://scripts/combat/portugal_actor_art.gd")
+	var atlas: Dictionary = art.data().hero_firearm_techniques
+	check(atlas.frames.size()==12 and atlas.source!=art.data().hero_firearm.source,"Techniques use twelve new illustrated frames instead of repeating the basic atlas")
+	check(float(atlas.frames[4][3])<float(atlas.frames[1][3])*0.85,"Prepared shot has a visibly lower kneeling silhouette at the same anatomical scale")
+	check(float(atlas.frames[7][2])/atlas.frames[7][3]>float(atlas.frames[1][2])/atlas.frames[1][3],"Passing shot uses a wider low-lunge silhouette than upright precision")
+	var art_indices: Array[int] = []
+	for action in [1,2,3,8]:
+		var contact_frame: int = Feel.firearm_art_frame(action,0.42)
+		check(not art_indices.has(contact_frame),"Technique selects its own artwork row: "+str(action))
+		art_indices.append(contact_frame)
+	check(Feel.firearm_art_frame(3,0.9)==8 and Feel.firearm_art_frame(8,0.45)==10,"Passing recovery keeps its crossing step and guard keeps its own block pose")
 	print("FIREARM_RESULT ",JSON.stringify({"checks":checks,"failures":failures}))
 	quit(0 if failures.is_empty() else 1)

@@ -1,7 +1,7 @@
 extends RefCounted
 ## Describe the actual saved checkpoint, not unsaved live progress.
 static func describe(data: Dictionary) -> String:
- var places: Dictionary={"opening.tscn":"Acolhimento · infância","plaza.tscn":"Praça · infância","training.tscn":"Treino com Leonor","forest_hunt.tscn":"Floresta","promise.tscn":"A promessa","adult_opening.tscn":"Lisboa · fase adulta","chapter_flow.tscn":"Lisboa · fase adulta"}
+ var places: Dictionary={"childhood_home.tscn":"Casa da Ordem · infância","opening.tscn":"Acolhimento · infância","plaza.tscn":"Praça · infância","training.tscn":"Treino com Leonor","forest_hunt.tscn":"Floresta","promise.tscn":"A promessa","adult_opening.tscn":"Lisboa · fase adulta","chapter_flow.tscn":"Lisboa · fase adulta"}
  var where: String=places.get(str(data.get("entry_scene","")).get_file(),"Campanha")
  if str(data.get("entry_scene","")).get_file()=="chapter_flow.tscn":
   var scenes: Array=JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/chapter_flow.json")).scenes

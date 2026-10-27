@@ -24,15 +24,20 @@ func _draw() -> void:
 			draw_line(at,at+Vector2(rng.randf_range(3,9),rng.randf_range(-2,2)),Color(.65,.46,.24,.48),1.2,true)
 	for x in [772,793]:
 		draw_line(Vector2(x,785),Vector2(x+56,966),Color(.32,.29,.23,.12),3,true)
-	for area in Ferro.BUILDINGS:
-		var a:=Layout.point(Vector2(area.position.x,area.end.y))
-		var b:=Layout.point(area.end)
-		for n in range(3,0,-1):
-			draw_colored_polygon(PackedVector2Array([a,b,b+Vector2(7,n*4),a+Vector2(7,n*4)]),Color(.20,.17,.12,.028))
-	for row in [[Vector2(-690,1000),"Estaleiro"],[Vector2(330,850),"Cordoaria"],[Vector2(745,970),"Mercado"],[Vector2(1015,830),"Armazém"],[Vector2(1455,1040),"Oficina"]]:
-		Materials.sign(self,row[0],row[1])
-	# Small private/service plaques read as notices, not new door handles.
-	for id in ["house_west","house_centre","warehouse","workshop"]:
-		var at: Vector2=preload("res://scripts/city/lisbon_access.gd").ROWS[id].at
-		draw_rect(Rect2(at+Vector2(-15,-33),Vector2(30,12)),Color("67543b"))
-		draw_line(at+Vector2(-12,-30),at+Vector2(11,-30),Color("d8c398"),1.2,true)
+	for i in Ferro.BUILDINGS.size():
+		var area: Rect2 = Ferro.BUILDINGS[i]
+		var base := Layout.point(Vector2(area.get_center().x,area.end.y))
+		var building := get_parent().get_node("ActorsAndProps/Ferro_"+Ferro.BUILDING_KEYS[i])
+		var width: float = building.size.x
+		# The same low front / receding side as the source architecture. This
+		# continuous contact and cast shadow replaces the tiny oval under a house.
+		var a := base+Vector2(-width*.43,-width*.13)
+		var b := base+Vector2(width*.28,-5)
+		var c := base+Vector2(width*.48,-width*.22)
+		for band in range(5,0,-1):
+			var shift := Vector2(5,3)*band
+			draw_colored_polygon(PackedVector2Array([a,b,c,c+shift,b+shift,a+shift]),Color(.15,.17,.13,.035))
+		draw_polyline(PackedVector2Array([a,b,c]),Color(.16,.17,.13,.23),4,true)
+	# Quayside traffic leaves a narrow worn strip, leaving the civic square calm.
+	for x in range(-480,1510,64):
+		patch(Vector2(x,1045+sin(x*.015)*8),Vector2(42,14),Color(.68,.64,.51,.12))

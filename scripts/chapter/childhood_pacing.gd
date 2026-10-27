@@ -15,6 +15,7 @@ func _ready() -> void:
 	process_mode=Node.PROCESS_MODE_ALWAYS;last_tick=Time.get_ticks_msec()
 func sample(scene:String,wall_seconds:float,is_paused:bool) -> void:
 	if finished or is_paused:return
+	if scene=="childhood_home.tscn":scene="opening.tscn"
 	if not SCENES.has(scene):
 		if not seconds.is_empty() and scene in ["adult_opening.tscn","chapter_flow.tscn"]:finished=true
 		return

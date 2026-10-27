@@ -26,6 +26,8 @@ static func recall(p,id:String) -> Array:
 	return []
 static func pending(p) -> Array[String]:
 	var titles:Array[String]=[]
+	if preload("res://scripts/chapter/order_campaign.gd").cargo_stage(p) not in ["","done"]:titles.append("A carga da Ordem")
+	if preload("res://scripts/city/order_house_hub.gd").meal_stage(p) in ["asked","prepared"]:titles.append("A mesa de quem fica")
 	var house=preload("res://scripts/city/house_life.gd")
 	if house.stage(p,false) not in ["","done"]:titles.append("A água da casa")
 	var cart=preload("res://scripts/chapter/local_request_state.gd")

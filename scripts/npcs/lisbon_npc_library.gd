@@ -14,6 +14,9 @@ static func data() -> Dictionary:
 		var poses_path := "res://assets/art/portugal-v2/hero-story-poses-frames.json"
 		if FileAccess.file_exists(poses_path):
 			entries.hero_story = JSON.parse_string(FileAccess.get_file_as_string(poses_path))
+		entries.duarte = JSON.parse_string(FileAccess.get_file_as_string("res://assets/art/npcs/lisbon/duarte-order-frames.json"))
+		var order_path := "res://assets/art/npcs/lisbon/order-house/frames.json"
+		if FileAccess.file_exists(order_path): entries.merge(JSON.parse_string(FileAccess.get_file_as_string(order_path)).entries)
 	return entries
 
 static func resolve(id: String) -> String:
@@ -39,7 +42,6 @@ static func draw_actor(canvas: Node2D,id: String,facing: int,walking: bool,time:
 	canvas.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	canvas.draw_set_transform(origin,0,Vector2(-1 if flip else 1,1))
 	var artwork: Texture2D = textures[id]
-	if id=="duarte": artwork = preload("res://scripts/chapter/order_livery.gd").texture(canvas,artwork,entry)
 	canvas.draw_texture_rect_region(artwork,Rect2(Vector2(-pivot[0],-pivot[1])*factor,Vector2(rect[2],rect[3])*factor),Rect2(rect[0],rect[1],rect[2],rect[3]))
 	if id in ["hero_child","hero_story"]:
 		preload("res://scripts/chapter/hero_eyes.gd").draw(canvas,"child" if id=="hero_child" else "story",index,rect,pivot,factor,eye_glow,flip)

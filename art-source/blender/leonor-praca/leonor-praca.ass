@@ -1,0 +1,16 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1280
+PlayResY: 720
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Dialogue,Georgia,27,&H00F1F2EE,&H00FFFFFF,&H001B221D,&H751B221D,0,0,0,0,100,100,0,0,1,2,1,2,50,50,42,1
+Style: Title,Georgia,29,&H00F1F2EE,&H00FFFFFF,&H001B221D,&H751B221D,0,0,0,0,100,100,3,0,1,1,1,8,50,50,38,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.25,0:00:02.10,Title,,0,0,0,,{\fad(200,350)}MAR DE JADE · A PRAÇA DO TEJO
+Dialogue: 0,0:00:12.25,0:00:13.35,Dialogue,,0,0,0,,{\fad(100,100)}Mestre: Outra vez.
+Dialogue: 0,0:00:13.55,0:00:14.65,Dialogue,,0,0,0,,{\fad(100,100)}Leonor: A tua mão.

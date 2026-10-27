@@ -35,6 +35,7 @@ func run() -> void:
 	check(entry.name_field.has_focus(), "Name field receives initial keyboard focus")
 	check(entry.confirm_button.disabled, "Empty name cannot be confirmed")
 	var settings: Button = entry.confirm_button.get_parent().get_node("GameSettings")
+	settings.grab_focus() # A synthetic pressed signal does not perform pointer focus.
 	settings.pressed.emit(); await scene_frames()
 	var panel = entry.get_child(entry.get_child_count()-1)
 	check(paused and not entry.can_process(), "Initial settings prevent input reaching the name screen")
@@ -64,7 +65,7 @@ func run() -> void:
 	entry.name_field.text_changed.emit(entry.name_field.text)
 	entry.name_field.text_submitted.emit(entry.name_field.text)
 	await scene_frames()
-	check(current_scene.scene_file_path == "res://scenes/chapter_01/opening.tscn", "Enter confirms the name and starts the opening")
+	check(current_scene.scene_file_path == "res://scenes/chapter_01/childhood_home.tscn", "Enter confirms the name and starts the playable convent opening")
 	check(profile.hero_name == "João Miguel", "Confirmation trims and normalizes spaces")
 	check(FileAccess.file_exists("res://tests/name-profile-fixture.json"), "Confirmed name is persisted separately from the study save")
 	var restored = load("res://scripts/chapter/campaign_profile.gd").new()
@@ -78,9 +79,9 @@ func run() -> void:
 	check(profile.speaker_name("Herói") == "João Miguel" and profile.speaker_name("Tomé") == "Tomé", "Only protagonist identities are substituted")
 	restored.free()
 	var opening = current_scene
-	check(opening.body.text == "Estão a chamar para comer.", "Name selection leaves the approved first line unchanged")
+	check(opening.view.body.text == "Estão a chamar para comer.", "Name selection preserves Tomé's invitation")
 	opening.advance()
-	check(opening.speaker.text == "João Miguel" and opening.body.text == "Já tenho esta.", "Selected name appears on the child's dialogue")
+	check(opening.view.speaker.text == "João Miguel" and opening.view.body.text == "Já tenho esta.", "Selected name appears on the child's dialogue")
 	await capture("res://tests/name-in-dialogue-preview.png")
 	check(change_scene_to_file("res://scenes/chapter_01/plaza.tscn") == OK, "Next map loads with the chosen profile")
 	await scene_frames()

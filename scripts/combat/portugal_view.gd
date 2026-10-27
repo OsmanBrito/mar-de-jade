@@ -1,4 +1,5 @@
 extends "res://scripts/combat/mar_de_ferro/tactical_view.gd"
+const TechniqueVisuals=preload("res://scripts/combat/medida_presentation.gd")
 const COMBAT_ART = preload("res://scripts/combat/portugal_actor_art.gd")
 const BOARD = preload("res://scripts/combat/portugal_board.gd")
 const FEEL = preload("res://scripts/combat/portugal_motion.gd")
@@ -9,6 +10,30 @@ var release_sound_played := false
 var weapon_tips: Dictionary = {}
 var field = preload("res://scripts/combat/portugal_field.gd").new()
 var field_state: Dictionary = {}
+func activate(id: String) -> void:
+	if id.begins_with("medida_focus_"):
+		model.medida_state.focus=id.trim_prefix("medida_focus_"); host.queue_redraw(); return
+	super.activate(id)
+func confirm() -> void:
+	if phase=="aim" and selected_skill==100 and model.get("style")=="PU":
+		if model.valid_attack(selected_skill,selected_cell):move_history.clear();queue_player(1)
+		else:host.notify_player(model.attack_reason(selected_skill,selected_cell))
+		return
+	super.confirm()
+func draw_order_study_preview() -> void:
+	if selected_skill==100 and model.get("style") in ["ES","PU"]:
+		var d: Dictionary=model.skill_def(model.current_id,selected_skill)
+		host.panel(Rect2(16,86,222,310),BG,GOLD)
+		host.text_at(d.name,Vector2(29,115),16,GOLD)
+		host.text_at("%d alento · 1 ação"%d.cost,Vector2(29,145),12,PAPER)
+		host.text_at("Sem dano ou timing ofensivo",Vector2(29,177),11,MUTED)
+		host.text_at("Proteção: %d%% · uma ocorrência"%roundi(d.protection*100),Vector2(29,207),11,JADE)
+		host.text_at("Frente e lado direito" if model.style=="ES" else "Casa livre · custa 1 movimento",Vector2(29,237),11,PAPER)
+		host.text_at("Até ao próximo turno próprio",Vector2(29,267),11,MUTED)
+		var reason: String=model.attack_reason(selected_skill,selected_cell)
+		host.text_at(host.fit_text(reason if not reason.is_empty() else "Confirma para executar",197,11),Vector2(29,345),11,GOLD)
+		return
+	super.draw_preview_sidebar()
 ## Keep reference input, previews, movement, facing, timing and impact pipeline.
 func tutorial_timing() -> bool:
 	return model.encounter!="portugal_duel"
@@ -64,7 +89,9 @@ func update(delta: float) -> void:
 	super.update(delta)
 
 func apply_impact() -> void:
+	var paths: Dictionary=result.get("medida_paths",{}).duplicate(true)
 	super.apply_impact()
+	if not paths.is_empty(): result.medida_paths=paths
 	if not (sequence_active and plan.get("no_counter",false)):
 		hit_pause = FEEL.hit_pause(weapon_style(result.actor),result,host.progress.data.options.reduced_fx,model.encounter.begins_with("portugal_child"))
 
@@ -75,6 +102,19 @@ func undo_move() -> void:
 
 func unit_position(id: int) -> Vector2:
 	var point: Vector2 = super.unit_position(id)
+	if phase=="animate_player" and result.get("actor",-1)==0:
+		var technique: String=model.skill_def(0,result.skill).get("content_id","")
+		var family: String=TechniqueVisuals.group(technique)
+		if not family.is_empty():
+			var paths: Dictionary=result.get("medida_paths",{})
+			if paths.has(id):
+				var points: Array=[]
+				for cell in paths[id]: points.append(screen(cell))
+				return TechniqueVisuals.path_position(points,TechniqueVisuals.movement_fraction(technique,clock))
+			if id==0:
+				var reduced: bool=host.progress.data.options.reduced_fx
+				var sample: Dictionary=TechniqueVisuals.sample(technique,clock,weapon_style(0),strike_direction(0))
+				return screen(model.units[0].cell)+strike_direction(0)*float(sample.lunge)*(.45 if reduced else 1.0)
 	if not attacking_animation(): return point
 	var reduced: bool = host.progress.data.options.reduced_fx
 	if id==result.actor:
@@ -109,6 +149,9 @@ func draw_board() -> void:
 	# Other encounter types retain the inherited objectives and telegraphs.
 	if not model.objective.is_empty() or not model.optional_objective.is_empty(): super.draw_board(); return
 	field.draw_ground(self,field_state)
+	if model.get("mode")=="order_trial":
+		var point: Vector2=screen(model.ORDER_TRIAL_CELL)
+		host.draw_circle(point,15,Color(.85,.7,.25,.3));host.draw_arc(point,16,0,TAU,24,Color("e6cb8d"),2,true)
 	var objects: Array = []
 	for cell in model.obstacles: objects.append({"cell":cell,"obstacle":true,"id":-1})
 	for unit in model.units:
@@ -135,6 +178,7 @@ func draw_unit(id: int) -> void:
 	var vector: Vector2 = visual_direction(id,Vector2((direction.x-direction.y)*BOARD.STEP.x,(direction.x+direction.y)*BOARD.STEP.y).normalized())
 	var child: bool = model.encounter.begins_with("portugal_child")
 	var height := 44.0 if child else 60.0
+	if model.get("mode")=="order_trial" and id==2:height=70.0
 	if unit.kind in ["wolf","bear"]: height = 62 if unit.kind=="wolf" else 102
 	var reaction := damage_reaction(id)
 	draw_passive_pulse(id,p)
@@ -143,15 +187,15 @@ func draw_unit(id: int) -> void:
 		height = 59
 	else:
 		var pose := "ready"
-		if id==0 and model.get("firearm_guard")==true: pose = "guard"
-		var pose_time := motion_clock
+		if id==0 and model.get("firearm_guard")==true: pose = "firearm_guard"
+		var pose_time := 0.45 if pose=="firearm_guard" else motion_clock
 		var style := weapon_style(id)
 		if phase=="walk" and walk_actor==id: pose = "walk"; pose_time = clock
 		if phase.begins_with("animate") and result.get("actor",-1)==id:
 			pose = "guard" if effect_kind(id,result.skill) in ["cover","brace","root","breath"] else {"LA":"thrust","MC":"crush","FO":"shoot","PU":"punch"}.get(style,"attack")
-			if style=="FO": pose = FEEL.firearm_pose(int(result.skill))
+			if style=="FO": pose = "firearm_guard" if effect_kind(id,result.skill) in ["cover","brace"] else FEEL.firearm_pose(int(result.skill))
 			pose_time = clock
-			if result.has("firearm_origin") and clock>=0.76: pose = "walk"; pose_time = clock-0.76
+			if result.has("firearm_origin") and clock>=0.76: pose = "shoot_passage"; pose_time = clock
 		elif phase=="timing_defend" and plan.get("targets",[]).has(id): pose = "parry"; pose_time = 0.2
 		elif phase.begins_with("animate") and result.get("impacted",false):
 			for hit in result.get("hits",[]):
@@ -161,6 +205,14 @@ func draw_unit(id: int) -> void:
 		weapon_tips[id] = draw_combat_actor(unit,p,vector,pose,pose_time,style,reaction)
 		if id==0 and model.get("firearm_guard")==true: host.centered("GUARDA DO CANO · %d%%"%roundi(model._guard_protection("FO08")*100),p.y+31,9,JADE,p.x)
 	var statuses: Array[String] = []
+	if model.has_method("medida_command"):
+		var guard: Dictionary=model.medida_state.get("guard_"+str(id),{})
+		if not guard.is_empty(): statuses.append("GUARDA · %d contacto(s)"%int(guard.remaining))
+		if id==0 and model.medida_state.has("watch"): statuses.append("VIGIA · %d resposta(s)"%int(model.medida_state.watch.remaining))
+	if unit.get("order_disarmed",false):statuses.append("DESARMADO · RECOMPOR PEGA")
+	if unit.get("order_weapon_weakened",false):statuses.append("PRÓXIMO ATAQUE FÍSICO -10%")
+	if id==0 and model.get("order_guard")!=null and not str(model.get("order_guard")).is_empty():statuses.append("ESTUDO · PROTEÇÃO PREPARADA")
+	if int(unit.get("order_disarm_immune_until",0))>int(unit.turns) and not unit.get("order_disarmed",false):statuses.append("PROTEÇÃO CONTRA NOVO DESARME")
 	if unit.get("broken",false): statuses.append("POSTURA QUEBRADA")
 	if int(unit.get("stun",0))>0: statuses.append("ATORDOADO · "+str(unit.stun))
 	if int(unit.get("bleed",0))>0: statuses.append("SANGRAMENTO · "+str(unit.bleed))
@@ -175,7 +227,18 @@ func draw_unit(id: int) -> void:
 	host.bar(p+Vector2(-18,-height-5),Vector2(36,2),unit.posture,unit.max_posture,GOLD)
 
 func draw_combat_actor(unit: Dictionary,point: Vector2,direction: Vector2,pose: String,time: float,style: String,reaction: float) -> Vector2:
-	return COMBAT_ART.draw_actor(host,COMBAT_ART.identity(model,unit),point,direction.x<0,pose,time,style,model.safe_training,reaction,host.progress.data.options.reduced_fx,direction)
+	var technique: String=""
+	if phase=="animate_player" and result.get("actor",-1)==0 and (unit.id==0 or result.get("medida_paths",{}).has(unit.id)):
+		technique=model.skill_def(0,result.skill).get("content_id","")
+		pose=TechniqueVisuals.pose(technique,style,pose)
+	elif model.has_method("medida_command") and pose not in ["hurt","kneel","parry"]:
+		var guard: Dictionary=model.medida_state.get("guard_"+str(unit.id),{})
+		if not guard.is_empty(): technique=guard.id
+		elif unit.id==0 and model.medida_state.has("watch"): technique=model.medida_state.watch.id
+		elif unit.id==0 and not str(model.order_guard).is_empty(): technique=model.order_guard
+		elif unit.id==0 and model.preparation: technique="MC08"
+		if not technique.is_empty(): pose=TechniqueVisuals.pose(technique,style,pose); time=.4
+	return COMBAT_ART.draw_actor(host,COMBAT_ART.identity(model,unit),point,direction.x<0,pose,time,style,model.safe_training,reaction,host.progress.data.options.reduced_fx,direction,1.0,technique)
 
 func icon_texture(actor: int, skill: int) -> Texture2D:
 	if icon_paths.is_empty():
@@ -192,8 +255,10 @@ func icon_texture(actor: int, skill: int) -> Texture2D:
 				if not portugal_icons.has(item_path): portugal_icons[item_path] = load(item_path)
 				return portugal_icons[item_path]
 	if skill==4 and actor==1: key = "DU01"
+	elif skill==100 and actor==0:key=model.OrderStudies.IDS[model.style]
 	elif skill==1 and model.get("style")!=null: key = model.FIRST[model.style]
 	elif skill in [2,3] and model.get("mode")=="practice" and model.style!="FO": key = model.FIRST[model.style]
+	if actor==0 and model.has_method("medida_command") and model.Medida.handles(skill): key=model.Medida.Book.id_for(skill)
 	var path: String = "res://assets/art/combat/portugal/basic-attack.png" if key=="basic" else icon_paths.get(key,"")
 	if path.is_empty(): return null
 	if not portugal_icons.has(path): portugal_icons[path] = load(path) if ResourceLoader.exists(path) else ImageTexture.create_from_image(Image.load_from_file(path))
@@ -269,6 +334,8 @@ func effect_kind(actor: int,skill: int) -> String:
 	return super.effect_kind(actor,skill)
 
 func draw_skill_effect() -> void:
+	if phase=="animate_player" and result.get("actor",-1)==0:
+		TechniqueVisuals.draw_effect(self,model.skill_def(0,result.skill).get("content_id",""))
 	if not attacking_animation(): super.draw_skill_effect(); return
 	var actor: int = result.actor
 	var style := weapon_style(actor)
@@ -306,6 +373,7 @@ func draw_skill_effect() -> void:
 			for side in [-1,1]: host.draw_line(centre+Vector2(side*7,-9),centre+Vector2(side*(10+progress*9),1+progress*4),Color(GOLD,fade),1.8,true)
 
 func draw_skill_travel(kind: String,actor: Vector2,aim: Vector2,direction: Vector2,tint: Color,reduced: bool) -> void:
+	if result.get("actor",-1)==0 and TechniqueVisuals.group(model.skill_def(0,result.skill).get("content_id",""))=="volley": return
 	if kind=="ranged" and result.get("actor",-1)==0 and model.get("style")=="FO":
 		if clock>=ActorMotion.PROJECTILE_RELEASE and clock<ActorMotion.IMPACT:
 			var muzzle: Vector2 = weapon_tips.get(result.actor,actor+direction*28)
@@ -345,6 +413,11 @@ func draw_sidebar() -> void:
 	if passive_feedback_readable() and not passive_feedback.pages.is_empty():
 		draw_passive_feedback(); return
 	host.panel(Rect2(16,295,222,101),BG,EDGE)
+	if model.get("mode")=="order_trial" and phase!="move":
+		host.text_at("A MEDIDA DO SERVIÇO",Vector2(29,315),10,GOLD)
+		var tasks: Array=[[model.order_trial_positioned,"Alcança a casa dourada"],[model.valid_hits>0,"Acerta um golpe"],[model.order_trial_defended,"Resposta frontal: Bom ou Perfeito"]]
+		for i in tasks.size():host.text_at(("✓ " if tasks[i][0] else "○ ")+tasks[i][1],Vector2(29,337+i*20),10,JADE if tasks[i][0] else PAPER)
+		return
 	if is_player() and phase=="move":
 		var state: Dictionary = field_state
 		host.text_at("MOVIMENTO",Vector2(29,315),10,JADE)
@@ -365,8 +438,27 @@ func draw_sidebar() -> void:
 	for i in mini(4,lines.size()): host.text_at(lines[i],Vector2(29,335+i*16),10,PAPER)
 
 func draw_preview_sidebar() -> void:
+	if model.has_method("medida_command") and model.Medida.handles(selected_skill):
+		var definition: Dictionary=model.skill_def(model.current_id,selected_skill)
+		if definition.shape in ["self","ally"]:
+			host.panel(Rect2(16,86,222,310),BG,GOLD)
+			host.text_at(host.fit_text(definition.name,195,15),Vector2(29,115),15,GOLD)
+			host.text_at("%d alento · Grau %s"%[definition.cost,["I","II","III"][definition.level-1]],Vector2(29,141),11,JADE)
+			var lines: Array=wrap_hint(definition.description,195,11,9)
+			for i in lines.size(): host.text_at(lines[i],Vector2(29,170+i*19),11,PAPER)
+			host.text_at("Enter confirma · Q / E orienta no fim",Vector2(29,377),10,GOLD)
+			return
+	if selected_skill==100 and model.get("style") in ["ES","PU"]:draw_order_study_preview();return
 	var state: Dictionary = field_state
-	if state.is_empty() or state.valid: super.draw_preview_sidebar(); return
+	if state.is_empty() or state.valid:
+		super.draw_preview_sidebar()
+		if model.has_method("medida_command") and model.Medida.Book.id_for(selected_skill)=="PU56":
+			host.draw_rect(Rect2(26,326,202,62),BG)
+			host.text_at("C / R3 · escolher foco",Vector2(29,340),10,GOLD)
+			for i in 3:
+				var key: String=["armor","anchor","weaken"][i]
+				host.button("medida_focus_"+key,["Furar","Firmar","Reduzir"][i],Rect2(27+i*67,350,64,30),model.medida_state.get("focus","armor")!=key)
+		return
 	var definition: Dictionary = model.skill_def(model.current_id,selected_skill)
 	host.panel(Rect2(16,86,222,310),BG,GOLD)
 	host.text_at(host.fit_text(model.current().name+" · PREVISÃO",197,12),Vector2(29,108),12,GOLD)
@@ -493,6 +585,10 @@ func tutorial_tip() -> Array:
 	return ["UMA AÇÃO POR TURNO","Mover não consome o ataque.","Confirma alcance e alvo antes de agir.","A defesa acontece no turno inimigo."]
 
 func input_event(event: InputEvent) -> void:
+	if model.has_method("medida_command") and model.Medida.Book.id_for(selected_skill)=="PU56" and phase=="aim" and ((event is InputEventKey and event.pressed and event.physical_keycode==KEY_C) or (event is InputEventJoypadButton and event.pressed and event.button_index==JOY_BUTTON_RIGHT_STICK)):
+		var focuses: Array=["armor","anchor","weaken"]
+		model.medida_state.focus=focuses[(focuses.find(model.medida_state.get("focus","armor"))+1)%3]
+		host.queue_redraw(); return
 	if event is InputEventKey and event.pressed and phase in ["choose","move","aim"] and detail_skill<0 and event.physical_keycode>=KEY_1 and event.physical_keycode<=KEY_9:
 		var actions: Array = model.commands(model.current_id)
 		var slot: int = event.physical_keycode-KEY_1
@@ -530,3 +626,24 @@ func input_event(event: InputEvent) -> void:
 
 
 
+
+func queue_player(grade: int) -> void:
+	super.queue_player(grade)
+	if model.current_id!=0: return
+	var technique: String=model.skill_def(0,selected_skill).get("content_id","")
+	var family: String=TechniqueVisuals.group(technique)
+	var origin: Vector2i=model.units[0].cell
+	var destination: Vector2i=origin
+	var paths: Dictionary={}
+	if family in ["approach","retreat"] or technique in ["ES08","PU10"]: destination=model.Medida.landing(model,technique,selected_cell)
+	elif family=="passage": destination=model.Firearm.side_step(model,0,selected_cell)
+	elif family=="sidestep": destination=selected_cell
+	elif family=="escort":
+		var ally: int=model.unit_at(selected_cell)
+		var pair: Array=model.Medida.escort(model,ally)
+		if pair.size()==2:
+			destination=pair[0];paths[ally]=[model.units[ally].cell,pair[1]]
+	if destination!=Vector2i(-1,-1) and destination!=origin:
+		var path: Array=[origin];path.append_array(model.path_to(0,destination))
+		if path.size()>1: paths[0]=path
+	if not paths.is_empty(): result.medida_paths=paths

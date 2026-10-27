@@ -1,0 +1,6 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "transparent_background": true,
+  "prompt": "Use case: identity-preserve. Production transparent combat sprite atlas. Image1 is EDIT TARGET, retain its EXACT 3 columns x 3 rows layout, the nine poses, body proportions, foot positions, hand positions and transparent alpha. Image2 defines the NEW character identity and outfit. Replace the young brown-haired man in EACH of the NINE cells of image1 with the bald, short black-bearded weapons instructor from image2. Preserve image1's exact ready pose, two walking poses, windup, straight strike, recovery, guard, hurt and kneeling poses. Match image2 ivory tabard with red Order of Christ cross with white inset, chainmail sleeves, short white shoulder cape, belt and boots. No drawn weapon in hands (runtime attaches wooden weapon to the hands). Instructor sheathed sword at belt may remain. All figures face RIGHT in three-quarter view exactly as image1. Same illustrated rendering and lighting. Do not copy image2 four-direction layout. Entire nine figures, hands and feet visible, equal cells, no touching neighbor cells. Real transparency, no background, no scenery, no shadow plate, no text or labels.",
+  "output": "assets/art/combat/portugal/order-instructor-v1.png"
+}

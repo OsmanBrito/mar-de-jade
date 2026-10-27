@@ -96,6 +96,9 @@ func run() -> void:
 		await capture("memory-"+id)
 		city.close();await frames()
 	game._menu("Pedidos");await frames()
+	for tab in game.player_menu.listing.find_children("*","Button",true,false):
+		if tab.text == "Arquivo":
+			tab.pressed.emit();await frames();break
 	check(game.player_menu.listing.find_children("*","Button",true,false).any(func(b):return b.text=="Confiar na passagem"),"Adult diary exposes the actual forest memory")
 	await capture("journal");game._menu();await frames()
 	# Legacy adult deliveries already started are kept as deliveries.

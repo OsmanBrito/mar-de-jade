@@ -17,7 +17,7 @@ class Preview extends Node2D:
 			var pose_time := time
 			if action==3:
 				point += Vector2(-36,0)*smoothstep(0.76,1.12,time)
-				if time>=0.76: pose = "walk"; pose_time = time-0.76
+				if time>=0.76: pose = "shoot_passage"; pose_time = time
 			var muzzle: Vector2 = Art.draw_actor(self,"hero",point,false,pose,pose_time,"FO",false,0,false,Vector2.RIGHT,2.6)
 			if action!=8 and time>=Feel.RELEASE and time<Feel.RELEASE+0.08:
 				draw_circle(muzzle,8*(1-(time-Feel.RELEASE)/0.08),Color("ffd58a"))

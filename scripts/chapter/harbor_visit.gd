@@ -30,14 +30,8 @@ func install(world) -> void:
 	for name in ["Provisoes","LisbonShopSign"]:
 		var old: Node = stall.get_node_or_null(name)
 		if old!=null: old.free()
-	# Existing goods art is displayed on the existing stall; source PNGs stay intact.
-	var goods := Node2D.new(); goods.name = "Provisoes"; goods.position = Vector2(0,-39); stall.add_child(goods)
-	for i in 3:
-		var icon := Sprite2D.new(); icon.texture = load("res://assets/art/items/portugal/"+["PT-C01","PT-C02","PT-C03"][i]+".png")
-		icon.position = Vector2((i-1)*23,(i-1)*-5); icon.scale = Vector2.ONE*24.0/icon.texture.get_width()
-		icon.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR; goods.add_child(icon)
-	var sign_label := Label.new(); sign_label.name = "LisbonShopSign"; sign_label.text = "PROVISÕES · LISBOA"; sign_label.position = Vector2(-85,-146)
-	sign_label.size.x = 170; sign_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; merchant.style_label(sign_label,12); stall.add_child(sign_label)
+	# The illustrated stall already contains produce at the correct perspective.
+	# Inventory thumbnails belong in the shop, not pasted onto the world counter.
 
 func can_begin() -> bool:
 	if ChapterProgress.flags.get("injured",false) or ChapterProgress.flags.get("embarked",false): return false
@@ -89,6 +83,8 @@ func resume() -> void:
 	director.view.caption_label.text = "Lisboa · Depois do socorro\nUma pausa no cais" if before_meal() else "Lisboa · Antes da partida\nProvisões e embarque"
 	if before_evaluation(): director.view.caption_label.text = "Lisboa · Depois da refeição\nAntes da avaliação de amanhã"
 	director.view.status.text = city.objective()+"  ·  J · pedidos"
+	director.view.independent_exploration_hud = true
+	director.view.set_exploration_prompt(exploration_objective(),"")
 	director.view.hint.text = "WASD / setas / clique · mover     E / A · interagir     J · pedidos     I · sacola     Esc · menu"
 	var focus = director.get_viewport().gui_get_focus_owner()
 	if focus != null: focus.release_focus()
@@ -104,6 +100,10 @@ func near_gate() -> bool:
 	return point.distance_to(GATE) <= 82 and director.world.segment_clear(point,GATE+Vector2(-45,0))
 
 func update() -> void:
+	if active and director.phase=="exploration":
+		var target: Vector2 = preload("res://scripts/chapter/request_guide.gd").target(ChapterProgress,city)
+		if target!=Vector2.INF: director.view.guide.track(director.world,target)
+		else: director.view.guide.enabled = false
 	if not is_instance_valid(merchant): return
 	merchant.available = active and can_begin()
 	merchant.highlighted = merchant.available and director.phase == "exploration" and not director.paused and near_merchant()
@@ -126,6 +126,21 @@ func update() -> void:
 	if before_evaluation():
 		gate_label.text = "Duarte · Regressar ao abrigo"
 		if near_gate() and director.phase=="exploration": director.view.status.text = "E / A · combinar o regresso ao abrigo · avaliação amanhã"
+	if active and director.phase=="exploration" and not director.paused:
+		var context: String = city.prompt()
+		if context.is_empty() and merchant.highlighted: context = "E / A · negociar com o comerciante · %d de ouro" % ChapterProgress.coins
+		if context.is_empty() and near_gate():
+			context = "E / A · falar com Duarte e levar a refeição" if before_meal() else "E / A · combinar o regresso ao abrigo · avaliação amanhã" if before_evaluation() else "E / A · falar com Duarte e preparar o embarque"
+		if context.is_empty() and not entry_notice.is_empty(): context = entry_notice
+		director.view.set_exploration_prompt(exploration_objective(),context)
+
+func exploration_objective() -> String:
+	var goal := "Duarte espera no pontão para levar a refeição. Podes explorar Lisboa antes de seguir."
+	if before_evaluation(): goal = "Duarte espera no pontão para regressar ao abrigo. A avaliação é amanhã; podes concluir os pedidos antes de descansar."
+	elif not before_meal(): goal = "Prepara as provisões e procura Duarte no pontão para embarcar. Madeira é a primeira escala."
+	var tracked: String = preload("res://scripts/chapter/request_guide.gd").objective(ChapterProgress,ChapterProgress.choices.get("tracked_request",""))
+	if not tracked.is_empty(): goal += "\n\nPedido acompanhado · "+tracked
+	return goal
 
 func interact() -> void:
 	if not active or not can_begin() or director.phase != "exploration" or director.paused: return

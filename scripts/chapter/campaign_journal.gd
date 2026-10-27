@@ -2,6 +2,10 @@ extends RefCounted
 ## Read the same discoveries on land and aboard; never grant unseen notes.
 static func notes(p) -> Array:
 	var entries: Array = []
+	for id in preload("res://scripts/chapter/childhood_home_plan.gd").NOTES:
+		if p.flags.get(id,false):
+			var row: Dictionary=preload("res://scripts/chapter/childhood_home_plan.gd").NOTES[id]
+			entries.append({"id":"home:"+id,"title":row.title,"text":row.text})
 	var convent = preload("res://scripts/city/convent_plan.gd")
 	for id in convent.NOTES:
 		if convent.observed(p,id): entries.append({"id":"convent:"+id,"title":convent.NOTES[id].title,"text":convent.NOTES[id].text})
@@ -17,12 +21,17 @@ static func notes(p) -> Array:
 		if access.observed(p,id): entries.append({"id":"access:"+id,"title":access.ROWS[id].title,"text":access.ROWS[id].text})
 	entries.append_array(preload("res://scripts/chapter/optional_arc.gd").memories(p))
 	entries.append_array(preload("res://scripts/chapter/adult_arc.gd").notes(p))
+	entries.append_array(preload("res://scripts/chapter/first_order_service.gd").notes(p))
+	entries.append_array(preload("res://scripts/city/order_house_hub.gd").journal(p))
+	entries.append_array(preload("res://scripts/chapter/order_campaign.gd").notes(p))
 	return entries
 static func request_text(p,text:String,finished:bool) -> String:
 	if not finished and p.completed and p.journey.get("kind","")!="port_visit": return text+"\n\nRetoma este pedido em terra, quando estiveres atracado em Lisboa."
 	return text
 static func requests(p) -> Array:
 	var entries: Array = []
+	for row in preload("res://scripts/chapter/order_campaign.gd").notes(p):entries.append({"title":row.title,"text":request_text(p,row.text,row.id!="order:cargo" or p.flags.get("order_cargo_done",false))})
+	if preload("res://scripts/city/order_house_hub.gd").meal_stage(p)!="": entries.append({"title":"Ordem · A mesa de quem fica","text":request_text(p,preload("res://scripts/city/order_house_hub.gd").meal_objective(p),preload("res://scripts/city/order_house_hub.gd").meal_stage(p)=="done")})
 	var house = preload("res://scripts/city/house_life.gd")
 	for young in [true,false]:
 		if not house.stage(p,young).is_empty():

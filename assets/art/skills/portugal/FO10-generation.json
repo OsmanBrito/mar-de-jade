@@ -1,0 +1,6 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "transparent_background": true,
+  "prompt": "Use case: illustration-story. Single square game technique icon, real transparent background. Reference is rendering/style only, not an edit target. A short Portuguese matchlock arquebus of wood and steel angled diagonally from lower left to upper right, firing a small restrained gold spark downward toward an opponent's sword grip; a separate small gloved hand releases the sword handle, sword tilting away. Make the arquebus dominant, the disarming grip motif small but very legible. Hand-painted illustrated RPG item icon, warm dark wood, silver steel, modest gold highlights, crisp clear silhouette, matching reference game palette. No bodies, no face, no blood, no violent wounds, no lettering, no UI border, no decorative frame, no opaque background. Fit all objects in canvas with generous transparent margin.",
+  "output": "assets/art/skills/portugal/FO10-v1.png"
+}

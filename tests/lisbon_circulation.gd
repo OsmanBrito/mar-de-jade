@@ -98,6 +98,9 @@ func run() -> void:
 	check(world.sorted_world.get_node("Batel").position.distance_to(boat_before)>100,"Returning to the city reapplies the completed physical consequence")
 	check(await walk(District.TARGETS.manifest.approach),"The eastern warehouse receipt is reachable after loading")
 	game._menu("Pedidos"); await frames()
+	for tab in game.player_menu.listing.find_children("*","Button",true,false):
+		if tab.text=="Arquivo":tab.pressed.emit();break
+	await frames()
 	var text := ""
 	for label in game.player_menu.listing.find_children("*","Label",true,false): text += label.text
 	check(text.contains("A maré e a amarra") and text.contains("Lugares conhecidos · Ribeira"),"The journal includes the new request and reusable observations")

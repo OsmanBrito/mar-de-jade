@@ -1,7 +1,17 @@
 extends "res://scripts/combat/portugal_rules.gd"
+const Medida = preload("res://scripts/combat/medida_runtime.gd")
+var medida_state: Dictionary={}
+var low_cover: Array[Vector2i]=[]
 const Development = preload("res://scripts/chapter/character_development.gd")
 var battle_practice: Dictionary = {}
 const Firearm = preload("res://scripts/combat/firearm_skills.gd")
+const OrderStudies = preload("res://scripts/combat/order_studies.gd")
+var order_guard := ""
+var order_guard_face := 0
+var order_exposed_face := -1
+var order_trial_positioned := false
+var order_trial_defended := false
+const ORDER_TRIAL_CELL := Vector2i(4,4)
 const STYLES := {"ES":{"name":"Espada","range":1,"power":22},"LA":{"name":"Lança","range":2,"power":20},"MC":{"name":"Machado","range":1,"power":28},"FO":{"name":"Arma de fogo","range":4,"power":20},"PU":{"name":"Desarmado","range":1,"power":18}}
 const FIRST := {"ES":"ES07","LA":"LA07","MC":"MC08","FO":"FO07","PU":"PU07"}
 ## Local practice drills, not entries or unlocks from the canonical skill catalogue.
@@ -33,10 +43,12 @@ var firearm_moved := false
 var progress_override: Dictionary = {}
 func combat_progress():
 	return ChapterProgress if progress_override.is_empty() else progress_override
-func weapon_techniques_available() -> bool: return mode in ["school","practice","boarding"]
+func weapon_techniques_available() -> bool: return mode in ["school","practice","boarding","order_trial"]
 func companion_support_available() -> bool: return mode in ["duarte_support","boarding"]
 
 func start_encounter(kind: String, hero_name: String, chosen_style: String = "ES") -> void:
+	medida_state.clear(); low_cover.clear()
+	order_guard="";order_exposed_face=-1;order_trial_positioned=false;order_trial_defended=false
 	super.start_lesson(1,hero_name)
 	mode = kind; style = chosen_style
 	battle_practice.clear()
@@ -111,6 +123,26 @@ func passive_active(id: String) -> bool:
 	return combat_progress().equipped_passives.has(id) and mode in ["school","perfect_defense","duarte_support","boarding"]
 
 func commands(actor: int) -> Array:
+	if actor==0 and mode in ["boarding","practice"]:
+		var record: Dictionary=Development.member(combat_progress())
+		var prepared: Array=record.get("active_skills",[])
+		if prepared.any(func(id): return Medida.Book.rows().has(id) and not Medida.Book.LEGACY.has(id)):
+			var selected: Array=[0]
+			for id in prepared:
+				if not str(id).begins_with(style) or not combat_progress().skills.has(id): continue
+				if id==OrderStudies.IDS[style]: selected.append(100)
+				elif id==FIRST[style]: selected.append(1)
+				elif style=="FO" and Firearm.IDS.values().has(id): selected.append(Firearm.IDS.find_key(id))
+				elif Medida.Book.rows().has(id): selected.append(Medida.Book.action(id))
+			return selected
+	var result: Array = _original_commands(actor)
+	if actor==0 and weapon_techniques_available() and combat_progress().skills.has(OrderStudies.IDS[style]) and Development.equipped(combat_progress(),OrderStudies.IDS[style]): result.append(OrderStudies.ACTION)
+	if actor==0 and weapon_techniques_available():
+		for id in Medida.Book.rows():
+			if Medida.Book.LEGACY.has(id): continue
+			if id.begins_with(style) and combat_progress().skills.has(id) and Development.equipped(combat_progress(),id): result.append(Medida.Book.action(id))
+	return result
+func _original_commands(actor: int) -> Array:
 	if actor==0 and style=="FO" and weapon_techniques_available():
 		var actions: Array = [0]
 		for action in Firearm.IDS:
@@ -125,6 +157,11 @@ func skill_def(actor: int, skill: int) -> Dictionary:
 	var definition: Dictionary = Catalog.HERO_SKILLS[1][0].duplicate(true)
 	definition.name = "Ataque básico"; definition.description = "Ataque básico com alcance do manejo. Recupera 1 energia."
 	definition.uses_opening = false
+	if actor==0 and Medida.handles(skill): return Medida.definition(self,skill,definition)
+	if actor==0 and skill==OrderStudies.ACTION and weapon_techniques_available():
+		var study: Dictionary=OrderStudies.definition(style,definition)
+		if passive_active("GE22") and not technique_evaluated and previous_action==0 and previous_action_turn==current().turns-1:study.cost=maxi(1,int(study.cost)-1)
+		return mastered(actor,skill,study)
 	if actor==0 and style=="FO" and (skill==0 or (Firearm.IDS.has(skill) and weapon_techniques_available())):
 		definition = Firearm.definition(skill,definition,not firearm_moved and units[actor].cell==units[actor].turn_origin)
 		if Firearm.IDS.has(skill) and passive_active("GE22") and not technique_evaluated and previous_action==0 and previous_action_turn==current().turns-1: definition.cost -= 1
@@ -186,13 +223,23 @@ func skill_def(actor: int, skill: int) -> Dictionary:
 func availability_reason(skill: int) -> String:
 	var u: Dictionary = current()
 	if u.team != 0: return "Aguarda o teu turno."
+	if u.hp<=0 or u.broken or u.stun>0: return "Este personagem não pode agir enquanto estiver incapacitado."
 	if not commands(current_id).has(skill): return "Esta ação não está disponível."
 	if u.acted: return "A acção principal deste turno já foi usada."
 	if u.qi < skill_def(current_id,skill).cost: return "Alento insuficiente. Usa o ataque básico."
 	return ""
 
 func attack_reason(skill: int, aim: Vector2i) -> String:
+	if current_id==0 and Medida.handles(skill): return Medida.reason(self,skill,aim)
+	if current_id==0 and skill==OrderStudies.ACTION and style=="PU":
+		var available:=availability_reason(skill)
+		if not available.is_empty():return available
+		if distance(current().cell,aim)!=1 or current().moves<1 or not segment_open(current().cell,aim):return "Escolhe uma casa adjacente livre, com movimento disponível e trajeto aberto."
+		return ""
 	var reason: String = super.attack_reason(skill,aim)
+	if reason.is_empty() and current_id==0 and skill==OrderStudies.ACTION:
+		if style in ["LA","MC"] and Firearm.side_step(self,0,aim)==Vector2i(-1,-1): return "O estudo exige um passo lateral livre após o golpe."
+		if style=="PU" and (distance(current().cell,aim)>current().moves or not segment_open(current().cell,aim)):return "O passo exige movimento disponível e trajeto livre."
 	if reason.is_empty() and current_id==0 and style=="FO" and skill==3 and Firearm.side_step(self,0,aim)==Vector2i(-1,-1):
 		return "Tiro de Passagem exige uma casa lateral livre."
 	if reason.is_empty() and weapon_techniques_available() and skill == 1 and style == "LA" and distance(current().cell,aim) != 2:
@@ -202,19 +249,67 @@ func attack_reason(skill: int, aim: Vector2i) -> String:
 	return reason
 
 func move_to(destination: Vector2i) -> Array[Vector2i]:
+	if current_id==medida_state.get("mark_target",-1) and destination!=current().cell: medida_state.erase("mark_target")
+	if current_id>=2 and medida_state.has("watch"):
+		var path: Array[Vector2i]=path_to(current_id,destination)
+		var hits: Array=Medida.before_enemy(self,{"path":path,"destination":destination})
+		if not hits.is_empty():
+			medida_state.pending_hits=hits
+			if medida_state.get("watch",{}).get("id","")=="LA11" and path.size()>0:
+				destination=path[-2] if path.size()>1 else current().cell
+				current().medida_intercepted_stop=true
+		if current().hp<=0: return []
 	var result: Array[Vector2i] = super.move_to(destination)
 	if current_id==0 and not result.is_empty(): firearm_moved = true
 	if current_id == 0 and not result.is_empty(): moved_in_battle = true; stationary_eligible = false
+	if current_id==0 and mode=="order_trial" and current().cell==ORDER_TRIAL_CELL:order_trial_positioned=true
 	return result
 
 func perform(skill: int, aim: Vector2i, quality: int) -> Dictionary:
+	if current_id==0 and Medida.handles(skill): return Medida.perform(self,skill,aim,quality)
+	if current_id==0 and skill==OrderStudies.ACTION and style=="PU":
+		var reason:=attack_reason(skill,aim)
+		if not reason.is_empty():return {"error":reason}
+		var origin: Vector2i=current().cell;order_guard="PU09";order_guard_face=current().face
+		var cost: int=skill_def(0,skill).cost
+		if cost<7:record_passive(0,"GE22",{"qi":1})
+		current().qi-=cost;current().acted=true;current().moves-=1;current().cell=aim;firearm_moved=true;moved_in_battle=true
+		technique_evaluated=true;technique_used=true;previous_action=skill;previous_action_turn=current().turns
+		return {"actor":0,"skill":skill,"hits":[],"cells":[aim],"text":"Passo de Lado · proteção preparada de 20% da antiga frente", "quality":quality,"movement_origin":origin,"movement_destination":aim}
 	var qualifying: bool = previous_action == 0 and previous_action_turn == current().turns-1
 	var definition: Dictionary = skill_def(current_id,skill)
 	var actor := current_id
 	var firing_origin: Vector2i = current().cell
+	var study_face: int = current().face
+	var study_landing: Vector2i=Firearm.side_step(self,0,aim) if current_id==0 and skill==OrderStudies.ACTION and style in ["LA","MC"] else Vector2i(-1,-1)
 	var landing: Vector2i = Firearm.side_step(self,0,aim) if actor==0 and style=="FO" and skill==3 else Vector2i(-1,-1)
 	var result: Dictionary = super.perform(skill,aim,quality)
 	if result.has("error"): return result
+	if actor==0:
+		Medida.track(self,skill,aim)
+		if int(definition.power)>0:
+			if style=="MC": current().erase("medida_weight_until")
+			if style=="FO":
+				medida_state.erase("mark_target")
+				medida_state.blocked_target=unit_at(aim) if result.get("hits",[]).any(func(h): return h.get("damage",0)==0) else -1
+	if mode=="order_trial" and actor==0 and result.get("hits",[]).any(func(h):return h.get("damage",0)>0):valid_hits+=1
+	if actor==0 and skill==OrderStudies.ACTION:
+		if definition.cost<OrderStudies.COSTS[OrderStudies.IDS[style]]:record_passive(0,"GE22",{"qi":1})
+		technique_evaluated=true;technique_used=true
+		if style in ["ES","PU"]:
+			order_guard=OrderStudies.IDS[style];order_guard_face=study_face;current().guard=false
+			if style=="PU": current().moves=maxi(0,int(current().moves)-distance(firing_origin,current().cell))
+		if study_landing!=Vector2i(-1,-1):
+			current().cell=study_landing;result.movement_origin=firing_origin;result.movement_destination=study_landing;firearm_moved=true;moved_in_battle=true
+			if style=="MC":order_exposed_face=direction_index(aim-firing_origin)
+		if style=="FO" and quality>=1:
+			for hit in result.get("hits",[]):
+				var target: Dictionary=units[int(hit.id)]
+				if hit.get("damage",0)>0 and OrderStudies.eligible_weapon(target):
+					if target.kind=="boss":target.order_weapon_weakened=true
+					elif int(target.turns)>=int(target.get("order_disarm_immune_until",0)):
+						target.order_disarmed=true;target.order_disarm_immune_until=int(target.turns)+2
+					result.text+=" · arma enfraquecida" if target.kind=="boss" else " · desarme até recompor a pega" if target.get("order_disarmed",false) else " · protegido contra reaplicação de desarme"
 	if definition.power>0 and result.get("hits",[]).any(func(h): return h.get("damage",0)>0): _record_development_use(actor,skill)
 	if actor==0 and style=="FO":
 		if Firearm.IDS.has(skill):
@@ -245,12 +340,17 @@ func perform(skill: int, aim: Vector2i, quality: int) -> Dictionary:
 	return result
 
 func end_turn(face: int) -> Dictionary:
+	if current_id==0 and order_guard=="ES09":order_guard_face=face
+	if current_id==0:
+		for key in ["guard_0","watch"]:
+			if medida_state.has(key): medida_state[key].face=face
 	if current_id == 0:
 		stationary_eligible = current().cell == current().turn_origin and passive_active("GE21")
 		stationary_cell = current().cell
 	return super.end_turn(face)
 
 func ai_plan() -> Dictionary:
+	if current_id>=2 and current().get("order_disarmed",false):return {"kind":"brace","path":[],"destination":current().cell,"targets":[],"cells":[current().cell],"name":"Recompor a pega · desarme", "order_disarm_recovery":true}
 	if mode=="practice" and current_id==4:
 		var previous_lesson := lesson; lesson = 1
 		var contact: Dictionary = super.ai_plan(); lesson = previous_lesson
@@ -258,8 +358,8 @@ func ai_plan() -> Dictionary:
 		if not contact.get("path",[]).is_empty():
 			contact.approach_bonus = 4; contact.power += 4
 		if contact_weakened and current_id==weakened_target: contact.power = roundi(contact.power*0.9)
-		return contact
-	if lesson == 0: return super.ai_plan()
+		return _medida_plan(contact)
+	if lesson == 0: return _medida_plan(super.ai_plan())
 	var result: Dictionary = super.ai_plan()
 	if uses_training_ai():
 		result.power = 90 if mode == "duel" else 8
@@ -268,7 +368,7 @@ func ai_plan() -> Dictionary:
 		if mode == "school" and not result.get("path",[]).is_empty():
 			result.approach_bonus = 4; result.power += 4
 	if contact_weakened and current_id==weakened_target and result.has("power"): result.power = roundi(result.power*0.9)
-	return result
+	return _medida_plan(result)
 
 func cover_info(target: int, damage: int) -> Dictionary:
 	if not companion_support_available(): return super.cover_info(target,damage)
@@ -278,10 +378,22 @@ func cover_info(target: int, damage: int) -> Dictionary:
 
 func defense_preview(actor: int, target: int, attack: Dictionary, grade: int) -> Dictionary:
 	var effective: Dictionary = attack.duplicate(true)
+	if units[actor].get("medida_no_charge",false) and effective.get("approach_bonus",0)>0: effective.power=maxi(0,int(effective.power)-int(effective.approach_bonus))
+	if units[actor].get("medida_weaken",0)>0 and Medida.is_contact(attack): effective.power=roundi(float(effective.power)*(1.0-float(units[actor].medida_weaken)))
+	if units[actor].get("order_weapon_weakened",false) and OrderStudies.physical_attack(attack):effective.power=roundi(float(attack.power)*.9)
 	if approach_weakened and actor==weakened_target:
 		if attack.get("approach_bonus",0)>0: effective.power = maxi(0,int(attack.power)-int(ceil(float(attack.approach_bonus)*0.5)))
-	var result: Dictionary = super.defense_preview(actor,target,effective,grade)
-	if target != 0 or mode == "duel": return result
+	var result: Dictionary = Medida.defense(self,actor,target,effective,super.defense_preview(actor,target,effective,grade))
+	if target != 0 or mode == "duel":
+		result.raw_damage=result.damage; result.cover=cover_info(target,result.damage)
+		return result
+	if attack.get("kind","")!="ranged":
+		var incoming: int=direction_index(units[actor].cell-units[0].cell)
+		if not order_guard.is_empty() and (incoming==order_guard_face or (order_guard=="ES09" and incoming==(order_guard_face+1)%4)):
+			var rank: int=Development.grade(combat_progress(),order_guard)
+			var protection: float=(.30 if order_guard=="ES09" else .20)+([0.0,.03,.05][rank-1])
+			result.damage=roundi(result.damage*(1.0-protection));result.order_guard_used=true
+		if incoming==order_exposed_face:result.damage=roundi(result.damage*1.1);result.order_exposure_used=true
 	var reduction := 0.0
 	var active_ids: Array[String] = []
 	if stationary_eligible and units[0].cell == stationary_cell and attack.kind != "ranged": reduction += 0.05
@@ -302,6 +414,25 @@ func defense_preview(actor: int, target: int, attack: Dictionary, grade: int) ->
 	return result
 
 func resolve_enemy(plan: Dictionary, grades: Dictionary) -> Dictionary:
+	if current().get("medida_slow",0)>0:
+		plan=plan.duplicate(true)
+		var path: Array=plan.get("path",[])
+		if not path.is_empty() and distance(path[-1],units[0].cell)<distance(current().turn_origin,units[0].cell):
+			plan.medida_advance_reduced=true
+	if current().get("medida_intercepted_stop",false):
+		plan=plan.duplicate(true)
+		if Medida.is_contact(plan) and distance(current().cell,units[0].cell)>1: plan.targets=[]; plan.cells=[]; plan.kind="approach"
+		current().erase("medida_intercepted_stop")
+	var medida_previews: Dictionary={}
+	for target in plan.get("targets",[]): medida_previews[target]=defense_preview(current_id,target,plan,int(grades.get(target,0)))
+	var watched: Array=medida_state.get("pending_hits",[]).duplicate(true)
+	medida_state.erase("pending_hits")
+	watched.append_array(Medida.before_enemy(self,plan))
+	if current().hp<=0:
+		current().acted=true
+		return {"actor":current_id,"skill":-1,"hits":watched,"cells":[],"text":"Interrompido pela vigia","quality":0}
+	var order_guard_used: bool=plan.get("targets",[]).has(0) and defense_preview(current_id,0,plan,int(grades.get(0,0))).get("order_guard_used",false)
+	var order_exposure_used: bool=plan.get("targets",[]).has(0) and defense_preview(current_id,0,plan,int(grades.get(0,0))).get("order_exposure_used",false)
 	var consumes_firearm_guard: bool = firearm_guard and plan.get("targets",[]).has(0) and plan.get("kind","")!="ranged" and flank(current_id,0)=="Frente"
 	var passive_changes: Dictionary = {}
 	if plan.get("targets",[]).has(0):
@@ -310,6 +441,16 @@ func resolve_enemy(plan: Dictionary, grades: Dictionary) -> Dictionary:
 	var had_preparation: bool = preparation and plan.get("targets",[]).has(0) and plan.get("kind","")!="ranged" and flank(current_id,0)=="Frente"
 	if weapon_techniques_available() and style == "MC" and preparation and plan.get("targets",[]).has(0): prepared_contact = true
 	var result: Dictionary = super.resolve_enemy(plan,grades)
+	if not result.has("error"):
+		result.hits.append_array(watched)
+		if not watched.is_empty(): result.text+=" · Vigia da Medida"; result.medida_watch_hits=watched
+		Medida.after_enemy(self,plan,grades,medida_previews)
+	if not result.has("error"):
+		if order_guard_used:_record_development_use(0,OrderStudies.ACTION);order_guard=""
+		if order_exposure_used:order_exposed_face=-1
+		if current().get("order_disarmed",false):current().erase("order_disarmed")
+		if OrderStudies.physical_attack(plan):current().erase("order_weapon_weakened")
+		if mode=="order_trial" and plan.get("targets",[]).has(0) and int(grades.get(0,0))>=1 and flank(current_id,0)=="Frente":order_trial_defended=true
 	if not result.has("error"):
 		var hero_hit: bool = result.get("hits",[]).any(func(h): return h.get("id",-1)==0 and h.get("damage",0)>0)
 		var companion_hit: bool = result.get("hits",[]).any(func(h): return h.get("id",-1)==1 and h.get("damage",0)>0)
@@ -331,10 +472,12 @@ func resolve_enemy(plan: Dictionary, grades: Dictionary) -> Dictionary:
 	return result
 
 func enemy_intent(_id: int) -> Dictionary:
+	if mode=="order_trial":return {"title":"A medida do serviço","detail":"Alcança a casa dourada, acerta um golpe e responde de frente com Bom ou Perfeito. Recursos emprestados; R / Select sai sem penalidade."}
 	if mode=="practice": return {"title":"Armas emprestadas · "+PRACTICE_TIPS[style],"detail":"Compara alcance, área, custo e postura na previsão. R / Select sai durante qualquer ação. Nenhuma técnica é aprendida aqui."}
 	return {"title":caption,"detail":"Objetivo: experimentar a distância e responder ao golpe. Leonor tem Plenitude 3; a derrota continua a história, sem exigir vitória ou consumo de itens." if mode == "duel" else ("Básico num turno, técnica no seguinte. Espaço confirma o timing." if mode == "school" else "Observa o golpe e a orientação. A defesa acontece no timing inimigo.")}
 
 func lesson_result() -> Dictionary:
+	if mode=="order_trial":return {"finished":units[0].hp<=0 or (order_trial_positioned and order_trial_defended and valid_hits>0),"success":units[0].hp>0 and order_trial_positioned and order_trial_defended and valid_hits>0}
 	var finished := false
 	var success := true
 	match mode:
@@ -349,8 +492,10 @@ func lesson_result() -> Dictionary:
 
 func next_turn() -> Dictionary:
 	var result: Dictionary = super.next_turn()
+	Medida.turn(self)
 	if mode=="practice" and current_id==0: current().qi = current().max_qi
 	if current_id == 0:
+		order_guard="";order_exposed_face=-1
 		firearm_guard = false; firearm_moved = false
 		stationary_eligible = false; protective_ready = false; preparation = false
 	return result
@@ -367,7 +512,7 @@ func role_name(id: int) -> String:
 
 func mastered(actor: int,skill: int,definition: Dictionary) -> Dictionary:
 	var d: Dictionary = super.mastered(actor,skill,definition)
-	if actor>=2 or d.is_empty() or mode not in ["school","practice","perfect_defense","duarte_support","boarding"]: return d
+	if actor>=2 or d.is_empty() or mode not in ["school","practice","perfect_defense","duarte_support","boarding","order_trial"]: return d
 	var person := "hero" if actor==0 else "duarte"
 	if Development.member(combat_progress(),person).is_empty():
 		var legacy_power: int = int(d.get("power",0))
@@ -380,6 +525,9 @@ func mastered(actor: int,skill: int,definition: Dictionary) -> Dictionary:
 	if id in ["FO08","MC08"]:
 		d.protection = _guard_protection(id)
 		d.description = d.description.replace("30%",str(roundi(d.protection*100))+"%")
+	if id in ["ES09","PU09"]:
+		d.protection=(.30 if id=="ES09" else .20)+[0.0,.03,.05][rank-1]
+		d.description=d.description.replace("30%" if id=="ES09" else "20%",str(roundi(d.protection*100))+"%")
 	if int(d.get("power",0))>0:
 		var weapon_style := style if actor==0 else "LA"
 		var original_power: float = STYLES[weapon_style].power if actor==0 else 20.0
@@ -390,6 +538,7 @@ func mastered(actor: int,skill: int,definition: Dictionary) -> Dictionary:
 			var profile: Array = Development.SKILL_PROFILES[id]
 			technique_power = float(profile[0])*Development.power(combat_progress(),weapon_style,person,{},[profile[1],profile[2]])
 		var before_passive: float = (technique_power+gear)*(1.0+0.05*(rank-1))
+		if actor==0 and style=="MC" and units[0].get("medida_weight_until",-1)>=units[0].turns: before_passive*=1.15
 		d.power = floori(before_passive*float(d.get("chapter_power_factor",1.0)))
 		d.passive_power_bonus = int(d.power)-floori(before_passive)
 		if actor==0: d.posture += int((int(Development.member(combat_progress()).attributes.FOR)-5)*0.7)
@@ -402,6 +551,8 @@ func mastered(actor: int,skill: int,definition: Dictionary) -> Dictionary:
 			influence = "/".join(pair)
 		d.description += " Grau %s · %s."%[["I","II","III"][rank-1],influence]
 	return d
+func segment_open(from: Vector2i,to: Vector2i) -> bool:
+	return passable(to,0) and clear_line(from,to,0)
 func _guard_protection(id: String) -> float:
 	var rank := Development.grade(combat_progress(),id)
 	return 0.30+(0.05 if rank==3 else 0.03 if rank==2 else 0.0)
@@ -411,3 +562,36 @@ func _record_development_use(actor: int,skill: int) -> void:
 	if not battle_practice.has(person): battle_practice[person] = {}
 	var id: String = skill_def(actor,skill).get("content_id","basic")
 	battle_practice[person][id] = mini(6,int(battle_practice[person].get(id,0))+1)
+
+func area(actor: int,skill: int,aim: Vector2i) -> Array[Vector2i]:
+	if actor==0 and Medida.handles(skill): return Medida.cells(self,skill,aim)
+	return super.area(actor,skill,aim)
+func predict(actor: int,target: int,skill: int,quality: int,aim := Vector2i(-1,-1)) -> Dictionary:
+	if actor==0 and Medida.handles(skill): return Medida.predict(self,target,skill,quality,units[target].cell if aim==Vector2i(-1,-1) else aim)
+	var result: Dictionary=super.predict(actor,target,skill,quality,aim)
+	if actor==0 and style=="FO" and medida_state.get("mark_target",-1)==target and medida_state.get("mark_cell",Vector2i(-1,-1))==units[target].cell and medida_state.get("mark_until",-1)>=units[0].turns:
+		result.damage=roundi(int(result.damage)*1.35)
+	return result
+func push_destination(actor: int,target: int,steps := 1) -> Vector2i:
+	if units[target].get("medida_anchor",0)>0 and (not units[target].get("medida_anchor_front",false) or direction_index(units[actor].cell-units[target].cell)==int(units[target].face)): return units[target].cell
+	steps=maxi(0,steps-int(units[target].get("medida_anchor_steps",0)))
+	if steps==0: return units[target].cell
+	return super.push_destination(actor,target,steps)
+
+func support_preview(actor: int,skill: int,aim: Vector2i) -> Dictionary:
+	var result: Dictionary=super.support_preview(actor,skill,aim)
+	if actor==0 and Medida.handles(skill):
+		result.guard=false; result.cover=false
+		result.medida_effect=Medida.row(skill).effect
+		if skill_def(actor,skill).shape=="ally": result.medida_destinations=Medida.escort(self,unit_at(aim))
+	return result
+
+func medida_command(command: int) -> bool: return Medida.handles(command)
+func _medida_plan(plan: Dictionary) -> Dictionary:
+	if current().get("medida_slow",0)<=0: return plan
+	var path: Array=plan.get("path",[])
+	if not path.is_empty() and distance(path[-1],units[0].cell)<distance(current().cell,units[0].cell):
+		plan=plan.duplicate(true); plan.path.pop_back()
+		plan.destination=plan.path[-1] if not plan.path.is_empty() else current().cell
+		if distance(plan.destination,units[0].cell)>1 and Medida.is_contact(plan): plan.targets=[]; plan.cells=[]; plan.kind="approach"
+	return plan

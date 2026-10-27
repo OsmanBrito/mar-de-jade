@@ -23,6 +23,7 @@ func _ready() -> void:
 	terrain.hide()
 	preload("res://scripts/city/convent_scenery.gd").install(self)
 	load("res://scripts/city/house_life.gd").install(self)
+	load("res://scripts/city/order_house_hub.gd").install(self)
 	rebuild_navigation()
 	player.presentation.identity = "hero_child" if childhood else "hero"
 	player.camera_zoom = 1.12; player.camera.offset = Vector2(0,-100)
@@ -30,12 +31,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	super._process(delta)
 	if is_instance_valid(player) and player.enabled:
-		var wing := smoothstep(320,490,player.position.x)
-		var follow_y := clampf(player.position.y-85,-235,560)
-		var church := 1-smoothstep(70,270,player.position.y)
-		var center := Vector2(lerpf(Plan.CHAPEL_OFFSET.x*church,670,wing),lerpf(follow_y,clampf(follow_y,410,480),wing))
-		if player.position.x< -400 and player.position.y>240: center = Vector2(-750,500)
-		elif player.position.y<230 and player.position.x>400: center = Vector2(lerpf(680,1040,smoothstep(930,1070,player.position.x)),-20)
+		var center := Plan.camera_focus(player.position)
 		player.camera.offset = player.camera.offset.lerp(center-player.position,1-exp(-delta*3.5))
 func is_walkable_point(p: Vector2) -> bool:
 	return Plan.contains(p)

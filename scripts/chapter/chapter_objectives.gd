@@ -1,7 +1,9 @@
 extends RefCounted
 const TRAVEL := "Madeira é a primeira escala: preparar mantimentos e seguir para Duas Águas, onde uma caravela desapareceu. Vais como aprendiz sob Rodrigo; Duarte segue contigo."
 static func current(director) -> String:
+	var progress = director.get_node("/root/ChapterProgress")
 	if director.routes!=null and director.routes.active: return director.routes.objective()
+	if director.scene_index==0 and progress.flags.get("order_intro_started",false) and not progress.flags.get("order_reported",false): return preload("res://scripts/chapter/first_order_service.gd").current(progress)
 	if director.completed: return TRAVEL+" A Botafogo já largou; inicia a navegação."
 	if director.phase=="task":
 		var task:=preload("res://scripts/chapter/adult_arc.gd").task(director.task_id,director.task_step)
@@ -16,5 +18,6 @@ static func current(director) -> String:
 	if director.scene_index==6: return "Assiste à demonstração pública. O mestre da praça enfrenta o combatente e, depois, Leonor; a tua avaliação será reservada, junto do banco no fim da tarde."
 	if director.scene_index<=8: return "Junto do banco, Leonor quer ver o que sabes agora. Esta avaliação reservada é diferente da demonstração da manhã; usa o movimento, o ataque e a guarda."
 	if director.scene_index<=12: return "Aceita o auxílio de Duarte e Tomé. Bebe a água, recupera e só então regressa à prática."
+	if director.scene_index==13 and progress.flags.get("order_prepared",false): return "Retoma o pátio de Tomé depois da recuperação. A arma e os fundamentos escolhidos no primeiro serviço continuam teus; revê o repertório e pratica a Defesa Perfeita."
 	if director.scene_index==13: return "Retoma o pátio com Tomé, compara os cinco manejos e escolhe a arma inicial. Aprender e equipar passivas são ações separadas."
 	return TRAVEL

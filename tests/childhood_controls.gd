@@ -33,6 +33,7 @@ func run() -> void:
 	root.get_node("CampaignProfile").hero_name = "Miguel"
 	for scene in ["opening","plaza","training","forest_hunt","promise"]:
 		p.reset(); game = load("res://scenes/chapter_01/"+scene+".tscn").instantiate(); root.add_child(game); await frames()
+		for i in 8:await physics_frame
 		var menu = game.get_node("ChildhoodMenu")
 		var snapshot: Dictionary = p.snapshot()
 		var cursor: Variant = game.get("cursor") if scene=="forest_hunt" else game.get("event_index")

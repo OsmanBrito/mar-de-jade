@@ -1,6 +1,7 @@
 extends RefCounted
 ## Re-readable facts are gated by witnessed milestones, never by future objectives.
 static func context(index:int) -> String:
+	if index==0:return "Serviço da Ordem"
 	if index==6:return "Demonstração pública"
 	if index in [7,8]:return "Avaliação reservada"
 	if index in [9,10,11]:return "Depois do confronto"

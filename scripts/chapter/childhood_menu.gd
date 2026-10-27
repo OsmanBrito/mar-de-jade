@@ -98,10 +98,15 @@ func journal() -> void:
 	else:
 		var objective := "Explora a casa da Ordem. Leonor espera junto do banco na praça."
 		if not host.scene_file_path.ends_with("plaza.tscn"): objective = {"opening.tscn":"Conversa com Tomé no acolhimento.","training.tscn":"Aprende os fundamentos com Leonor.","promise.tscn":"Partilha a promessa com Leonor."}.get(host.scene_file_path.get_file(),objective)
+		if host.has_method("objective"): objective = host.objective()
 		text("Objetivo · "+objective)
 	if not House.stage(progress,true).is_empty(): text("A água da casa · "+House.objective(progress,true))
 	text("Lugares conhecidos",true)
 	var found := false
+	for id in preload("res://scripts/chapter/childhood_home_plan.gd").NOTES:
+		if progress.flags.get(id,false):
+			var row: Dictionary = preload("res://scripts/chapter/childhood_home_plan.gd").NOTES[id]
+			text(row.title+"\n"+row.text);found=true
 	for id in Plan.NOTES:
 		if Plan.observed(progress,id): text(Plan.NOTES[id].title+"\n"+Plan.NOTES[id].text); found = true
 	for id in progress.childhood_hunt.get("notes",[]):

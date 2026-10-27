@@ -161,15 +161,15 @@ func interact(requested: String = "") -> bool:
 
 func _fisher() -> void:
 	match Errands.stage(ChapterProgress,Errands.ACCOUNT):
-		"": _message("Pescadora","A passagem abriu depois do socorro; já consigo levar o peixe. Mas recebi aviso de sete caixas e só cinco chegaram à banca. Antes de cobrar outra entrega, podes conferir no pontão onde ficaram as duas?",[["Conferir o destino das duas caixas","account_accept"],["Agora não","close"]])
-		"dock": _message("Pescadora","Pergunta no pontão pelo registo das sete caixas. Não quero cobrar uma entrega que alguém já fez.")
+		"": _message("Pescadora",("Depois do socorro, já consegui trazer o peixe. " if ChapterProgress.flags.get("patient_helped",false) else "")+"Mandaram-me sete caixas. Aqui tenho cinco. Antes de ir reclamar ao armazém, podes perguntar no pontão onde ficaram as outras duas?",[["Conferir o destino das duas caixas","account_accept"],["Agora não","close"]])
+		"dock": _message("Pescadora","O trabalhador do pontão tem o registo. Se as outras duas já foram entregues, quero saber antes de reclamar.")
 		"kitchen": _message("Pescadora","Duas seguiram para a cozinha? A vizinha ajuda a organizar as porções; confirma com ela antes de fecharmos a conta.")
 		"reconcile": _message("Pescadora","Então, como ficaram as sete caixas?",[["Cinco na banca; duas entregues à cozinha","account_reconcile"],["Faltam duas: pedir outra entrega","account_wrong"],["Conferir mais tarde","close"]])
-		"completed": _message("Pescadora","A conta ficou certa. Já separei a parte da cozinha no registo; ninguém vai pagar duas vezes pela mesma entrega.")
+		"completed": _message("Pescadora","Já escrevi a parte da cozinha numa linha à parte. Hoje, ao menos, não ponho ninguém à procura de peixe que já está na panela.")
 
 func _neighbor() -> void:
 	if Errands.stage(ChapterProgress,Errands.ACCOUNT)=="kitchen":
-		_message("Vizinha","Chegaram duas caixas à cozinha antes do socorro. Fiquei com a conferência: duas aqui, cinco na banca. A pescadora pode fechar a conta.",[["Anotar a entrega e voltar à pescadora","account_kitchen"],["Voltar depois","close"]])
+		_message("Vizinha","Recebi duas, sim. Até assinei. Diz à pescadora que não as perdi; já estão a dar trabalho na cozinha. Com as cinco dela, são as sete.",[["Anotar a entrega e voltar à pescadora","account_kitchen"],["Voltar depois","close"]])
 	elif Errands.stage(ChapterProgress,Errands.ACCOUNT)=="completed": _message("Vizinha","A cozinha recebeu a parte certa, e o pontão deixou de procurar caixas que já tinham chegado. Obrigada por conferir antes de acusar alguém.")
 	else: _say("neighbor_done" if Requests.stage(ChapterProgress) in ["return","completed"] else "neighbor")
 
@@ -182,7 +182,7 @@ func _dock_topics() -> void:
 		elif state=="prepare": options.append(["Mostrar a ligadura e a água da sacola","kit_finish"])
 		else: options.append(["Rever o uso dos suprimentos a bordo","kit_advice"])
 	options.append(["Conversar sobre o trabalho do pontão","dock_work"]); options.append(["Voltar à rua","close"])
-	_message("Trabalhador do pontão","As peças pequenas ficam comigo. Também guardo a conta das entregas; diz o que precisas de conferir.",options)
+	_message("Trabalhador do pontão","Precisas de uma peça, ou vens pelas entregas? Tenho as duas coisas aqui, mas só uma delas cabe no bolso.",options)
 
 func _workshop() -> void:
 	match Requests.stage(ChapterProgress):
@@ -228,7 +228,7 @@ func _open(turns: Array, options: Array = []) -> void:
 		var hello := Social.introduction(ChapterProgress,conversation)
 		if not hello.is_empty() and not lines.is_empty():
 			lines[0][1]=hello+"\n\n"+str(lines[0][1]);_save("Conversa guardada · "+str(Social.TITLES[conversation]))
-		actions.insert(maxi(0,actions.size()-1),["Conversar sobre a cidade e o trabalho","city_life"])
+		actions.insert(maxi(0,actions.size()-1),["Como vão as coisas por aqui?","city_life"])
 		if not Optional.recall(ChapterProgress,conversation).is_empty(): actions.insert(maxi(0,actions.size()-1),["Recordar a floresta com Leonor","forest_memory"])
 	director.phase = "local_dialogue"; director._lock_player(true)
 	director.world.player.presentation.posture = "standing"
@@ -289,7 +289,7 @@ func choose(action: String) -> void:
 		"account_dock":
 			if not near("dock") or not Errands.advance(ChapterProgress,Errands.ACCOUNT,"dock","kitchen"): return
 			_save("Registo conferido · duas caixas seguiram para a cozinha")
-			_message("Trabalhador do pontão","Sete descarregadas: cinco para a banca, duas para a cozinha do cais. A vizinha recebeu as duas; confirma com ela, para não depender só da minha conta.")
+			_message("Trabalhador do pontão","Tenho aqui sete. Cinco seguiram para a banca; as outras duas, para a cozinha. A vizinha recebeu-as. Pergunta-lhe, ou vê os recibos na mesa do armazém.")
 		"account_kitchen":
 			if not near("neighbor") or not Errands.advance(ChapterProgress,Errands.ACCOUNT,"kitchen","reconcile"): return
 			_save("Entrega confirmada · volta à pescadora"); _message("Herói","A conta tem dois destinos. Vou explicar antes de pedirem outra carga.")
@@ -377,6 +377,10 @@ func _animate_repair() -> void:
 	world.rebuild_navigation(); director.busy = false
 
 func _save(message: String) -> void:
+	if message.begins_with("Pedido iniciado"):
+		var id: String = {"workshop":Requests.ID,"fisher":Errands.ACCOUNT,"dock":Errands.KIT,"keeper":Errands.BATEL}.get(conversation,"")
+		if not id.is_empty(): preload("res://scripts/chapter/request_guide.gd").track(ChapterProgress,id)
+	ChapterProgress.sync_development()
 	feedback = Items.persist(ChapterProgress,message)
 	if is_instance_valid(world):preload("res://scripts/city/work_results.gd").apply(world,ChapterProgress)
 

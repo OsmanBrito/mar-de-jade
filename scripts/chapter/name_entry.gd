@@ -68,7 +68,7 @@ func confirm() -> void:
 		return
 	name_field.text = CampaignProfile.hero_name
 	var destination = CampaignProfile.name_entry_destination
-	CampaignProfile.name_entry_destination = "res://scenes/chapter_01/opening.tscn"
+	CampaignProfile.name_entry_destination = "res://scenes/chapter_01/childhood_home.tscn"
 	get_tree().change_scene_to_file(destination)
 
 func resume_chapter() -> void:

@@ -1,6 +1,6 @@
 param(
     [string]$GodotExe = $env:GODOT_EXE,
-    [ValidateSet('character_development','weapon_choice','player_inventory','firearm','boarding','combat_economy','practice_freedom','integration_closure','campaign_continuity','chapter_rules','chapter_passives','interface_closure','navigation_campaign_entry','combat_feel','chapter_full')]
+    [ValidateSet('order_leadership','order_studies','order_house_costumes','order_house_hub','order_convent','house_life','optional_closure','order_first_service','character_development','weapon_choice','player_inventory','firearm','boarding','combat_economy','practice_freedom','integration_closure','campaign_continuity','chapter_rules','chapter_passives','interface_closure','navigation_campaign_entry','combat_feel','chapter_full')]
     [string[]]$Suites = @('character_development','weapon_choice','player_inventory','firearm','boarding','combat_economy','practice_freedom','integration_closure','campaign_continuity','chapter_rules','chapter_passives','interface_closure','navigation_campaign_entry','combat_feel','chapter_full')
 )
 $ErrorActionPreference = 'Stop'

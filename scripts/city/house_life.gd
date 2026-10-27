@@ -14,19 +14,28 @@ var pupil: Node2D
 var care_surface: Node2D
 var elapsed := 0.0
 var heard: Dictionary = {}
+var order_markers: Dictionary={}
 static func install(map: Node2D) -> void:
 	if Engine.is_editor_hint(): return
 	if map.has_node("HouseLife"): return
 	var life := Node2D.new(); life.name = "HouseLife"; life.set_script(load("res://scripts/city/house_life.gd")); life.world = map; map.add_child(life)
 	if map.has_meta("continuous_lisbon"):
-		life.person("IrmaoDaPortaria","attendant",Vector2(-855,110))
-		life.person("ResponsavelDosMantimentos","dock_woman",Vector2(-790,300))
+		life.person("IrmaoDaPortaria","order_brother",Vector2(-855,110))
+		life.person("ResponsavelDosMantimentos","order_cook",Vector2(-790,300))
 		life.pupil = life.person("AprendizDoAdro","shelter_child",Vector2(-820,350),false)
 		City.prop(map,"CisternaDoAdro","roman-well-refined-v1.png",Vector2(-935,245),Vector2(110,145),Rect2(-35,-22,70,30))
 		var table := preload("res://scripts/chapter/furniture_art.gd").place(map.sorted_world,"table",Vector2(-865,300),Vector2(85,70))
 		life.surface(table,false)
+		for id in preload("res://scripts/chapter/order_campaign.gd").CITY_ROWS:
+			var holder:=Node2D.new();holder.position=preload("res://scripts/chapter/order_campaign.gd").CITY_ROWS[id].at;map.sorted_world.add_child(holder)
+			var marker=preload("res://scripts/chapter/local_request_marker.gd").new();marker.caption=preload("res://scripts/chapter/order_campaign.gd").CITY_ROWS[id].title;marker.symbol="!";holder.add_child(marker);life.order_markers[id]=marker
+		# The manifest is an object at the loading point, not an empty marker.
+		if not map.childhood:
+			var desk=preload("res://scripts/chapter/furniture_art.gd").place(map.sorted_world,"table",Vector2(1535,1022),Vector2(68,50))
+			desk.name="OrderCargoManifest"
+			var papers:=Node2D.new();papers.name="Documents";papers.set_script(preload("res://scripts/city/order_service_props.gd"));papers.kind="registry";papers.scale=Vector2.ONE*.55;papers.position.y=8;desk.add_child(papers)
 	else:
-		life.person("AjudanteDaCozinha","worker",Vector2(1310,-40))
+		life.person("AjudanteDaCozinha","order_server",Vector2(1310,-40))
 		var table = map.sorted_world.get_node_or_null("Table")
 		if table!=null: life.care_surface = life.surface(table,true)
 	preload("res://scripts/city/house_ambience.gd").install(map)
@@ -41,7 +50,14 @@ func person(label: String,id: String,at: Vector2,solid: bool = true) -> Node2D:
 	return actor
 static func rows(map) -> Dictionary:
 	if not is_instance_valid(map) or not map.has_node("HouseLife"): return {}
-	return WARD if map.has_meta("order_convent") else EXTERIOR
+	if map.has_meta("order_convent"):
+		var combined: Dictionary = WARD.duplicate(true)
+		combined.merge(preload("res://scripts/city/order_house_hub.gd").ROWS)
+		combined.merge(preload("res://scripts/chapter/order_campaign.gd").rows(map))
+		return combined
+	var exterior: Dictionary=EXTERIOR.duplicate(true)
+	exterior.merge(preload("res://scripts/chapter/order_campaign.gd").rows(map))
+	return exterior
 static func child(map) -> bool: return bool(map.get("childhood"))
 static func prefix(young: bool) -> String: return "house_child_" if young else "house_adult_"
 static func stage(progress,young: bool) -> String:
@@ -64,6 +80,8 @@ static func objective(progress,young: bool) -> String:
 		"done": return "Concluído · A água foi entregue e a responsável confirmou a tarefa."
 	return "A responsável dos mantimentos organiza o trabalho no adro."
 static func talk(map,progress,id: String) -> Dictionary:
+	if preload("res://scripts/chapter/order_campaign.gd").rows(map).has(id):return preload("res://scripts/chapter/order_campaign.gd").talk(map,progress,id)
+	if map.has_meta("order_convent") and preload("res://scripts/city/order_house_hub.gd").ROWS.has(id): return preload("res://scripts/city/order_house_hub.gd").talk(map,progress,id)
 	var choices := rows(map)
 	if not choices.has(id): return {}
 	var young := child(map); var key := prefix(young); var state := stage(progress,young)
@@ -127,6 +145,11 @@ func _process(delta: float) -> void:
 	if not is_instance_valid(world.player): return
 	if not world.player.enabled: return
 	elapsed += delta
+	for id in order_markers:
+		var p=get_node("/root/ChapterProgress")
+		order_markers[id].available=p.flags.get("order_cargo_asked",false)
+		order_markers[id].symbol="✓" if p.flags.get("order_cargo_done",false) else "!"
+		order_markers[id].highlighted=world.player.position.distance_to(preload("res://scripts/chapter/order_campaign.gd").CITY_ROWS[id].at)<60
 	if is_instance_valid(pupil):
 		var target := Vector2(-820+sin(elapsed*.22)*40,350)
 		var before := pupil.position

@@ -41,7 +41,8 @@ func run() -> void:
 	root.get_node("CampaignProfile").hero_name="Inês"
 	game=load("res://scenes/chapter_01/chapter_flow.tscn").instantiate();game.start_block=3;root.add_child(game);await frames(8)
 	var life=game.world.get_node("CityLife")
-	check(life.walkers.size()==2,"Both public errand routes have clear endpoints")
+	var public_routes := ["RecadosDaRibeira","PassanteDaPraca","MoradoraDaTravessa","RecadosDoBairro"]
+	check(life.walkers.size()==4 and public_routes.all(func(id):return life.walkers.filter(func(person):return person.name==id).size()==1),"Four public routes have clear endpoints and one actor each")
 	var origins:Dictionary={}
 	for person in life.walkers:origins[person.name]=person.position
 	for i in 240:await physics_frame
@@ -98,7 +99,7 @@ func run() -> void:
 	game=load("res://scenes/chapter_01/chapter_flow.tscn").instantiate();root.add_child(game);await frames(7)
 	check(p.flags==remembered,"Reload does not reset first meetings or replay conversations")
 	var current_life=game.world.get_node("CityLife")
-	check(current_life.walkers.size()==2,"Reload installs exactly one pair of errand actors")
+	check(current_life.walkers.size()==4 and public_routes.all(func(id):return current_life.walkers.filter(func(person):return person.name==id).size()==1),"Reload installs each public route exactly once")
 	var before_flags:Dictionary=p.flags.duplicate()
 	p.flags.erase("patient_helped");p.flags.erase("patient_stable");p.flags.cargo_freed=true
 	var alarm:Dictionary=House.talk(game.world,p,"porter")

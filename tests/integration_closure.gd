@@ -32,10 +32,10 @@ func run():
 	p.inventory={"PT-Q01":1,"PT-W01":1,"PT-C01":2,"PT-C03":3};p.equipment={"weapon":"PT-W01"}
 	p.childhood_hunt={"stage":9,"position":[180,850],"notes":["shelter"]};p.flags.lisbon_tide_read=true
 	p.coins=40;p.vitals={"hp":80,"qi":7,"posture":75};p.companion_vitals={"duarte":{"hp":90,"qi":4,"posture":70}}
-	check(Content.data().items.size()==27 and Content.data().skills.size()==23,"The arc scope inventories all 27 items and 23 catalogue skills")
+	check(Content.data().items.size()==27 and Content.data().skills.size()==68,"The arc scope inventories all 27 items and 68 catalogue skills, including all 65 Medida techniques")
 	check(Content.executable("DU01") and not Content.executable("DU02") and not Content.executable("C01-DEMO-ES-01"),"Executable skills and temporary exercises are distinguished")
-	p.learn("C01-DEMO-ES-01");p.learn("ES01");p.learn("unknown")
-	check(not p.skills.has("ES01") and not p.skills.has("unknown"),"Catalogue-only skills and unknown IDs cannot be newly learned")
+	p.learn("C01-DEMO-ES-01");p.learn("DU02");p.learn("unknown")
+	check(not p.skills.has("DU02") and not p.skills.has("unknown"),"Catalogue-only skills and unknown IDs cannot be newly learned")
 	check(Content.data().items.all(func(id): return Items.items().has(id)) and Items.items().size()==Content.data().items.size(),"The playable item manifest exactly matches the runtime catalogue")
 	var journal=preload("res://scripts/chapter/campaign_journal.gd")
 	check(journal.notes(p).filter(func(row):return not row.id.begins_with("story:")).size()==2 and journal.notes(p).any(func(row): return row.id=="forest:shelter"),"The shared journal includes only observed forest and city discoveries")

@@ -121,9 +121,17 @@ func run() -> void:
 	check(p.load_from("user://forest-test.json")==OK and p.childhood_hunt.is_empty(),"Version 7 saves remain supported")
 	p.reset()
 	var training = load("res://scenes/chapter_01/training.tscn").instantiate(); root.add_child(training); current_scene = training; await frames(2)
-	training.phase = "complete"; training.advance(); await frames(5)
+	training.phase = "complete"; training.advance()
+	for i in 120:
+		await frames(1)
+		if current_scene.get_script().resource_path.ends_with("forest_hunt_director.gd"):break
 	check(current_scene.get_script().resource_path.ends_with("forest_hunt_director.gd"),"Training hands off to forest in the real scene tree")
-	game = current_scene; game.complete(); game.advance(); await frames(5)
+	game = current_scene; game.complete()
+	# Let the covered arrival finish before requesting another scene transfer.
+	await frames(30);game.advance()
+	for i in 120:
+		await frames(1)
+		if current_scene.get_script().resource_path.ends_with("promise_director.gd"):break
 	check(current_scene.get_script().resource_path.ends_with("promise_director.gd"),"Completed hunt continues to the approved childhood promise")
 	check(p.save_to("user://forest-test.json")==OK and p.load_from("user://forest-test.json")==OK,"Completed quest remains loadable after leaving the forest")
 	for suffix in ["",".bak",".tmp"]:

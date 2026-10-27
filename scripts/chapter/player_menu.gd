@@ -25,6 +25,12 @@ var row_buttons: Dictionary = {}
 var action_button: Button
 var pending_sale := ""
 var pending_binding := ""
+var knowledge_owner := "hero"
+var knowledge_category := "Todas"
+var knowledge_style := "Atual"
+var knowledge_rank := -1
+var mission_category := "Em curso"
+var mission_card_count := 0
 var tab_names := ["Personagem","Evolução","Armas","Inventário","Equipamento","Técnicas","Passivas","Pedidos","Conversas","Loja de Lisboa","Sistema"]
 
 func _ready() -> void:
@@ -47,12 +53,19 @@ func _ready() -> void:
 	resume_button.custom_minimum_size.x = 160
 	resume_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 	resume_button.autowrap_mode = TextServer.AUTOWRAP_OFF
-	var navigation := HFlowContainer.new(); navigation.add_theme_constant_override("h_separation",7); navigation.add_theme_constant_override("v_separation",5); column.add_child(navigation)
+	content = HBoxContainer.new(); content.size_flags_vertical = Control.SIZE_EXPAND_FILL; content.add_theme_constant_override("separation",16); column.add_child(content)
+	var navigation_scroll := ScrollContainer.new(); navigation_scroll.custom_minimum_size.x = GamePreferences.font_size(160)
+	navigation_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; navigation_scroll.follow_focus = true; content.add_child(navigation_scroll)
+	var navigation := VBoxContainer.new(); navigation.size_flags_horizontal = Control.SIZE_EXPAND_FILL; navigation_scroll.add_child(navigation)
 	for name in tab_names:
-		tabs[name] = button(navigation,name,switch_page.bind(name)); tabs[name].size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		tabs[name].custom_minimum_size.x = tabs[name].get_theme_font("font").get_string_size(name,HORIZONTAL_ALIGNMENT_LEFT,-1,GamePreferences.font_size(17)).x+28
-	column.add_child(HSeparator.new())
-	content = HBoxContainer.new(); content.size_flags_vertical = Control.SIZE_EXPAND_FILL; content.add_theme_constant_override("separation",24); column.add_child(content)
+		if name in ["Personagem","Inventário","Pedidos","Sistema"]:
+			navigation.add_child(label({"Personagem":"PERSONAGEM","Inventário":"PERTENCES","Pedidos":"JORNADA","Sistema":"JOGO"}[name],12,Color("a3bab0")))
+		tabs[name] = button(navigation,"Missões" if name=="Pedidos" else name,switch_page.bind(name)); tabs[name].alignment = HORIZONTAL_ALIGNMENT_LEFT
+	for i in tab_names.size():
+		var node: Button = tabs[tab_names[i]]
+		node.focus_neighbor_right = node.get_path_to(tabs[tab_names[(i+1)%tab_names.size()]])
+		node.focus_neighbor_left = node.get_path_to(tabs[tab_names[posmod(i-1,tab_names.size())]])
+	content.add_child(VSeparator.new())
 	var scroll := ScrollContainer.new(); scroll.custom_minimum_size.x = 270; scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; scroll.follow_focus = true; content.add_child(scroll)
 	summary_scroll = scroll
 	summary = VBoxContainer.new(); summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL; summary.add_theme_constant_override("separation",8); scroll.add_child(summary)
@@ -71,8 +84,10 @@ func _ready() -> void:
 
 func _resize_columns() -> void:
 	var width := get_viewport().get_visible_rect().size.x
-	summary_scroll.custom_minimum_size.x = clampf(width*.19,160,270)
-	details_scroll.custom_minimum_size.x = clampf(width*.23,200,320)
+	summary_scroll.visible = width >= 1150
+	content.get_child(3).visible = width >= 1150
+	summary_scroll.custom_minimum_size.x = clampf(width*.14,120,200)
+	details_scroll.custom_minimum_size.x = clampf(width*.25,220,360)
 
 func label(value: String, font_size: int = 17, color := Color("e8dfc8")) -> Label:
 	var node := Label.new(); node.text = value; node.add_theme_font_size_override("font_size",GamePreferences.font_size(font_size))
@@ -95,6 +110,7 @@ func clear(parent: Node) -> void:
 
 func open(initial: String = "Personagem") -> void:
 	ChapterProgress.sync_development()
+	knowledge_owner = "hero"; knowledge_category = "Todas"; knowledge_style = "Atual"; knowledge_rank = -1
 	page = initial; filter = "Todos"; selected = ""; pending_sale = ""; screen.show(); refresh()
 	notice.text = "Progresso guardado no início de cada etapa. A mochila conserva as tuas alterações."
 	if director.routes.active: notice.text = "O percurso conserva o local e o compromisso atual. A mochila conserva as tuas alterações."
@@ -104,6 +120,7 @@ func close() -> void:
 	screen.hide(); pending_sale = ""; pending_binding = ""
 
 func switch_page(value: String) -> void:
+	knowledge_category = "Todas"
 	page = value; selected = ""; filter = "Todos"; pending_sale = ""; refresh()
 	tabs[page].grab_focus()
 
@@ -115,9 +132,9 @@ func refresh() -> void:
 	var hero_name := label(CampaignProfile.hero_name,29,Color("e6cb8d"))
 	hero_name.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS; hero_name.tooltip_text = CampaignProfile.hero_name; summary.add_child(hero_name)
 	summary.add_child(label("19 anos  ·  Aprendiz",16))
-	var art := preload("res://scripts/chapter/hero_portrait.gd").new(); art.custom_minimum_size = Vector2(244,160); summary.add_child(art)
+	var art := preload("res://scripts/chapter/hero_portrait.gd").new(); art.custom_minimum_size = Vector2(120,110); summary.add_child(art)
 	summary.add_child(label(Items.STYLES[p.style],22,Color("e6cb8d")))
-	paragraph(summary,"Em recuperação · aguarda o tratamento de Tomé." if p.flags.get("injured",false) else "%s %d"%[Items.Development.RANKS[int(p.development.members.hero.cultivation.rank)],p.development.members.hero.cultivation.step] if p.flags.get("recovered",false) else "Antes do ensino de Tomé")
+	paragraph(summary,"Em recuperação · aguarda o tratamento de Tomé." if p.flags.get("injured",false) else "%s %d"%[Items.Development.RANKS[int(p.development.members.hero.cultivation.rank)],p.development.members.hero.cultivation.step] if p.skills.any(func(id): return id in ["ES07","LA07","MC08","FO07","PU07"]) else "Antes do ensino de Tomé")
 	var stats := Items.stats(p)
 	for key in ["hp","qi","posture"]:
 		var value := "%d / %d" % [int(p.vitals[key]),int(stats[key])]
@@ -138,7 +155,98 @@ func refresh() -> void:
 		"Pedidos": requests_page()
 		"Conversas": history_page()
 
+func mission_card(title: String, status: String, objective: String, callback: Callable) -> void:
+	mission_card_count += 1
+	var card := button(listing,title+"\n"+status,func():
+		clear(details); paragraph(details,title,Color("e6cb8d")).add_theme_font_size_override("font_size",24)
+		paragraph(details,status,Color("8cd7b7")); paragraph(details,"Próximo passo",Color("e6cb8d")); paragraph(details,objective)
+		if callback.is_valid(): button(details,"Acompanhar missão",callback))
+	card.alignment=HORIZONTAL_ALIGNMENT_LEFT; card.custom_minimum_size.y=72
+
 func requests_page() -> void:
+	mission_card_count = 0
+	listing.add_child(label("Diário de missões",25,Color("e6cb8d")))
+	var filters := HFlowContainer.new(); listing.add_child(filters)
+	for category in ["Em curso","Concluídas","Arquivo"]:
+		button(filters,("● " if mission_category==category else "")+category,func(): mission_category=category; refresh())
+	if mission_category=="Arquivo": requests_archive(); return
+	var p=ChapterProgress
+	var order=preload("res://scripts/chapter/order_campaign.gd")
+	var completed := mission_category=="Concluídas"
+	if not completed:
+		mission_card("Compromisso principal","HISTÓRIA",director.routes.goal_label if director.routes.active else preload("res://scripts/chapter/chapter_objectives.gd").current(director),stop_tracking)
+		if order.ready(p) and not p.flags.get("order_audience_done",false):
+			mission_card("O nome no livro","ORDEM · AUDIÊNCIA","Procura o Grão-Mestre na Sala do Capítulo, pelo corredor norte da secretaria. Apresenta o primeiro serviço.",func(): p.choices.tracked_request="ORDER-AUDIENCE"; refresh())
+	var stage: String=order.cargo_stage(p)
+	if stage!="" and (stage=="done")==completed:
+		mission_card("A carga da Ordem","CONCLUÍDA" if completed else "ORDEM · INVESTIGAÇÃO · %d / 3 registos"%[[p.flags.get("order_cargo_ledger",false),p.flags.get("order_cargo_manifest",false),p.flags.get("order_cargo_recipient",false)].count(true)],order.objective(p),Callable() if completed else func(): p.choices.tracked_request="ORDER-CARGO"; refresh())
+	var errands=preload("res://scripts/chapter/lisbon_errands.gd")
+	for id in errands.DEFINITIONS:
+		var progress: String=errands.stage(p,id)
+		if progress.is_empty() or (progress=="completed")!=completed: continue
+		var row: Dictionary=errands.DEFINITIONS[id]
+		mission_card(row.title,"CONCLUÍDA" if completed else "LISBOA · PEDIDO",row.objectives[progress],Callable() if completed else track_request.bind(id))
+	var local=preload("res://scripts/chapter/local_request_state.gd")
+	stage=local.stage(p)
+	if not stage.is_empty() and (stage=="completed")==completed:
+		mission_card(local.definition().title,"CONCLUÍDA" if completed else "LISBOA · PEDIDO",local.objective(p),Callable() if completed else track_request.bind(local.ID))
+	if completed:
+		for row in order.notes(p):
+			if row.id=="order:cargo" and order.cargo_stage(p)!="done": continue
+			mission_card(row.title,"REGISTO DA ORDEM",row.text,Callable())
+		if p.flags.get("order_reported",false):
+			for row in preload("res://scripts/chapter/first_order_service.gd").notes(p): mission_card(row.title,"CONCLUÍDA",row.text,Callable())
+	else:
+		var house=preload("res://scripts/city/house_life.gd")
+		var young: bool=director.world.get("childhood")==true
+		if house.stage(p,young) not in ["","done"]: mission_card("A água da casa","CASA · PEDIDO OPCIONAL",house.objective(p,young),Callable())
+		if director.routes.active and director.routes.state.kind=="order_help":
+			mission_card("A roda presa","PEDIDO ACOMPANHADO",preload("res://scripts/chapter/first_order_service.gd").help_objective(p),Callable())
+		var hub=preload("res://scripts/city/order_house_hub.gd")
+		if hub.meal_stage(p) not in ["","done"]: mission_card("A mesa de quem fica","ORDEM · SERVIÇO",hub.meal_objective(p),track_order_meal)
+		for row in preload("res://scripts/chapter/first_order_service.gd").notes(p):
+			if not p.flags.get("order_reported",false): mission_card(row.title,"ORDEM · PRIMEIRO SERVIÇO",row.text,Callable())
+	var house=preload("res://scripts/city/house_life.gd")
+	if completed and house.stage(p,director.world.get("childhood")==true)=="done": mission_card("A água da casa","CONCLUÍDA",house.objective(p,director.world.get("childhood")==true),Callable())
+	if completed and mission_card_count==0: paragraph(listing,"Ainda não concluíste pedidos. Os que terminares ficam aqui para recordar.")
+	if not completed and p.choices.has("tracked_request"):
+		var tracked: String = preload("res://scripts/chapter/request_guide.gd").objective(p,p.choices.tracked_request)
+		if not tracked.is_empty():
+			paragraph(details,"Pedido acompanhado",Color("e6cb8d")); paragraph(details,tracked)
+			button(details,"Retomar missão principal",stop_tracking)
+	paragraph(details,"Seleciona uma missão para ver o próximo passo e acompanhar. O Arquivo reúne lugares, acontecimentos e todos os registos.")
+
+func requests_archive() -> void:
+	var order_campaign=preload("res://scripts/chapter/order_campaign.gd")
+	if order_campaign.ready(ChapterProgress) and not ChapterProgress.flags.get("order_audience_done",false):
+		paragraph(listing,"A Ordem recebe o teu relato",Color("e6cb8d"));paragraph(listing,"A Sala do Capítulo fica pelo corredor norte da secretaria. A liderança pode autorizar os estudos da casa.")
+		button(listing,"Acompanhar · audiência na Sala do Capítulo",func():ChapterProgress.choices.tracked_request="ORDER-AUDIENCE";refresh())
+	for row in order_campaign.notes(ChapterProgress):
+		paragraph(listing,row.title,Color("e6cb8d"));paragraph(listing,row.text)
+	if order_campaign.cargo_stage(ChapterProgress) not in ["","done"]:
+		button(listing,"Acompanhar a carga da Ordem",func():ChapterProgress.choices.tracked_request="ORDER-CARGO";refresh())
+	var hub = preload("res://scripts/city/order_house_hub.gd")
+	if hub.meal_stage(ChapterProgress)!="":
+		listing.add_child(label("Ordem · A mesa de quem fica",23,Color("e6cb8d")))
+		paragraph(listing,hub.meal_objective(ChapterProgress))
+		if hub.meal_stage(ChapterProgress)!="done": button(listing,"Acompanhar serviço da vigília",track_order_meal)
+	if ChapterProgress.choices.has("tracked_request") and not (director.routes.active and director.routes.state.kind=="order_help"):
+		listing.add_child(label("Pedido acompanhado",23,Color("e6cb8d")))
+		paragraph(listing,preload("res://scripts/chapter/request_guide.gd").objective(ChapterProgress,ChapterProgress.choices.tracked_request))
+		button(listing,"Parar de acompanhar · retomar missão principal",stop_tracking)
+	var order = preload("res://scripts/chapter/first_order_service.gd")
+	for row in order.notes(ChapterProgress):
+		if ChapterProgress.flags.get("order_reported",false):
+			button(listing,row.title+" · concluído",func(): clear(details); paragraph(details,row.title,Color("e6cb8d")); paragraph(details,row.text))
+		else:
+			listing.add_child(label(row.title,23,Color("e6cb8d"))); paragraph(listing,row.text)
+	if director.routes.active and director.routes.state.kind=="order_help":
+		listing.add_child(label("Pedido acompanhado · A roda presa",23,Color("e6cb8d")))
+		paragraph(listing,order.help_objective(ChapterProgress))
+		button(listing,"Retomar missão principal com Duarte · guardar pedido",func():
+			director._menu(); director.routes.arrive_order())
+	listing.add_child(label("Compromisso atual · missão principal",23,Color("e6cb8d")))
+	paragraph(listing,director.routes.goal_label if director.routes.active else preload("res://scripts/chapter/chapter_objectives.gd").current(director))
 	paragraph(listing,preload("res://scripts/chapter/optional_arc.gd").availability(ChapterProgress))
 	var story:=preload("res://scripts/chapter/adult_arc.gd").notes(ChapterProgress)
 	if not story.is_empty():listing.add_child(label("Acontecimentos conhecidos",22,Color("e6cb8d")))
@@ -147,8 +255,7 @@ func requests_page() -> void:
 	var memories:=preload("res://scripts/chapter/optional_arc.gd").memories(ChapterProgress)
 	for memory in memories:
 		button(listing,memory.title,func(): clear(details); paragraph(details,memory.title,Color("e6cb8d")); paragraph(details,memory.text))
-	listing.add_child(label("Compromisso atual",25,Color("e6cb8d")))
-	paragraph(listing,preload("res://scripts/chapter/chapter_objectives.gd").current(director))
+
 	var house = preload("res://scripts/city/house_life.gd")
 	var young: bool = director.world.get("childhood")==true
 	if not house.stage(ChapterProgress,young).is_empty():
@@ -190,6 +297,7 @@ func requests_page() -> void:
 		listing.add_child(label(row.title,22,Color("e6cb8d")))
 		paragraph(listing,"Concluído" if progress=="completed" else "Em curso")
 		paragraph(listing,row.summary); paragraph(listing,row.objectives[progress]); listing.add_child(HSeparator.new())
+		if progress!="completed": button(listing,"Acompanhar este pedido",track_request.bind(id))
 	var requests = preload("res://scripts/chapter/local_request_state.gd")
 	listing.add_child(label("Pedidos de Lisboa",25,Color("e6cb8d")))
 	var state: String = requests.stage(ChapterProgress)
@@ -206,6 +314,7 @@ func requests_page() -> void:
 	paragraph(listing,"Concluído" if state=="completed" else "Em curso",Color("a3c9b3"))
 	paragraph(listing,row.summary)
 	paragraph(listing,requests.objective(ChapterProgress))
+	if state!="completed": button(listing,"Acompanhar A roda presa",track_request.bind(requests.ID))
 	paragraph(details,"O que aconteceu",Color("e6cb8d"))
 	for step in requests.STAGES:
 		paragraph(details,"• "+row.history[step])
@@ -215,7 +324,7 @@ func requests_page() -> void:
 func history_page() -> void:
 	listing.add_child(label("Conversas recentes",25,Color("e6cb8d")))
 	paragraph(details,"Últimas 200 falas vistas na campanha, conservadas entre cenas e no progresso guardado. Fechar conserva a fala e a tarefa atuais.")
-	if director.view.history.is_empty(): paragraph(listing,"Ainda não há falas registradas nesta campanha.")
+	if director.view.history.is_empty(): paragraph(listing,"Ainda não há falas registadas nesta campanha.")
 	for row in director.view.history:
 		paragraph(listing,row.speaker,Color("e6cb8d"))
 		var line := paragraph(listing,row.text)
@@ -249,7 +358,7 @@ func shop_reason() -> String:
 	if director.world.has_meta("order_convent"): return "As provisões são vendidas pelo comerciante na Ribeira."
 	if director.busy or ChapterProgress.flags.get("injured",false): return "Termina esta sequência e recupera antes de visitar a loja."
 	if director.map_kind not in ["cais","service","plaza","courtyard"] or (ChapterProgress.flags.get("embarked",false) and ChapterProgress.journey.get("kind","")!="port_visit"): return "A loja fica em Lisboa. Visita-a nas pausas no cais, na praça ou no pátio."
-	if director.phase not in ["block_end","styles","styles_result","equipment","exploration","roaming"]: return "Termina esta etapa para visitar a loja numa pausa segura."
+	if director.phase not in ["block_end","styles","styles_result","equipment","exploration","roaming","order_supply"]: return "Termina esta etapa para visitar a loja numa pausa segura."
 	return ""
 
 func inventory_page() -> void:
@@ -302,7 +411,7 @@ func draw_item() -> void:
 	var row: Dictionary = Items.items()[selected]
 	var color := Color(row.rarity_color)
 	var icon := TextureRect.new(); icon.texture = load(row.icon); icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; icon.custom_minimum_size = Vector2(270,170); details.add_child(icon)
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; icon.custom_minimum_size = Vector2(120,100); details.add_child(icon)
 	paragraph(details,row.name,Color("e6cb8d")).add_theme_font_size_override("font_size",24)
 	paragraph(details,"Nv. %d · %s" % [row.rarity_level,row.rarity_name],color)
 	paragraph(details,row.description)
@@ -375,30 +484,133 @@ func trade_selected() -> void:
 
 func knowledge_page() -> void:
 	var passive := page == "Passivas"
-	listing.add_child(label("Passivas · quatro vagas por pessoa" if passive else "Técnicas aprendidas",24,Color("e6cb8d")))
-	if not passive: button(listing,"Organizar as seis vagas ativas",switch_page.bind("Evolução"))
+	listing.add_child(label("Passivas · quatro vagas por pessoa" if passive else "Técnicas e manuais",24,Color("e6cb8d")))
+	paragraph(listing,"Efeitos automáticos enquanto equipadas. Conhecer uma passiva não a equipa." if passive else "Aprender → preparar → usar em combate. Comprar não ocupa uma vaga.")
+	var shortcuts := HBoxContainer.new(); listing.add_child(shortcuts)
+	button(shortcuts,"Ver técnicas" if passive else "Ver passivas",switch_page.bind("Técnicas" if passive else "Passivas"))
+	var people := HBoxContainer.new(); listing.add_child(people)
+	for person in ["hero","duarte"]:
+		var choice := button(people,("● " if knowledge_owner==person else "")+(CampaignProfile.hero_name if person=="hero" else "Duarte"),func(): knowledge_owner=person; refresh())
+		choice.disabled = Items.Development.member(ChapterProgress,person).is_empty()
+	var slots: Array = (ChapterProgress.equipped_passives if knowledge_owner=="hero" else ChapterProgress.duarte_equipped_passives) if passive else Items.Development.member(ChapterProgress,knowledge_owner).get("active_skills",[])
+	paragraph(listing,"%d / %d vagas ocupadas"%[slots.size(),4 if passive else 6],Color("e6cb8d"))
+	var categories := HFlowContainer.new(); listing.add_child(categories)
+	for category in (["Todas","Equipadas","Conhecidas"] if passive else ["Todas","Preparadas","Aprendidas","Disponíveis"]):
+		button(categories,("● " if knowledge_category==category else "")+category,func(): knowledge_category=category; selected=""; refresh())
+	if not passive and knowledge_owner=="hero":
+		var selectors := HBoxContainer.new(); listing.add_child(selectors)
+		var styles := OptionButton.new(); styles.size_flags_horizontal=Control.SIZE_EXPAND_FILL; styles.custom_minimum_size.y=42; styles.fit_to_longest_item=false; selectors.add_child(styles)
+		var style_keys: Array=["Atual","Todos","ES","LA","MC","FO","PU"]
+		for key in style_keys: styles.add_item("Arma atual" if key=="Atual" else "Todos os manejos" if key=="Todos" else Items.STYLES[key])
+		styles.select(style_keys.find(knowledge_style)); styles.item_selected.connect(func(index): knowledge_style=style_keys[index]; refresh())
+		var ranks := OptionButton.new(); ranks.size_flags_horizontal=Control.SIZE_EXPAND_FILL; ranks.custom_minimum_size.y=42; ranks.fit_to_longest_item=false; selectors.add_child(ranks)
+		ranks.add_item("Todos os patamares")
+		for title in preload("res://scripts/chapter/order_techniques.gd").RANKS: ranks.add_item(title)
+		ranks.select(knowledge_rank+1); ranks.item_selected.connect(func(index): knowledge_rank=index-1; refresh())
 	var rows: Array = JSON.parse_string(FileAccess.get_file_as_string("res://data/chapter_01/"+("passives.json" if passive else "skill_icons.json")))["passives" if passive else "skills"]
 	var owned: Array = ChapterProgress.passives if passive else ChapterProgress.skills
 	var count := 0
+	var first: Dictionary = {}
+	var chosen: Dictionary = {}
 	for row in rows:
-		if not owned.has(row.id): continue
+		if ("duarte" if row.id.begins_with("DU") else "hero") != knowledge_owner: continue
+		if not passive and not owned.has(row.id) and (not preload("res://scripts/combat/order_studies.gd").NAMES.has(row.id)): continue
+		if not passive and knowledge_category=="Preparadas" and not slots.has(row.id): continue
+		if not passive and knowledge_category=="Aprendidas" and not owned.has(row.id): continue
+		if passive and knowledge_category=="Equipadas" and not slots.has(row.id): continue
+		if passive and knowledge_category=="Conhecidas" and not owned.has(row.id): continue
+		if not passive and knowledge_category=="Disponíveis" and (owned.has(row.id) or not preload("res://scripts/chapter/order_techniques.gd").reason(ChapterProgress,row.id).is_empty()): continue
+		if not passive and knowledge_owner=="hero" and preload("res://scripts/chapter/order_techniques.gd").rows().has(row.id):
+			var entry: Dictionary=preload("res://scripts/chapter/order_techniques.gd").rows()[row.id]
+			if knowledge_style!="Todos" and entry.style!=(ChapterProgress.style if knowledge_style=="Atual" else knowledge_style): continue
+			if knowledge_rank>=0 and (0 if row.id=="FO10" else int(entry.rank))!=knowledge_rank: continue
 		count += 1
-		var equipped: Array = ChapterProgress.duarte_equipped_passives if row.id.begins_with("DU") else ChapterProgress.equipped_passives
-		var node := button(listing,("✓ " if passive and equipped.has(row.id) else "")+row.name+(" · Duarte" if row.id.begins_with("DU") else ""),show_knowledge.bind(row,passive))
-		node.icon = load(row.icon); node.expand_icon = true; node.add_theme_constant_override("icon_max_width",46); node.custom_minimum_size.y = 62
-	if count == 0: paragraph(listing,"Tomé ainda não ensinou estas práticas.")
-	paragraph(details,"Escolhe uma prática para consultar os detalhes. Os exercícios C01-DEMO são temporários; as restantes técnicas do catálogo amplo pertencem a etapas posteriores.")
+		var state: String
+		if passive:
+			state = "Equipada" if slots.has(row.id) else "Conhecida · na reserva" if owned.has(row.id) else "Bloqueada · por descobrir"
+		elif owned.has(row.id):
+			state = "Reação · não ocupa vaga" if row.id=="DP01" else "Preparada" if slots.has(row.id) else "Aprendida · na reserva"
+		elif preload("res://scripts/chapter/order_campaign.gd").purchased(ChapterProgress,row.id):
+			state = "Manual adquirido · aprender"
+		elif not preload("res://scripts/chapter/order_techniques.gd").reason(ChapterProgress,row.id).is_empty():
+			state = "Bloqueada · ver requisitos"
+		else:
+			var price: int = preload("res://scripts/chapter/order_techniques.gd").price(row.id)
+			state = "Disponível · gratuita" if price==0 else "Disponível · %d ouro"%price
+		var node := button(listing,row.name+"\n"+state,func(): selected=row.id; show_knowledge(row,passive))
+		node.alignment=HORIZONTAL_ALIGNMENT_LEFT
+		node.icon = load(row.icon); node.expand_icon = true; node.add_theme_constant_override("icon_max_width",46); node.custom_minimum_size.y = 68
+		row_buttons[row.id]=node
+		if first.is_empty(): first=row
+		if selected==row.id: chosen=row
+	if count == 0:
+		paragraph(listing,"Nenhuma prática neste filtro. Experimenta Todas ou outro manejo.")
+		paragraph(details,"Técnicas: seis vagas. Passivas: quatro. Seleciona uma prática para ver efeito e requisitos.")
+	else:
+		var initial: Dictionary = first if chosen.is_empty() else chosen
+		selected=initial.id
+		show_knowledge(initial,passive)
 
 func show_knowledge(row: Dictionary, passive: bool) -> void:
-	clear(details); paragraph(details,row.name,Color("e6cb8d")).add_theme_font_size_override("font_size",24)
-	paragraph(details,"Nv. %d · %s" % [row.rarity_level,row.rarity_name],Color(row.rarity_color))
+	selected=row.id
+	details_scroll.set_deferred("scroll_vertical",0)
+	for id in row_buttons:
+		row_buttons[id].modulate=Color("e6cb8d") if id==row.id else Color.WHITE
+	clear(details)
+	var icon := TextureRect.new(); icon.texture=load(row.icon); icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED; icon.custom_minimum_size=Vector2(72,72); details.add_child(icon)
+	paragraph(details,row.name,Color("e6cb8d")).add_theme_font_size_override("font_size",24)
+	paragraph(details,"Raridade · "+row.rarity_name,Color(row.rarity_color))
+	if passive and not ChapterProgress.passives.has(row.id):
+		paragraph(details,"Bloqueada · ainda não conhecida",Color("e6cb8d"))
+		paragraph(details,row.effect)
+		paragraph(details,"Como obter: "+(row.unlock.get_slice(": ",1) if row.unlock.begins_with("C01-") else row.unlock))
+		paragraph(details,"Depois de a conheceres, equipa-a numa das quatro vagas. As passivas deste arco são aprendidas na campanha; não se compram neste catálogo.")
+		return
 	if not passive:
+		if not ChapterProgress.skills.has(row.id):
+			var order = preload("res://scripts/chapter/order_campaign.gd")
+			paragraph(details,preload("res://scripts/combat/order_studies.gd").TEXT.get(row.id,""))
+			paragraph(details,"%s · %d alento"%[Items.STYLES[row.id.substr(0,2)],preload("res://scripts/combat/order_studies.gd").COSTS[row.id]])
+			var book=preload("res://scripts/chapter/order_techniques.gd")
+			paragraph(details,book.requirements(row.id),Color("e6cb8d"))
+			if not order.purchased(ChapterProgress,row.id):
+				paragraph(details,"Ensino gratuito. Conserva o vale e as vagas preparadas." if book.price(row.id)==0 else "%d ouro · ou 1 vale. Aprendes na compra; o repertório é preservado."%book.price(row.id))
+				var shown_reasons: Array[String]=[]
+				for voucher in ([false] if book.price(row.id)==0 else [false,true]):
+					var reason: String=order.acquire_reason(ChapterProgress,row.id,voucher)
+					var buy := button(details,"Aprender com vale" if voucher else "Aprender gratuitamente" if book.price(row.id)==0 else "Comprar e aprender · %d ouro"%book.price(row.id),func():
+						if not development_safe(): return
+						var message: String=order.acquire(ChapterProgress,row.id,voucher)
+						message=Items.persist(ChapterProgress,message)
+						refresh(); show_knowledge(row,false); notice.text=message)
+					buy.disabled=not reason.is_empty() or not development_safe()
+					if not reason.is_empty() and not shown_reasons.has(reason):
+						shown_reasons.append(reason); paragraph(details,reason,Color("e6cb8d"))
+				if not development_safe(): paragraph(details,"Procura uma pausa segura para aprender.")
+				return
+			var reason: String = order.study_reason(ChapterProgress,row.id)
+			var learn := button(details,"Aprender técnica",func():
+				if not development_safe(): return
+				var message: String = order.study(ChapterProgress,row.id)
+				message = Items.persist(ChapterProgress,message)
+				refresh(); show_knowledge(row,false); notice.text=message)
+			learn.disabled = not reason.is_empty() or not development_safe()
+			if not reason.is_empty(): paragraph(details,reason)
+			if not development_safe(): paragraph(details,"Procura uma pausa segura para estudar.")
+			return
 		paragraph(details,("Aprendida · " if preload("res://scripts/chapter/arc_content.gd").executable(row.id) else "Registro de catálogo antigo · não executável neste arco · ")+("Duarte" if row.id.begins_with("DU") else CampaignProfile.hero_name))
-		if row.id in ["ES07","LA07","MC08","FO07","FO01","FO08","FO09","PU07"]:
+		if preload("res://scripts/chapter/order_techniques.gd").rows().has(row.id) and not preload("res://scripts/chapter/order_techniques.gd").LEGACY.has(row.id):
+			var book=preload("res://scripts/chapter/order_techniques.gd")
+			var entry: Dictionary=book.rows()[row.id]
+			paragraph(details,"%s · %d alento · %s"%[Items.STYLES[entry.style],entry.cost,entry.geometry])
+			paragraph(details,entry.effect); paragraph(details,entry.limit)
+			paragraph(details,book.requirements(row.id))
+		elif row.id in ["ES07","LA07","MC08","FO07","FO01","FO08","FO09","PU07","ES09","LA09","MC09","FO10","PU09"]:
 			var style: String = row.id.substr(0,2)
 			var rules = preload("res://scripts/combat/campaign_rules.gd").new()
 			rules.start_encounter("school",CampaignProfile.hero_name,style)
-			var action: int = {"FO01":2,"FO08":8,"FO09":3}.get(row.id,1)
+			var action: int = 100 if row.id in ["ES09","LA09","MC09","FO10","PU09"] else {"FO01":2,"FO08":8,"FO09":3}.get(row.id,1)
 			var definition: Dictionary = rules.skill_def(0,action)
 			paragraph(details,"%s · %d alento\nPotência %d · Alcance %s" % [Items.STYLES[style],definition.cost,definition.power,"próprio" if definition.shape=="self" else str(definition.range)])
 			paragraph(details,definition.description)
@@ -411,8 +623,18 @@ func show_knowledge(row: Dictionary, passive: bool) -> void:
 		elif row.id == "DU02": paragraph(details,"Registro antigo conservado. Ponta da Guarda pertence ao catálogo de etapas posteriores; neste arco Duarte usa o básico e Guarda Companheira.")
 		if row.id!="DP01" and preload("res://scripts/chapter/arc_content.gd").executable(row.id):
 			var owner := preload("res://scripts/chapter/arc_content.gd").owner(row.id)
+			var grade: int=Items.Development.grade(ChapterProgress,row.id,owner)
+			var practice: int=Items.Development.member(ChapterProgress,owner).get("practice",{}).get(row.id,0)
+			paragraph(details,"Grau %s · domínio %d / 20 · II aos 8 usos, III aos 20"%[["I","II","III"][grade-1],practice],Color("8cd7b7"))
 			paragraph(details,"Preparada numa das seis vagas." if Items.Development.equipped(ChapterProgress,row.id,owner) else "Aprendida, mas não preparada numa das seis vagas.")
-			button(details,"Organizar repertório",switch_page.bind("Evolução"))
+			var active := Items.Development.equipped(ChapterProgress,row.id,owner)
+			var prepare := button(details,"Retirar técnica" if active else "Preparar técnica",func():
+				if not development_safe(): return
+				var message := Items.Development.toggle_skill(ChapterProgress,row.id)
+				message = Items.persist(ChapterProgress,message)
+				refresh(); show_knowledge(row,false); notice.text=message)
+			prepare.disabled = not development_safe() or (not active and Items.Development.member(ChapterProgress,owner).active_skills.size()>=6)
+			details.move_child(prepare,2)
 		paragraph(details,"A linha de ações do combate mostra as técnicas disponíveis em cada exercício.")
 		return
 	paragraph(details,"Conhecida · "+("Duarte" if row.owner=="duarte" else CampaignProfile.hero_name)+". Só produz efeito enquanto equipada; cada pessoa tem quatro vagas próprias.")
@@ -429,6 +651,8 @@ func show_knowledge(row: Dictionary, passive: bool) -> void:
 	node.disabled = (not active and equipped.size() >= 4) or not ChapterProgress.flags.get("recovered",false) or not development_safe()
 	details.move_child(node,2)
 	if not active and equipped.size() >= 4: paragraph(details,"Retira uma passiva antes de equipar outra.")
+	if not ChapterProgress.flags.get("recovered",false): paragraph(details,"Conclui a recuperação com Tomé antes de trocar passivas.")
+	elif not development_safe(): paragraph(details,"Procura uma pausa segura para trocar passivas.")
 
 func system_page() -> void:
 	listing.add_child(label("Capítulo e progresso",25,Color("e6cb8d")))
@@ -535,7 +759,7 @@ func select_weapon(id: String) -> void:
 	elif row_buttons.has(id):row_buttons[id].grab_focus()
 
 func development_safe() -> bool:
-	return not director.busy and not ChapterProgress.flags.get("injured",false) and director.phase in ["block_end","styles","styles_result","equipment","exploration","roaming","completed"]
+	return not director.busy and not ChapterProgress.flags.get("injured",false) and director.phase in ["block_end","styles","styles_result","equipment","exploration","roaming","completed","order_supply","order_inspection"]
 func evolution_page() -> void:
 	var editor = preload("res://scripts/chapter/development_panel.gd").new()
 	listing.add_child(editor); editor.setup(ChapterProgress.snapshot(),development_safe())
@@ -550,3 +774,19 @@ func evolution_page() -> void:
 	paragraph(details,"Ganhas três pontos por nível. Distribui na prévia e confirma quando estiveres satisfeito. Podes conservar pontos sem gastar.")
 	paragraph(details,"Cada pessoa prepara até seis técnicas e quatro passivas. Básico, itens e defesa por reação não ocupam vagas ativas.")
 	paragraph(details,"Grau II: oito usos válidos. Grau III: vinte. Guardas só contam quando protegem um contacto real; preparação sem uso não concede domínio.")
+
+func track_request(id: String) -> void:
+	if not director.routes.safe_city() and director.phase!="exploration": notice.text = "Retoma este pedido numa pausa segura em Lisboa."; return
+	if preload("res://scripts/chapter/request_guide.gd").track(ChapterProgress,id):
+		notice.text = "Pedido acompanhado. Fecha o caderno e segue a indicação; E / A interage no destino."
+
+func stop_tracking() -> void:
+	ChapterProgress.choices.erase("tracked_request")
+	if director.routes.active and director.routes.state.kind=="order_help":
+		director._menu(); director.routes.arrive_order()
+	else: refresh()
+
+func track_order_meal() -> void:
+	if preload("res://scripts/city/order_house_hub.gd").meal_stage(ChapterProgress) not in ["asked","prepared"]:return
+	ChapterProgress.choices.tracked_request="ORDER-MEAL"
+	notice.text="Serviço acompanhado. Fecha o caderno e segue a indicação até à casa da Ordem."

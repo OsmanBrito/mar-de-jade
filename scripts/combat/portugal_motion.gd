@@ -61,6 +61,7 @@ static func hit_pause(style: String,result: Dictionary,reduced: bool,child: bool
 
 # Technique presentation shares the exact release/impact clocks with combat and audio.
 static func firearm_pose(skill: int) -> String:
+	if skill==100:return "shoot_prepared"
 	return {0:"shoot",1:"shoot_measured",2:"shoot_prepared",3:"shoot_passage",8:"firearm_guard"}.get(skill,"shoot")
 static func firearm_skill(pose: String) -> int:
 	return {"shoot":0,"shoot_measured":1,"shoot_prepared":2,"shoot_passage":3,"firearm_guard":8}.get(pose,0)
@@ -92,3 +93,10 @@ static func firearm_sample(skill: int,time: float) -> Dictionary:
 	return {"frame":frame,"body":body,"lean":lean,"displacement":displacement}
 static func firearm_offset(skill: int,time: float,direction: Vector2,reduced: bool) -> Vector2:
 	return direction*float(firearm_sample(skill,time).displacement)*(0.45 if reduced else 1.0)
+
+# Distinct artwork rows: upright precision, supported kneeling, low lateral lunge, barrel block.
+static func firearm_art_frame(skill: int,time: float) -> int:
+	var row: int = {1:0,2:1,3:2,8:3}.get(skill,0)
+	var contact := RELEASE if skill!=8 else 0.20
+	var recovery: float = {1:0.60,2:0.72,3:0.76,8:0.62}.get(skill,0.60)
+	return row*3+(0 if time<contact else 1 if time<recovery else 2)

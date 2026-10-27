@@ -1,18 +1,26 @@
-[gd_scene load_steps=4 format=3]
-[ext_resource type="Script" path="res://scripts/chapter/promise_director.gd" id="director"]
+[gd_scene load_steps=4 format=3 uid="uid://b31rbd2l1o1wa"]
+
+[ext_resource type="Script" uid="uid://omhbk8a8jqxm" path="res://scripts/chapter/promise_director.gd" id="director"]
 [ext_resource type="PackedScene" path="res://scenes/maps/praca_infancia.tscn" id="map"]
 [ext_resource type="PackedScene" path="res://scenes/chapter_01/training_tools.tscn" id="tools"]
+
 [node name="APrimeiraPromessa" type="Node2D"]
 process_mode = 3
 script = ExtResource("director")
+
 [node name="Praca" parent="." instance=ExtResource("map")]
 process_mode = 1
+metadata/city_square = true
+
 [node name="ReturnTools" parent="Praca/ActorsAndProps" instance=ExtResource("tools")]
 position = Vector2(180, 330)
+
 [node name="ReservedTools" parent="Praca/ActorsAndProps" instance=ExtResource("tools")]
 position = Vector2(130, 350)
 visible = false
+
 [node name="ToolsPickup" type="Marker2D" parent="Praca/Staging"]
 position = Vector2(180, 330)
+
 [node name="LeonorExit" type="Marker2D" parent="Praca/Staging"]
 position = Vector2(330, 270)

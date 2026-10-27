@@ -5,6 +5,7 @@ const Furniture = preload("res://scripts/chapter/furniture_art.gd")
 const Prop = preload("res://scripts/city/lisbon_prop.gd")
 const Order = preload("res://scripts/chapter/order_house.gd")
 const Materials = preload("res://scripts/city/place_materials.gd")
+const Finish = preload("res://scripts/city/convent_finish.gd")
 var world
 static var pieces: Dictionary = {}
 static func piece(map: Node2D,name: String,file: String,foot: Vector2,width: float) -> Node2D:
@@ -33,7 +34,9 @@ static func install(map: Node2D) -> void:
 			box(map,Rect2(Vector2(x-Plan.PIER_SIZE.x/2,row-25),Plan.PIER_SIZE))
 	for at in [Vector2(-105,475),Vector2(100,565)]:
 		City.prop(map,"OliveiraDoClaustro","bruma-v2-tree.png",at,Vector2(125,155))
-	City.prop(map,"CisternaDoClaustro","roman-well-refined-v1.png",Vector2(-5,580),Vector2(115,165))
+	City.prop(map,"CisternaDoClaustro","roman-well-refined-v1.png",Plan.CISTERN,Vector2(115,165))
+	box(map,Plan.CISTERN_FOOTPRINT)
+	Finish.install(map)
 	for at in [Vector2(-220,745),Vector2(220,745),Vector2(415,350),Vector2(910,700)]:
 		City.prop(map,"VasosDoConvento","bruma-v2-pots.png",at,Vector2(42,50))
 	var desk := Furniture.place(map.sorted_world,"table",Vector2(-290,390),Vector2(100,85)); desk.name = "MesaDaRegra"
@@ -52,10 +55,11 @@ static func install(map: Node2D) -> void:
 		var table := Furniture.place(map.sorted_world,"table",Vector2(x,-80),Vector2(150,120))
 		var serving := Node2D.new(); serving.set_script(preload("res://scripts/city/house_work_surface.gd")); serving.position.y = -25; table.add_child(serving)
 		for y in [-195,30]: Furniture.place(map.sorted_world,"bench",Vector2(x,y),Vector2(115,85))
-	Furniture.place(map.sorted_world,"table",Vector2(1190,60),Vector2(120,95))
+	var preparation:=Furniture.place(map.sorted_world,"table",Vector2(1190,60),Vector2(120,95));preparation.name="MesaDasPorcoes"
 	piece(map,"LareiraDaCozinha","res://assets/art/order/kitchen-hearth-v1.png",Vector2(1260,-160),230)
 	box(map,Rect2(1145,-235,230,90))
-	var attendant = preload("res://scripts/chapter/actor_proxy.gd").new(); attendant.npc_id = "attendant"; attendant.position = Vector2(810,445); map.sorted_world.add_child(attendant)
+	install_service_rooms(map)
+	var attendant = preload("res://scripts/chapter/actor_proxy.gd").new(); attendant.name="IrmaoDaEnfermaria";attendant.npc_id = "order_brother"; attendant.position = Vector2(810,445); map.sorted_world.add_child(attendant)
 	City.body(attendant,PackedVector2Array([Vector2(-9,-6),Vector2(9,-6),Vector2(9,7),Vector2(-9,7)]))
 func _draw() -> void:
 	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
@@ -65,9 +69,10 @@ func _draw() -> void:
 	for surface in Plan.surfaces():
 		var boundary := surface.duplicate(); boundary.append(surface[0])
 		draw_polyline(boundary,Color("81755d"),24,true)
-		Materials.polygon(self,surface,"limestone-floor",Materials.INTERIOR_STONE,Materials.PAVING_SCALE)
+		Finish.paving(self,surface,Materials.INTERIOR_STONE)
 		draw_polyline(boundary,Color("ac9977"),4,true)
-	for band in [Rect2(Plan.CHAPEL.position,Vector2(Plan.CHAPEL.size.x,18)),Plan.NORTH_WALLS[0],Plan.NORTH_WALLS[1],Rect2(360,230,240,18),Rect2(750,230,220,18)]:
+	Finish.spaces(self)
+	for band in [Rect2(Plan.CHAPEL.position,Vector2(Plan.CHAPEL.size.x,18))]+Plan.NORTH_WALLS+[Rect2(360,230,240,18),Rect2(750,230,220,18)]:
 		Materials.wall(self,band.position,band.position+Vector2(band.size.x,0))
 	for at in [Vector2(475,200),Vector2(875,200)]:
 		Materials.window(self,at,44,72)
@@ -75,21 +80,11 @@ func _draw() -> void:
 	for edge in [Rect2(-360,240,16,380),Rect2(-360,740,16,170),Rect2(344,185,16,230),Rect2(344,580,16,330),Rect2(954,235,16,565),Rect2(-550,-420,14,660),Rect2(56,-420,14,600),Rect2(-1000,270,14,480),Rect2(-514,270,14,350),Rect2(430,-360,14,510),Rect2(1436,-360,14,510)]:
 		Materials.paving(self,edge,Color("8a795e"),200)
 		draw_line(edge.position,edge.position+Vector2(0,edge.size.y),Color("dfcda7"),3,true)
-	# Beds have their own quiet bays; walking routes stay clear.
-	for at in [Vector2(520,395),Vector2(730,395),Vector2(895,625)]:
-		var rug := Rect2(at-Vector2(78,63),Vector2(156,87))
-		draw_rect(rug,Color("9d9c80")); draw_rect(rug.grow(-5),Color("cdc4a4"),false,2)
-		draw_line(at+Vector2(-52,10),at+Vector2(52,10),Color("6c6955"),2,true)
 	for row in Plan.ARCADE_ROWS:
 		for x in Plan.PIER_CENTERS:
 			var foot := Vector2(x,row)
 			draw_colored_polygon(PackedVector2Array([foot+Vector2(-24,-6),foot+Vector2(24,-6),foot+Vector2(55,24),foot+Vector2(7,24)]),Color(.13,.16,.11,.12))
-	draw_rect(Plan.GARDEN.grow(12),Color("86765b"))
-	Materials.paving(self,Plan.GARDEN.grow(7),Color("cfbd94"),180)
-	var garden := PackedVector2Array([Plan.GARDEN.position,Plan.GARDEN.position+Vector2(Plan.GARDEN.size.x,0),Plan.GARDEN.end,Plan.GARDEN.position+Vector2(0,Plan.GARDEN.size.y)])
-	var garden_uv := PackedVector2Array()
-	for point in garden: garden_uv.append(point/Vector2(260,195))
-	draw_polygon(garden,PackedColorArray([Materials.GRASS_TINT]),garden_uv,City.texture("bruma-grass-refined.png",false))
+	Finish.garden(self)
 	for at in [Vector2(-330,200),Vector2(330,200),Vector2(400,260)]:
 		Order.banner(self,at+Vector2(0,-65),Vector2.RIGHT)
 	# The chapel's central aisle has a woven runner, leaving seats to either side.
@@ -97,10 +92,30 @@ func _draw() -> void:
 	for y in range(-180,125,18):
 		draw_line(Vector2(-34,y)+Plan.CHAPEL_OFFSET,Vector2(34,y)+Plan.CHAPEL_OFFSET,Color(.8,.65,.43,.11),1,true)
 	for at in [Vector2(0,880),Vector2(-325,680),Vector2(370,505),Plan.CHAPEL_ENTRY]:
-		Materials.threshold(self,at)
-	Materials.sign(self,Vector2(-90,260),"Capela",false)
-	Materials.sign(self,Vector2(-295,650),"Acolhimento",false)
-	Materials.sign(self,Vector2(300,455),"Enfermaria")
-	Materials.sign(self,Vector2(-470,720),"Dormitório",false)
-	Materials.sign(self,Vector2(790,230),"Refeitório",false)
-	Materials.sign(self,Vector2(980,125),"Cozinha")
+		Finish.threshold(self,at)
+	Materials.wall(self,Vector2(80,-350),Vector2(210,-350),120)
+	Materials.wall(self,Vector2(320,-350),Vector2(390,-350),120)
+	Materials.wall(self,Vector2(-1000,790),Vector2(-820,790),90)
+	Materials.wall(self,Vector2(-660,790),Vector2(-500,790),90)
+	Finish.threshold(self,Vector2(260,180))
+	Finish.threshold(self,Vector2(-740,780))
+	Finish.signs(self)
+
+static func install_service_rooms(map: Node2D) -> void:
+	# Rooms sit along existing routes, with readable work clusters and clear approaches.
+	for band in [Rect2(80,-350,130,14),Rect2(320,-350,70,14),Rect2(80,-350,14,500),Rect2(376,-350,14,500),Rect2(-1000,790,180,12),Rect2(-660,790,160,12)]:box(map,band)
+	Furniture.place(map.sorted_world,"shelf",Vector2(125,-205),Vector2(90,135))
+	Furniture.place(map.sorted_world,"shelf",Vector2(330,-155),Vector2(90,135))
+	var registry:=Furniture.place(map.sorted_world,"table",Vector2(230,30),Vector2(150,100));registry.name="MesaDosRegistos"
+	Furniture.place(map.sorted_world,"bench",Vector2(230,-60),Vector2(100,75))
+	Furniture.place(map.sorted_world,"cupboard",Vector2(320,-285),Vector2(100,145))
+	var armour:=Furniture.place(map.sorted_world,"table",Vector2(-850,875),Vector2(130,90));armour.name="BancadaDaArmaria"
+	Furniture.place(map.sorted_world,"cupboard",Vector2(-555,875),Vector2(85,130))
+	piece(map,"ArmasDePratica","res://assets/art/combat/portugal/training-rack-mar-de-ferro.png",Vector2(-660,855),150)
+	box(map,Rect2(-710,830,100,25))
+	for at in [Vector2(1410,-30),Vector2(1090,-260)]:City.prop(map,"ReservaDaCozinha","bruma-crate.png",at,Vector2(68,65))
+	City.prop(map,"AguaDeServico","bruma-barrel.png",Vector2(1400,-220),Vector2(64,85))
+	var notes:=Node2D.new();notes.set_script(load("res://scripts/city/order_service_props.gd"));notes.name="MesasDeTrabalho";map.sorted_world.add_child(notes)
+	for key in ["MesaDosRegistos","BancadaDaArmaria","MesaDasPorcoes"]:
+		var table=map.sorted_world.get_node(key)
+		var work:=Node2D.new();work.set_script(load("res://scripts/city/order_service_props.gd"));work.kind={"MesaDosRegistos":"registry","BancadaDaArmaria":"armory","MesaDasPorcoes":"portions"}[key];table.add_child(work)

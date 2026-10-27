@@ -1,0 +1,20 @@
+{
+  "source": "res://assets/art/portugal-v2/hero-child-side-walk-v1.png",
+  "frame_size": 96,
+  "reference_height": 96.0,
+  "anchor": [
+    48.0,
+    96
+  ],
+  "facing": "east",
+  "west_flip": true,
+  "frames": 8,
+  "layout": [
+    8,
+    1
+  ],
+  "source_layout": [
+    4,
+    2
+  ]
+}

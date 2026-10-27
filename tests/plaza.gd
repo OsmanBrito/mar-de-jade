@@ -23,7 +23,7 @@ func capture(path: String) -> void:
 	root.get_texture().get_image().save_png(path)
 
 func reach_walk_stage(id: String) -> bool:
-	for i in range(300):
+	for i in range(900):
 		if game.walking_stage == id:
 			return true
 		if not game.busy:

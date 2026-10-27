@@ -2,6 +2,16 @@ extends SceneTree
 const Arc=preload("res://scripts/chapter/adult_arc.gd")
 const Objectives=preload("res://scripts/chapter/chapter_objectives.gd")
 const Journal=preload("res://scripts/chapter/campaign_journal.gd")
+# Objectives now consults the ChapterProgress autoload. Its test director must
+# participate in the scene tree, just like the actual chapter director.
+class ObjectiveDirector extends Node:
+	var routes = null
+	var scene_index := 0
+	var completed := false
+	var phase := "task"
+	var task_id := ""
+	var task_step := 0
+	var current_event := {"caption":"stale instruction"}
 var checks:=0
 var failures:Array[String]=[]
 var p
@@ -44,9 +54,10 @@ func run() -> void:
 	p=root.get_node("ChapterProgress");p.auto_save=false;p.reset();root.get_node("CampaignProfile").hero_name="Miguel"
 	check(Arc.notes(p).is_empty(),"No future adult events in a new campaign")
 	for id in ["lever","meal","recovery_walk","blue_rope"]:
-		var fake:Dictionary={"routes":null,"completed":false,"phase":"task","task_id":id,"task_step":0,"current_event":{"caption":"stale instruction"}}
+		var fake := ObjectiveDirector.new(); fake.task_id = id; root.add_child(fake)
 		var before:String=Objectives.current(fake);fake.task_step=1
 		check(before!=Objectives.current(fake) and not Objectives.current(fake).contains("stale"),"Objective follows the current physical substep "+id)
+		fake.free()
 	check(Arc.task("recovery_water",0).contains("não encerra"),"Water is distinguished from recovery")
 	p.flags={"duel_lost":true}
 	check(Arc.notes(p).size()==1 and not str(Arc.notes(p)).contains("Dez anos"),"Defeat does not reveal the later promise or aid")
@@ -108,6 +119,9 @@ func run() -> void:
 	check(not Arc.notes(p).any(func(row):return row.id in ["story:promise","story:help"]),"Aftermath events are not recorded before being witnessed")
 	check(p.save_to("user://adult-arc.json")==OK and p.load_from("user://adult-arc.json")==OK,"Known-event diary survives existing save schema")
 	game._menu("Pedidos");await frames()
+	for tab in game.player_menu.listing.find_children("*","Button",true,false):
+		if tab.text == "Arquivo":
+			tab.pressed.emit();await frames();break
 	check(game.player_menu.listing.find_children("*","Button",true,false).any(func(b):return b.text=="A avaliação terminou"),"Adult diary exposes witnessed event for rereading")
 	await capture("story-journal");game._menu()
 	var aboard:Dictionary=p.snapshot();aboard.flags.packed=true

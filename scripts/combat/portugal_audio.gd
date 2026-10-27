@@ -12,6 +12,7 @@ func action_event(style: String,child: bool,support: bool = false) -> String:
 	if child: return "swing"
 	return {"ES":"swing","LA":"gesture_thrust_windup","MC":"heavy_swing","FO":"gesture_thrust_windup","PU":"fast_swing"}.get(style,"swing")
 func release_event(style: String,skill: int = 0) -> String:
+	if style=="FO" and skill==100:return "firearm-prepared"
 	if style!="FO" or skill==8: return ""
 	return {0:"firearm-basic",1:"firearm-measured",2:"firearm-prepared",3:"firearm-passage"}.get(skill,"firearm-basic")
 func impact_events(style: String,child: bool,result: Dictionary,grades: Dictionary) -> Array[String]:

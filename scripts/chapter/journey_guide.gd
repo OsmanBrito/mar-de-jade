@@ -13,11 +13,13 @@ func _draw() -> void:
 	if world==null: return
 	var size := get_viewport_rect().size
 	var point: Vector2 = world.get_global_transform_with_canvas()*target
-	var safe := Rect2(Vector2(65,135),size-Vector2(130,235))
+	var top := 135.0
+	if view.exploration_back.visible: top = maxf(top,view.exploration_back.get_rect().end.y+24)
+	var safe := Rect2(Vector2(65,top),size-Vector2(130,top+100))
 	if safe.has_point(point): return
-	var center := size*.5
+	var center := safe.get_center()
 	var direction := (point-center).normalized()
-	var half := size*.5-Vector2(52,105)
+	var half := safe.size*.5
 	var length := minf(half.x/maxf(.001,absf(direction.x)),half.y/maxf(.001,absf(direction.y)))
 	var at := center+direction*length
 	draw_circle(at,15,Color(.05,.12,.12,.9))

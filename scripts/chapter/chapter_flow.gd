@@ -3,6 +3,7 @@ signal block_finished(scene_id: String)
 const WORLD = preload("res://scripts/chapter/plaza_world.gd")
 const PLAYER = preload("res://scenes/chapter_01/child_player.tscn")
 const ACTOR = preload("res://scripts/chapter/actor_proxy.gd")
+const OrderService = preload("res://scripts/chapter/first_order_service.gd")
 const RULES = preload("res://scripts/combat/campaign_rules.gd")
 @export_range(0,16) var start_block := 0
 var blocks: Array
@@ -48,6 +49,8 @@ var staging
 var block_generation := 0
 var practice_resume_index := -1
 var practice_events: Array = []
+var order_practice_return := false
+var order_trial_return := false
 
 func _ready() -> void:
 	ChapterProgress.development_awarded.connect(_show_development_notice)
@@ -66,6 +69,7 @@ func _ready() -> void:
 	add_child(view)
 	view.continuation_requested.connect(advance)
 	view.replay_requested.connect(restart_block)
+	view.menu_requested.connect(_menu)
 	player_menu = preload("res://scripts/chapter/player_menu.gd").new()
 	player_menu.director = self; add_child(player_menu)
 	player_menu.close_requested.connect(_menu)
@@ -111,8 +115,17 @@ func _load_block(index: int,preserve_position: bool = false,restore_journey: boo
 		_load_map("cais"); routes.restore(saved_journey)
 		scene_snapshot = ChapterProgress.snapshot(); return
 	events = blocks[index].events.duplicate(true); event_index = -1; current_event = {}
+
+	# Additive introduction: old in-progress saves without this flag keep their event indices.
+	if index==0 and (ChapterProgress.flags.get("order_intro_started",false) or (saved_journey.is_empty() and ChapterProgress.flags.is_empty())):
+		ChapterProgress.flags.order_intro_started = true
+		var styles: Dictionary = blocks[13].events.filter(func(e): return e.type=="styles")[0]
+		events = OrderService.intro(styles)+events
+	if index==3 and ChapterProgress.flags.get("order_intro_started",false): events.append({"type":"order_help"})
 	if index==4 and ChapterProgress.flags.get("meal",false): events = events.filter(func(event): return event.get("id","")!="meal")
-	if index==0 and ((ChapterProgress.flags.get("delivery_pending",false) and not ChapterProgress.flags.get("delivery_finished",false)) or saved_journey.get("stage","")=="delivery_return"):
+	if index==0 and ChapterProgress.flags.get("order_intro_started",false) and (ChapterProgress.flags.get("delivery_pending",false) or saved_journey.get("stage","")=="delivery_return"):
+		ChapterProgress.flags.order_delivery_prefix = true
+	if index==0 and (ChapterProgress.flags.get("order_delivery_prefix",false) or (ChapterProgress.flags.get("delivery_pending",false) and not ChapterProgress.flags.get("delivery_finished",false)) or saved_journey.get("stage","")=="delivery_return"):
 		events = [{"type":"task","id":"delivery","caption":"Leva os sacos de farinha à vizinha da cozinha; mantém-nos separados do peixe.","map":"cais"},{"type":"line","speaker":"Vizinha","text":"Chegaram secos e separados. Obrigada pela entrega. O Duarte espera-te no pátio para descerem juntos ao cais."},{"type":"stage","action":"delivery_return"}]+events
 	phase = "dialogue"; busy = false; completed = false; task_id = ""
 	service_paid_now = false
@@ -411,6 +424,15 @@ func advance() -> void:
 		"task": _begin_task(current_event)
 		"battle": _begin_battle(current_event.mode)
 		"styles": _show_styles(current_event.options)
+		"order_supply": OrderService.supply(self)
+		"order_check":
+			if ChapterProgress.flags.get("order_check_done",false): advance()
+			else: routes.begin("order_check",scene_index)
+		"order_report":
+			if ChapterProgress.flags.get("order_reported",false): advance()
+			else: routes.begin("order_report",scene_index)
+		"order_help": OrderService.help_offer(self)
+
 
 func _finish_block() -> void:
 	if RULES.Development.STORY.has(blocks[scene_index].id):
@@ -467,6 +489,7 @@ func _insert(extra: Array) -> void:
 	for i in range(extra.size()-1,-1,-1): events.insert(event_index+1,extra[i].duplicate(true))
 
 func _begin_task(event: Dictionary) -> void:
+	if event.id=="delivery" and ChapterProgress.flags.get("delivery_finished",false): advance(); return
 	if event.id=="fetch_tome":
 		routes.begin("fetch",scene_index); return
 	if event.id=="delivery" and routes.area()!="cais":
@@ -590,12 +613,14 @@ func _deliver(clean: bool) -> void:
 
 func _begin_battle(mode: String) -> void:
 	phase = "battle"; _lock_player(true); view.hide(); _clear_options(); battle_container.show()
-	battle_host.select_battle_map(map_kind)
+	battle_host.select_battle_map("courtyard" if order_practice_return else map_kind)
 	battle_host.allow_practice_exit = mode!="duel"
 	battle_host.begin_encounter(mode,CampaignProfile.hero_name,ChapterProgress.style)
 	if mode=="duel":battle_host.note="Avaliação reservada · Controlas "+CampaignProfile.hero_name+". Leonor quer ver o que sabes agora."
 
 func _practice_aborted() -> void:
+	if order_trial_return:return_from_order_trial(false);return
+	if order_practice_return: return_from_order_practice(); return
 	battle_container.hide(); view.show(); phase = "dialogue"
 	if battle_host.combat.mode in ["style_test","school","practice"]:
 		if practice_resume_index>=0:
@@ -611,8 +636,10 @@ func _practice_aborted() -> void:
 		options_box.get_child(0).grab_focus()
 
 func _battle_finished(success: bool) -> void:
+	if order_trial_return:return_from_order_trial(success);return
 	battle_container.hide(); view.show(); phase = "dialogue"
 	var mode: String = battle_host.combat.mode
+	if order_practice_return and mode=="practice": return_from_order_practice(); return
 	if mode == "duel":
 		ChapterProgress.flags.injured = true; ChapterProgress.flags.duel_lost = true
 		for key in ["hp","qi","posture"]: ChapterProgress.vitals[key] = int(battle_host.combat.units[0][key])
@@ -639,6 +666,12 @@ func _battle_finished(success: bool) -> void:
 	advance()
 
 func _show_styles(options: Array) -> void:
+	if scene_index>0 and ChapterProgress.flags.get("order_prepared",false):
+		phase = "styles_result"; _clear_options(); options_box.show(); view.panel.show(); view.next_button.hide()
+		view.speaker.text = "Tomé · Retomar o manejo"; view.body.text = "A arma e o fundamento escolhidos no primeiro serviço continuam teus. Revê o repertório e retoma a prática depois da recuperação."
+		_option("Continuar com "+Items.STYLES[ChapterProgress.style],func(): phase="dialogue"; advance())
+		_option("Rever técnicas e equipamento",func(): _menu("Evolução"))
+		options_box.get_child(0).grab_focus(); return
 	phase = "styles"; style_options = options; _clear_options(); options_box.show(); _lock_player(true)
 	view.panel.show(); view.next_button.hide(); view.speaker.text = "Tomé"
 	view.body.text = "Escolhe a arma que queres aprender a usar. Depois da aula, confirma a escolha para equipar a tua arma e continuar. A primeira é oferecida por Tomé. Podes experimentar outras antes de decidir. Os treinos usam armas emprestadas e não gastam os teus suprimentos. R / Select volta à escolha."
@@ -726,6 +759,7 @@ func restart_block() -> void:
 	if busy or phase == "battle": return
 	get_tree().paused = false; paused = false; menu_open = false
 	if player_menu != null: player_menu.close()
+	if scene_index==0: ChapterProgress.flags.order_intro_started = true
 	_load_block(scene_index)
 
 func _stage(action: String) -> void:
@@ -949,3 +983,37 @@ func _show_development_notice(message: String) -> void:
 	label.add_theme_color_override("font_color",Color("e6cb8d")); label.add_theme_font_size_override("font_size",GamePreferences.font_size(18)); panel.add_child(label)
 	await get_tree().create_timer(3.5,false).timeout
 	if is_instance_valid(layer): layer.queue_free()
+
+func begin_order_practice() -> void:
+	if paused or phase!="order_inspection" or not routes.active or routes.area()!="convent":return
+	if not routes.near(Vector2(-850,920)):return
+	if ChapterProgress.flags.get("injured",false) or not ChapterProgress.skills.has(RULES.FIRST[ChapterProgress.style]):
+		view.status.text="A prática espera pelo tratamento e pelo fundamento de Tomé.";return
+	if ChapterProgress.choices.get("tracked_request","")=="ORDER-PRACTICE":ChapterProgress.choices.erase("tracked_request")
+	order_practice_return=true
+	_begin_battle("practice")
+func return_from_order_practice() -> void:
+	order_practice_return=false
+	battle_host.active=false;battle_host.ending.reset(battle_host);battle_container.hide()
+	view.show();routes.resume()
+	view.status.text="Prática concluída ou interrompida. O serviço e os recursos pessoais foram preservados."
+
+func begin_order_trial() -> void:
+	if paused or phase!="order_inspection" or not routes.active or routes.area()!="convent" or not routes.near(Vector2(-850,920)):return
+	if ChapterProgress.flags.get("injured",false) or not ChapterProgress.flags.get("order_audience_done",false) or not ChapterProgress.skills.has(RULES.FIRST[ChapterProgress.style]):
+		view.status.text="A avaliação exige recuperação, fundamento de Tomé e autorização da liderança.";return
+	order_practice_return=true;_begin_battle("practice");order_practice_return=false;order_trial_return=true
+	var c=battle_host.combat;c.mode="order_trial";c.lesson=1;c.caption="A medida do serviço"
+	for cell in [Vector2i(4,3),Vector2i(4,4),Vector2i(4,5),Vector2i(4,6)]:c.obstacles.erase(cell)
+	c.units[0].cell=Vector2i(4,3);c.units[0].turn_origin=c.units[0].cell;c.units[0].qi=40;c.units[0].max_qi=40;c.units[0].speed=50
+	c.units[2].cell=Vector2i(4,6);c.units[2].kind="tome";c.units[2].name="Instrutor da Ordem";c.units[2].speed=10
+	for i in range(3,c.units.size()):c.units[i].hp=0;c.units[i].withdrawn=true
+	c.order_index=-1;c.rebuild_order();c.next_turn();battle_host.tactical.begin()
+	battle_host.note="Alcança a casa dourada (4,4), acerta um golpe e responde de frente com Bom ou Perfeito. R / Select sai sem perder recursos."
+func return_from_order_trial(success: bool) -> void:
+	var outcome: Dictionary=battle_host.combat.lesson_result()
+	var complete: bool=success and outcome.get("finished",false) and outcome.get("success",false)
+	order_trial_return=false
+	if complete:preload("res://scripts/chapter/order_campaign.gd").finish_trial(ChapterProgress)
+	return_from_order_practice();routes.save()
+	view.status.text="Avaliação confirmada: um vale de estudo e 25 XP na primeira conclusão. Leva os manuais ao instrutor para aprender." if complete else "Avaliação interrompida. Podes voltar à armaria e tentar sem taxa ou perda de recursos pessoais."

@@ -64,3 +64,19 @@ As poses ilustradas existentes agora compõem cinco sequências: básico com pre
 Cada sequência tem seus próprios tempos de poses, inclinação e recuo. A liberação do projétil, o som, o impacto e as regras permanecem sincronizados no tempo original. O passo lateral conserva origem e destino reais; efeitos reduzidos diminuem recuo e inclinação, preservando as poses que distinguem as técnicas. As mesmas sequências são usadas em terra e nas abordagens. Os pivôs dos pés e a boca do cano continuam calculados a partir do quadro ilustrado.
 
 [Comparação animada das cinco sequências](arma-de-fogo-animacoes.gif), reproduzível por `tools/capture_firearm_animations.gd`. Trata-se de composição e movimento das poses existentes; não foram geradas novas ilustrações. Validação: **249 verificações aprovadas** nas suítes de arma de fogo, resposta de combate e abordagem, incluindo sequências distintas, liberação sincronizada e redução de recuo.
+
+
+## Silhuetas próprias — revisão após comparação do jogador
+
+A revisão anterior alterava principalmente duração e recuo das mesmas poses e ficou visualmente semelhante. Esta versão substitui a arte das quatro técnicas por **12 quadros novos**, em quatro sequências próprias:
+
+- **Disparo de Medida:** postura ereta e estreita, mira elevada, baixa o cano ao recuperar.
+- **Tiro Preparado:** apoia um joelho no chão para mirar e disparar, depois começa a levantar.
+- **Tiro de Passagem:** base baixa e muito aberta, disparo em avanço lateral e recuperação cruzando as pernas; mantém o deslocamento real já previsto.
+- **Guarda do Cano:** arma quase vertical atravessada diante do corpo, bloqueio e desvio para fora; a guarda persistente também usa essa arte.
+
+O básico conserva a ilustração anterior. As novas silhuetas permanecem distintas com efeitos reduzidos; não dependem de fumaça, cores ou intensidade do recuo para serem reconhecidas. A geração integrada usou o atlas anterior como referência de personagem. Fonte e prompt estão em `assets/art/combat/portugal/firearm-techniques-generation.json`; imagem em `hero-firearm-techniques-v2.png`. O medidor `tools/build_firearm_technique_frames.py` só lê os pixels para gerar retângulos, pivôs e bocas do cano, sem reescrever a imagem.
+
+O renderizador usa a mesma escala anatômica para manter o ajoelhado realmente mais baixo. Os quadros de contato de cada técnica pertencem a linhas diferentes do atlas; o passo lateral conserva sua recuperação própria em vez de voltar à caminhada genérica. Liberação, som, impacto, alvos e dano continuam nos tempos e regras anteriores.
+
+[Comparação animada revisada](arma-de-fogo-animacoes-v2.gif). **257 verificações aprovadas**: 143 de arma de fogo, 36 de resposta de combate e 78 de abordagem. Incluem seleção dos quadros novos e silhuetas baixa/aberta; a comparação nativa também foi inspecionada em contato e recuperação. A preferência visual continua sujeita à avaliação do jogador.

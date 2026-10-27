@@ -21,7 +21,7 @@ func run() -> void:
 	root.get_node("CampaignProfile").hero_name = "Inês"
 	game = load("res://scenes/chapter_01/training.tscn").instantiate()
 	root.add_child(game)
-	await frames(3)
+	await frames(24)
 	check(game.view.body.text == "Estás a apertar demais.","Approved opening")
 	dialogue()
 	var host = game.battle_host
@@ -120,7 +120,12 @@ func run() -> void:
 	host.update_ending(1); host.update_ending(1)
 	check(b.units[0].hp > 0 and game.phase == "dialogue","Safe simple defense leads to narrative")
 	dialogue()
+	for i in 240:
+		if game.phase=="dialogue":game.advance()
+		elif game.phase!="washing":break
+		await physics_frame
 	check(game.completed,"Approved lessons complete")
+	check(root.get_node("ChapterProgress").flags.get("child_forest_invited",false),"The completed practice leads to Leonor's spoken invitation")
 	# Direct rules repeat failure without killing or granting perfect counter.
 	b.start_lesson(1,"Inês"); b.end_turn(0)
 	var plan: Dictionary = b.ai_plan()

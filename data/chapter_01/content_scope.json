@@ -19,8 +19,8 @@
     },
     "ES01": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "order_catalogue"
     },
     "ES07": {
       "owner": "hero",
@@ -29,13 +29,13 @@
     },
     "ES08": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "order_catalogue"
     },
     "ES09": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "order_manual"
     },
     "FO01": {
       "owner": "hero",
@@ -59,8 +59,8 @@
     },
     "LA01": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "order_catalogue"
     },
     "LA07": {
       "owner": "hero",
@@ -69,23 +69,23 @@
     },
     "LA08": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "order_catalogue"
     },
     "LA09": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "order_manual"
     },
     "MC01": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "order_catalogue"
     },
     "MC07": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "order_catalogue"
     },
     "MC08": {
       "owner": "hero",
@@ -94,13 +94,13 @@
     },
     "MC09": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "order_manual"
     },
     "PU01": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "order_catalogue"
     },
     "PU07": {
       "owner": "hero",
@@ -109,13 +109,238 @@
     },
     "PU08": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "order_catalogue"
     },
     "PU09": {
       "owner": "hero",
-      "status": "catalog_only",
-      "acquisition": "later_arc"
+      "status": "implemented",
+      "acquisition": "order_manual"
+    },
+    "FO10": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_manual"
+    },
+    "ES06": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES10": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES11": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES12": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES13": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES14": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES15": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES56": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES57": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA06": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA10": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA11": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA12": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA13": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA14": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA15": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA56": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA57": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC06": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC10": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC11": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC12": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC13": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC14": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC15": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC56": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC57": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU06": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU10": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU11": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU12": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU13": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU14": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU15": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU56": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU57": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO06": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO11": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO12": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO13": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO14": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO15": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO56": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO57": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
     }
   },
   "passives": {

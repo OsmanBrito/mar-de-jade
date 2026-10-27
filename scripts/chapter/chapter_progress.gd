@@ -22,7 +22,7 @@ var payments: Array[String] = []
 var companion_vitals: Dictionary = {}
 var vitals: Dictionary = {"hp":100,"qi":8,"posture":100}
 var checkpoint := 0
-var entry_scene := "res://scenes/chapter_01/opening.tscn"
+var entry_scene := "res://scenes/chapter_01/childhood_home.tscn"
 var flags: Dictionary = {}
 var choices: Dictionary = {}
 var style := "ES"
@@ -46,7 +46,7 @@ func reset() -> void:
 	companion_vitals.clear()
 	local_requests.clear()
 	journey.clear(); childhood_hunt.clear()
-	checkpoint = 0; entry_scene = "res://scenes/chapter_01/opening.tscn"; flags.clear(); choices.clear(); style = "ES"
+	checkpoint = 0; entry_scene = "res://scenes/chapter_01/childhood_home.tscn"; flags.clear(); choices.clear(); style = "ES"
 	tested_styles.clear(); skills.clear(); passives.clear(); equipped_passives.clear(); duarte_equipped_passives.clear()
 	inventory = {"PT-Q01":1}; completed = false; resume_requested = false
 	coins = 0; equipment = {}; shop_stock = Items.stock(); payments.clear()
@@ -96,11 +96,11 @@ func restore(source_data: Dictionary, apply: bool = true) -> Error:
 	if not data.get("hero_name") is String or not CampaignProfile.name_error(data.hero_name).is_empty(): return ERR_INVALID_DATA
 	if not data.get("checkpoint") is float and not data.get("checkpoint") is int: return ERR_INVALID_DATA
 	if int(data.checkpoint) < 0 or int(data.checkpoint) >= 17 or float(data.checkpoint) != int(data.checkpoint): return ERR_INVALID_DATA
-	if data.get("entry_scene") not in ["res://scenes/chapter_01/opening.tscn","res://scenes/chapter_01/plaza.tscn","res://scenes/chapter_01/training.tscn","res://scenes/chapter_01/promise.tscn","res://scenes/chapter_01/forest_hunt.tscn","res://scenes/chapter_01/adult_opening.tscn","res://scenes/chapter_01/chapter_flow.tscn"]: return ERR_INVALID_DATA
+	if data.get("entry_scene") not in ["res://scenes/chapter_01/childhood_home.tscn","res://scenes/chapter_01/opening.tscn","res://scenes/chapter_01/plaza.tscn","res://scenes/chapter_01/training.tscn","res://scenes/chapter_01/promise.tscn","res://scenes/chapter_01/forest_hunt.tscn","res://scenes/chapter_01/adult_opening.tscn","res://scenes/chapter_01/chapter_flow.tscn"]: return ERR_INVALID_DATA
 	if data.get("style") not in ["ES","LA","MC","FO","PU"]: return ERR_INVALID_DATA
 	for key in ["flags","choices","inventory"]:
 		if not data.get(key) is Dictionary: return ERR_INVALID_DATA
-	if data.flags.size() > 100 or data.choices.size() > 10: return ERR_INVALID_DATA
+	if data.flags.size() > 256 or data.choices.size() > 16: return ERR_INVALID_DATA
 	for key in ["tested_styles","skills","passives","equipped_passives","duarte_equipped_passives"]:
 		if not data.get(key) is Array: return ERR_INVALID_DATA
 		for id in data[key]:
@@ -123,8 +123,11 @@ func restore(source_data: Dictionary, apply: bool = true) -> Error:
 		if not Items.whole(count,999): return ERR_INVALID_DATA
 	for value in data.flags.values():
 		if not value is bool: return ERR_INVALID_DATA
+	if not preload("res://scripts/chapter/order_campaign.gd").valid_state(data):return ERR_INVALID_DATA
 	for value in data.choices.values():
 		if not value is String: return ERR_INVALID_DATA
+	if data.flags.get("order_kit_received",false) and data.choices.get("order_supply","") not in ["protection","endurance"]: return ERR_INVALID_DATA
+	if data.flags.get("order_check_done",false) and data.choices.get("order_service","") not in ["water","linen"]: return ERR_INVALID_DATA
 	for id in data.equipped_passives:
 		if not data.passives.has(id) or id.begins_with("DU"): return ERR_INVALID_DATA
 	for id in data.duarte_equipped_passives:
@@ -150,6 +153,7 @@ func restore(source_data: Dictionary, apply: bool = true) -> Error:
 				if rescue_events[i].get("id","")=="fetch_tome": old_journey.event = i; break
 			data.journey = old_journey
 	if not preload("res://scripts/chapter/lisbon_journey_state.gd").valid(data.get("journey",{}),int(data.checkpoint),data.flags): return ERR_INVALID_DATA
+	if data.get("journey",{}).get("kind","")=="childhood_home" and (data.entry_scene!="res://scenes/chapter_01/childhood_home.tscn" or data.completed): return ERR_INVALID_DATA
 	if data.get("journey",{}).get("kind","")=="port_visit" and (not data.completed or data.entry_scene!="res://scenes/chapter_01/chapter_flow.tscn"): return ERR_INVALID_DATA
 	if data.get("journey",{}).get("kind","")=="childhood" and (data.schema_version<5 or data.entry_scene!="res://scenes/chapter_01/plaza.tscn"): return ERR_INVALID_DATA
 	if data.get("journey",{}).get("area","")=="convent" and data.schema_version<6: return ERR_INVALID_DATA
@@ -197,7 +201,7 @@ func restore(source_data: Dictionary, apply: bool = true) -> Error:
 	journey = data.get("journey",{}).duplicate(true)
 	if not journey.is_empty():
 		journey.target = int(journey.target); journey.event = int(journey.event)
-		journey.position = [roundi(float(journey.position[0])),roundi(float(journey.position[1]))]
+		journey.position = [snappedf(float(journey.position[0]),.01),snappedf(float(journey.position[1]),.01)] if journey.kind=="childhood_home" else [roundi(float(journey.position[0])),roundi(float(journey.position[1]))]
 	CampaignProfile.origin_response = str(choices.get("origin_response",""))
 	resume_requested = true
 	return OK

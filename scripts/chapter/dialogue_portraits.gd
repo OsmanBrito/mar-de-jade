@@ -6,6 +6,7 @@ static var cache: Dictionary = {}
 static var sources: Dictionary = {}
 static var busts: Dictionary = {}
 static func identity(who: String,young: bool,hero_name: String) -> String:
+	who = who.split(" · ")[0]
 	if who==hero_name or who in ["Herói","Herói adulto","Herói criança"]: return "hero_child" if young or who=="Herói criança" else "hero_adult"
 	if who in ["Leonor","Leonor criança"]: return "leonor_child" if young or who=="Leonor criança" else "leonor_adult"
 	if who=="Tomé": return "tome_young" if young else "tome_adult"
@@ -18,6 +19,12 @@ static func filtered(path: String) -> Texture2D:
 	sources[path]=texture;return texture
 static func portrait(id: String) -> Texture2D:
 	if cache.has(id): return cache[id]
+	if id=="duarte":
+		var info: Dictionary = NPC.data().duarte; var f: Array = info.frames[0]
+		var portrait_height: float = float(f[3])*0.66
+		var atlas := AtlasTexture.new(); atlas.atlas = filtered(info.source)
+		atlas.region = Rect2(f[0]+(f[2]-portrait_height*ASPECT)*0.5,f[1],portrait_height*ASPECT,portrait_height)
+		atlas.filter_clip = true; cache[id] = atlas; return atlas
 	var source: Texture2D
 	var region: Rect2
 	if id in ["hero_adult","hero_child"]:

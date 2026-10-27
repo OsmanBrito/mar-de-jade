@@ -5,7 +5,7 @@ const MAX_NAME_LENGTH := 24
 const SAVE_PATH := "user://campanha-perfil.json"
 var hero_name := ""
 var origin_response := "" # Runtime chapter choice; progress persistence is separate.
-var name_entry_destination := "res://scenes/chapter_01/opening.tscn"
+var name_entry_destination := "res://scenes/chapter_01/childhood_home.tscn"
 
 func normalized_name(value: String) -> String:
 	return " ".join(value.strip_edges().split(" ",false))

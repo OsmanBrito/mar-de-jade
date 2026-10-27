@@ -62,6 +62,11 @@ func leave() -> void:
 func begin() -> void:
 	plaza_world = host.world; host.tree_exiting.connect(cleanup)
 	host.world.player.presentation.identity = "hero_child"
+	host.world.set_meta("exploration_companion",host.leonor)
+	host.leonor.posture="crouched";host.leonor.facing=1
+	var tools:=preload("res://scenes/chapter_01/training_tools.tscn").instantiate()
+	tools.name="LeonorPracticeTools";tools.position=Vector2(210,370);tools.scale=Vector2.ONE*.65
+	host.world.sorted_world.add_child(tools)
 	var saved: Dictionary = ChapterProgress.journey.duplicate(true)
 	host.world.player.position = Vector2(-315,150)
 	if saved.get("kind","")=="childhood" and saved.get("area","")=="square":
@@ -103,19 +108,22 @@ func update() -> void:
 	var arrived := intent.poll(host.world)
 	if not arrived.is_empty(): interact(arrived); return
 	var selected := focus()
+	if not inside() and host.leonor.posture=="crouched" and host.world.player.position.distance_to(host.leonor.position)<150:
+		host.leonor.posture="standing";host.leonor.facing=1 if host.world.player.position.x<host.leonor.position.x else 3
 	host.view.guide.track(host.world,Vector2(0,870) if inside() else Vector2(80,400))
 	for marker in host.world.sorted_world.get_children():
 		if marker.get_script()!=Marker: continue
 		var id: String = str(marker.get_meta("place_id",""))
 		marker.highlighted = id==selected
 		if id.begins_with("note:"): marker.symbol = "·" if Convent.observed(ChapterProgress,id.trim_prefix("note:")) else "i"
-	host.view.status.text = "E / A · "+str(places()[selected].title) if not selected.is_empty() else "Explora a casa da Ordem. Leonor espera junto do banco na praça."
+	host.view.set_exploration_prompt("Encontra a Leonor junto do banco. Trouxeste água para os dois.","E / A · "+str(places()[selected].title) if not selected.is_empty() else "")
 	if inside(): host.view.caption_label.text = "Lisboa · Infância · "+Convent.title(host.world.player.position)
 	remember()
 func interact(requested: String = "") -> void:
 	intent.cancel()
 	var selected := focus() if requested.is_empty() else requested
 	if selected.is_empty(): return
+	if not places().has(selected) or host.world.player.position.distance_to(places()[selected].at)>=60 or not host.world.segment_clear(host.world.player.position,places()[selected].at):return
 	if selected=="arcade": ChapterProgress.flags.child_portaria_entry=false; visit(); return
 	if selected=="portaria": ChapterProgress.flags.child_portaria_entry=true; visit(Vector2(-690,700)); return
 	if selected=="leave": leave(); return
@@ -124,8 +132,8 @@ func interact(requested: String = "") -> void:
 		for marker in markers:
 			if is_instance_valid(marker): marker.queue_free()
 		if is_instance_valid(child): child.queue_free()
-		host.world.player.position = host.world.get_node("Staging/ChildInSun").position
-		host.world.player.presentation.posture = "seated"; host.world.player.z_index = 1
+		host.world.player.presentation.posture = "standing"; host.world.player.z_index = 1
+		host.leonor.posture="standing"
 		host.view.next_button.show(); host.phase = "bank"
 		host._start_segment("bank")
 		if ChapterProgress.auto_save: ChapterProgress.save_to()

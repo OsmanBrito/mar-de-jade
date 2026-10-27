@@ -2,6 +2,7 @@ extends CanvasLayer
 ## Shared presentation for staged chapter scenes.
 signal continuation_requested
 signal replay_requested
+signal menu_requested(page: String)
 var caption := "Portugal · Infância\nUm lugar à mesa"
 var speaker: Label
 var body: Label
@@ -29,6 +30,14 @@ var footer: ColorRect
 var portrait_frame: PanelContainer
 var portrait_image: TextureRect
 var portrait_id := ""
+var exploration_back: Panel
+var interaction_back: Panel
+var objective_label: Label
+var interaction_label: Label
+var exploration_objective := ""
+var exploration_prompt := ""
+var independent_exploration_hud := false
+var exploration_actions: HBoxContainer
 const Presentation = preload("res://scripts/ui/presentation.gd")
 
 func _ready() -> void:
@@ -48,6 +57,9 @@ func _ready() -> void:
 	material.shader = shader; material.set_shader_parameter("fade",texture); shade.material = material
 	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	control.add_child(shade)
+	exploration_back = Panel.new(); exploration_back.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	exploration_back.add_theme_stylebox_override("panel",Presentation.panel(Color(.055,.105,.10,.90),Color(.45,.49,.37,.7)))
+	control.add_child(exploration_back); exploration_back.hide()
 	var header = _label("MAR DE JADE",19)
 	brand = header
 	header.position = Vector2(34,22)
@@ -67,6 +79,13 @@ func _ready() -> void:
 	status.size.x = 800
 	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	control.add_child(status)
+	objective_label = _label("",15); objective_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	objective_label.add_theme_color_override("font_color",Color("ded8bd")); objective_label.hide(); control.add_child(objective_label)
+	interaction_back = Panel.new(); interaction_back.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	interaction_back.add_theme_stylebox_override("panel",Presentation.panel(Color(.055,.105,.10,.94),Color("a99161")))
+	control.add_child(interaction_back); interaction_back.hide()
+	interaction_label = _label("",17); interaction_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	interaction_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; control.add_child(interaction_label); interaction_label.hide()
 	panel = PanelContainer.new()
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
 	panel.position = Vector2(-480,-210)
@@ -129,6 +148,15 @@ func _ready() -> void:
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	control.add_child(hint)
 	control.theme = Presentation.theme()
+	exploration_actions = HBoxContainer.new()
+	exploration_actions.add_theme_constant_override("separation",8)
+	control.add_child(exploration_actions)
+	for entry in [["Caderno","Pedidos"],["Menu","Sistema"]]:
+		var action := Button.new(); action.text = entry[0]
+		action.custom_minimum_size = Vector2(104,42)
+		action.pressed.connect(func(): menu_requested.emit(entry[1]))
+		exploration_actions.add_child(action)
+	exploration_actions.hide()
 	GamePreferences.changed.connect(_preferences_changed)
 	_preferences_changed()
 	guide = preload("res://scripts/chapter/journey_guide.gd").new(); guide.view = self; add_child(guide)
@@ -145,6 +173,11 @@ func remember(who: String,words: String) -> void:
 	last_record = who+"\n"+words
 	preload("res://scripts/chapter/dialogue_log.gd").remember(ChapterProgress,who,words)
 
+func set_exploration_prompt(objective: String,prompt: String) -> void:
+	exploration_objective = objective; exploration_prompt = prompt
+	# Preserve the status contract used by gameplay and accessibility checks.
+	status.text = prompt if not prompt.is_empty() else objective
+
 func _process(_delta: float) -> void:
 	if hint!=null:
 		if hint.text!=rendered_hint: hint_source = hint.text
@@ -158,6 +191,11 @@ func _process(_delta: float) -> void:
 	var footer_height := maxf(42,hint.get_minimum_size().y+18)
 	footer.offset_top = -footer_height; hint.offset_top = -footer_height+9; hint.offset_bottom = -9
 	var exploring := not panel.visible and not next_button.visible
+	exploration_actions.visible = exploring and not menu_requested.get_connections().is_empty()
+	if exploration_actions.visible:
+		for action in exploration_actions.get_children(): action.add_theme_font_size_override("font_size",GamePreferences.font_size(16))
+		exploration_actions.size = exploration_actions.get_combined_minimum_size()
+		exploration_actions.position = Vector2(window_size.x-exploration_actions.size.x-24,24)
 	if exploring!=exploration_layout:
 		exploration_layout = exploring; brand.visible = not exploring
 		caption_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT if exploring else Control.PRESET_CENTER_TOP)
@@ -177,6 +215,33 @@ func _process(_delta: float) -> void:
 	else:
 		var status_half := minf(400,(window_size.x-56)*.5)
 		status.offset_left = -status_half; status.offset_right = status_half
+	var city_hud: bool = exploring and not exploration_objective.is_empty() and (guide.enabled or independent_exploration_hud)
+	exploration_back.visible = city_hud; objective_label.visible = city_hud
+	status.visible = not city_hud
+	interaction_back.visible = city_hud and not exploration_prompt.is_empty()
+	interaction_label.visible = interaction_back.visible
+	if city_hud:
+		var hud_width := minf(450,window_size.x-48)
+		caption_label.offset_left = 40; caption_label.offset_top = 29; caption_label.offset_right = hud_width+8
+		caption_label.add_theme_font_size_override("font_size",GamePreferences.font_size(17))
+		caption_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		objective_label.text = GamePreferences.hint_text(exploration_objective)
+		objective_label.add_theme_font_size_override("font_size",GamePreferences.font_size(15))
+		objective_label.position = Vector2(40,caption_label.offset_top+caption_label.get_minimum_size().y+10)
+		objective_label.size = Vector2(hud_width-32,0)
+		exploration_back.position = Vector2(24,18)
+		exploration_back.size = Vector2(hud_width,objective_label.position.y+objective_label.get_minimum_size().y-2)
+		var prompt_width := minf(660,window_size.x-80)
+		interaction_label.text = GamePreferences.hint_text(exploration_prompt)
+		interaction_label.add_theme_font_size_override("font_size",GamePreferences.font_size(17))
+		interaction_label.size = Vector2(prompt_width-32,0)
+		var prompt_height := interaction_label.get_minimum_size().y+24
+		interaction_back.position = Vector2((window_size.x-prompt_width)*.5,window_size.y-footer_height-prompt_height-20)
+		interaction_back.size = Vector2(prompt_width,prompt_height)
+		interaction_label.position = interaction_back.position+Vector2(16,12)
+	else:
+		caption_label.add_theme_font_size_override("font_size",19)
+		caption_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	if not panel.is_visible_in_tree(): return
 	var portraits = preload("res://scripts/chapter/dialogue_portraits.gd")
 	var young := caption_label.text.contains("Infância")

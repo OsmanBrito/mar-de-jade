@@ -21,3 +21,14 @@ static func environment_hint(stage: int,at: Vector2) -> String:
 	}
 	if not clues.has(stage) or at.distance_to(clues[stage][0])>260:return ""
 	return clues[stage][1]
+
+static func departure(p,original:Array) -> Array:
+	if not p.flags.get("child_forest_invited",false):return original
+	return [["Herói criança","Foi aqui que o viram?"],["Leonor criança","Perto da ponte. Não disseram de que lado."],["Herói criança","Se houver pegadas, encontramos."],["Leonor criança","Tu olhas para o chão. Eu vejo o caminho."],["Herói criança","E não te afastes."],["Leonor criança","Está bem."]]
+
+static func discovery(id:String) -> Array:
+	return {
+		"shelter":[["Herói criança","Há ovos aqui."],["Leonor criança","Não mexas no ramo."],["Herói criança","Eu só queria ver."],["Leonor criança","Então vê daqui."]],
+		"charcoal":[["Herói criança","Isto ardeu?"],["Leonor criança","Faziam carvão aqui. Olha para as marcas das rodas."],["Herói criança","Também vieram atrás do corço?"],["Leonor criança","Acho que vieram trabalhar."]],
+		"tracks":[["Herói criança","Estas não são iguais."],["Leonor criança","Aquelas são muito maiores."],["Herói criança","Não era só o corço que vinha beber aqui."],["Leonor criança","Ficamos no caminho."]]
+	}.get(id,[])

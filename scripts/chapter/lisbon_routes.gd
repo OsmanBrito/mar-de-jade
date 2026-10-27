@@ -1,6 +1,7 @@
 extends RefCounted
 ## Walk to a place, then interact with its person/object to resume the story.
 signal stage_arrived
+const OrderService = preload("res://scripts/chapter/first_order_service.gd")
 const State = preload("res://scripts/chapter/lisbon_journey_state.gd")
 const Marker = preload("res://scripts/chapter/local_request_marker.gd")
 const Convent = preload("res://scripts/city/convent_plan.gd")
@@ -43,6 +44,21 @@ func click(point: Vector2) -> void:
 	intent.begin(director.world,point,targets)
 
 func guide_target() -> Vector2:
+	if active and ChapterProgress.choices.get("tracked_request","") in ["ORDER-CARGO","ORDER-AUDIENCE","ORDER-PRACTICE"]:
+		var destination: Dictionary=preload("res://scripts/chapter/order_campaign.gd").target(ChapterProgress)
+		if (area()=="convent")!=bool(destination.city):return destination.at
+		if continuous():return preload("res://scripts/city/lisbon_layout.gd").CONVENT_ENTRY
+		for exit in exits:
+			if exit.to==("square" if destination.city else "convent"):return exit.point
+	if active and ChapterProgress.choices.get("tracked_request","")=="ORDER-MEAL" and preload("res://scripts/city/order_house_hub.gd").meal_stage(ChapterProgress) in ["asked","prepared"]:
+		if area()=="convent": return preload("res://scripts/city/order_house_hub.gd").meal_target(ChapterProgress)
+		if continuous(): return preload("res://scripts/city/lisbon_layout.gd").CONVENT_ENTRY
+		for exit in exits:
+			if exit.to=="convent": return exit.point
+	if active and safe_city():
+		var tracked: Vector2 = preload("res://scripts/chapter/request_guide.gd").target(ChapterProgress,director.harbor.city)
+		if tracked!=Vector2.INF: return tracked
+	if active and state.kind=="order_help" and safe_city(): return OrderService.help_target(director).at
 	if goal_reachable_here(): return goal
 	var next := "room" if area()=="convent" and goal_area=="room" else "square"
 	if continuous() and goal_area=="deck": next = "deck"
@@ -120,6 +136,9 @@ func restore(saved: Dictionary) -> void:
 
 func set_goal() -> void:
 	var kind: String = state.kind
+	if kind=="order_check": goal_area = "convent"; goal = Vector2(570,600); goal_label = "Enfermaria · conferir panos e água"; return
+	if kind=="order_report": goal_area = "square"; goal = Vector2(-130,290); goal_label = "Duarte · apresentar o relato à Ordem"; return
+	if kind=="order_help": goal_area = "cais"; goal = Vector2(490,800); goal_label = "Duarte · continuar para a refeição"; return
 	if kind=="port_visit": goal_area = "cais"; goal = preload("res://scripts/city/lisbon_layout.gd").BOAT_ENTRY-Vector2(0,60); goal_label = "Regressar à Botafogo · retomar a viagem"; return
 	if kind=="rest": goal_area = "room"; goal = Vector2(-110,300); goal_label = "Descansar · avaliação amanhã"; return
 	if kind=="fetch": goal_area = "room"; goal = Vector2(185,340); goal_label = "Pedir a Tomé que vá ao cais"; return
@@ -143,8 +162,21 @@ func set_goal() -> void:
 	goal_area = spec[0]; goal = spec[1]; goal_label = spec[2]
 
 func objective() -> String:
+	if ChapterProgress.choices.get("tracked_request","")=="ORDER-PRACTICE":return preload("res://scripts/chapter/request_guide.gd").objective(ChapterProgress,"ORDER-PRACTICE")
 	if not active: return ""
-	var detail := goal_label+" · "+str(definitions[goal_area].title)
+	if ChapterProgress.choices.get("tracked_request","")=="ORDER-AUDIENCE":return "Apresenta o primeiro relato à liderança na Sala do Capítulo, pelo corredor norte da secretaria. · J: missão principal"
+	if ChapterProgress.choices.get("tracked_request","")=="ORDER-CARGO":return preload("res://scripts/chapter/order_campaign.gd").objective(ChapterProgress)+" · J: missão principal"
+	if ChapterProgress.choices.get("tracked_request","")=="ORDER-MEAL": return preload("res://scripts/city/order_house_hub.gd").meal_objective(ChapterProgress)+" · J: missão principal"
+	if state.kind=="order_help":
+		var guide = preload("res://scripts/chapter/request_guide.gd")
+		var id: String = ChapterProgress.choices.get("tracked_request","")
+		var text: String = guide.objective(ChapterProgress,id) if not guide.target_id(ChapterProgress,id).is_empty() else OrderService.help_objective(ChapterProgress)
+		return text+" · Podes retomar a missão principal no caderno ou junto de Duarte."
+	if state.kind in ["order_check","order_report"]: return OrderService.current(ChapterProgress)
+	var tracked := preload("res://scripts/chapter/request_guide.gd").objective(ChapterProgress,ChapterProgress.choices.get("tracked_request",""))
+	if safe_city() and not preload("res://scripts/chapter/request_guide.gd").target_id(ChapterProgress,ChapterProgress.choices.get("tracked_request","")).is_empty(): return "Pedido acompanhado · "+tracked+" · J: missão principal e outros pedidos"
+	var detail := goal_label
+	if goal_area!=area(): detail += " · "+str({"room":"Acolhimento","square":"Praça","cais":"Ribeira","convent":"Claustro","deck":"Botafogo"}.get(goal_area,goal_area))
 	if state.kind=="fetch": detail = "Duarte fica com o ferido. Vai ao abrigo buscar Tomé e regressa com ele ao cais."
 	elif state.kind=="fetch_return": detail = "Tomé segue contigo. Regressa pelo caminho da praça ao cais; Duarte espera com o ferido."
 	elif state.kind=="rest": detail = "Leonor marcou a avaliação para amanhã. Regressa ao abrigo e descansa quando estiveres pronto."
@@ -199,10 +231,14 @@ func install() -> void:
 		director.harbor.city.install(director.world)
 	else: director.harbor.active = false
 	# The cook and Leonor wait at the table while the player reaches them.
-	if area()=="cais" and state.kind=="block" and int(state.target)==4:
+	if area()=="cais" and state.kind=="block" and int(state.target)==4 and goal_area=="cais":
 		if not director.actors.has("Ajudante da cozinha"):
 			director._add_actor("Ajudante da cozinha",Vector2(470,830)); director.actors["Ajudante da cozinha"].npc_id = "attendant"
 			director.actors["Ajudante da cozinha"].carries_bowl = true
+	# Once treatment is over, the meal is inside the house. The previous rescue
+	# cast must not remain lined up behind the market during free exploration.
+	if continuous() and state.kind=="block" and int(state.target)==4 and goal_area=="convent" and ChapterProgress.flags.get("patient_helped",false):
+		for actor in director.actors.values(): actor.hide()
 	# Tomé travels with the player; ordinary care remains the objective.
 	if state.kind=="fetch_return" and not director.actors.has("Tomé"): director._add_actor("Tomé",director.world.player.position+Vector2(-35,-20))
 	if director.actors.has("Leonor") and ChapterProgress.flags.get("leonor_departed",false): director.actors.Leonor.hide()
@@ -222,6 +258,9 @@ func install() -> void:
 			walk.tween_callback(func():
 				var actor = actor_ref.get_ref()
 				if actor!=null: actor.posture = "seated")
+	if state.kind in ["order_report","order_help"] and goal_reachable_here() and director.actors.has("Duarte"):
+		director.actors.Duarte.show(); director.actors.Duarte.position = goal+Vector2(0,-40)
+		if director.actors.Duarte.has_node("NameLabel"): director.actors.Duarte.get_node("NameLabel").show()
 	director.world.rebuild_navigation()
 
 func clear_point(point: Vector2) -> Vector2:
@@ -249,6 +288,7 @@ func add_exit(to: String,caption: String,point: Vector2) -> void:
 
 func resume() -> void:
 	if not active: return
+	if director.has_meta("order_confirmation"):director.remove_meta("order_confirmation")
 	intent.cancel()
 	director.busy = false; director.phase = "roaming"; director._clear_options()
 	director.view.show(); director.view.panel.hide(); director.view.next_button.hide()
@@ -292,7 +332,7 @@ func update(delta: float) -> void:
 	if not active or director.paused or director.phase!="roaming": return
 	if area()!=installed_area:
 		install(); director.view.caption_label.text = location_title(); save()
-	if area()=="convent": director.view.caption_label.text = location_title()
+	if continuous() or area()=="convent": director.view.caption_label.text = location_title()
 	var arrived := intent.poll(director.world)
 	if not arrived.is_empty(): interact(arrived); return
 	director.view.guide.track(director.world,guide_target())
@@ -317,8 +357,12 @@ func update(delta: float) -> void:
 					if director.world.point_clear(behind) and tome.position.distance_to(behind)<85: tome.position = tome.position.move_toward(behind,140*delta); break
 			tome.walking = true; tome.frame_time += delta*7
 		else: tome.walking = false
+	if state.kind=="order_help": follow_duarte(delta)
 	if safe_city():
 		director.harbor.city.update()
+		if state.kind=="order_help":
+			var target: Dictionary = OrderService.help_target(director)
+			if director.harbor.city.markers.has(target.id): director.harbor.city.markers[target.id].symbol = "!"
 		for id in director.harbor.city.markers:
 			var marker = director.harbor.city.markers[id]
 			if is_instance_valid(marker): marker.highlighted = focused=="resident:"+str(id)
@@ -343,7 +387,7 @@ func update(delta: float) -> void:
 		if prompt.is_empty() and safe_city():
 			prompt = director.harbor.city.prompt()
 			if prompt.is_empty() and director.harbor.near_merchant(): prompt = "E / A · negociar com o comerciante"
-	director.view.status.text = prompt if not prompt.is_empty() else objective()
+	director.view.set_exploration_prompt(objective(),prompt)
 
 func interact(requested: String = "") -> void:
 	if not active or director.paused or director.busy or director.phase!="roaming": return
@@ -387,7 +431,12 @@ func inspect(row: Dictionary) -> void:
 	director.phase = "order_inspection"; director._lock_player(true); director._clear_options()
 	director.view.panel.show(); director.options_box.show(); director.view.next_button.hide()
 	director.view.speaker.text = row.title; director.view.body.text = row.text
+	director.view.status.text = ""
+	director.view.hint.text = "Enter / A · escolher     Esc / B · voltar"
 	director.view.remember(director.view.speaker.text,director.view.body.text)
+	if row.has("hub_id"):
+		for action in row.get("actions",[]):
+			director._option(action[0],func(): preload("res://scripts/city/order_house_hub.gd").act(director,row.hub_id,action[1]))
 	director._option("Voltar à exploração",resume)
 	director.options_box.get_child(0).grab_focus()
 
@@ -439,6 +488,7 @@ func save() -> void:
 	if ChapterProgress.auto_save: ChapterProgress.save_to()
 
 func stop(cancel: bool = false) -> void:
+	if director.actors.has("Duarte"): director.actors.Duarte.walking = false
 	intent.cancel(); director.view.guide.enabled = false
 	active = false; ChapterProgress.journey = {}; clear_markers(); director.harbor.active = false
 	director.props.show(); director.props.delivery_active = false; director.props.carrying = false
@@ -446,6 +496,11 @@ func stop(cancel: bool = false) -> void:
 
 func arrive() -> void:
 	var kind: String = state.kind; var target: int = int(state.target); var cursor: int = int(state.event)
+	if kind in ["order_check","order_report","order_help"]:
+		if not near(goal): return
+		if kind=="order_check": OrderService.inspect(director)
+		else: arrive_order()
+		return
 	if kind=="port_visit":
 		director.phase = "shore_return"; director._lock_player(true); director._clear_options()
 		director.view.panel.show(); director.options_box.show(); director.view.next_button.hide()
@@ -502,3 +557,50 @@ func return_to_voyage() -> void:
 	if error!=OK:
 		director.view.status.text = "Não foi possível guardar o regresso. Continua em Lisboa e tenta novamente."; return
 	preload("res://scripts/navigation/voyage_launch.gd").start(director.get_tree(),true,true)
+
+func arrive_order() -> void:
+	if not active or director.paused or state.kind not in ["order_check","order_report","order_help"]: return
+	var kind: String = state.kind; var cursor: int = state.event
+	if kind=="order_check" and not ChapterProgress.flags.get("order_check_done",false): return
+	if kind=="order_report": ChapterProgress.flags.order_reported = true
+	if kind=="order_help":
+		ChapterProgress.choices.erase("tracked_request")
+		if OrderService.Requests.stage(ChapterProgress)=="completed": ChapterProgress.flags.order_help_reported = true
+	var feet: Vector2 = director.world.player.position
+	stop()
+	if kind=="order_report":
+		director._load_map("courtyard")
+		director.world.player.position = clear_point(feet)
+		director.view.remember("Duarte","Relato recebido. A reserva ficou conferida; a casa sabe o que pode enviar ao cais. A liderança recebe-te na Sala do Capítulo, pelo corredor norte da secretaria. Podes apresentar-te e conhecer os estudos durante esta pausa, antes da viagem.")
+	if kind=="order_help":
+		director.event_index = cursor; director.phase = "order_report_dialogue"; director._lock_player(true); director._clear_options()
+		director.view.panel.show(); director.view.next_button.hide(); director.options_box.show()
+		director.view.speaker.text = "Duarte"
+		director.view.body.text = "O carro voltou ao trabalho e o oficial recebeu a tua resposta. Uma ajuda só termina quando quem a pediu sabe o resultado. A casa pode contar com o carro para o próximo serviço. Vamos levar a refeição a quem ficou no socorro?" if ChapterProgress.flags.get("order_help_reported",false) else "Podemos seguir. O pedido ficou anotado e pode ser retomado nesta pausa ou numa visita a Lisboa. Não prometeste terminá-lo agora; quando voltares, pergunta ao oficial o que ainda falta."
+		director.view.remember("Duarte",director.view.body.text)
+		director._option("Seguir com Duarte · levar a refeição",func():
+			if director.paused: return
+			director.phase = "dialogue"; director._clear_options(); director.advance())
+		director.options_box.get_child(0).grab_focus(); return
+	director.event_index = cursor; director.phase = "dialogue"; director._clear_options(); director.advance()
+
+func follow_duarte(delta: float) -> void:
+	if not director.actors.has("Duarte"): return
+	var actor = director.actors.Duarte
+	var destination: Vector2 = director.world.player.position+Vector2(-48,-12)
+	if director.world.player.position.distance_to(goal)<100: destination = goal+Vector2(0,-40)
+	actor.show()
+	for shape in actor.find_children("*","CollisionPolygon2D",true,false): shape.set_deferred("disabled",true)
+	if actor.position.distance_to(destination)<24: actor.walking=false; return
+	var next: Vector2 = destination
+	if not director.world.segment_clear(actor.position,next):
+		var from: Vector2i = director.world._nearest_id(actor.position)
+		var to: Vector2i = director.world._nearest_id(destination)
+		if from.x<0 or to.x<0: actor.walking=false; return
+		var path: PackedVector2Array = director.world.navigation.get_point_path(from,to)
+		if path.size()<2: actor.walking=false; return
+		next = path[1]
+	var direction: Vector2 = next-actor.position
+	actor.position = actor.position.move_toward(next,160*delta)
+	actor.facing = (3 if direction.x>0 else 1) if absf(direction.x)>absf(direction.y) else (0 if direction.y>0 else 2)
+	actor.walking=true; actor.frame_time += delta*7

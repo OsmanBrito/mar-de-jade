@@ -1,0 +1,7 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "transparent_background": true,
+  "reference": "assets/art/npcs/lisbon/order-house/order-instructor-v1.png",
+  "prompt": "Use case: illustration-story. Production Godot 2D RPG sprite atlas with REAL transparent background. Reference image is STYLE ONLY. Match warm hand-painted illustrated RPG rendering, sharp readable silhouette, same full-body proportions. NEW CHARACTER: the fictional Grand Master of the Portuguese Order of Christ, dignified older man aged about 60, swept-back silver hair, neatly trimmed silver beard, calm authoritative face, ivory ceremonial tabard with large red Order of Christ cross with white inset, deep burgundy long mantle with modest gold edging, small gold clasp, dark chainmail sleeves, leather belt and scabbarded sword, brown boots. No crown, no throne, no staff in hands. Distinct identity from bald black-bearded instructor. EXACT 16 full-body sprites, strict 4 columns by 4 rows grid, consistent sizes and generous transparent margins between cells. Row1 front/south, row2 left/west, row3 back/north, row4 right/east. Columns: standing idle, left-foot-forward stride, passing-step stride, right-foot-forward stride. All same character, outfit, palette, face. Entire head, cape and shoes visible in every cell. No scenery, objects, labels, shadows, border, text or watermark. Do not add a fifth row or seated poses. Atlas aspect ratio square or portrait; leave space between rows. True alpha outside characters.",
+  "output": "assets/art/npcs/lisbon/order-house/order-grandmaster-v1.png"
+}

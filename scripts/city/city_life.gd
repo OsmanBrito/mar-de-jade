@@ -21,7 +21,7 @@ static func routine(id: String,time: float) -> Dictionary:
 	return {"phase":["preparar","trabalhar","pousar","conferir","descansar"][phase],"weight":at/float(lengths[phase]),"cycle":total}
 func _ready() -> void:
 	# They have no solid layer: an errand cannot block the player or a story actor.
-	for spec in [["RecadosDaRibeira","worker",Vector2(1050,1000),Vector2(1220,1000)],["PassanteDaPraca","observer",Vector2(-240,450),Vector2(-60,450)]]:
+	for spec in [["RecadosDaRibeira","worker",Vector2(1050,1000),Vector2(1220,1000)],["PassanteDaPraca","observer",Vector2(-240,450),Vector2(-60,450)],["MoradoraDaTravessa","dock_woman",Vector2(820,290),Vector2(1030,315)],["RecadosDoBairro","worker",Vector2(1250,340),Vector2(1490,370)]]:
 		if not world.point_clear(spec[2]) or not world.point_clear(spec[3]): continue
 		var person = preload("res://scripts/chapter/quay_resident.gd").new()
 		person.name=spec[0];person.npc_id=spec[1];person.position=spec[2];person.route=PackedVector2Array([spec[2],spec[3]]);person.pause_seconds=5

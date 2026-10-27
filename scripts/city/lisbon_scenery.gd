@@ -5,6 +5,7 @@ const Ferro = preload("res://scripts/city/ferro_lisbon.gd")
 const Prop = preload("res://scripts/city/lisbon_prop.gd")
 const ROOT := "res://assets/art/ferro-lisbon/"
 const Materials = preload("res://scripts/city/place_materials.gd")
+const Ground = preload("res://scripts/city/lisbon_ground.gd")
 static var art: Dictionary = {}
 var world
 var paving_aprons: Array[PackedVector2Array] = []
@@ -57,11 +58,12 @@ static func install(map: Node2D) -> void:
 	map.add_child(floor)
 	var landmarks := preload("res://scripts/city/city_landmarks.gd").new(); landmarks.name="StreetLandmarks";map.sorted_world.add_child(landmarks)
 	var finish := preload("res://scripts/city/lisbon_finish.gd").new(); finish.name = "WorkingGround"; finish.z_index = -3; map.add_child(finish)
-	for edge in [-1280,1870]:
-		for y in [-440,-170,100,370,640]:
-			prop(map,"OlivalDoLimite","bruma-v2-tree.png",Vector2(edge,y),Vector2(230,275))
+	# Irregular groups frame the streets; a repeated row made the district look
+	# like a board with scenery pasted around its perimeter.
+	for at in [Vector2(-1210,-300),Vector2(-1330,80),Vector2(-1180,470),Vector2(-1030,960),Vector2(1840,190),Vector2(1820,740),Vector2(1850,1060)]:
+		prop(map,"OlivalDoLimite","bruma-v2-tree.png",at,Vector2(210,250)*(1.0+sin(at.x*.07)*.14))
 	var river := Sprite2D.new(); river.name = "Shoreline"; river.texture = texture("lisbon-ground-refined-v3.png",false); river.centered = false
-	river.position = Layout.OFFSET; river.scale = Ferro.SIZE*Layout.SCALE/river.texture.get_size()
+	river.position = Layout.OFFSET; river.scale = Vector2.ONE*(Ferro.SIZE.x*Layout.SCALE/river.texture.get_width())
 	var material := ShaderMaterial.new(); var shader := Shader.new()
 	# Keep only the retaining stones and water from the source painting. Its baked
 	# cobbles used to dissolve over a second, incompatible paving underneath.
@@ -80,18 +82,34 @@ static func install(map: Node2D) -> void:
 		var area: Rect2 = Ferro.BUILDINGS[i]
 		var file: String = "bruma-v2-"+Ferro.BUILDING_KEYS[i]+".png"
 		var at: Vector2 = Layout.point(Vector2(area.get_center().x,area.end.y))
-		prop(map,"Ferro_"+Ferro.BUILDING_KEYS[i],file,at,Ferro.BUILDING_SIZES[i]*Layout.SCALE,Rect2((area.position-Vector2(area.get_center().x,area.end.y))*Layout.SCALE,area.size*Layout.SCALE))
+		var building := prop(map,"Ferro_"+Ferro.BUILDING_KEYS[i],file,at,Ferro.BUILDING_SIZES[i]*Layout.SCALE,Rect2((area.position-Vector2(area.get_center().x,area.end.y))*Layout.SCALE,area.size*Layout.SCALE))
+		building.tint = Color("f1eee5")
 	# Preserve source walls in depth slices, opening a readable northern gate.
 	for wall in Ferro.COURTYARD_WALLS:
+		var whole := texture("lisbon-courtyard-wall-refined-v1.png") as AtlasTexture
+		var factor: float = wall.size.x*Layout.SCALE/whole.region.size.x
+		var image := whole.atlas.get_image()
+		var origin := Layout.point(Vector2(wall.position.x,wall.end.y))-Vector2(0,whole.region.size.y*factor)
 		for section in 8:
 			var left: float = wall.position.x+wall.size.x*section/8.0
 			var right: float = wall.position.x+wall.size.x*(section+1)/8.0
 			if right>670 and left<745: continue
-			var whole := texture("lisbon-courtyard-wall-refined-v1.png") as AtlasTexture
-			var slice := AtlasTexture.new(); slice.atlas = whole.atlas; slice.region = Rect2(whole.region.position+Vector2(whole.region.size.x*section/8,0),Vector2(whole.region.size.x/8,whole.region.size.y))
+			# Integer crop boundaries avoid fractional atlas seams. Each slice keeps
+			# the original painting's geometry and sorts at its own visible ground.
+			var x0 := int(whole.region.size.x*section/8)
+			var x1 := int(whole.region.size.x*(section+1)/8)
+			var top := int(whole.region.size.y); var bottom := 0
+			for x in range(x0,x1,2):
+				for y in range(int(whole.region.size.y)):
+					if image.get_pixelv(Vector2i(whole.region.position)+Vector2i(x,y)).a>.2:
+						top = mini(top,y); bottom = maxi(bottom,y+1)
+			if bottom<=top: continue
+			var slice := AtlasTexture.new(); slice.atlas = whole.atlas
+			slice.region = Rect2(whole.region.position+Vector2(x0,top),Vector2(x1-x0,bottom-top)); slice.filter_clip = true
 			var item := Prop.new(); item.texture = slice; item.world = map
-			item.size = Vector2(wall.size.x/8,wall.size.x*.5)*Layout.SCALE
-			item.position = Layout.point(Vector2((left+right)*.5,Ferro.wall_base_y(wall,(left+right)*.5)))
+			item.name = "MuroIlustrado_%d_%d" % [int(wall.position.x),section]
+			item.size = slice.region.size*factor
+			item.position = origin+Vector2((x0+x1)*.5,bottom)*factor
 			map.sorted_world.add_child(item)
 			body(item,PackedVector2Array([Vector2(-item.size.x/2,-9),Vector2(item.size.x/2,-9),Vector2(item.size.x/2,9),Vector2(-item.size.x/2,9)]))
 	prop(map,"Estaleiro","lisbon-shipyard-refined-v1.png",Layout.point(Vector2(123,485)),Vector2(160,90)*Layout.SCALE)
@@ -100,7 +118,11 @@ static func install(map: Node2D) -> void:
 	for pile in Ferro.CARGO_PILES:
 		# This source cargo cluster becomes Jade's playable accident, with its own art.
 		if pile[0].x>780 and pile[0].x<870: continue
-		for level in int(pile[1]): prop(map,"Cargo","bruma-crate.png",Layout.point(pile[0]-Vector2(0,22*level)),Vector2(31,30)*Layout.SCALE)
+		var stack := Node2D.new(); stack.name = "PilhaDeCarga"; stack.position = Layout.point(pile[0]); map.sorted_world.add_child(stack)
+		for level in int(pile[1]):
+			var crate := prop(map,"Cargo","bruma-crate.png",stack.position,Vector2(31,30)*Layout.SCALE)
+			crate.reparent(stack); crate.position = Vector2(0,-22*level*Layout.SCALE)
+			crate.fade = false # The column sorts once at its ground foot.
 	for item in Ferro.PROPS:
 		if item[0]=="cart": continue
 		var file: String = "bruma-v2-"+item[0]+".png" if item[0] in ["pots"] else "regional-bench-illustrated-v1.png" if item[0]=="bench" else "bruma-"+item[0]+".png"
@@ -111,7 +133,10 @@ static func install(map: Node2D) -> void:
 	for i in Ferro.DOCK_DRAW.size():
 		var dock: Rect2 = Ferro.DOCK_DRAW[i]
 		var pier := Sprite2D.new(); pier.texture = texture("bruma-pier-directed-v1.png"); pier.centered = false
-		pier.position = Layout.point(dock.position); pier.scale = dock.size*Layout.SCALE/pier.texture.get_size(); floor.add_child(pier)
+		# Match the authored deck height; preserve width instead of squeezing it.
+		pier.scale = Vector2.ONE*(dock.size.y*Layout.SCALE/pier.texture.get_height())
+		pier.position = Layout.point(dock.position)+Vector2((dock.size.x*Layout.SCALE-pier.texture.get_width()*pier.scale.x)*.5,0)
+		pier.name = "Pontao"+str(i); floor.add_child(pier)
 		prop(map,"Batel","bruma-boat.png",Layout.point(Vector2(173 if i==0 else 1410,761)),Vector2(125,100)*Layout.SCALE)
 	prop(map,"CarroDaOficina","bruma-v2-cart.png",Layout.CART_HOME,Vector2(105,85),Rect2(-35,-16,70,24))
 	# Keep the approved Jade residents, now placed at their real workplaces.
@@ -124,7 +149,8 @@ static func install(map: Node2D) -> void:
 		if name=="Vizinha": person.npc_id = "dock_woman"
 		person.position = positions[names[name]]; person.route = PackedVector2Array([person.position]); map.sorted_world.add_child(person)
 	template.free()
-	for old_tree in ["pine_01","pine_02"]:
+	# Remove the obsolete pixel-art blockout cargo as well as the old tree proxies.
+	for old_tree in ["pine_01","pine_02","Obstacle"]:
 		var tree = map.sorted_world.get_node_or_null(old_tree)
 		if tree!=null: tree.free()
 	var convent := Node2D.new(); convent.name = "PracaDeLisboa"; map.add_child(convent)
@@ -132,12 +158,18 @@ static func install(map: Node2D) -> void:
 	# Pots and independent trees give the convent forecourt volume without rescaling a painting.
 	for p in [Vector2(-540,340),Vector2(560,315)]: prop(map,"Oliveira","bruma-v2-tree.png",p,Vector2(210,240),Rect2(-18,-14,36,28))
 	for p in [Vector2(-400,130),Vector2(310,130)]: prop(map,"Vasos","bruma-v2-pots.png",p,Vector2(50,60))
-	for p in [Vector2(-580,85),Vector2(610,100),Vector2(-660,415)]:
+	for p in [Vector2(-580,85)]:
 		prop(map,"ArvoreDoLimite","bruma-v2-tree.png",p,Vector2(205,245),Rect2(-16,-14,32,28))
+	for row in [[Vector2(-945,160),"Acolhimento",true],[Vector2(370,230),"Claustro",false],[Vector2(550,455),"Ribeira",true],[Vector2(-950,405),"Estaleiro",false],[Vector2(1715,895),"Botafogo",true]]:
+		var signpost := preload("res://scripts/city/lisbon_sign.gd").new()
+		signpost.name = "Placa"+str(row[1]); signpost.position = row[0]; signpost.caption = row[1]; signpost.right = row[2]
+		signpost.scale = Vector2.ONE*.78
+		map.sorted_world.add_child(signpost)
 	map.set_meta("portugal_quay_art",true)
 	map.set_meta("continuous_lisbon",true)
 	load("res://scripts/city/house_life.gd").install(map)
 	load("res://scripts/chapter/lisbon_district.gd").install(map)
+	load("res://scripts/city/lisbon_composition.gd").install(map)
 
 func _draw() -> void:
 	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
@@ -145,29 +177,23 @@ func _draw() -> void:
 	draw_rect(Rect2(-2400,-1600,6000,3400),Color("72735a"))
 	var grass := PackedVector2Array([Vector2(-2400,-1600),Vector2(3600,-1600),Vector2(3600,1800),Vector2(-2400,1800)])
 	var grass_uv := PackedVector2Array()
-	for p in grass: grass_uv.append(p/Vector2(260,195))
-	draw_polygon(grass,PackedColorArray([Materials.GRASS_TINT]),grass_uv,texture("bruma-grass-refined.png",false))
+	for p in grass: grass_uv.append(p/Vector2(470,300))
+	draw_polygon(grass,PackedColorArray([Color("828b70")]),grass_uv,texture("bruma-grass-refined.png",false))
 	var surface := Layout.paving_surface()
 	# A worn verge shares the exact paving UVs; no rectangular texture patches.
 	for apron in paving_aprons: Materials.verge(self,apron)
-	Materials.polygon(self,surface,"limestone-floor",Materials.EXTERIOR_STONE,Materials.PAVING_SCALE)
+	Ground.surface(self,surface)
 	# Opaque pieces use the exact same global UVs and tint at their junctions.
 	# Keeping the loops separate preserves the gardens enclosed by the streets.
-	for street in Layout.streets(): Materials.polygon(self,street,"limestone-floor",Materials.EXTERIOR_STONE,Materials.PAVING_SCALE)
+	for street in Layout.streets(): Ground.surface(self,street)
+	Ground.edging(self,paving_aprons)
 	# The descending processional path points to the real opening in Ferro's wall.
 	# The descent is already part of the joined floor; drawing it twice darkened
 	# the material at the gate and produced another visible seam.
-	for edge in [[Vector2(-1100,-100),Vector2(-1050,290)],[Vector2(-1050,290),Vector2(-925,343)],[Vector2(-794,398),Vector2(-505,520)],[Vector2(480,-100),Vector2(650,290)],[Vector2(650,290),Vector2(648,294)],[Vector2(615,360),Vector2(550,490)]]:
+	for edge in [[Vector2(-1100,-100),Vector2(-1050,290)],[Vector2(-1050,290),Vector2(-925,343)],[Vector2(-794,398),Vector2(-505,520)]]:
 		Materials.wall(self,edge[0],edge[1],27)
-	Materials.threshold(self,Layout.ROOM_ENTRY,150)
-	Materials.threshold(self,Layout.CONVENT_ENTRY,88)
-	Materials.sign(self,Vector2(550,455),"Ribeira")
-	Materials.sign(self,Vector2(370,230),"Claustro",false)
-	Materials.sign(self,Vector2(-945,160),"Acolhimento")
-	Materials.sign(self,Vector2(-950,405),"Estaleiro",false)
-	Materials.sign(self,Vector2(720,350),"Oficina")
-	Materials.sign(self,Vector2(-800,805),"Pontão poente",false)
-	Materials.sign(self,Vector2(1715,895),"Botafogo")
+	# Entrances use the illustrated stone steps and contextual interaction cue.
+	# No detached floor bars or plaques are painted in front of the door.
 	# Preserve the source's working ropewalk rather than turning it into a barrier.
 	for y in [402,414,426]:
 		var rope := PackedVector2Array()

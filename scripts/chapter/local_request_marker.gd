@@ -7,11 +7,14 @@ var caption := ""
 var clock := 0.0
 var world: Node2D
 var visibility_weight := 0.0
+var icon_height := 92.0
 func _ready() -> void:
 	var parent := get_parent()
 	while parent!=null:
 		if parent.has_method("is_walkable_point"): world = parent; break
 		parent = parent.get_parent()
+	if is_instance_valid(world) and world.has_meta("order_convent"):
+		icon_height = 114.0 if world.get("childhood")==true else 134.0
 func _process(delta: float) -> void:
 	clock += delta
 	var target := 1.0
@@ -24,7 +27,7 @@ func _process(delta: float) -> void:
 	queue_redraw()
 func _draw() -> void:
 	if not available or visibility_weight<.015: return
-	var center := Vector2(0,-92)
+	var center := Vector2(0,-icon_height)
 	var color := Color("efd195") if highlighted else Color("b7c3aa")
 	var radius := 12.0 if highlighted else 7.0
 	draw_circle(center+Vector2(1,2),radius+1,Color(0,.03,.025,.45))

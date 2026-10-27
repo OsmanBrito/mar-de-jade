@@ -1,6 +1,8 @@
 extends RefCounted
 ## One coordinate system: the existing Jade square above Ferro's real Ribeira.
 const Ferro = preload("res://scripts/city/ferro_lisbon.gd")
+const Blocks = preload("res://scripts/city/lisbon_blocks.gd")
+const Urban = preload("res://scripts/city/lisbon_urban_plan.gd")
 const SCALE := 1.6
 const OFFSET := Vector2(-680,120)
 const BOUNDS := Rect2(-1200,-600,3020,2000)
@@ -10,7 +12,7 @@ const CONVENT_ENTRY := preload("res://scripts/city/convent_plan.gd").ARCADE
 const ROOM_RETURN := Vector2(-690,145)
 const UPPER := [Vector2(-1100,-100),Vector2(480,-100),Vector2(650,290),Vector2(515,550),Vector2(480,650),Vector2(300,650),Vector2(250,540),Vector2(-500,520),Vector2(-1050,290)]
 const RIBEIRA_PAVING := Rect2(-552,512,2144,590)
-const RIBEIRA_SURFACE := [Vector2(-2400,440),Vector2(-1500,440),Vector2(-950,480),Vector2(650,480),Vector2(2100,440),Vector2(3600,440),Vector2(3600,1102),Vector2(-2400,1102)]
+const RIBEIRA_SURFACE := [Vector2(-552,512),Vector2(1592,512),Vector2(1592,1102),Vector2(-552,1102)]
 static var paved_outline := PackedVector2Array()
 const WEST_STREET := [Vector2(-850,340),Vector2(-900,430),Vector2(-900,820),Vector2(-650,965),Vector2(-485,1000)]
 const EAST_STREET := [Vector2(480,300),Vector2(735,360),Vector2(1645,450),Vector2(1660,965),Vector2(1480,1025)]
@@ -25,6 +27,9 @@ static func paving_surface() -> PackedVector2Array:
 	if paved_outline.is_empty():
 		var joined := Geometry2D.merge_polygons(PackedVector2Array(UPPER),PackedVector2Array(RIBEIRA_SURFACE))
 		assert(joined.size()==1,"Lisbon paving must connect the forecourt and Ribeira")
+		for addition in Urban.PUBLIC_ADDITIONS:
+			joined = Geometry2D.merge_polygons(joined[0],PackedVector2Array(addition))
+			assert(joined.size()==1,"The residential street must join the civic and harbor ground")
 		paved_outline = joined[0]
 	return paved_outline
 const WORKSHOP := Vector2(1360,925)
@@ -37,8 +42,16 @@ static func source_point(p: Vector2) -> Vector2: return (p-OFFSET)/SCALE
 static func point(p: Vector2) -> Vector2: return OFFSET+p*SCALE
 static func area(p: Vector2) -> String: return "cais" if p.y>660 else "square"
 static func contains(p: Vector2,childhood: bool = false) -> bool:
+	if Blocks.private_ground(p) or Urban.private_ground(p): return false
+	return saved_ground(p,childhood)
+
+static func saved_ground(p: Vector2,childhood: bool = false) -> bool:
+	# Historical public ground remains valid for loading; routes.clear_point moves
+	# old positions out of the newly enclosed plots before returning control.
 	if Geometry2D.is_point_in_polygon(p,PackedVector2Array(UPPER)): return true
 	if childhood: return false
+	for addition in Urban.PUBLIC_ADDITIONS:
+		if Geometry2D.is_point_in_polygon(p,PackedVector2Array(addition)): return true
 	for street in streets():
 		if Geometry2D.is_point_in_polygon(p,street): return true
 	var q := source_point(p)
