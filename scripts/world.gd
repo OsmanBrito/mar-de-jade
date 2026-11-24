@@ -193,6 +193,9 @@ func _draw() -> void:
 			if has_meta("living_quay") and tile != 1:
 				preload("res://scripts/chapter/quay_bank.gd").draw(self,a,b)
 				continue
+			if has_meta("living_quay"):
+				preload("res://scripts/chapter/pier_edge.gd").draw(self,a,b)
+				continue
 			var depth = 18.0 if tile != 1 else 9.0
 			var color = Color("736653") if side == 0 else Color("544f43")
 			if tile == 1:

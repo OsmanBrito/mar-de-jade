@@ -27,12 +27,10 @@ func install(world) -> void:
 	if not building_visit: return
 	merchant = MERCHANT.new(); merchant.name = "ComercianteDeLisboa"
 	merchant.position = stall.position+Vector2(-67,8); world.sorted_world.add_child(merchant)
-	# Existing goods art is displayed on the existing stall; source PNGs stay intact.
-	var goods := Node2D.new(); goods.name = "Provisoes"; goods.position = Vector2(0,-39); stall.add_child(goods)
-	for i in 3:
-		var icon := Sprite2D.new(); icon.texture = load("res://assets/art/items/portugal/"+["PT-C01","PT-C02","PT-C03"][i]+".png")
-		icon.position = Vector2((i-1)*23,(i-1)*-5); icon.scale = Vector2.ONE*24.0/icon.texture.get_width()
-		icon.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR; goods.add_child(icon)
+	# Goods for sale laid on the stall, painted in the same isometric set as the
+	# meal: folded linen (bandages), loaves (rations) and a cup (water).
+	var goods := Node2D.new(); goods.set_script(preload("res://scripts/chapter/stall_goods.gd"))
+	goods.name = "Provisoes"; goods.position = Vector2(0,-30); stall.add_child(goods)
 
 func can_begin() -> bool:
 	if ChapterProgress.flags.get("injured",false) or ChapterProgress.flags.get("embarked",false): return false

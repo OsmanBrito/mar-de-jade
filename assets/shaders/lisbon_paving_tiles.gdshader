@@ -58,5 +58,6 @@ void fragment() {
 		col = layered(p, TOPS[kind], kind == 0 ? stone_period : stone_period * 0.8);
 		col *= 0.9 + fbm(p / 260.0) * 0.18;
 	}
-	COLOR = vec4(col * vec3(1.0, 0.985, 0.95), mask.a);
+	// Neighbouring tiles overlap their soft rims; firming the mask removes the faint grid.
+	COLOR = vec4(col * vec3(1.0, 0.985, 0.95), smoothstep(0.0, 0.3, mask.a));
 }
