@@ -12,6 +12,9 @@ func _ready() -> void:
 	super._ready()
 	if map_id == "praca_infancia":
 		preload("res://scripts/chapter/chapter_environment.gd").install(self)
+	if not Engine.is_editor_hint():
+		var light := "harbor" if has_meta("living_quay") else ("departure" if map_id == "botafogo_departure" else "square")
+		preload("res://scripts/chapter/scene_grade.gd").install(self,light)
 
 func is_walkable_point(point: Vector2) -> bool:
 	if has_meta("departure_deck"):

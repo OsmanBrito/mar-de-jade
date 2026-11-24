@@ -32,6 +32,8 @@ const NPC_ART = preload("res://scripts/npcs/lisbon_npc_library.gd")
 		eye_glow = value
 		queue_redraw()
 var walking := false
+## Interiors keep only the soft contact shadow; the sun shadow is for outdoor light.
+var has_cast_shadow := true
 var frame_time := 0.0
 var facing := 0
 var seat_support := false
@@ -41,6 +43,14 @@ var tool_angle := 0.45:
 	set(value): tool_angle = value; queue_redraw()
 var cup_lift := 0.0:
 	set(value): cup_lift = value; queue_redraw()
+
+func _indoors() -> bool:
+	var node := get_parent()
+	while node != null:
+		if node.has_node("ShelterFloor"): return true
+		if node.has_node("Ground"): return false
+		node = node.get_parent()
+	return false
 
 func _process(_delta: float) -> void:
 	if walking:
@@ -66,7 +76,19 @@ func _draw() -> void:
 		child = height<60
 	if posture != "standing" and not NPC_ART.data().has(visual_id):
 		height *= 0.75
+	if posture != "fallen" and has_cast_shadow and not _indoors():
+		if not NPC_ART.draw_actor(self,visual_id,facing,walking,frame_time,posture,1.0,Vector2(0,-seat_lift if posture == "seated" else 0.0),false,true) and identity in ["hero","hero_child"]:
+			var art = preload("res://scripts/chapter/quay_sprite.gd")
+			var info: Dictionary = art.metadata().hero
+			var index := clampi(facing,0,3)*4+(1+int(frame_time)%3 if walking else 0)
+			var r: Array = info.frames[index]; var pivot: Array = info.pivots[index]
+			var factor: float = height/295.0
+			var shadows = preload("res://scripts/chapter/contact_shadow.gd")
+			draw_set_transform_matrix(shadows.cast_transform(Vector2.ZERO,false))
+			draw_texture_rect_region(art.artwork("hero"),Rect2(Vector2(-pivot[0],-pivot[1])*factor,Vector2(r[2],r[3])*factor),Rect2(r[0],r[1],r[2],r[3]),shadows.SHADOW_COLOR)
+			draw_set_transform(Vector2.ZERO)
 	preload("res://scripts/chapter/contact_shadow.gd").draw_contact(self,Vector2.ZERO,Vector2(17 if child else 21,6 if child else 8))
+	preload("res://scripts/chapter/contact_shadow.gd").draw_contact(self,Vector2(0,1),Vector2(11 if child else 13,3.5 if child else 4.5))
 	if seat_support and posture == "seated":
 		preload("res://scripts/chapter/dining_art.gd").draw(self,"stool_east" if facing == 3 else "stool_west",Vector2(-5 if facing == 3 else 5,3),30 if child else 38,seat_lift)
 	var cloth = Color("6f9996") if child else Color("8b795b")

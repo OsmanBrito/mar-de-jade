@@ -15,6 +15,9 @@ var root: Control
 var content_scroll: ScrollContainer
 var content_box: VBoxContainer
 var last_body_text := ""
+var frame: Control
+var portrait: Control
+var last_speaker := "<none>"
 var history: Array[Dictionary] = []
 var last_record := ""
 var hint_source := ""
@@ -38,14 +41,31 @@ func _ready() -> void:
 	material.shader = shader; material.set_shader_parameter("fade",texture); shade.material = material
 	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	control.add_child(shade)
-	var header = _label("MAR DE JADE",19)
-	header.position = Vector2(34,22)
+	var header = _label("MAR  DE  JADE",17)
+	header.position = Vector2(52,24)
+	header.add_theme_font_override("font",Presentation.serif())
+	header.add_theme_color_override("font_color",Color("e5c787"))
+	header.add_theme_color_override("font_outline_color",Color(0.02,0.05,0.05,0.8))
+	header.add_theme_constant_override("outline_size",5)
 	control.add_child(header)
+	var emblem := Control.new(); emblem.position = Vector2(26,27); emblem.size = Vector2(18,18)
+	emblem.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	emblem.draw.connect(func():
+		var c := Vector2(9,9)
+		var d := PackedVector2Array([c+Vector2(0,-8),c+Vector2(8,0),c+Vector2(0,8),c+Vector2(-8,0)])
+		emblem.draw_colored_polygon(d,Color("3f8f78")); d.append(d[0])
+		emblem.draw_polyline(d,Color("d9bc80"),1.4,true)
+		emblem.draw_circle(c+Vector2(-2,-2.5),1.8,Color(1,1,1,0.45)))
+	control.add_child(emblem)
 	caption_label = _label(caption,19)
 	caption_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	caption_label.position = Vector2(-270,24)
 	caption_label.size.x = 540
 	caption_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	caption_label.add_theme_font_override("font",Presentation.serif())
+	caption_label.add_theme_color_override("font_outline_color",Color(0.02,0.05,0.05,0.75))
+	caption_label.add_theme_constant_override("outline_size",5)
+	caption_label.add_theme_constant_override("line_spacing",-2)
 	control.add_child(caption_label)
 	status = _label("",15)
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -60,17 +80,32 @@ func _ready() -> void:
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
 	panel.position = Vector2(-480,-210)
 	panel.size = Vector2(960,156)
-	var style = Presentation.panel(Color("132c30"),Presentation.GOLD)
-	style.content_margin_left = 26
-	style.content_margin_right = 26
-	style.content_margin_top = 20
-	style.content_margin_bottom = 18
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0,0,0,0)
+	style.shadow_color = Color(0.0,0.02,0.02,0.45); style.shadow_size = 18; style.shadow_offset = Vector2(0,6)
+	style.set_content_margin_all(0)
 	panel.add_theme_stylebox_override("panel",style)
 	control.add_child(panel)
+	frame = Control.new(); frame.set_script(preload("res://scripts/ui/dialogue_frame.gd"))
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(frame)
+	var margins := MarginContainer.new()
+	for side in [["left",22],["right",30],["top",18],["bottom",16]]:
+		margins.add_theme_constant_override("margin_"+side[0],side[1])
+	panel.add_child(margins)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation",22)
+	margins.add_child(row)
+	portrait = Control.new(); portrait.set_script(preload("res://scripts/ui/speaker_portrait.gd"))
+	portrait.custom_minimum_size = Vector2(118,118)
+	portrait.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(portrait)
 	content_scroll = ScrollContainer.new()
+	content_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	content_scroll.follow_focus = true
-	panel.add_child(content_scroll)
+	row.add_child(content_scroll)
 	var box = VBoxContainer.new()
 	content_box = box
 	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -78,6 +113,7 @@ func _ready() -> void:
 	content_scroll.add_child(box)
 	speaker = _label("",22)
 	speaker.add_theme_color_override("font_color",Color("e5c787"))
+	speaker.add_theme_font_override("font",Presentation.serif())
 	box.add_child(speaker)
 	body = _label("",23)
 	body.custom_minimum_size = Vector2(0,38)
@@ -133,11 +169,17 @@ func _process(_delta: float) -> void:
 	if body.text!=last_body_text:
 		last_body_text = body.text
 		content_scroll.scroll_vertical = 0
+		# New line: a short fade keeps the change readable without delaying input.
+		body.modulate.a = 0.0
+		create_tween().tween_property(body,"modulate:a",1.0,0.18)
+	if speaker.text!=last_speaker:
+		last_speaker = speaker.text
+		portrait.visible = portrait.show_speaker(speaker.text,CampaignProfile.hero_name,caption_label.text.contains("Infância"))
 	var viewport_size := get_viewport().get_visible_rect().size
 	var width := minf(1000,viewport_size.x-64)
 	panel.offset_left = -width*0.5
 	panel.offset_right = width*0.5
-	var height := clampf(content_box.get_combined_minimum_size().y+38,170,maxf(170,viewport_size.y-190))
+	var height := clampf(content_box.get_combined_minimum_size().y+38,(156.0 if portrait.visible else 150.0),maxf(170,viewport_size.y-190))
 	panel.offset_bottom = -54
 	panel.offset_top = -54-height
 	# Resizing always follows content, including choices and passive equipment.

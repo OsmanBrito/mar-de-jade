@@ -26,6 +26,8 @@ static func install(room: Node2D) -> void:
 	var dusk := ShaderMaterial.new(); dusk.shader = BACKDROP
 	backdrop.material = dusk
 	room.add_child(backdrop); room.move_child(backdrop,0)
+	if not Engine.is_editor_hint():
+		preload("res://scripts/chapter/scene_grade.gd").install(room,"interior")
 	var dressing := Node2D.new(); dressing.set_script(load("res://scripts/chapter/shelter_dressing.gd"))
 	dressing.name = "TecidosELuz"; room.add_child(dressing)
 	var sorted: Node2D = room.get_node("ActorsAndProps")

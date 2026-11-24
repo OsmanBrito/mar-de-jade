@@ -19,7 +19,7 @@ static func data() -> Dictionary:
 static func resolve(id: String) -> String:
 	return {"tome":"tome_adult","leonor":"leonor_child","child":"hero_child"}.get(id,id)
 
-static func draw_actor(canvas: Node2D,id: String,facing: int,walking: bool,time: float,posture: String,scale_multiplier: float = 1.0,origin: Vector2 = Vector2.ZERO,eye_glow: bool = false) -> bool:
+static func draw_actor(canvas: Node2D,id: String,facing: int,walking: bool,time: float,posture: String,scale_multiplier: float = 1.0,origin: Vector2 = Vector2.ZERO,eye_glow: bool = false,shadow: bool = false) -> bool:
 	id = resolve(id)
 	if not data().has(id): return false
 	var entry: Dictionary = data()[id]
@@ -37,6 +37,13 @@ static func draw_actor(canvas: Node2D,id: String,facing: int,walking: bool,time:
 	var flip: bool = (facing==1 and entry.west_flip) if not use_pose else facing==3
 	if not use_pose and facing==3 and entry.get("east_flip",false): flip = true
 	canvas.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	var shadows = preload("res://scripts/chapter/contact_shadow.gd")
+	if shadow:
+		# Seated and crouched figures cast a shorter shadow.
+		canvas.draw_set_transform_matrix(shadows.cast_transform(origin,flip,0.95 if posture=="standing" else 0.6))
+		canvas.draw_texture_rect_region(textures[id],Rect2(Vector2(-pivot[0],-pivot[1])*factor,Vector2(rect[2],rect[3])*factor),Rect2(rect[0],rect[1],rect[2],rect[3]),shadows.SHADOW_COLOR)
+		canvas.draw_set_transform(Vector2.ZERO)
+		return true
 	canvas.draw_set_transform(origin,0,Vector2(-1 if flip else 1,1))
 	canvas.draw_texture_rect_region(textures[id],Rect2(Vector2(-pivot[0],-pivot[1])*factor,Vector2(rect[2],rect[3])*factor),Rect2(rect[0],rect[1],rect[2],rect[3]))
 	if id in ["hero_child","hero_story"]:

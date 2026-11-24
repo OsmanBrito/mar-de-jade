@@ -6,6 +6,15 @@ const PAPER := Color("eee4cb")
 const GOLD := Color("d9bc80")
 const MUTED := Color("a6b6aa")
 
+static var serif_font: SystemFont
+## Book serif for names and titles; falls back through common system faces.
+static func serif() -> SystemFont:
+	if serif_font == null:
+		serif_font = SystemFont.new()
+		serif_font.font_names = PackedStringArray(["Palatino Linotype","Palatino","Book Antiqua","Georgia","Cambria","Times New Roman","serif"])
+		serif_font.font_weight = 600
+	return serif_font
+
 static func panel(fill: Color = INK, edge: Color = EDGE) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = fill
