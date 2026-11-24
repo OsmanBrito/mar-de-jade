@@ -52,7 +52,7 @@ static func install(map: Node2D) -> void:
 	Scenery.prop(map,"OliveiraDoLargo","bruma-v2-tree.png",Urban.MARKET_TREE,Vector2(175,205),Rect2(-16,-12,32,24))
 	Scenery.prop(map,"BancoDoLargo","regional-bench-illustrated-v1.png",Urban.MARKET_BENCH,Vector2(112,58),Rect2(-39,-9,78,17))
 	# Domestic use is confined to the frontage; these never occupy the street axis.
-	for at in [Vector2(720,143),Vector2(1015,193),Vector2(1300,250),Vector2(1195,510),Vector2(355,533),Vector2(535,554)]:
+	for at in [Vector2(1095,48),Vector2(1385,52),Vector2(1010,490),Vector2(1265,494),Vector2(355,533),Vector2(535,554)]:
 		Scenery.prop(map,"VasoDaDescida","bruma-v2-pots.png",at,Vector2(42,52),Rect2(-12,-10,24,15))
 	var mast := Node2D.new(); mast.name = "MarcoDoEmbarque"; mast.position = Vector2(1582,1040)
 	mast.set_script(load("res://scripts/city/lisbon_waterfront_marker.gd")); map.sorted_world.add_child(mast)
@@ -74,16 +74,13 @@ func _draw() -> void:
 		if polygon==Blocks.WEST_GARDEN:
 			draw_polygon(points,PackedColorArray([Color("8a8d6d")]),uv,Scenery.texture("bruma-grass-refined.png",false))
 		else: Ground.surface(self,points,Color("aaa48e"))
-	Ground.surface(self,PackedVector2Array(Urban.SERVICE_YARD),Color("aaa48e"))
 	for y in [565,590,615]:
 		for x in range(-480,-215,25):
 			var at := Vector2(x,y+sin(x*.12)*3)
 			draw_set_transform(at,0,Vector2(1,.42))
 			draw_circle(Vector2.ZERO,9,Color("5e704e")); draw_circle(Vector2(-2,-2),5,Color("8c9670"))
 	draw_set_transform(Vector2.ZERO)
-	# A narrow worn street has actual frontage on both sides. Enclosed yards and
-	# thresholds distinguish land use without adding ornamental road stripes.
-	# Rua dos Mercadores is a street, not more square: cobbles and a gutter.
+	# Rua Alta and its east lane share the cobbles and gutter of Rua da Oficina.
 	Ground.street(self,PackedVector2Array(Urban.NEIGHBORHOOD_WALK),106)
 	# Every door gets its own pale threshold between house and street.
 	for row in Urban.FRONTAGES+Urban.ROW_HOUSES:

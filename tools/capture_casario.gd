@@ -29,7 +29,7 @@ func run() -> void:
 	camera.position = Vector2(300,330); camera.zoom = Vector2.ONE*0.4; camera.make_current()
 	await shot(dir,"overview")
 	if "grid" in args: game.free(); quit(); return
-	for station in [["bairro",Vector2(1000,300)],["descida",Vector2(700,560)],["ribeira",Vector2(500,880)],["estaleiro",Vector2(-500,800)]]:
+	for station in [["rua-alta",Vector2(1130,60)],["bairro",Vector2(1000,300)],["descida",Vector2(700,560)],["ribeira",Vector2(500,880)],["estaleiro",Vector2(-500,800)]]:
 		camera.position = station[1]; camera.zoom = Vector2.ONE
 		await shot(dir,station[0])
 	game.free(); await frames(); print("CASARIO_CAPTURES_COMPLETE"); quit()

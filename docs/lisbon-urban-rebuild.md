@@ -66,3 +66,20 @@ Godot reports certificate-store and shader-cache access errors in this environme
 The kit supplies two residential paintings, so repeated facades remain visible. Their painted perspective and lighting also differ from the convent illustration. This intervention changes urban structure, circulation and land use; it does not turn those paintings into a varied modular architecture library. The waterfront retains its broad working access and both existing piers for the current campaign.
 
 Pre-existing unrelated checkout changes were preserved. No commit was created.
+
+## Bairro em ruas horizontais
+
+As duas pinturas de casa mostram a fachada em vista oblíqua de frente. Com cerca de 330 unidades de altura, cada casa tapa o chão atrás dela. Por isso, as duas fileiras dão para a rua logo abaixo, com telhados ao fundo e quintais privados entre as fileiras.
+
+- **Rua Alta.** Quatro fachadas com pés em y 22–34, entre x 740 e 1520. A rua tem 106 unidades de largura e segue pelo eixo y 95 até ao beco leste, em x ≈ 1665.
+- **Rua da Oficina.** Quatro fachadas com pés em y 445–470, entre x 515 e 1390. A rua tem 124 unidades de largura ao longo de y 525. O beco do adro cruza a fileira em x ≈ 695. A descida leste inclina-se para oeste até (1646, 965), onde a calçada se sobrepõe ao pavimento do cais.
+- **Quintais.** O miolo privado ocupa x 745–1612 e y 150–388. Os telhados da fileira de fundo aparecem acima da Rua Alta. Os edifícios de trabalho da Ribeira ocultam trechos da Rua da Oficina em primeiro plano.
+
+As capturas abaixo usam o mesmo enquadramento no Godot 4.5.1, antes (commit `66262b7`) e depois.
+
+| Vista | Antes | Depois |
+| --- | --- | --- |
+| Geral | [Vista geral](lisbon-horizontal/antes-geral.jpg) | [Vista geral](lisbon-horizontal/depois-geral.jpg) |
+| Rua Alta | [Rua Alta](lisbon-horizontal/antes-rua-alta.jpg) | [Rua Alta](lisbon-horizontal/depois-rua-alta.jpg) |
+| Bairro e Oficina | [Bairro](lisbon-horizontal/antes-bairro.jpg) | [Bairro](lisbon-horizontal/depois-bairro.jpg) |
+| Estaleiro | [Estaleiro](lisbon-horizontal/antes-estaleiro.jpg) | [Estaleiro](lisbon-horizontal/depois-estaleiro.jpg) |

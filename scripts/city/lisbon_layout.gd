@@ -15,7 +15,10 @@ const RIBEIRA_PAVING := Rect2(-552,512,2144,590)
 const RIBEIRA_SURFACE := [Vector2(-552,512),Vector2(1592,512),Vector2(1592,1102),Vector2(-552,1102)]
 static var paved_outline := PackedVector2Array()
 const WEST_STREET := [Vector2(-850,340),Vector2(-900,430),Vector2(-900,820),Vector2(-650,965),Vector2(-485,1000)]
-const EAST_STREET := [Vector2(480,300),Vector2(735,360),Vector2(1645,450),Vector2(1660,965),Vector2(1480,1025)]
+# From the adro gate a short lane drops to Rua da Oficina, which runs east
+# along the south terrace. The last descent angles in to meet the quay
+# paving instead of leaving a gap between the street and the waterfront.
+const EAST_STREET := [Vector2(480,300),Vector2(695,330),Vector2(695,525),Vector2(1660,525),Vector2(1646,965),Vector2(1480,1025)]
 const STREET_WIDTH := 124.0
 static var street_surfaces: Array[PackedVector2Array] = []
 static func streets() -> Array[PackedVector2Array]:

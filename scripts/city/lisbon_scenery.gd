@@ -163,7 +163,7 @@ static func install(map: Node2D) -> void:
 	for p in [Vector2(-400,130),Vector2(310,130)]: prop(map,"Vasos","bruma-v2-pots.png",p,Vector2(50,60))
 	for p in [Vector2(-580,85)]:
 		prop(map,"ArvoreDoLimite","bruma-v2-tree.png",p,Vector2(205,245),Rect2(-16,-14,32,28))
-	for row in [[Vector2(-945,160),"Acolhimento",true],[Vector2(370,230),"Claustro",false],[Vector2(550,455),"Ribeira",true],[Vector2(-950,405),"Estaleiro",false],[Vector2(1715,895),"Botafogo",true]]:
+	for row in [[Vector2(-945,160),"Acolhimento",true],[Vector2(370,230),"Claustro",false],[Vector2(400,490),"Ribeira",true],[Vector2(-950,405),"Estaleiro",false],[Vector2(1715,895),"Botafogo",true]]:
 		var signpost := preload("res://scripts/city/lisbon_sign.gd").new()
 		signpost.name = "Placa"+str(row[1]); signpost.position = row[0]; signpost.caption = row[1]; signpost.right = row[2]
 		signpost.scale = Vector2.ONE*.78
