@@ -67,3 +67,53 @@ static func edging(canvas: CanvasItem,surfaces: Array[PackedVector2Array]) -> vo
 				canvas.draw_line(from,to,Color("8c8874"),6,true)
 				canvas.draw_line(from-Vector2(0,2),to-Vector2(0,2),Color("b1aa92"),2,true)
 				canvas.draw_line(from,from+(to-from).normalized()*1.5,Color("777462"),5,true)
+
+## A Lisbon street, as opposed to a square: darker cobbles (calçada de cubos),
+## a central gutter of larger setts and soft shade along both edges. The
+## square and doorsteps keep the pale limestone slabs, so the two read apart.
+const STREET_COBBLE := Color("a2998a")
+static func street(canvas: CanvasItem,path: PackedVector2Array,width: float) -> void:
+	for polygon in Geometry2D.offset_polyline(path,width*.5,Geometry2D.JOIN_ROUND,Geometry2D.END_ROUND):
+		cobbled_surface(canvas,polygon,STREET_COBBLE)
+	# Shade where the street meets walls and doorsteps.
+	for side in [-1.0,1.0]:
+		for band in 3:
+			var inset := width*.5-4.0-band*5.0
+			canvas.draw_polyline(_offset(path,side*inset),Color(.22,.20,.15,.07),7.0,true)
+	gutter(canvas,path)
+
+## Central gutter: a shallow channel of larger, darker setts.
+static func gutter(canvas: CanvasItem,path: PackedVector2Array) -> void:
+	canvas.draw_polyline(path,Color(.26,.24,.19,.22),16.0,true)
+	canvas.draw_polyline(path,Color(.20,.19,.15,.20),7.0,true)
+	var travelled := 0.0
+	for i in path.size()-1:
+		var a := path[i]; var b := path[i+1]
+		var length := a.distance_to(b); var along := (b-a)/maxf(length,.001)
+		var across := along.orthogonal()
+		var d := fposmod(-travelled,15.0)
+		while d < length:
+			var at := a+along*d
+			for k in [-1.0,1.0]:
+				var stone: Vector2 = at+across*k*4.2
+				var s := 3.0+fposmod(stone.x*.37+stone.y*.11,1.2)
+				canvas.draw_set_transform(stone,along.angle(),Vector2(1.25,.7))
+				canvas.draw_circle(Vector2.ZERO,s,Color(.35,.32,.26,.55))
+				canvas.draw_circle(Vector2(-.6,-.8),s*.5,Color(.55,.51,.43,.35))
+			d += 15.0
+		travelled += length
+	canvas.draw_set_transform(Vector2.ZERO)
+
+static func _offset(path: PackedVector2Array,distance: float) -> PackedVector2Array:
+	var result := PackedVector2Array()
+	for i in path.size():
+		var tangent := (path[mini(i+1,path.size()-1)]-path[maxi(i-1,0)]).normalized()
+		result.append(path[i]+tangent.orthogonal()*distance)
+	return result
+
+## Pale limestone threshold in front of a door: private ground meeting the street.
+static func doorstep(canvas: CanvasItem,foot: Vector2,width: float) -> void:
+	var outline := PackedVector2Array([foot+Vector2(-width*.5,-2),foot+Vector2(width*.5,-2),foot+Vector2(width*.5-6,24),foot+Vector2(-width*.5+6,24)])
+	paving(canvas,outline,Color("d6cfbd"),Materials.texture("limestone-floor"),70)
+	canvas.draw_line(outline[3],outline[2],Color(.25,.22,.17,.30),3,true)
+	canvas.draw_line(outline[3]+Vector2(0,-1.5),outline[2]+Vector2(0,-1.5),Color(1,.97,.88,.35),1,true)

@@ -84,6 +84,9 @@ static func install(map: Node2D) -> void:
 		var at: Vector2 = Layout.point(Vector2(area.get_center().x,area.end.y))
 		var building := prop(map,"Ferro_"+Ferro.BUILDING_KEYS[i],file,at,Ferro.BUILDING_SIZES[i]*Layout.SCALE,Rect2((area.position-Vector2(area.get_center().x,area.end.y))*Layout.SCALE,area.size*Layout.SCALE))
 		building.tint = Color("f1eee5")
+		# The two original Ribeira houses join the Lisbon render palette.
+		if Ferro.BUILDING_KEYS[i]=="house_limestone": building.plaster_mode = 1; building.plaster = Color("f0c9a4",0.9)
+		elif Ferro.BUILDING_KEYS[i]=="house_teal": building.plaster_mode = 2; building.plaster = Color("eed9a0",0.9)
 	# Preserve source walls in depth slices, opening a readable northern gate.
 	for wall in Ferro.COURTYARD_WALLS:
 		var whole := texture("lisbon-courtyard-wall-refined-v1.png") as AtlasTexture
@@ -160,7 +163,7 @@ static func install(map: Node2D) -> void:
 	for p in [Vector2(-400,130),Vector2(310,130)]: prop(map,"Vasos","bruma-v2-pots.png",p,Vector2(50,60))
 	for p in [Vector2(-580,85)]:
 		prop(map,"ArvoreDoLimite","bruma-v2-tree.png",p,Vector2(205,245),Rect2(-16,-14,32,28))
-	for row in [[Vector2(-945,160),"Acolhimento",true],[Vector2(370,230),"Claustro",false],[Vector2(550,455),"Ribeira",true],[Vector2(-950,405),"Estaleiro",false],[Vector2(1715,895),"Botafogo",true]]:
+	for row in [[Vector2(-945,160),"Acolhimento",true],[Vector2(370,230),"Claustro",false],[Vector2(400,490),"Ribeira",true],[Vector2(-950,405),"Estaleiro",false],[Vector2(1715,895),"Botafogo",true]]:
 		var signpost := preload("res://scripts/city/lisbon_sign.gd").new()
 		signpost.name = "Placa"+str(row[1]); signpost.position = row[0]; signpost.caption = row[1]; signpost.right = row[2]
 		signpost.scale = Vector2.ONE*.78
@@ -186,6 +189,8 @@ func _draw() -> void:
 	# Opaque pieces use the exact same global UVs and tint at their junctions.
 	# Keeping the loops separate preserves the gardens enclosed by the streets.
 	for street in Layout.streets(): Ground.surface(self,street)
+	# The two connecting streets read as streets (cobbles and gutter), not squares.
+	for path in [Layout.WEST_STREET,Layout.EAST_STREET]: Ground.street(self,PackedVector2Array(path),Layout.STREET_WIDTH)
 	Ground.edging(self,paving_aprons)
 	# The descending processional path points to the real opening in Ferro's wall.
 	# The descent is already part of the joined floor; drawing it twice darkened

@@ -21,6 +21,14 @@ static func install(map: Node2D) -> void:
 		var house := Scenery.prop(map,row[0],"bruma-v2-"+row[1]+".png",row[2],row[3],Rect2(area.position-row[2],area.size))
 		house.tint = Color("f1eee5")
 		house.set_meta("urban_frontage",true)
+		var look: Array = Urban.FRONTAGE_LOOK.get(row[0],["",false])
+		dress_house(house,row[1],look[0],look[1])
+	for row in Urban.ROW_HOUSES:
+		var area := Urban.footprint(row)
+		var house := Scenery.prop(map,row[0],"bruma-v2-"+row[1]+".png",row[2],row[3],Rect2(area.position-row[2],area.size))
+		house.tint = Color("eeebe1")
+		house.set_meta("row_house",true)
+		dress_house(house,row[1],row[5],row[6])
 	for at in [Vector2(-390,598),Vector2(-185,592)]:
 		Scenery.prop(map,"OliveiraDoQuintal","bruma-v2-tree.png",at,Vector2(154,182))
 	for row in Blocks.WALLS+Urban.WALLS:
@@ -44,11 +52,18 @@ static func install(map: Node2D) -> void:
 	Scenery.prop(map,"OliveiraDoLargo","bruma-v2-tree.png",Urban.MARKET_TREE,Vector2(175,205),Rect2(-16,-12,32,24))
 	Scenery.prop(map,"BancoDoLargo","regional-bench-illustrated-v1.png",Urban.MARKET_BENCH,Vector2(112,58),Rect2(-39,-9,78,17))
 	# Domestic use is confined to the frontage; these never occupy the street axis.
-	for at in [Vector2(720,143),Vector2(1015,193),Vector2(1300,250),Vector2(1195,510),Vector2(355,533),Vector2(535,554)]:
+	for at in [Vector2(1095,48),Vector2(1385,52),Vector2(1010,490),Vector2(1265,494),Vector2(355,533),Vector2(535,554)]:
 		Scenery.prop(map,"VasoDaDescida","bruma-v2-pots.png",at,Vector2(42,52),Rect2(-12,-10,24,15))
 	var mast := Node2D.new(); mast.name = "MarcoDoEmbarque"; mast.position = Vector2(1582,1040)
 	mast.set_script(load("res://scripts/city/lisbon_waterfront_marker.gd")); map.sorted_world.add_child(mast)
 	Scenery.body(mast,PackedVector2Array([Vector2(-5,-5),Vector2(5,-5),Vector2(5,5),Vector2(-5,5)]))
+## Lisbon render colour and mirroring for one of the two house paintings.
+static func dress_house(house: Node2D,painting: String,plaster: String,mirror: bool) -> void:
+	if not plaster.is_empty():
+		house.plaster_mode = 1 if painting=="house_limestone" else 2
+		house.plaster = Color(Urban.PLASTER[plaster],0.92)
+	if mirror: house.scale.x = -1
+
 func _draw() -> void:
 	for polygon in Urban.BLOCKS:
 		Ground.surface(self,PackedVector2Array(polygon),Color("aaa48e"))
@@ -59,17 +74,17 @@ func _draw() -> void:
 		if polygon==Blocks.WEST_GARDEN:
 			draw_polygon(points,PackedColorArray([Color("8a8d6d")]),uv,Scenery.texture("bruma-grass-refined.png",false))
 		else: Ground.surface(self,points,Color("aaa48e"))
-	Ground.surface(self,PackedVector2Array(Urban.SERVICE_YARD),Color("aaa48e"))
 	for y in [565,590,615]:
 		for x in range(-480,-215,25):
 			var at := Vector2(x,y+sin(x*.12)*3)
 			draw_set_transform(at,0,Vector2(1,.42))
 			draw_circle(Vector2.ZERO,9,Color("5e704e")); draw_circle(Vector2(-2,-2),5,Color("8c9670"))
 	draw_set_transform(Vector2.ZERO)
-	# A narrow worn street has actual frontage on both sides. Enclosed yards and
-	# thresholds distinguish land use without adding ornamental road stripes.
-	var street := Geometry2D.offset_polyline(PackedVector2Array(Urban.NEIGHBORHOOD_WALK),53,Geometry2D.JOIN_ROUND,Geometry2D.END_ROUND)
-	for polygon in street: Ground.surface(self,polygon,Color("b9b09a"))
+	# Rua Alta and its east lane share the cobbles and gutter of Rua da Oficina.
+	Ground.street(self,PackedVector2Array(Urban.NEIGHBORHOOD_WALK),106)
+	# Every door gets its own pale threshold between house and street.
+	for row in Urban.FRONTAGES+Urban.ROW_HOUSES:
+		Ground.doorstep(self,row[2],minf(row[4].x*.55,120))
 	Ground.surface(self,PackedVector2Array(Blocks.MARKET_APRON),Color("c8c0aa"))
 	Ground.surface(self,PackedVector2Array(Blocks.PIER_APRON),Color("c6bfaa"))
 	# Worn paving follows actual bends, rather than an arrow painted on the map.
