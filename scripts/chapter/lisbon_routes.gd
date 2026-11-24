@@ -161,26 +161,29 @@ func set_goal() -> void:
 	var spec: Array = destinations.get(int(state.target),[zone(director.blocks[int(state.target)].map),Vector2.ZERO,"Retomar o compromisso"])
 	goal_area = spec[0]; goal = spec[1]; goal_label = spec[2]
 
-func objective() -> String:
-	if ChapterProgress.choices.get("tracked_request","")=="ORDER-PRACTICE":return preload("res://scripts/chapter/request_guide.gd").objective(ChapterProgress,"ORDER-PRACTICE")
+func main_objective() -> String:
 	if not active: return ""
-	if ChapterProgress.choices.get("tracked_request","")=="ORDER-AUDIENCE":return "Apresenta o primeiro relato à liderança na Sala do Capítulo, pelo corredor norte da secretaria. · J: missão principal"
-	if ChapterProgress.choices.get("tracked_request","")=="ORDER-CARGO":return preload("res://scripts/chapter/order_campaign.gd").objective(ChapterProgress)+" · J: missão principal"
-	if ChapterProgress.choices.get("tracked_request","")=="ORDER-MEAL": return preload("res://scripts/city/order_house_hub.gd").meal_objective(ChapterProgress)+" · J: missão principal"
-	if state.kind=="order_help":
-		var guide = preload("res://scripts/chapter/request_guide.gd")
-		var id: String = ChapterProgress.choices.get("tracked_request","")
-		var text: String = guide.objective(ChapterProgress,id) if not guide.target_id(ChapterProgress,id).is_empty() else OrderService.help_objective(ChapterProgress)
-		return text+" · Podes retomar a missão principal no caderno ou junto de Duarte."
 	if state.kind in ["order_check","order_report"]: return OrderService.current(ChapterProgress)
-	var tracked := preload("res://scripts/chapter/request_guide.gd").objective(ChapterProgress,ChapterProgress.choices.get("tracked_request",""))
-	if safe_city() and not preload("res://scripts/chapter/request_guide.gd").target_id(ChapterProgress,ChapterProgress.choices.get("tracked_request","")).is_empty(): return "Pedido acompanhado · "+tracked+" · J: missão principal e outros pedidos"
-	var detail := goal_label
+	var detail := "Duarte · retomar a história e seguir para a refeição" if state.kind=="order_help" else goal_label
 	if goal_area!=area(): detail += " · "+str({"room":"Acolhimento","square":"Praça","cais":"Ribeira","convent":"Claustro","deck":"Botafogo"}.get(goal_area,goal_area))
 	if state.kind=="fetch": detail = "Duarte fica com o ferido. Vai ao abrigo buscar Tomé e regressa com ele ao cais."
 	elif state.kind=="fetch_return": detail = "Tomé segue contigo. Regressa pelo caminho da praça ao cais; Duarte espera com o ferido."
 	elif state.kind=="rest": detail = "Leonor marcou a avaliação para amanhã. Regressa ao abrigo e descansa quando estiveres pronto."
 	return detail
+
+func objective() -> String:
+	if not active: return ""
+	var guide = preload("res://scripts/chapter/request_guide.gd")
+	var id: String = ChapterProgress.choices.get("tracked_request","")
+	var tracked: String = guide.objective(ChapterProgress,id)
+	var order_request: bool = id in ["ORDER-PRACTICE","ORDER-AUDIENCE","ORDER-CARGO","ORDER-MEAL"]
+	if state.kind=="order_help" and (tracked.is_empty() or (not order_request and guide.target_id(ChapterProgress,id).is_empty())):
+		tracked = OrderService.help_objective(ChapterProgress).trim_prefix("Pedido acompanhado · ").trim_suffix(" · J: rever o pedido.")
+	elif not order_request and (not safe_city() or guide.target_id(ChapterProgress,id).is_empty()):
+		tracked = ""
+	var main := "História · "+main_objective()
+	if tracked.begins_with("Pedido concluído"): return main+"\n"+tracked
+	return main if tracked.is_empty() else main+"\nPedido acompanhado · "+tracked
 
 func safe_city() -> bool:
 	return (continuous() or area()=="cais") and ChapterProgress.flags.get("patient_helped",false) and not ChapterProgress.flags.get("injured",false)

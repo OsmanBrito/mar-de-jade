@@ -19,7 +19,7 @@ var framing
 var roam
 
 func objective() -> String:
-	if phase in ["childhood_explore","childhood_note"]:return "Encontra a Leonor junto do banco. Trouxeste água para os dois."
+	if phase in ["childhood_explore","childhood_note"] and roam!=null:return roam.objective()
 	if not walking_stage.is_empty():return "Chega até à marca de Leonor, contornando o banco."
 	if completed:return "Experimenta a vara de treino com Leonor, junto do alvo."
 	return "Conversa com Leonor junto do banco."

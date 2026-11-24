@@ -2,7 +2,7 @@ extends RefCounted
 const TRAVEL := "Madeira é a primeira escala: preparar mantimentos e seguir para Duas Águas, onde uma caravela desapareceu. Vais como aprendiz sob Rodrigo; Duarte segue contigo."
 static func current(director) -> String:
 	var progress = director.get_node("/root/ChapterProgress")
-	if director.routes!=null and director.routes.active: return director.routes.objective()
+	if director.routes!=null and director.routes.active: return director.routes.main_objective()
 	if director.scene_index==0 and progress.flags.get("order_intro_started",false) and not progress.flags.get("order_reported",false): return preload("res://scripts/chapter/first_order_service.gd").current(progress)
 	if director.completed: return TRAVEL+" A Botafogo já largou; inicia a navegação."
 	if director.phase=="task":

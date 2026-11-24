@@ -21,6 +21,9 @@ func click(point: Vector2) -> void:
 	for id in places(): targets.append({"id":id,"at":places()[id].at,"point":places()[id].at})
 	intent.begin(host.world,point,targets)
 func inside() -> bool: return host.world.has_meta("order_convent")
+func objective() -> String:
+	if inside(): return "Regressa à praça pela saída do corredor sul. Leonor espera junto do banco."
+	return "Encontra a Leonor junto do banco. Trouxeste água para os dois."
 func places() -> Dictionary:
 	var rows: Dictionary = PLACES.duplicate(true) if not inside() else {"leave":{"at":Vector2(0,870),"title":"Voltar à praça · Leonor espera junto do banco"}}
 	if inside():
@@ -116,7 +119,7 @@ func update() -> void:
 		var id: String = str(marker.get_meta("place_id",""))
 		marker.highlighted = id==selected
 		if id.begins_with("note:"): marker.symbol = "·" if Convent.observed(ChapterProgress,id.trim_prefix("note:")) else "i"
-	host.view.set_exploration_prompt("Encontra a Leonor junto do banco. Trouxeste água para os dois.","E / A · "+str(places()[selected].title) if not selected.is_empty() else "")
+	host.view.set_exploration_prompt(objective(),"E / A · "+str(places()[selected].title) if not selected.is_empty() else "")
 	if inside(): host.view.caption_label.text = "Lisboa · Infância · "+Convent.title(host.world.player.position)
 	remember()
 func interact(requested: String = "") -> void:
@@ -140,7 +143,10 @@ func interact(requested: String = "") -> void:
 		return
 	var reading: Dictionary = places()[selected].duplicate(true)
 	if selected=="child":
-		if ChapterProgress.flags.get("city_child_met",false): reading.text="Já guardei as canecas. A tua ficou junto do banco; vou esperar pela refeição."
+		if ChapterProgress.flags.get("home_meal",false):
+			reading.text="Já comeste? A Leonor está junto do banco. Deixei lá as canecas para vocês."
+			if ChapterProgress.flags.get("city_child_met",false): reading.text="As canecas continuam junto do banco. A Leonor ainda está à tua espera."
+		elif ChapterProgress.flags.get("city_child_met",false): reading.text="Já guardei as canecas. A tua ficou junto do banco; vou esperar pela refeição."
 		ChapterProgress.flags.city_child_met=true;save()
 	if selected.begins_with("house:"):
 		var row := House.talk(host.world,ChapterProgress,selected.trim_prefix("house:"))
