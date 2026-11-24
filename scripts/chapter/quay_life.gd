@@ -10,19 +10,9 @@ func _ready() -> void:
 	if Engine.is_editor_hint(): return
 	boat = get_parent().get_node_or_null("ActorsAndProps/Caravela")
 	if boat: boat_origin = boat.position
-	var ground: TileMapLayer = get_parent().get_node("Ground")
-	var shader := Shader.new()
-	shader.code = """
-shader_type canvas_item;
-varying vec2 world_position;
-void vertex(){ world_position=(MODEL_MATRIX*vec4(VERTEX,0.0,1.0)).xy; }
-void fragment(){
-  float wear=sin(world_position.x*0.011+sin(world_position.y*0.017))*sin(world_position.y*0.014);
-  float damp=smoothstep(-0.2,0.8,wear);
-  COLOR=vec4(COLOR.rgb*mix(vec3(0.96,0.96,0.90),vec3(0.76,0.81,0.75),damp*0.65),COLOR.a);
-}
-"""
-	var material := ShaderMaterial.new(); material.shader = shader; ground.material = material
+	# Full-resolution stone and boards in world space (see lisbon_paving_tiles.gdshader).
+	var material: Material = preload("res://data/terrain/lisbon_paving.tres")
+	get_parent().get_node("Ground").material = material
 	var city_ground := get_parent().get_node_or_null("CityGround") as TileMapLayer
 	if city_ground: city_ground.material = material
 func _process(delta: float) -> void:
