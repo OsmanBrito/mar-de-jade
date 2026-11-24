@@ -1,64 +1,80 @@
 extends Node2D
-## A ship-shaped walking surface using the painted timber and fittings of boarding combat.
-const Assets = preload("res://scripts/navigation/boarding_assets.gd")
-const OUTLINE := [Vector2(-455,240),Vector2(-385,180),Vector2(-260,178),Vector2(240,270),Vector2(430,360),Vector2(290,490),Vector2(-230,382),Vector2(-455,285)]
+## The Botafogo at the quay: the painted caravel from the living quay, mirrored so
+## its bow points away from Lisbon, with the walkable area fitted to its waist deck.
+const SHIP := preload("res://assets/art/living-quay/caravela-clean-v2.png")
+const SIZE := Vector2(1536,1024)
+const SCALE := 1.45
+## World position of the mirrored image's top-left pixel.
+const ORIGIN := Vector2(-1125,-643)
+## Walkable waist deck, in the original (unmirrored) image pixels.
+const DECK := [Vector2(1091,750),Vector2(1024,707),Vector2(860,650),Vector2(647,588),Vector2(397,532),Vector2(388,540),
+	Vector2(388,650),Vector2(397,652),Vector2(522,684),Vector2(710,734),Vector2(860,759),Vector2(1024,784),Vector2(1091,788)]
+## Painted fittings that block walking: [image point, half width].
+const FITTINGS := [[Vector2(391,575),24.0]] # capstan by the sterncastle
+## Mast shafts drawn again in the sorted layer so actors can pass behind them:
+## [image region, base point in the image].
+const MASTS := [[Rect2(556,300,46,316),Vector2(579,612)],[Rect2(1083,470,36,262),Vector2(1101,728)]]
+static var outline_cache := PackedVector2Array()
 var departure_progress := 0.0:
 	set(value): departure_progress = value; queue_redraw()
 var rope_owner: Node2D
 var rope_secured := false
 
+static func to_world(image_point: Vector2) -> Vector2:
+	return ORIGIN+Vector2(SIZE.x-image_point.x,image_point.y)*SCALE
+
+static func outline() -> PackedVector2Array:
+	if outline_cache.is_empty():
+		for point in DECK: outline_cache.append(to_world(point))
+	return outline_cache
+
 func _process(_delta: float) -> void:
-	if is_instance_valid(rope_owner): queue_redraw()
+	if is_instance_valid(rope_owner) or has_meta("debug"): queue_redraw()
+
 static func install(world: Node2D) -> void:
 	world.set_meta("departure_deck",true)
 	world.terrain.hide()
+	var ship := Sprite2D.new(); ship.name = "Caravela"; ship.texture = SHIP
+	ship.centered = false; ship.flip_h = true; ship.position = ORIGIN; ship.scale = Vector2.ONE*SCALE
+	ship.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS; ship.z_index = 1
+	world.add_child(ship)
 	var deck := Node2D.new(); deck.set_script(load("res://scripts/chapter/departure_deck.gd"))
 	deck.name = "ConvesDaBotafogo"; deck.z_index = 1; world.add_child(deck)
-	for spec in [["deckhouse",Vector2(-355,245),Vector2(135,120)], ["mast",Vector2(-235,255),Vector2(150,230)], ["helm",Vector2(-325,290),Vector2(53,64)], ["crate",Vector2(-285,315),Vector2(56,50)], ["barrel",Vector2(260,425),Vector2(42,57)], ["mast",Vector2(305,365),Vector2(88,135)]]:
-		var sprite := Sprite2D.new(); sprite.texture = Assets.prop(spec[0])
-		var factor: float = minf(spec[2].x/sprite.texture.get_width(),spec[2].y/sprite.texture.get_height())
-		sprite.scale = Vector2.ONE*factor
-		sprite.position = spec[1]-Vector2(0,sprite.texture.get_height()*factor*0.5)
-		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-		world.sorted_world.add_child(sprite)
-		var body := StaticBody2D.new(); body.collision_mask = 0
-		body.position = spec[1]; world.sorted_world.add_child(body)
-		var shape := CollisionPolygon2D.new()
-		var width: float = 24 if spec[0]=="deckhouse" else 12
-		shape.polygon = PackedVector2Array([Vector2(-width,0),Vector2(0,-width*0.4),Vector2(width,0),Vector2(0,width*0.4)])
-		body.add_child(shape)
+	for mast in MASTS:
+		var region: Rect2 = mast[0]; var base: Vector2 = mast[1]
+		var shaft := Sprite2D.new(); shaft.name = "Mastro"
+		var atlas := AtlasTexture.new(); atlas.atlas = SHIP
+		atlas.region = region
+		shaft.texture = atlas; shaft.flip_h = true; shaft.centered = false; shaft.scale = Vector2.ONE*SCALE
+		var anchor := to_world(base)
+		shaft.position = to_world(Vector2(region.end.x,region.position.y))-anchor
+		shaft.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		var holder := Node2D.new(); holder.position = anchor; holder.add_child(shaft)
+		world.sorted_world.add_child(holder)
+		_footprint(holder,22.0)
+	for fitting in FITTINGS:
+		var holder := Node2D.new(); holder.name = "Cabrestante"; holder.position = to_world(fitting[0])
+		world.sorted_world.add_child(holder); _footprint(holder,fitting[1])
+
+static func _footprint(holder: Node2D,half: float) -> void:
+	var body := StaticBody2D.new(); body.collision_mask = 0; holder.add_child(body)
+	var shape := CollisionPolygon2D.new()
+	shape.polygon = PackedVector2Array([Vector2(-half,0),Vector2(0,-half*0.45),Vector2(half,0),Vector2(0,half*0.45)])
+	body.add_child(shape)
 
 static func contains(point: Vector2) -> bool:
-	return Geometry2D.is_point_in_polygon(point,PackedVector2Array(OUTLINE))
+	return Geometry2D.is_point_in_polygon(point,outline())
 
 func _draw() -> void:
-	var deck := PackedVector2Array(OUTLINE)
 	if departure_progress>0:
+		# The wake trails from the stern, opposite to the bow's heading.
+		var stern := to_world(Vector2(200,640))
 		for side in [-1,1]:
 			var wake := PackedVector2Array()
 			for i in 8:
 				var trail := float(i)/7
-				wake.append(Vector2(-455,275)+Vector2(-110*trail,-42*trail+side*(8+trail*15))*departure_progress)
-			draw_polyline(wake,Color(0.67,0.83,0.77,departure_progress*0.3),2,true)
-	var shadow := PackedVector2Array()
-	for point in deck: shadow.append(point+Vector2(8,33))
-	draw_colored_polygon(shadow,Color(0.02,0.1,0.12,0.35))
-	for i in deck.size():
-		var a := deck[i]; var b := deck[(i+1)%deck.size()]
-		draw_colored_polygon(PackedVector2Array([a,b,b+Vector2(0,24),a+Vector2(0,24)]),Color("4f3e2b"))
-	var uv := PackedVector2Array()
-	for point in deck: uv.append(Vector2(point.x/290.0+point.y/145.0,point.y/145.0-point.x/290.0))
-	draw_polygon(deck,PackedColorArray([Color("d1c4a8")]),uv,Assets.texture("regional-deck.png",true))
-	var edge := deck.duplicate(); edge.append(deck[0])
-	draw_polyline(edge,Color("42352a"),10,true)
-	draw_polyline(edge,Color("bda078"),4,true)
-	for i in deck.size():
-		var a := deck[i]; var b := deck[(i+1)%deck.size()]
-		var posts := maxi(1,ceili(a.distance_to(b)/48))
-		for step in posts:
-			var foot := a.lerp(b,float(step)/posts)
-			draw_line(foot,foot-Vector2(0,16),Color("5a4632"),5,true)
-		draw_line(a-Vector2(0,16),b-Vector2(0,16),Color("cfb48a"),3,true)
+				wake.append(stern+Vector2(150*trail,-58*trail+side*(10+trail*22))*departure_progress)
+			draw_polyline(wake,Color(0.80,0.90,0.86,departure_progress*0.35),2.5,true)
 	for origin in [Vector2(-60,290),Vector2(50,290)]:
 		preload("res://scripts/chapter/story_prop_art.gd").draw_item(self,"PT-T01",origin+Vector2(0,7),48)
 		if origin.x<0: draw_line(origin+Vector2(-13,0),origin+Vector2(12,0),Color("68a3bc"),4,true)
@@ -70,7 +86,15 @@ func _draw() -> void:
 			curve.append(Vector2(-60,290).lerp(end,weight)+Vector2(0,sin(weight*PI)*10))
 		draw_polyline(curve,Color("436b79"),3.5,true)
 		draw_polyline(curve,Color("8eb5bd"),1.1,true)
-	# Standing rigging stays behind the cast rather than crossing their faces.
-	for endpoint in [Vector2(-385,180),Vector2(240,270)]:
-		draw_line(Vector2(-235,65),endpoint,Color("7b7156"),1.5,true)
-	draw_line(Vector2(-235,90),Vector2(305,250),Color("928265"),1.5,true)
+	if has_meta("debug"):
+		var font := ThemeDB.fallback_font
+		for x in range(-600,601,50):
+			draw_line(Vector2(x,0),Vector2(x,600),Color(1,1,1,0.25 if x%100 else 0.5),1)
+			if x%100==0: draw_string(font,Vector2(x+2,12),str(x),HORIZONTAL_ALIGNMENT_LEFT,-1,11,Color.WHITE)
+		for y in range(0,601,50):
+			draw_line(Vector2(-600,y),Vector2(600,y),Color(1,1,1,0.25 if y%100 else 0.5),1)
+			if y%100==0: draw_string(font,Vector2(-598,y-2),str(y),HORIZONTAL_ALIGNMENT_LEFT,-1,11,Color.WHITE)
+		var edge := outline(); edge.append(edge[0])
+		draw_polyline(edge,Color.RED,2)
+		for p in [Vector2(-80,360),Vector2(-140,360),Vector2(120,300),Vector2(200,310),Vector2(-60,290),Vector2(50,290),Vector2(-140,330),Vector2(40,365),Vector2(-170,395),Vector2(-140,385)]:
+			draw_circle(p,5,Color.YELLOW)

@@ -672,7 +672,7 @@ func _stage(action: String) -> void:
 			add_child(camera); camera.make_current()
 			staging.mark("departure_cast_off"); staging.sound("creak",-22,1.0,true)
 			var tween = world.create_tween().set_parallel(true)
-			tween.tween_property(world,"position",Vector2(145,85),3.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+			tween.tween_property(world,"position",Vector2(-170,70),3.5) # toward the bow, away from the quay.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 			tween.tween_property(world.get_node("ConvesDaBotafogo"),"departure_progress",1.0,3.5)
 			staging.sound("sail_flap",-25,0.9,true)
 			await tween.finished; staging.mark("departure_underway"); view.panel.show()

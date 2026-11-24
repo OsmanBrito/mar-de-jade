@@ -6,6 +6,8 @@ shader_type canvas_item;
 uniform sampler2D atlas : filter_linear_mipmap, repeat_disable;
 uniform float stone_period = 230.0;
 uniform float wood_period = 256.0;
+// Optional: hide paving below the quay edge seen from the departing ship.
+uniform bool clip_to_shore = false;
 varying vec2 world_at;
 
 const vec2 ATLAS = vec2(1774.0, 887.0);
@@ -43,6 +45,7 @@ vec3 layered(vec2 p, vec2 top, float size) {
 }
 
 void fragment() {
+	if (clip_to_shore && world_at.y > 45.0 + (world_at.x + 700.0) * 210.0 / 1240.0) discard;
 	vec4 mask = texture(TEXTURE, UV);
 	int kind = int(floor(UV.x * 2.0)) + 2 * int(floor(UV.y * 2.0));
 	vec2 p = world_at;
