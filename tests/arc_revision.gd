@@ -92,15 +92,15 @@ func run() -> void:
 	check(game.player_menu.listing.find_children("wide_timing","CheckButton",true,false).size()==1,"System exposes combat timing preference")
 	game._menu()
 	if DisplayServer.get_name()!="headless": root.size = Vector2i(1280,800)
-	check(prefs.bind_key("interact",KEY_V)=="Comando atualizado.","Player can rebind interaction")
+	check(prefs.bind_key("interact",KEY_U)=="Comando atualizado.","Player can rebind interaction")
 	var preferences_path: String = prefs.path; prefs.path = "res://tests/preferences-fixture.cfg"
 	check(prefs.save_settings()==OK,"Preferences save independently of campaign progress")
 	prefs.bindings = prefs.DEFAULT_BINDINGS.duplicate(); prefs.text_scale = 1.0; prefs.load_settings(); prefs.apply_bindings()
-	check(prefs.bindings.interact==KEY_V and is_equal_approx(prefs.text_scale,1.2),"Key and text-size preferences survive a reload")
+	check(prefs.bindings.interact==KEY_U and is_equal_approx(prefs.text_scale,1.2),"Key and text-size preferences survive a reload")
 	prefs.path = preferences_path
 	game._begin_task({"id":"input_probe","caption":"Input regression"}); game.props.marker = game.world.player.position
 	await key(KEY_E); check(not p.flags.get("input_probe",false),"Old interaction key does not bypass remapping")
-	await key(KEY_V); check(p.flags.get("input_probe",false),"New interaction key executes the real task")
+	await key(KEY_U); check(p.flags.get("input_probe",false),"New interaction key executes the real task")
 	prefs.bindings = prefs.DEFAULT_BINDINGS.duplicate(); prefs.apply_bindings()
 	game._begin_battle("duel"); var host = game.battle_host
 	host.tactical.phase = "timing_attack"; var narrow: Vector2 = host.tactical.timing_windows()

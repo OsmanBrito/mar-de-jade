@@ -1,8 +1,8 @@
 extends Node2D
 ## Standalone playable review of the campaign host; never writes chapter saves.
-const MODES := ["child_attack","child_defense","adult_basic","adult_defense","duel","school","perfect_defense","duarte_support"]
-const TITLES := ["Infância · básico","Infância · defesa simples","Duarte · repetição","Duarte · defesa simples","Leonor · duelo","Tomé · manejo","Tomé · Defesa Perfeita","Duarte · proteção"]
-@export_enum("child_attack","child_defense","adult_basic","adult_defense","duel","school","perfect_defense","duarte_support") var encounter := "child_attack"
+const MODES := ["child_attack","child_defense","adult_basic","adult_defense","duel","school","perfect_defense","duarte_support","practice"]
+const TITLES := ["Infância · básico","Infância · defesa simples","Duarte · repetição","Duarte · defesa simples","Leonor · duelo","Tomé · manejo","Tomé · Defesa Perfeita","Duarte · proteção","Prática livre · técnicas"]
+@export_enum("child_attack","child_defense","adult_basic","adult_defense","duel","school","perfect_defense","duarte_support","practice") var encounter := "child_attack"
 @export_enum("ES","LA","MC","FO","PU") var style := "ES"
 var host
 var container: SubViewportContainer

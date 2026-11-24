@@ -1,0 +1,3353 @@
+{
+  "schema_version": 1,
+  "source_root": "C:\\Users\\gamer\\Documents\\ChatGPT\\jogo",
+  "entrypoint": "project.godot",
+  "coverage": "Literal resource references reachable from project.godot; dynamically constructed paths require manual review. Unreachable files are not evidence of runtime use.",
+  "source_catalog_sha256": "d657af9a6e8d1820961900e12809860df7422415d23d03e1127396bb490d9096",
+  "resources": [
+    {
+      "path": "project.godot",
+      "exists": true,
+      "sha256": "7416d55eb481829d135321a1a9ed49a6a8e826e759dbb2a7fe7ac047494b34f7"
+    },
+    {
+      "path": "scenes/main.tscn",
+      "exists": true,
+      "sha256": "02099da37482a3695595da4b76976907079e7bb137953159ea40b6e7d939bd3d"
+    },
+    {
+      "path": "scripts/main.gd",
+      "exists": true,
+      "sha256": "8cf6938e836d436bee70f0d2a00a11f9c58d83f3dcd86c8ad3d0beaa8aadd886"
+    },
+    {
+      "path": "scripts/localization.gd",
+      "exists": true,
+      "sha256": "0a0c549801b53a786477fdbd58914a0e080285c30b51c907636efc933f2f277d"
+    },
+    {
+      "path": "scripts/tactics.gd",
+      "exists": true,
+      "sha256": "8e821f9cebbfe1c7e76e06db6a17c5dee4074629f66fe279beee547069b06a7f"
+    },
+    {
+      "path": "scripts/tactical_view.gd",
+      "exists": true,
+      "sha256": "c66246ee530b2b038a2754b5a28fbfe83bc0456d52141bcda15ac2c71a86b7c7"
+    },
+    {
+      "path": "scripts/music.gd",
+      "exists": true,
+      "sha256": "ec0cbb8772695a51c064474accd4456783275780631aab800d3e96a61537519e"
+    },
+    {
+      "path": "scripts/combat_audio.gd",
+      "exists": true,
+      "sha256": "0771ee1694e8762d61b71348792792f8a9e894fcf5fdf0257548411c48876b77"
+    },
+    {
+      "path": "scripts/world_life.gd",
+      "exists": true,
+      "sha256": "2b4490f3d96cf506569393cf7fc677710b8a5507bcc7de422c4d63a829b33030"
+    },
+    {
+      "path": "scripts/world_ambience.gd",
+      "exists": true,
+      "sha256": "891a9b5c08bf73fa901a0f3eae37f69bba91d962045ffcc3fa9d60d8e28037c1"
+    },
+    {
+      "path": "scripts/pixel_art.gd",
+      "exists": true,
+      "sha256": "cb1ebd5c7257004fb558cf9b9f1aa1b0873602ca11f8a891fb3af299973efc5b"
+    },
+    {
+      "path": "scripts/progression.gd",
+      "exists": true,
+      "sha256": "0fa74a8e1dc9b6e4099ef4ef91535b62f552f1740eca8351e17ab45a8fb348f1"
+    },
+    {
+      "path": "scripts/rpg_catalog.gd",
+      "exists": true,
+      "sha256": "d657af9a6e8d1820961900e12809860df7422415d23d03e1127396bb490d9096"
+    },
+    {
+      "path": "scripts/journey_menu.gd",
+      "exists": true,
+      "sha256": "91f4a6211f96d46356ebbaadc61c1956ffcf5d81d5383a01090b344b7f2c0285"
+    },
+    {
+      "path": "scripts/dialogue_catalog.gd",
+      "exists": true,
+      "sha256": "b98e8ba0d5fc735ae73568be0bb5d77ee280e1e691d5a5ccbddca4d0b8021371"
+    },
+    {
+      "path": "scripts/mission_catalog.gd",
+      "exists": true,
+      "sha256": "a381fd6649736e5904d22901263768406405f194c4285ac918355ed7ad2e30df"
+    },
+    {
+      "path": "scripts/campaign_state.gd",
+      "exists": true,
+      "sha256": "b8cd0ae9dd280bc860e7fbea7d2c3b0f549398a77d0a32912776742bbcd1410d"
+    },
+    {
+      "path": "scripts/madeira_world.gd",
+      "exists": true,
+      "sha256": "098d19dcf2559e8fa963a8938e40908beab889af8ac4fe0d185b38d6a4fc7d68"
+    },
+    {
+      "path": "scripts/bruma_world.gd",
+      "exists": true,
+      "sha256": "89b8ea3193c859256533bb34046155394d1b5771cf94488db38e08398734c980"
+    },
+    {
+      "path": "scripts/cove_world.gd",
+      "exists": true,
+      "sha256": "d90e0bf81083e2e174b3fc8c873be0a71a1361a37366de84bde447c727c99fd0"
+    },
+    {
+      "path": "scripts/lisbon_world.gd",
+      "exists": true,
+      "sha256": "5ad16ddff602168164891c0bd9b74ef6ca4c54e571601736484fd9f7fd315a11"
+    },
+    {
+      "path": "scripts/porto_world.gd",
+      "exists": true,
+      "sha256": "35bcf24f6140edb8649e9c39c51931da4871f8eeffdf841ea1638aebcc49c852"
+    },
+    {
+      "path": "scripts/roman_world.gd",
+      "exists": true,
+      "sha256": "c0b1e543bf8df63dd64d37514e131add047cebf0ec648890f42caed4b7738eee"
+    },
+    {
+      "path": "scripts/vigia_world.gd",
+      "exists": true,
+      "sha256": "cb01d0578cf540e008920738c0d69a14f2962da5073265ac2f51240e0e9d2645"
+    },
+    {
+      "path": "scripts/ceuta_world.gd",
+      "exists": true,
+      "sha256": "d3718984fe05f7910e2bec9d57c54b0a97163b2923b36981544780dceedf25e9"
+    },
+    {
+      "path": "scripts/refuge_world.gd",
+      "exists": true,
+      "sha256": "d31773c8b9185536b6195e400d4f1f1c6a8d097d118aaaeeae02d36d822470ab"
+    },
+    {
+      "path": "scripts/order_reveal.gd",
+      "exists": true,
+      "sha256": "17af0d4d0f7a6af216ce8aa0e70bf8d75e5b71a0c8a77414d136573068629c7e"
+    },
+    {
+      "path": "scripts/cargo_world.gd",
+      "exists": true,
+      "sha256": "ad2c4f90c56c9dff5eb408334fe14aa92374afc19f016217f70a71ea2b2e01e9"
+    },
+    {
+      "path": "scripts/coast_world.gd",
+      "exists": true,
+      "sha256": "31dda7ee1578ff66a23a9e3854e21519b1aee2a193615dbabdee436fe038ae02"
+    },
+    {
+      "path": "scripts/storm_world.gd",
+      "exists": true,
+      "sha256": "14d48e5ec3ad3c5b72ead87a7bf872a7d8893ca1e613a987f1b40f1dd6d3b949"
+    },
+    {
+      "path": "scripts/final_world.gd",
+      "exists": true,
+      "sha256": "55d2dd4e729efc3d981e41ac6fe8a3ea4a502847d8630ac1998cbce826002593"
+    },
+    {
+      "path": "scripts/order_world.gd",
+      "exists": true,
+      "sha256": "e74f45d90a90a6957dd5125a0acd5a8d34ad246ef84e7e66b5c17fbae521c6bc"
+    },
+    {
+      "path": "scripts/playtest_recorder.gd",
+      "exists": true,
+      "sha256": "cfb578a7c2e9812a3124cbb4727131934b3b6acd1c57571af911fb93db5f5ebe"
+    },
+    {
+      "path": "scripts/test_lab.gd",
+      "exists": true,
+      "sha256": "b75e2a1188bd78c3634b5aaa5a6e5f8e0e468651fc9ba6cc850c0c1de051ad26"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/map.json",
+      "exists": true,
+      "sha256": "a64eb922fdc64d963cc73479d39ba94576bfc26f1c6d7667ca5d3dc191f3c424"
+    },
+    {
+      "path": "assets/audio/dialogue_en/map.json",
+      "exists": true,
+      "sha256": "df2d9865be35a356d6b3cba5c80e5f75136d50554247e979c31860264b82430c"
+    },
+    {
+      "path": "assets/audio/combat/credits.json",
+      "exists": true,
+      "sha256": "ff73585da2f43a8c5b510a04c2622c0a1449396bae0666e9ba805387512e0885"
+    },
+    {
+      "path": "scripts/boss_techniques.gd",
+      "exists": true,
+      "sha256": "3b5a1c00fe9884eec5dce6c6b7d3c8933d8f61e40997c258af88f651c914d439"
+    },
+    {
+      "path": "scripts/enemy_moves.gd",
+      "exists": true,
+      "sha256": "9baa23a584582b42286efb707c834f1da0571328478499c1c57f7ecae7c3b823"
+    },
+    {
+      "path": "scripts/enemy_attributes.gd",
+      "exists": true,
+      "sha256": "0fcacd11a55619449f3c65447d9e3730d7ccc0cf995ac43b6deff4705db196a1"
+    },
+    {
+      "path": "scripts/battle_identity.gd",
+      "exists": true,
+      "sha256": "177eb671715bfdf011209e727213942704655f1b94daec71648deb8bbec2962d"
+    },
+    {
+      "path": "scripts/passive_feedback.gd",
+      "exists": true,
+      "sha256": "61e2604a6a7f24702f8d47539c7bad8ff4cf4b49fd9169e157fb335e2367f1d5"
+    },
+    {
+      "path": "scripts/actor_motion.gd",
+      "exists": true,
+      "sha256": "10a4091306335320245b366a1cade97d4442d72625c63390bf0b2a0bb6dd40ca"
+    },
+    {
+      "path": "scripts/skill_motion.gd",
+      "exists": true,
+      "sha256": "dd14e0d99499a1b227551308cdd424e2bd7c197b092bf9dbab38f287502626d5"
+    },
+    {
+      "path": "scripts/combat_onboarding.gd",
+      "exists": true,
+      "sha256": "eb0bf00a6fb2676c5f33f4c05355f39600f02663c2e1202e0cf85b166985694e"
+    },
+    {
+      "path": "scripts/skill_presentation.gd",
+      "exists": true,
+      "sha256": "a78505eb580e7de785721d3e77f370dcbaedbe592ddbce0b12ba8cd418919fc5"
+    },
+    {
+      "path": "scripts/battlefield_art.gd",
+      "exists": true,
+      "sha256": "a931956646d0a27d59bf653781af04006cdacb83af50dd4715a8775f9dae2d85"
+    },
+    {
+      "path": "scripts/technique_cutin.gd",
+      "exists": true,
+      "sha256": "cdfce25ea07103db0db9d68e3360be3424e32c5031d988101987a8a1ec8d0be4"
+    },
+    {
+      "path": "scripts/soundtrack_catalog.gd",
+      "exists": true,
+      "sha256": "29192ca8aef2f1ef3c82a4cd6844df2acf5f2f83d4cc9ab87c64ca77a00e1d61"
+    },
+    {
+      "path": "assets/audio/mar_de_ferro.mp3",
+      "exists": true,
+      "sha256": "55ad66d814b09b7275651e35199aac73904897296b4621f8aa404fb9cfab822f"
+    },
+    {
+      "path": "assets/audio/Mel marinha.mp3",
+      "exists": true,
+      "sha256": "08c52b2ef9528c20b9e15b9e699edd99b38bac601b6e56bf3beb80e2c2369a3a"
+    },
+    {
+      "path": "assets/audio/mar_de_ferro_2.mp3",
+      "exists": true,
+      "sha256": "263350ba6d04fe6c63cb12ace1b71f6cc505b1f2e0bfb51f835e28bbb67e9f2d"
+    },
+    {
+      "path": "assets/audio/battle_ballad.mp3",
+      "exists": true,
+      "sha256": "e3cc0982437dd7b59b89b7f80dcb8e03ce9d4112964fd52bbb7d8693aeca51b3"
+    },
+    {
+      "path": "assets/audio/fado_of_iron_seas_2.mp3",
+      "exists": true,
+      "sha256": "17b577f657c47d5587fc2e88d4d886d8e747cbb0cca046fd5d86f35b4dc9dc36"
+    },
+    {
+      "path": "assets/audio/fado_of_iron_seas.mp3",
+      "exists": true,
+      "sha256": "a4a501009396194409fb82a9615ac63d090b11edd6f687f445fc2aa31415610e"
+    },
+    {
+      "path": "assets/audio/celestial_pages.mp3",
+      "exists": true,
+      "sha256": "9357911d3520c7f5a11ebb73b9b748206a6dc6914d69185d935e46a980f06c4d"
+    },
+    {
+      "path": "assets/audio/Fado da Batalha.mp3",
+      "exists": true,
+      "sha256": "d5538d84ab7b84d24d6562a1995778aefb59327cff5102fee6225b8b866b0e87"
+    },
+    {
+      "path": "assets/audio/Fado da Batalha (1).mp3",
+      "exists": true,
+      "sha256": "8db047ce1cedb6b59660bb8d1695288c430a826da5abf087ec1d510002c2fbc3"
+    },
+    {
+      "path": "assets/audio/mare_do_destino.mp3",
+      "exists": true,
+      "sha256": "963b36fdb5889df75828821786cb443da6f7de85864cd8d3ddcd0437a79da624"
+    },
+    {
+      "path": "assets/audio/mare_do_destino_2.mp3",
+      "exists": true,
+      "sha256": "8b1696537274e674aef6860396bcd1ed5550525614cf688bba7fb0cb8a39b076"
+    },
+    {
+      "path": "assets/audio/Tidal_Siege.mp3",
+      "exists": true,
+      "sha256": "1b35e511b4e8c088da937be1267961a2a96c30e5c0f1edfc148327b724ab73f8"
+    },
+    {
+      "path": "assets/audio/Maelstrom Oath.mp3",
+      "exists": true,
+      "sha256": "f324b6ebe7bb1fe35c730c6162390e9b0df5dac24c37ffbafb5842f08c663c9a"
+    },
+    {
+      "path": "assets/audio/Duel_at_the_Atlantic_Edge.mp3",
+      "exists": true,
+      "sha256": "b8f8f8b51c7a50af568608b18636054d99f056735460feb231a6ce1d0106af4d"
+    },
+    {
+      "path": "assets/audio/porto_morning_tides.mp3",
+      "exists": true,
+      "sha256": "49d1bf26064a87506e136a6e6e2ddb207e93044f56d700ebdb46cbfd3ed0bad6"
+    },
+    {
+      "path": "assets/audio/storm_over_black_cliffs.mp3",
+      "exists": true,
+      "sha256": "cfa08c4b1f3dd3ac15efa006b7082937355b051cfaabbc32718eec0213b6a58d"
+    },
+    {
+      "path": "assets/audio/Echoes_of_the_Templar_City.mp3",
+      "exists": true,
+      "sha256": "e91a52b0b9d486e04ce92d5505f1dddd9de0ddb2377ee0b51a001e77fb5aa86f"
+    },
+    {
+      "path": "assets/audio/Vento e Surdo.mp3",
+      "exists": true,
+      "sha256": "967f67ac06621447cb6b786332dd285cb29769f537c481ebb407ca1e4a12872a"
+    },
+    {
+      "path": "assets/audio/Vagem do Oceano.mp3",
+      "exists": true,
+      "sha256": "33afa0d5f053ecd686eb65ae0eef6dce308185fd6b44ed3ac7ad4ce731f3ac10"
+    },
+    {
+      "path": "assets/audio/Campo de Fado e Fúria (1).mp3",
+      "exists": true,
+      "sha256": "e7203aaca1f678d0febd76942d96057c8d27839769b2db567d06c54387542391"
+    },
+    {
+      "path": "assets/audio/Ceita da Mar.mp3",
+      "exists": true,
+      "sha256": "5d960b034cca3b4c81f25a3e8f4e68e3c236a220b9a8e2bbbca32fe7707b73a8"
+    },
+    {
+      "path": "scripts/order_appearance.gd",
+      "exists": true,
+      "sha256": "a89bb37f8d479f3c806450e430e6a4239f967a446ce36dd4aa33f1e0ed69cc6b"
+    },
+    {
+      "path": "scripts/bruma_composed.gd",
+      "exists": true,
+      "sha256": "34ef8bad839a49666d79e5f86e4b328f67efbd87ac3516091c6848d4fd91ea8f"
+    },
+    {
+      "path": "scripts/actor_art_catalog.gd",
+      "exists": true,
+      "sha256": "39a8b316171b3e5e48222e5b0f843495a6d4aa2cb7017a49f890fbed9e8c5912"
+    },
+    {
+      "path": "scripts/actor_equipment.gd",
+      "exists": true,
+      "sha256": "d3754ce947fc9843aca8363f3f995e0a2e5c0efcc440e8cbacd4a7e490ac6e26"
+    },
+    {
+      "path": "scripts/regional_scenery.gd",
+      "exists": true,
+      "sha256": "2d4f1bd97057ee974263962e2ae6db75df6eff756c8e81892d16f8977499a408"
+    },
+    {
+      "path": "assets/sprites/duarte-halberd.svg",
+      "exists": true,
+      "sha256": "1410c66532eeb7b9a92ee127b0b60e0bd63437b83a74f2c6456a0ce3c6c0de99"
+    },
+    {
+      "path": "assets/sprites/ines-sword.svg",
+      "exists": true,
+      "sha256": "ccc9fe358bef77de1eb5ce734f93bcca987b61a546129e29cec73492981b03d7"
+    },
+    {
+      "path": "assets/scenery/madeira-ground-polished-v2.png",
+      "exists": true,
+      "sha256": "4070925e02f9fad0af1af157af32b7a531794f37f7bb6704d10b70ee071e9a24"
+    },
+    {
+      "path": "scripts/bruma_market_kit.gd",
+      "exists": true,
+      "sha256": "cff47cf27b22b8a229a919e7e1a62c7f279f7d8600ac29802dd0d45e67e9bd1b"
+    },
+    {
+      "path": "assets/scenery/bruma-ground-directed-v4.png",
+      "exists": true,
+      "sha256": "91561451e6507ca613815ed72afcea1b65f37113878c491568c5e058f343e093"
+    },
+    {
+      "path": "assets/scenery/cove-ground-refined-v1.png",
+      "exists": true,
+      "sha256": "1190111dba0bcbd4f6c15c713e49d0e19da56edc22da9ff1974d19ea2546bb1a"
+    },
+    {
+      "path": "assets/scenery/lisbon-ground-refined-v3.png",
+      "exists": true,
+      "sha256": "e4fb5f0f2778a52870ee49a7d0f253b8cc235dd4cd6f78396321234e6f50a79f"
+    },
+    {
+      "path": "assets/scenery/porto-ground-refined-v1.png",
+      "exists": true,
+      "sha256": "169474bc26a0940c5296395e1964da80f75ddb153fe7d0296fe72973b238e867"
+    },
+    {
+      "path": "assets/scenery/roman-ground-refined-v2.png",
+      "exists": true,
+      "sha256": "7e3ef2f701d2b929fc7db997c271035e44a8a372cdcfd19681eab5b6faa07bc7"
+    },
+    {
+      "path": "assets/scenery/vigia-ground-refined-v2.png",
+      "exists": true,
+      "sha256": "126d680d72ccd55e20eafdef6b77e958bed2eb3e95cb75424db1a95e5d7db283"
+    },
+    {
+      "path": "assets/scenery/ceuta-ground-refined-v2.png",
+      "exists": true,
+      "sha256": "4efc70b4f6658e561b8e163257d93a3ee0e76a059cb17ffe15adf8711b39e276"
+    },
+    {
+      "path": "scripts/maritime_motifs.gd",
+      "exists": true,
+      "sha256": "8cc6667aff6eddb5b8e78925a93360d3b2a51ff701a485843775a084c31a95d7"
+    },
+    {
+      "path": "assets/scenery/coast-ground-refined-v1.png",
+      "exists": true,
+      "sha256": "5144f8d0f98de0be3d61add7a789c6f67ed444bebcec1d604939932677a30682"
+    },
+    {
+      "path": "assets/scenery/storm-hull-refined-v1.png",
+      "exists": true,
+      "sha256": "c3b87e525830c29f7cd601c36b74bade189125dfbd1f192711bc44da29f26682"
+    },
+    {
+      "path": "assets/scenery/final-hull-refined-v1.png",
+      "exists": true,
+      "sha256": "0dd8902982cba099f9890c200df7159a7ab259adfb2233e9f1f2e2384c7b0464"
+    },
+    {
+      "path": "assets/scenery/order-ground-refined-v1.png",
+      "exists": true,
+      "sha256": "455d4ef5b9bebbed1878a8d2a891566bb861bf9e38fb241406077a565b51bfd5"
+    },
+    {
+      "path": "scripts/campaign_catalog.gd",
+      "exists": true,
+      "sha256": "91abff1ca4308b2e3528930fe6fe0b9d0fed845b3a322b8a5243235efaaa5c21"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/0ac3d0291e236489393d1dff.mp3",
+      "exists": true,
+      "sha256": "b5770edf435483345fa7458bf68a2b1c352de092decd89ac23cdc85ddffee1a8"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/18741fa89cb95970dd52ded3.mp3",
+      "exists": true,
+      "sha256": "2212ed433c724b77a446cf43bb793aff145370fa341a24a42fb52eb184f87be8"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/c862d521211437fcb6f0713b.mp3",
+      "exists": true,
+      "sha256": "3faf5c1d845823be35dd7e0bcf366e8f0d088493610c61819de81718a003459d"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/7ff7295fe4e8d3034523e4dd.mp3",
+      "exists": true,
+      "sha256": "ca5739441ebcf5d7f2d8118df85edf67cd7b0c8069586d9020c16191cdc0802c"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/687b032a538b303c5583b4e5.mp3",
+      "exists": true,
+      "sha256": "97bf592ef94cd5de12fde0d8c24bbaf367962c9b8312511c3ef89883be68c611"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/f509174777a81d657562696b.mp3",
+      "exists": true,
+      "sha256": "01f57939e449db7647c8a011223de7da0698755c80d46d499a060ee5bc505560"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/ffd8f7ad6ad766a6ce0fc2ed.mp3",
+      "exists": true,
+      "sha256": "072ca206a4f66d2b1a4642e818b8cc62dc7a7ed33939db40d07a85ca23d53349"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/89eaca622791c98a64fa52f4.mp3",
+      "exists": true,
+      "sha256": "04768f07a8d17148838497ae7234b0a4ec778c25e2e2bbeace3d657dac0d3f21"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/c54f666315684c634b68e5be.mp3",
+      "exists": true,
+      "sha256": "2b183ae759db67b5a50939eb0ad456eff7e3928ad3076617b6904467c0c1c942"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/3344972468bb414f2fc7a2f2.mp3",
+      "exists": true,
+      "sha256": "64fc63c89d2f0f83bcab0193ab48a95b5b3de76063d00dfd6294319a658520a0"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/f4a4e8e8df25180b333a8a0a.mp3",
+      "exists": true,
+      "sha256": "0f9c2e2a2058664d5154b993a6d28ac4f940f84ddd1ec765130cf05d613f6bc5"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/a60f141a2a670eb28d1b6a96.mp3",
+      "exists": true,
+      "sha256": "3730935ffe0f38425874f6e10f5d6c98e4a7b8ddea8700f75798e7f98668959a"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/3f172cc44abf913da8bad0fd.mp3",
+      "exists": true,
+      "sha256": "e6c4de88a55342cf357e4474454b9c7b5329c2178b8020f4bf55b1d13128c1b2"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/7f7a12c016814ef08524e4b5.mp3",
+      "exists": true,
+      "sha256": "b6989e78f2d397c63971cb054a4801b611ee10b37467ad411590c1dfa5ca645a"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/b8700fe2e097e8e9e9e163c7.mp3",
+      "exists": true,
+      "sha256": "a8f37b876081edf9bc1d8fad65b5d79f57ce70724ef45119f5d11e44918a4b69"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/92582cf80d17882fb0d114db.mp3",
+      "exists": true,
+      "sha256": "c44a4a773c309601354990222c3181fd1e4b9684ecc7d01ce253f31522ca7697"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/dbc3403bbcd9ffb7166b3d2c.mp3",
+      "exists": true,
+      "sha256": "0a4ed6ec098b81f3997a1008af332ab67fd7ec7e912b94bc46ebe872fbf5df51"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/4b1d638095e94f2efddf8b68.mp3",
+      "exists": true,
+      "sha256": "23198a220fbb471296abe4b2ee4edcba1f904c7e558be48789b1ac2a13fd43c2"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/0acf6682d6038d7f1f851b67.mp3",
+      "exists": true,
+      "sha256": "97962fef374d91a61a76ef35e25dc922e3565a049d91020362a84ebdc2dd2ef7"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/3746dc9ebf1a3800b299835b.mp3",
+      "exists": true,
+      "sha256": "e7b4be3341582ad4d0f911386c27881539a59a8671821632c9f7a57afd46a601"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/0b5235ad15943211a9dc384d.mp3",
+      "exists": true,
+      "sha256": "7cb311b501b291b7aa4eabaeb5d36f4836da7f5ac67feb76c5f09ac507da28f1"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/78a0ec5df8d57a6294f9a51d.mp3",
+      "exists": true,
+      "sha256": "a9b3a3ff4bf4ccda7dde455a15bb2932871753ec10b31bdd041717c38b83ce99"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/961b6e479f3a9723cbb3a47c.mp3",
+      "exists": true,
+      "sha256": "232bb88c92feb2849e7757591505be0d892f7486bed914e06c1d9457b7be191c"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/59698becf393eacda97f67ae.mp3",
+      "exists": true,
+      "sha256": "818e129d4f9b9a2191c277373520a40e65b64f7825391a8c22afd64f80b3e946"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/1b2352880aee38690d529a0d.mp3",
+      "exists": true,
+      "sha256": "e24fd2fd239e4be4985ebd2660bfed3ad49e4bc93db21afa0d57ba44860a5f95"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/628191759822d1f9b880301b.mp3",
+      "exists": true,
+      "sha256": "c7c38462dbf7f177d0b754c48d3fe6512eeb59ee82db9054e2cf19347e229ac9"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/4ef0c2f14a46a69e01e27ee6.mp3",
+      "exists": true,
+      "sha256": "eb3c65ddec690625e18b35e1c1229105a4445a163a5c67030e3f98d72f4dfe98"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/80d8ae9810a356b30ee86a67.mp3",
+      "exists": true,
+      "sha256": "ffd1747223d169b2d9355bdf9728c36ae0f78e0c188f452ea776b57e5d2ec60f"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/7e2c57492569a010b5559737.mp3",
+      "exists": true,
+      "sha256": "5ec5546f9becd6e14dee62022e17b691802a9b7d6e1f9316c80feea08d0a05f4"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/071e35c24d2efb955c022f58.mp3",
+      "exists": true,
+      "sha256": "fd894576bce76b55da4285ae88ac0b52ab284a4e840b88efecdff9900498294a"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/a891d58eaa724c3679cc30cd.mp3",
+      "exists": true,
+      "sha256": "347e390d28334c6715c63d9884f26ebe4ee4d2e0a3915a080d20693d7ed61e79"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/33ae654da3f8ce23cf4627e6.mp3",
+      "exists": true,
+      "sha256": "20c3d57c43ce8640d0381365b47b2bc33184dda53e1eb20231aba7c9dc39bce9"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/55086c8d81cb7d256805ea4e.mp3",
+      "exists": true,
+      "sha256": "2b8c6934cee1a2938a2c55a3ac7a3610108a51a1d1820efde010a72442b381cf"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/5c8f27f246aa8939013002da.mp3",
+      "exists": true,
+      "sha256": "dd9405b231c7e463259f68d3ef752c29381f7ce0f2e096a12bef4b82e07d0120"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/245b191148ec4f23aedadc5f.mp3",
+      "exists": true,
+      "sha256": "8871f48b16710a6500ba44cce343e61db7e867d6048e7d6be0e97631fd995617"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/acd5d88f88613f8b13031416.mp3",
+      "exists": true,
+      "sha256": "3e1a794a650aa2c48d28f6afaa3b7505b26a860843dad9b1dd131553a026542c"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/15fadaec4d9b6cb3a96fb00f.mp3",
+      "exists": true,
+      "sha256": "a1e605b363129355fd841a9ed1d7b41ed29b5c6ea3083a250ffce4a22b61d20a"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/28a3eb779bf2b1bc243cba75.mp3",
+      "exists": true,
+      "sha256": "65f9f78e9e819ee9feec85ed360710e79c98a26bf6b76b64e5f55e0043f56fea"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/8b33d84e9563f6511376d8c7.mp3",
+      "exists": true,
+      "sha256": "14fee30a535270cde3302480d3660836be3a056b5c35d36195d02244496fbc8c"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/4004bf93914a6303f8f64b36.mp3",
+      "exists": true,
+      "sha256": "af8dd4e7a085b8207f73069502f3b5baaabf93cbdbd16eb767606b9c01a24638"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/3b0bb53fd318401ffeeb4505.mp3",
+      "exists": true,
+      "sha256": "a827b80244616d552c9d610a1eb9b79d8fa570e6943783bac69322ffeb7e806b"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/1bc681c1d998a5f28061372f.mp3",
+      "exists": true,
+      "sha256": "a9268c014b7e2dddcdb9c620a681b776e387bcfc8e412fab512ca07403f6f91d"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/ab48e6eeefa1699ec85977ca.mp3",
+      "exists": true,
+      "sha256": "a6ea0080b28462293520c3ddede7d0f22fcb1750f72d44451c3122cfdb65d18a"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/9e362646d9023bcf385863c6.mp3",
+      "exists": true,
+      "sha256": "205f133607abc80f5266f97ac388d69ab67e02f1ab92ed872ea943eda5e007d2"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/e6a92d8301a10733a4fe34d5.mp3",
+      "exists": true,
+      "sha256": "15011394f3fee27e7cbced6ec24fba343ba621f04a5635db212b50d13bef4e86"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/fd64ef1bebee7ae4d239339b.mp3",
+      "exists": true,
+      "sha256": "d3da4bb8c0182ac84b84535e92e1954d85bfa93353fa55265df473eebc912334"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/90a3942ecd66a3ca350434fd.mp3",
+      "exists": true,
+      "sha256": "2cc8bd1c605c6d69282091095dfaa41ee7736a20a95af3f067048bf18040648f"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/d909c822fa471a595c027add.mp3",
+      "exists": true,
+      "sha256": "a7b958e582cc856767d116729cd564fca302b0c219bd3ac266541d15763742c0"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/3f740988a9126461c4c72930.mp3",
+      "exists": true,
+      "sha256": "ed219c0500bdc7640a697c4a0b4d255aa9c721732522745477c91e77ae3ac943"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/123c4720b2704c4527d50dc2.mp3",
+      "exists": true,
+      "sha256": "5f9c53bde07b29480980af105bc0cbf9e74afe7296de9b66cb837f9b3f34d1c7"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/ded3c2b26ef2b18b49bddf40.mp3",
+      "exists": true,
+      "sha256": "424a59f4b7d88fce255b18b50d2953195d8303db02acbc3709c59dd4d31b8b68"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/6a48bb1e9460e6955a85f8e7.mp3",
+      "exists": true,
+      "sha256": "760df81a77c63579310424496aaff6997029b9da6f344516c7bc580f53cc9cf0"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/e34364ef1641cc0adaa03998.mp3",
+      "exists": true,
+      "sha256": "e142c832abbbc810c7210bc5c6cbac15454635c536de510120651658b8bb43cb"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/dc9654713f37543440966843.mp3",
+      "exists": true,
+      "sha256": "35ffc9e7bc43140bf249fe3855264408cb20de92f99467dce0e05063500ae2bb"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/b6794ed70a49f849b909e8ae.mp3",
+      "exists": true,
+      "sha256": "b49e5993a8b4f560f9e8daf2750df3e8a84948df6bd892c3bbab5ebfbc158d41"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/8f0112cbaccb572c02c293cf.mp3",
+      "exists": true,
+      "sha256": "28a913176817a59bb65d3c7b3e6c69ad9351038ad557d504014ef3cf4ed83a06"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/652139e2d2f02f523f628f47.mp3",
+      "exists": true,
+      "sha256": "9c90b9cd2f5c71a94d1addad8cf308113ed37d4367e724ccae06f16559910075"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/722bf4958205f194d53b4e67.mp3",
+      "exists": true,
+      "sha256": "a0d1e72bb66a40fb56316de0a39cfacdafa2aaded9fa1c1c0251ae546a1f36df"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/7bda550579f51543a7e2adef.mp3",
+      "exists": true,
+      "sha256": "56b5f3ad8b999adc777321da121b21ead28c05473b50c3f1c63aecf4aafd1b07"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/df9edb0f4cfcf96f3ef3d0d2.mp3",
+      "exists": true,
+      "sha256": "343f033abb6915088effd62c683945ad9702d283d2d32aced16fccb9959bd27b"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/70214b54bf9d2b0209e47675.mp3",
+      "exists": true,
+      "sha256": "ca1191676e98349f74affc2a190206bc0619fa7eb53cafe1e5ab6203a36f2ca5"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/7b7fe651288dd664960b3670.mp3",
+      "exists": true,
+      "sha256": "82bc8dc9ee8231ae28ede6d758b642c8cd481a1474122dc65ffe904c6ebfb22f"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/2ff2cabf5376ae68aba40a43.mp3",
+      "exists": true,
+      "sha256": "52fc6e5d8eb45827a92d18e9f9a4fe3338f0c31fd25ce9a0c44e7c4039bd0a03"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/e97b27f4e9fb4a52dbc875fb.mp3",
+      "exists": true,
+      "sha256": "280ad4c2070dfee262368bd93c4328a757fcdf7da1815dff16cb4feebd5703c4"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/0f0c3fef079eba288198bff3.mp3",
+      "exists": true,
+      "sha256": "763dc3fea8a5944d8d77dc479ee2e0926e5d7ea647d125e55d91e2b773b40de8"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/a554d23cbe066c690a4220ca.mp3",
+      "exists": true,
+      "sha256": "b950883bb21b8adc7cff1206a27844d182f284316ea2a4537646021b9cb9d5c5"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/a802fe894781413df0c4eb89.mp3",
+      "exists": true,
+      "sha256": "df27887c341f6d5db8d69461c130d596a372918629dbbe5e73cc8275a7c081c9"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/91e5d4a6897363838f35df71.mp3",
+      "exists": true,
+      "sha256": "8ceaea571a0b870d21c34471c34447973a2586a6af6d119929bf076f7654515c"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/bf7fbada2744827f7bf13913.mp3",
+      "exists": true,
+      "sha256": "32c9c1114798eb64c333f500d0e77aba23df5111da60a7e0ca8ace94e7e32395"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/67add90e8aafaba78cdb5dab.mp3",
+      "exists": true,
+      "sha256": "44e128130e99e55b3def31e841922cf161a3dc57ac587592b2828a26f7c85fcc"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/f5bd583c91e0e385dbe2023e.mp3",
+      "exists": true,
+      "sha256": "62f75f0acfcff2a2064473d842ce5b5f912b35874307975570657a35793f578c"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/915504ab2d41021f6d194771.mp3",
+      "exists": true,
+      "sha256": "c40d650a04f47cbdab7c931be5c51cc545010495070cfc560bd1afa67460ddb0"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/d55faa7ba5a592a03b4333d0.mp3",
+      "exists": true,
+      "sha256": "e885344fef3ec111f67519d26dd290ae98d17e9ae518d11ef4482f0f8ca268a4"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/9c8d5439a557bf8f4d7479d5.mp3",
+      "exists": true,
+      "sha256": "5517d13ce30354641d4a21c25bc14daaa668f29940171268f80fc3d0653a18d3"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/0309af33a21032602b4aa26f.mp3",
+      "exists": true,
+      "sha256": "12b42251cbe50262f2ad7ee78d78cd8fa7813689f1eae2b574b82f3b88430eab"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/96cb5da4f5bceb88f8903278.mp3",
+      "exists": true,
+      "sha256": "ec39db39885a236ea040fefc7d7c13f6c3775efb8b1232c1982c3897e4ab2a98"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/7f4e0600eacffe60236f83dd.mp3",
+      "exists": true,
+      "sha256": "58547127e4a1ab36b07c1450fd6f3d48d22f92dc98b7d3072559f542c0e6b769"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/e7d31ecffc9f67fdc768e819.mp3",
+      "exists": true,
+      "sha256": "6860425e62ae39ded6a6cffb60efdf305435a102cbf806b60352fc362c8d2d91"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/8289cffd7ac1ac5a1cde8f7f.mp3",
+      "exists": true,
+      "sha256": "8d14492eb8594cf4e52fa0be45fd1f62118e808e69b6be87bfaf2c8a0c59c312"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/6969dc9873594267c47bd256.mp3",
+      "exists": true,
+      "sha256": "f7ce8384c35ae856b9b37618be581c62466f98096ee9cb1d0a724186dcbde1e0"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/ae132c132f2edd273eef4095.mp3",
+      "exists": true,
+      "sha256": "e7cc85d913192bce106a36ae84836d9ba0337f344baf31356a501a3aa235a04e"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/08b7fc37ff6665cb6f7f037c.mp3",
+      "exists": true,
+      "sha256": "ed0c47a339b147ca3f518b262776b35a1ce4ba61321fef3118f23d07183afcc8"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/d11c240630c395820ce1cc05.mp3",
+      "exists": true,
+      "sha256": "6012c52a19afc09974713a51aecaa7981df30bea617e4252da37e0beaa49ca05"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/bd4f7525b0e7d0526cc4eb6c.mp3",
+      "exists": true,
+      "sha256": "0af656527e0761a78b31cad60721ce3a916f681d3753f0178900d10d21436384"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/2021a8199a66a3993ad8757a.mp3",
+      "exists": true,
+      "sha256": "ef099f898b70b6de9277e5799ac1b11876980890a2f12b0c99b6cb444333b501"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/c0a819cf38a50a494ea5f306.mp3",
+      "exists": true,
+      "sha256": "b5e5361d56b29c79e66975759466b8d1bbfc318ce7f6afe9be70ffb0914aad46"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/e8e79aee3babe85421b3a1fe.mp3",
+      "exists": true,
+      "sha256": "9bde7f4db38c63d5f44459d456df6374fc11960a5212300ce9f5788be1a63d44"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/d2da3c4697a5d7a6d2bbb48a.mp3",
+      "exists": true,
+      "sha256": "2e77e0d76f427c601794de8169e51abefdf1c972754de1802a9226242453480f"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/0e0036729bc56fe61a7b026c.mp3",
+      "exists": true,
+      "sha256": "692b16a086d0bf3941ada941acf14bb6107bbb0158de4b8c9e2f7fe93142ca98"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/1c8c737f5545fa37db2a1de2.mp3",
+      "exists": true,
+      "sha256": "514daf06442241ee589ab7ef2f88b03b70216dd5e0a91ab9e1c4bf6a19f23a25"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/d76a177842ce319ff11d422d.mp3",
+      "exists": true,
+      "sha256": "ecabc80e6b11900ac44a776f03fe18af3d27ef983c5ade852ee300a0fdb8c58f"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/f2a75d83ea7b341300762187.mp3",
+      "exists": true,
+      "sha256": "c4e2a2fe4cf119e2402ec3bd1d0b82a7d48eb1447e17bf0f1cf2a3bfda22b8ba"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/14fe0293a7baee9d8b87643d.mp3",
+      "exists": true,
+      "sha256": "c4c78d0c09e8056ec71fe950a0921ac3eb0c737d93a18c523b1ecf94fdbd070e"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/5e8bbd59cadbd0a32d1b4654.mp3",
+      "exists": true,
+      "sha256": "e6aab382977aa9b035252c5b68b481caaccdabbe55d35b7873feac4a3f9d206c"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/5e0a681bb0c474670869d827.mp3",
+      "exists": true,
+      "sha256": "afa17780f70800ca9c1e7ee0a12f3c59587861e252fc9122a34e4564d4935e7c"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/10815f8eea60763997d69419.mp3",
+      "exists": true,
+      "sha256": "57fcb026ac744c13079232a0b375e2583c9e72608c26a9f8505637f9ced82324"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/f4710734a7c66d3fe7d97ad5.mp3",
+      "exists": true,
+      "sha256": "89b64783dff8f02f0d05e80682ffd3eb82b372154bfefd39789acf95dfd78f90"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/c2a12d8e0f704c3cb8293268.mp3",
+      "exists": true,
+      "sha256": "4f5dbe43082c9a7b18c8ff1c9df2f41b0168ee4307f2f6f53387cc2f6fc37d0e"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/b2b3ec7effb387b5cff3f15c.mp3",
+      "exists": true,
+      "sha256": "f5e6bc372bd9db6e97703a69297ce999097e53ad5f8bd2a4beab264f35ac5260"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/e807c443c647ba9004d25f7c.mp3",
+      "exists": true,
+      "sha256": "b45e468b975e9c10802e0b17e2357cf71b3c839e2f0b4e0063a1d6422467f050"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/63e0c8db18f54d32b9fb6d56.mp3",
+      "exists": true,
+      "sha256": "ad25e67e3ef80890ae36aa1d11dc98cf1fee1319ee55d56ee954d06f1f072a21"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/8b020bb1288b65ec643c0f13.mp3",
+      "exists": true,
+      "sha256": "964e46d2d2ba924476b50aad9e5f26fafddc1926c6bbb0a3c2de9cdd73a52970"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/bfdd22c3478353ed1dd95929.mp3",
+      "exists": true,
+      "sha256": "792d2486d653a2a05a13f2ae5cba2e7e5da0c3e4689373245237b90ee31f85f4"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/1bc9e12d5dced1e8e90dcb9e.mp3",
+      "exists": true,
+      "sha256": "910a0d73b51b1794f0032446dc1b39e4e05ce78e2f1fd12b4d6e6341203907bb"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/a115f361521d990c469d492c.mp3",
+      "exists": true,
+      "sha256": "14793b4416b9251ce76c815a1f97d3632fe3a1927c71cd9e638aa4f692228506"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/3f69b043d72112fd802ba0cb.mp3",
+      "exists": true,
+      "sha256": "de3134d50ae28a5f9064cdfc745bed051771379d6966a62ef7352e3ffb464a8e"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/129c8da2aa08c1acae31d237.mp3",
+      "exists": true,
+      "sha256": "80d025437b39178a9c2a880b138b210593bb3b1915bbc2e51e560c0e3dcbff0c"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/3f180f2faf9adf7508ae6996.mp3",
+      "exists": true,
+      "sha256": "f853acbf23f6c6cf29f7ab848865a225233197161dd0a0b66c27bcd591ce0774"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/7f47a93956b5bec80610c391.mp3",
+      "exists": true,
+      "sha256": "ce0d8aa66ebe0aab721473c738893929a7edc7ac9ddff497bbfcd4c035465cc8"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/84dc9faaafb72892b8407ce2.mp3",
+      "exists": true,
+      "sha256": "5a86924928b0a3da3c554cc599948a046af1e2793e90ae51be610d8a08c3f9c7"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/6fd20b838b7b1158742bedbf.mp3",
+      "exists": true,
+      "sha256": "0ba80230778dc89f0cd343e7ee2d1eb0f779ffcb7c35bc37abf6bc711862fca4"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/16f35c969d228eb3f57e9163.mp3",
+      "exists": true,
+      "sha256": "95e8927a5b41a90d5bf45453348bab11949d4c0a1ef07e33745926e70c982673"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/fbd0aa412c83ea66f2660f48.mp3",
+      "exists": true,
+      "sha256": "fcf13face4628d7a7478e24ad315823e133dfec97168f4bea294695e4f90702f"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/a8bbce36a8b89c5d5bfd8591.mp3",
+      "exists": true,
+      "sha256": "4668926da545b135a8ae53330831d0493e728e54a31ee2717344f038ca8f41d5"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/9100970b26e1b199caf37c9b.mp3",
+      "exists": true,
+      "sha256": "966bb8e98038ee56326edf1fefd79202c240936bb5128eafcab84feaf2db95f5"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/c29af16caecd667713dd0662.mp3",
+      "exists": true,
+      "sha256": "3eb0b3caeb56da5c07bfd7ac8d8bc502e98c77e7ea82e6b464353e6d2ebd4e88"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/f29df9abbe59c16686dfcc72.mp3",
+      "exists": true,
+      "sha256": "2c2cf889af5d22e7a9c8318d288eff486f93c4ffa4cfe2f7045a05ece7435797"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/dba59672bb97046dee733fd1.mp3",
+      "exists": true,
+      "sha256": "add18ea80e2ecb192ed0aece6165dc225c57db9789c9725a8ae126249905e8e9"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/3bdd2fcbfab54c81d5ce3019.mp3",
+      "exists": true,
+      "sha256": "624cf821bddb793a85a0cf17cd070366a7f432ec5e3c88f08768f526d02fa5eb"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/decb7b8a4b6c7e22c67a0a4f.mp3",
+      "exists": true,
+      "sha256": "0e4af382d7486742c0490e55e2994b93f252ccfc0c07b99b7f7b405396a47764"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/c4c9f0bf232b1259dbaca82d.mp3",
+      "exists": true,
+      "sha256": "638832d0c92ef3bb93a29f33d77997ade88cd43e5b568b35c587f302211f6a18"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/357e0d168d5fdf30c18eccad.mp3",
+      "exists": true,
+      "sha256": "e375e81638ff32943ca29e4d7c73badf1f93e784f2bdd4ba7845d08945adf77a"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/099b342e4cb52c3144b7e01c.mp3",
+      "exists": true,
+      "sha256": "74f2482fe74346eb7aec76167fbcafa5af7179a7c976a4d1fa0adc56cc54cf36"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/1abcad2ff98ce43a902b27a3.mp3",
+      "exists": true,
+      "sha256": "9558f22df601484b21471f468f14eaab90cf40b5e3c6f2fb8e7b02cb9606e1bf"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/1f49cafc87a24d61dabedc99.mp3",
+      "exists": true,
+      "sha256": "6fa685c18bce24317810829b88c66bd0547f3ac45d306d43bd8f833f858837e4"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/89c289dbdecb32863c41d08a.mp3",
+      "exists": true,
+      "sha256": "63ac4a3f900e459e3c2ebba664cd359ee0b65abc91e6f9ce33386424d797fe26"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/8cfb1f077e03679d255b3da3.mp3",
+      "exists": true,
+      "sha256": "41ec83db360314393894b4f2e96224ed36061652866713d389db624ed8730218"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/b31c19a73c0b4a0b0b0843ff.mp3",
+      "exists": true,
+      "sha256": "31fdc1621b3f5289b433871aa90c6d1a6ef3003662428b8d074cf48f2e39f407"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/e998d48dd35e429124dc55bb.mp3",
+      "exists": true,
+      "sha256": "ea4902031380c955b92889811c17223ca7444df8fc20925d8558840e0f061c91"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/a55c11a7b36b71caa4a9d396.mp3",
+      "exists": true,
+      "sha256": "eda36dfce49a8c1e167125ed4f5e84b9323abfe55d9b218ca36befd342459f4c"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/3c79d54c414de1317e22092b.mp3",
+      "exists": true,
+      "sha256": "43e5eacec0b0f2df7384c955a0a717c4c5020b6339716a3ee90d2aa94b93d5cc"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/a16c7d833244361451709a68.mp3",
+      "exists": true,
+      "sha256": "28c85e577d30b54a637b15fbacedfc86924c954701f062782ee309e02e353ee1"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/e0f76755d5fed916c0ff6b23.mp3",
+      "exists": true,
+      "sha256": "380c91f6694b184595eaef1c0b67e27c511dd8bc8c89ca5392eaeb069cb03c97"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/a9d8a08dcfe4f0c51a36cd3b.mp3",
+      "exists": true,
+      "sha256": "ad6c249916cbb3b09941c8981b136ac32c3f5d81b4b3a391cba2e0c0e58c9e6e"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/11ed83c3d2b5f9f406cdd074.mp3",
+      "exists": true,
+      "sha256": "e81d2c053dec4a7bcc4afc0ee56cc6b6319284934ee174fa6245bc31981a0f08"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/d98b2f05840eaf1ea4fab714.mp3",
+      "exists": true,
+      "sha256": "3308dc0d443b009af32c264a307c69d242ffcdf0bd5231fdd79f0a00f66ada42"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/89ee88c76dc44a8616573d12.mp3",
+      "exists": true,
+      "sha256": "cfe009911c4b0eeb701b97d85fdb2925683cc7cb1813f542f6e93d65b43fdffe"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/4420479956c731699eae279a.mp3",
+      "exists": true,
+      "sha256": "0cc10209821cee7035be4e73d13aa4e141a1d03fbca799ee5e5a23f69968c844"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/ec04380f4baa4814d5c372d0.mp3",
+      "exists": true,
+      "sha256": "67c2f1051bfc061b66cf6e672d4bb3ff94117dbeeb988d341c36ba74ff7d2714"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/8876380f195a260bb6eacecb.mp3",
+      "exists": true,
+      "sha256": "da688f3a6103832527a01539f3304d9f7f9f43609576938d10529be1313979d6"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/df78630c6fb73e66a823bb04.mp3",
+      "exists": true,
+      "sha256": "84f50351a9731010539c745edbddb0b18cbab08109c242e6c3056071feb8f886"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/c886abd8151db50a5f5001ca.mp3",
+      "exists": true,
+      "sha256": "a4c19312408ed7236915dd31cb4d1991c39b4416965a1ce7b0a10762e5826d1a"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/20fc5dbf1eb21390556f0c17.mp3",
+      "exists": true,
+      "sha256": "51a4a603424dfeb8dbc247d3eed76ab972f959b08aa72bb9f4fe97bffb80fd47"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/1f6d9defe133f8bdaae45a68.mp3",
+      "exists": true,
+      "sha256": "9e220633df3b71a5bb86a49d858a20452c600a4ca8a1b29d403d82b8bc9106d7"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/f4a2ddd9dcc6b6119a6057a9.mp3",
+      "exists": true,
+      "sha256": "b8b9e27855d3c512f323156a54235611163e62fd98e0ae59ca8fc82bc1d00d34"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/6ad5c757ef3b616f778a145b.mp3",
+      "exists": true,
+      "sha256": "eba7aa5c328e34605e8176a47e29411543d9d0b9f44097b861db463e3e054504"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/17a25f2e319a9558f666defd.mp3",
+      "exists": true,
+      "sha256": "53d681abfe7740183ebce0af384226f7cbe4ba016b9836319ef0f548579f0539"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/646cfb3eddda6224bf705fcf.mp3",
+      "exists": true,
+      "sha256": "7bb9aab38e0903c7dc12b9ee8d27fd26bdd490b30eeb41770215714d95bdac31"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/5dbd755fee4cd19b219e0390.mp3",
+      "exists": true,
+      "sha256": "fe7edc169f094f533ef456fc9372da5ab299978d64e6dbcec88e1e30bf4f3e51"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/165d5f6e2cb1d78bbb45da49.mp3",
+      "exists": true,
+      "sha256": "d324bb8983b0da51c2b5264040d5d0ab98245aa94962dea0b6ffa17a8e996e73"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/317c95677fa2cf2c34590527.mp3",
+      "exists": true,
+      "sha256": "8070bff09be24afe74f0361874b0b680e4e9306e087a5036100b75cf83a9c0a0"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/fc7ab6851ba4e66b26ab5bd8.mp3",
+      "exists": true,
+      "sha256": "99a91e5fff76c76c246bd09f59e38cdae8a63e138e07ec4b6bf6f3a453d32e3d"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/f9b2c814141630955992d588.mp3",
+      "exists": true,
+      "sha256": "515cafcaf7cfd19c02a246f6443c4f7aa5a7949d394f69ba592db3ba4b8fac1d"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/db625e9693dba2e4c34fbb1a.mp3",
+      "exists": true,
+      "sha256": "b193043a0c5f87979d47c1f5b98199c08939b5a4a4bb5c9acaca2c8c7c9e8f16"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/05aa7d00f44158bd67e1c262.mp3",
+      "exists": true,
+      "sha256": "750d38fbd1424da74404641577d5d8c946612edef30094262359eb71a50bfc37"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/dfd6b39da4cb0acaa0ffe34e.mp3",
+      "exists": true,
+      "sha256": "497116ae2925eb98ae5b6edbc04e7f05a78beb4867b1a1592b1425cc56a6b516"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/1456b371b8d169f92d91566f.mp3",
+      "exists": true,
+      "sha256": "067518c0bf8fdbcd52f2eaf8c20ec4a56ceb97c52ff4c481b3a9d513022f9e66"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/db9672d81884d36e4e24dd41.mp3",
+      "exists": true,
+      "sha256": "ccfe613441f650fac24205d3d7b55c43ca8553a4ed090684cb761ae331ab211c"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/68bf3873f061902f0ac11881.mp3",
+      "exists": true,
+      "sha256": "ff4b88bcfc36add59baaf466d3837e520292078e1f9dcc27c01d46d06641a1b0"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/7d0e7cd642120b41cb7a5f65.mp3",
+      "exists": true,
+      "sha256": "2c443b7d517b7ad4267b49362172b110857a848df1da01dc9d49ccdea1c64e6e"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/df37efc852000a27074ea576.mp3",
+      "exists": true,
+      "sha256": "ef755320f4bb1410faa03889d73cd9a98ebcfb93fabb5ea38a7c3eea57748b64"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/cdf5e6eeddd062270ff6eace.mp3",
+      "exists": true,
+      "sha256": "23e542b8d5b72f367dd4326b98acbdf1dd2793c3f1c8edca49118d81e776b70f"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/ddf621a9aae0e9db98987bfd.mp3",
+      "exists": true,
+      "sha256": "86ffa2dd2bfd236c967df455e8190177fb9d9b031604181f585baedc5e8bc75b"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/78e60a8e88557293fa9c8539.mp3",
+      "exists": true,
+      "sha256": "2ffbb50e2ceef2c5e02f1f8c9437a8db88a317711b72b51df3a0160b853bf9a4"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/6c7b309ffec529ac16352ef7.mp3",
+      "exists": true,
+      "sha256": "313fa300ac8ca3d2d0051fc548715f7d8057bf253d3b485f3705149ab6552176"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/247194cf42ed26f3c2fa9a93.mp3",
+      "exists": true,
+      "sha256": "fd5de72d6f2ab1269cc7b129a3b763d751b452a6d8e6b0f36c9020250c22aa10"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/323ae007ad0001a80bee4252.mp3",
+      "exists": true,
+      "sha256": "28be1055341669e68b0aeb9577613ea21e5b74acdac38ec33f6d07e1866deaaa"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/5b1d480a0e5a7f7f50f7dc66.mp3",
+      "exists": true,
+      "sha256": "59ed3b2ea47766d8a0c5d8dbe6eee51202a17e06c1115ae31dbb895acab7a552"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/175ecc8c3f268c04d1884191.mp3",
+      "exists": true,
+      "sha256": "88193dd95c0537bae88541bb0b4c58887d7dd442c3b4833dbff92f9dfb39ff73"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/08ce66163a9e4db11ee316a7.mp3",
+      "exists": true,
+      "sha256": "f67fb80da658e066d4ef0b16501874a39e522e4d10265ee315a9111fc56710e1"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/44b062344a25bc2b87e54753.mp3",
+      "exists": true,
+      "sha256": "04559f96a97e6862b327271d4ada0597c8cd0472a2b5fd513440af2c611461c9"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/9dadd3ce4f9daac6bdfd6de1.mp3",
+      "exists": true,
+      "sha256": "cd00f58e11112763f3b639c2f583c01100bc9eb0127d6977b361a7d2b44d16b5"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/e3a31e2b211b9164d47b2f68.mp3",
+      "exists": true,
+      "sha256": "c48b29fe67ba8754f757bfd2f881f3c37dcb0b20deabfa8803a5c6009c8f4572"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/a03ff22459f3e98206cf1864.mp3",
+      "exists": true,
+      "sha256": "4bbd7436efbc3f7acd2235aba2d1b9f8add33448b2f86b6cbc3df72f0c8da2ef"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/8620aaa79cc764de32d6de12.mp3",
+      "exists": true,
+      "sha256": "b73637e7cd006bb423fc1e373200f4d11b933c131da99d45020c04efb8bd6996"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/1398c1beafd611f1b2e5f911.mp3",
+      "exists": true,
+      "sha256": "c65aba2e47888b879f252b1018096591516a53c946a384e8217cc9d730a81279"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/e3783edc9486abf1bee8760a.mp3",
+      "exists": true,
+      "sha256": "213dc04b43a51d23613a30d86e592bde5967f6775a8dcb82773ca5548e80ace2"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/1e39a7408e456226b02475d6.mp3",
+      "exists": true,
+      "sha256": "c57cfd0bbd140566951d7d558a38938b85ce41cac53975e430b96aeaba8297e8"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/6feeb4c6d503d0d3a80f2cee.mp3",
+      "exists": true,
+      "sha256": "b4d67cad2fc4a0f6597691cc8b6811fbd2469cbd74fd404797608502c89ec2b8"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/72ebb2b0eaf46cd2c96f1479.mp3",
+      "exists": true,
+      "sha256": "fc21be83b96ef8da727a41e8115699ce14cab5aef10cb0bd940e0655b0b99155"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/f7af080f49bfa8f020be0588.mp3",
+      "exists": true,
+      "sha256": "83c22b18c4ae42d4672e2b0a1b1733f7fdf56a2c73ac5d1dd2ae5139ccef2846"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/2b0d4242896d15a5babafce1.mp3",
+      "exists": true,
+      "sha256": "450952312093b04dba05a12e0da8fa427b698f143cc23102529776197ca88fa8"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/5bdc99594a7b14fd33ccd48a.mp3",
+      "exists": true,
+      "sha256": "ac907d7267c27e552ef56f32d839ec5f5699559337e4780d8e93813563135805"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/0435bba17ba24e72683a36eb.mp3",
+      "exists": true,
+      "sha256": "8ff5b101883be6deea8177d47cfad075a233a75e110a3e8518ad111dbd410457"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/276c39273795cfeef9c8471a.mp3",
+      "exists": true,
+      "sha256": "b1b0bd147cd83352ea01f8c135e6dd4bc6d76d3f1835be495d1d16e88ca123ac"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/93c7bacf859ec764a57c097a.mp3",
+      "exists": true,
+      "sha256": "572ce66ee0be587b626c60c9edcf79219be371da6b031e6b2d71f8461865ab76"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/73ce3bff47c5dce5fbe598b6.mp3",
+      "exists": true,
+      "sha256": "7e2551ce24ff901c5ae91ceac0261204a10b40834376192d4a161195b2499e88"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/bf07cba014287911f86356cf.mp3",
+      "exists": true,
+      "sha256": "1592922113e94447d396602ee6e0cb19bedba579b766e51cca6f049be7935636"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/c4d73475d7829cd57ee5506c.mp3",
+      "exists": true,
+      "sha256": "f0f388555868db282b01731c51b3c9bd5610fd47bbd4efd12eacd4dfb4271be6"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/c28ee48770efe968c19065c2.mp3",
+      "exists": true,
+      "sha256": "989916d7472cde2a616072c3acc76acbd27d97761465a9b4f1988a9e96353b4f"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/ef981bfab9e9493729d09504.mp3",
+      "exists": true,
+      "sha256": "e07f642fcb1589029d40125e8f4872643c27a7ff7f914827e3697f4fb38f68cd"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/ac72a4c837f42ae7cb39b837.mp3",
+      "exists": true,
+      "sha256": "ae8dd410f4626463fbc858f92d52cd7c171eab154346d15b0493500afb3df085"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/47b985b286d003e3a4f015e0.mp3",
+      "exists": true,
+      "sha256": "1a9b45cea535465e9b22d30da1f78e677fe717b41bb96835061d2c088fa40e5d"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/bfdbdc9ba7b7360b5a7004af.mp3",
+      "exists": true,
+      "sha256": "8dfba019527710714d23c980651db1525830b84d2bca3b38600444df32c35700"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/b09293c28dcbad88ababc1e4.mp3",
+      "exists": true,
+      "sha256": "24f4c0a6aa891d5d9ff0985177b8f4375f274706a579ef3e4683574550d53a9a"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/0bbc2d4ff35fb5d7d17ff881.mp3",
+      "exists": true,
+      "sha256": "0f55e8a061c68570110dac87bec71b59d92335157ec0598d59e630843f4effa3"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/ae1a3da9f203c1a142b41fa0.mp3",
+      "exists": true,
+      "sha256": "8d80c7e120e1485013a7aa94436f465fd762c84af6184f7daf1221b8ceddf12f"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/4f76b445ef965e998c5e7ebf.mp3",
+      "exists": true,
+      "sha256": "fc14cbb9a96bf2f495580e92401d5e72e66c69329105e6afbfbadea9cd47a9f6"
+    },
+    {
+      "path": "assets/audio/dialogue_ptpt/58271e9b1ea651da2bedd361.mp3",
+      "exists": true,
+      "sha256": "14b0eebd288317f6bd6581b440067b4718a6c9b989f05a24d01e6767d39878b6"
+    },
+    {
+      "path": "assets/audio/dialogue_en/0496acf72a5f3298034a8e8c.mp3",
+      "exists": true,
+      "sha256": "5ce9ba7eea2def88e78742e59b423fca86c73d3f69179dd8d3070cab19240588"
+    },
+    {
+      "path": "assets/audio/dialogue_en/4ffcbd1fb65e54c961069bf7.mp3",
+      "exists": true,
+      "sha256": "538f3d2e4df8f7b848e04ef76216c399e0a16d3d927687cf81598081db043f33"
+    },
+    {
+      "path": "assets/audio/dialogue_en/40ec65566a3ed358d32dcb32.mp3",
+      "exists": true,
+      "sha256": "7301e55425a0abac12eaef216f8019478eacade01c2f5b99b4e0f8b6450b9609"
+    },
+    {
+      "path": "assets/audio/dialogue_en/e60563ebdab99deffca741fa.mp3",
+      "exists": true,
+      "sha256": "d727749e87950fde329bb4433f514dabb49cb58853ba1e3d20787237b39866b0"
+    },
+    {
+      "path": "assets/audio/dialogue_en/6922d013d24b928ed3227cc4.mp3",
+      "exists": true,
+      "sha256": "71349e9f8233950067f6ba66a283799fffbe1e9e3c54d9b5c29babd9e91d33d6"
+    },
+    {
+      "path": "assets/audio/dialogue_en/ac621ed50133628fbf865d0f.mp3",
+      "exists": true,
+      "sha256": "575d2d2a5555a9e76cf6c430bb25751754cbd2ef4d7d7b225177067b3b2f98c7"
+    },
+    {
+      "path": "assets/audio/dialogue_en/e7d549e6c5643094ac4fb71c.mp3",
+      "exists": true,
+      "sha256": "6b5e640d9ecb5a2287caefa0ed33987bd3f4cd241154824d79605ef16430e068"
+    },
+    {
+      "path": "assets/audio/dialogue_en/551d9065bab41d5acbc53f9e.mp3",
+      "exists": true,
+      "sha256": "cf444899b5100697d888904d268318f3550ee565830568b357d8f91d5c37a7f0"
+    },
+    {
+      "path": "assets/audio/dialogue_en/6ed71761936dac2846f17667.mp3",
+      "exists": true,
+      "sha256": "6672f680c24609cee6840812e893b7d79530123613da453e83a0ad9be79c5b7f"
+    },
+    {
+      "path": "assets/audio/dialogue_en/19532e8ab5b7e86afbd0929f.mp3",
+      "exists": true,
+      "sha256": "a99055ba24a34e2da1d43e67e4b1c25926e731aa8e209dd13157f60e2621ecf8"
+    },
+    {
+      "path": "assets/audio/dialogue_en/261bb7037cd1dbc385ec531d.mp3",
+      "exists": true,
+      "sha256": "b8c0f4efa46af18083f55a1f18a437279df7d9a9c2dc0857d967658d471bc484"
+    },
+    {
+      "path": "assets/audio/dialogue_en/1b6c5844e297a1241f4381a5.mp3",
+      "exists": true,
+      "sha256": "327c6ca5441e3bc3af8be8f16cc2a64873df8e4cf18a6faa78829a3a570c317d"
+    },
+    {
+      "path": "assets/audio/dialogue_en/cb06c31f05d20ad526df2cb7.mp3",
+      "exists": true,
+      "sha256": "fd8e4c848cd035dfb2da678543cb5161fe3eb1d02f160a5ca33c9bfeff257bd0"
+    },
+    {
+      "path": "assets/audio/dialogue_en/5fff1d37b38dfda74d7b43df.mp3",
+      "exists": true,
+      "sha256": "5e8273bb3f8a31e9df9c4c3b47490f8d60f66630bd29d1c745993568a43509ab"
+    },
+    {
+      "path": "assets/audio/dialogue_en/c0209c4f74c12bcd665ee010.mp3",
+      "exists": true,
+      "sha256": "7aa06c0152350bd2b180031113365c881f43527dde344bdbcb419e22c0d99de1"
+    },
+    {
+      "path": "assets/audio/dialogue_en/7c37f3b292c5bdae6c4ea30e.mp3",
+      "exists": true,
+      "sha256": "d25156ae873ba92d4ca6704524aa92764d95a54ce1f725e22f18255a5275a907"
+    },
+    {
+      "path": "assets/audio/dialogue_en/be3e137fcd7d16306463a38e.mp3",
+      "exists": true,
+      "sha256": "ed877b87f86e7869acbb39bef628a7a6f4af7977e69239e19c87f8565b9d1b45"
+    },
+    {
+      "path": "assets/portraits/mestre.png",
+      "exists": true,
+      "sha256": "6c3e42ba6dbcaef13423a0f9e8317c45f363d1ad5ea197c3c30d9f302cb8267c"
+    },
+    {
+      "path": "assets/audio/music/manifest.json",
+      "exists": true,
+      "sha256": "803ce829b7c1249b9224be8b1b4bba6de3d67385b93c1204a15789dccf4a8076"
+    },
+    {
+      "path": "assets/sprites/order-weapons-sheet.png",
+      "exists": true,
+      "sha256": "ff3410760acfc58165a7d42d3066d797933133ffe05e4c5bf5b8951e00d095ba"
+    },
+    {
+      "path": "assets/concepts/duarte-ines-legado-v1.png",
+      "exists": true,
+      "sha256": "f00b2e3a16be3d0b3d1155a0172c5c169dce0781f6db1ed3edd6c9670c6a2661"
+    },
+    {
+      "path": "scripts/bruma_illustrated.gd",
+      "exists": true,
+      "sha256": "1b44ae37fcd7adc5f2d9317e0a06f491d34eda54cdb19a8336df31b1618fa4a0"
+    },
+    {
+      "path": "scripts/bruma_ground_shadows.gd",
+      "exists": true,
+      "sha256": "c7347852790508857facc1501d14a0d45700a5402ba388a80d7c576029027ee8"
+    },
+    {
+      "path": "scripts/bruma_terrain.gd",
+      "exists": true,
+      "sha256": "94bc669d574cfb06fd25345faaf987e86102b1ebae66ace50e4551162ffa5f3c"
+    },
+    {
+      "path": "assets/scenery/bruma-ladder-refined.png",
+      "exists": true,
+      "sha256": "6f823d0b72ea09b886556b99fc4d80dc236b72a9d11906dadf96bc6825269109"
+    },
+    {
+      "path": "assets/scenery/bruma-house-limestone-human-v1.png",
+      "exists": true,
+      "sha256": "0a349ab7a7a6fd03ca6d617c1722cb9a85b44a83f80ea585476128f8e982379d"
+    },
+    {
+      "path": "assets/scenery/bruma-house-teal-human-v1.png",
+      "exists": true,
+      "sha256": "112670bd2b08e7baf2949c1d3bd3c5e36975ab4b9c92990bcc62473e91075ba6"
+    },
+    {
+      "path": "scripts/madeira_scenery.gd",
+      "exists": true,
+      "sha256": "a3abcbea194db4556e854d51967065ac208b2ccc64e58ea64902421393da727b"
+    },
+    {
+      "path": "assets/scenery/regional-bench-illustrated-v1.png",
+      "exists": true,
+      "sha256": "0be927bf20af37b8c84c648defcd1d771a1439d130174145cf5e8d9877beb745"
+    },
+    {
+      "path": "assets/scenery/bruma-grass-tuft-v1.png",
+      "exists": true,
+      "sha256": "c289bdb29ce5c1d367608fb4bee79409798a34ec7527df0e456922a07672821d"
+    },
+    {
+      "path": "assets/scenery/bruma-pier-directed-v1.png",
+      "exists": true,
+      "sha256": "6bd2bec88c2ae6415063dfc8c936e24561a05e5f52ce7955e0555c628fb966ef"
+    },
+    {
+      "path": "assets/scenery/bruma-broken-bridge-directed-v1.png",
+      "exists": true,
+      "sha256": "43394eb6afb1102e8f6f819aab4daa159c0e31f3dd9d635c451e6ff6b475dbaa"
+    },
+    {
+      "path": "assets/scenery/bruma-order-entrance-illustrated-v1.png",
+      "exists": true,
+      "sha256": "14df99be774ece1cde734da63a610ea52f67438b46b8cbb4e13afa02a882d48b"
+    },
+    {
+      "path": "scripts/regional_landscape.gd",
+      "exists": true,
+      "sha256": "d9fdabe57e887222090f32458e56e7830314213203b65b890b15f21fd2bce7e4"
+    },
+    {
+      "path": "scripts/cove_scenery.gd",
+      "exists": true,
+      "sha256": "c036d5e525837eb84242b151db49cf23f1ab02c36ed53ab85f63ccc0a6d8aca4"
+    },
+    {
+      "path": "scripts/roman_scenery.gd",
+      "exists": true,
+      "sha256": "77d4876c34c728687d912ff2be2639b1807c65f28a81eba39b02280471bb06a4"
+    },
+    {
+      "path": "scripts/porto_scenery.gd",
+      "exists": true,
+      "sha256": "fc085eaa0621be714aa1b1ad300fb5645dc21146042383f3056524823f1bf472"
+    },
+    {
+      "path": "scripts/lisbon_scenery.gd",
+      "exists": true,
+      "sha256": "c2c34f1b2b37c2939e1c7655d7d01d0c2308997e59e3f760b65b7b8d67786ccc"
+    },
+    {
+      "path": "scripts/vigia_scenery.gd",
+      "exists": true,
+      "sha256": "10377efddc6162efe7988bc8ba8b7c9d949e54f69fa615699f4b622237baaeac"
+    },
+    {
+      "path": "scripts/ceuta_scenery.gd",
+      "exists": true,
+      "sha256": "4a1ed2289f748fb11adddac0c8f3a9c39754f14a0b95615200bb49a9226269c1"
+    },
+    {
+      "path": "scripts/coast_scenery.gd",
+      "exists": true,
+      "sha256": "60eec3af6c070cc2278ce97264f4d2495c14c1c5ae3b9986ba7f76df23c8d848"
+    },
+    {
+      "path": "scripts/storm_scenery.gd",
+      "exists": true,
+      "sha256": "d3421aaddba4f0eb82d16169a3ea574d8528687e3b3d2cdca1b42b92b198e6bf"
+    },
+    {
+      "path": "scripts/final_scenery.gd",
+      "exists": true,
+      "sha256": "79b114f623981baf4699a6116e3f07db734a726f007d8bfe5978a43efbc5f956"
+    },
+    {
+      "path": "scripts/order_scenery.gd",
+      "exists": true,
+      "sha256": "cb56572c297fa8999c8d68bff84df528ef8ed41eaecbc6d4dc1765fbe49cd060"
+    },
+    {
+      "path": "assets/scenery/bruma-paving.png",
+      "exists": true,
+      "sha256": "66bb75dd65e0786a54923fade86d67bf194e601ea92ee86f99a89b100fce7290"
+    },
+    {
+      "path": "assets/scenery/regional-deck.png",
+      "exists": true,
+      "sha256": "a5b49ab26c1b38e157c5993b04f247f4426450a1a52360bfcc7105e2584553d9"
+    },
+    {
+      "path": "assets/scenery/regional-water-illustrated-v1.png",
+      "exists": true,
+      "sha256": "587cba06beeca1ec91ef9c21514e315cbbb4443d7746a682a14085146dd1c988"
+    },
+    {
+      "path": "assets/scenery/bruma-training-rack-illustrated-v1.png",
+      "exists": true,
+      "sha256": "edf4e8d9353cdd00ec2f7616ef84d08d84c896bc8da843f1ea4e4847eaca258a"
+    },
+    {
+      "path": "assets/scenery/bruma-net-rack-illustrated-v1.png",
+      "exists": true,
+      "sha256": "ff1ce6d350fa9db0bdffb3ceed59d5fd4298b20a7a5c86510d904b55bd93f836"
+    },
+    {
+      "path": "assets/scenery/bruma-market-goods-illustrated-v1.png",
+      "exists": true,
+      "sha256": "b4a019c5d2e7f1089aaa4e70a2611fc457d52cc0133e8bb4292cb2de091a6b6c"
+    },
+    {
+      "path": "assets/scenery/bruma-waystone.svg",
+      "exists": true,
+      "sha256": "7bc28a6d06c1a4e26a0863370c7e7ba0b0574b9359fdcba6cd63ed06d1957a70"
+    },
+    {
+      "path": "assets/scenery/regional-earth-natural-v1.png",
+      "exists": true,
+      "sha256": "588cd488637176f389c837d07ef503330a5e5fbb800466075f1308c46b8fe3c4"
+    },
+    {
+      "path": "assets/scenery/bruma-grass-refined.png",
+      "exists": true,
+      "sha256": "fba46751a42b977a95c062386a7700484f0dce76c594fe9198b4e8cd07e83c82"
+    },
+    {
+      "path": "assets/scenery/bruma-paving-tile-v1.png",
+      "exists": true,
+      "sha256": "d0b1a56b26150ccd5e4b093ab7d22ae31e52c4ca49040ae8b6c4f9a1f207466a"
+    },
+    {
+      "path": "assets/scenery/bruma-bank-masonry-v1.png",
+      "exists": true,
+      "sha256": "c3c88d890cbab68eeae5922e798f18161fba0c4d44a2b7e02ae82f28e7c61c42"
+    },
+    {
+      "path": "assets/scenery/madeira-pier-pilot-v1.png",
+      "exists": true,
+      "sha256": "169e1909e9709bd848f0f6f18973b170f4eef1e1efd9a6e958fa2e7f2601774c"
+    },
+    {
+      "path": "assets/scenery/madeira-chart-table-refined-v1.png",
+      "exists": true,
+      "sha256": "c2b4253e9ea40c9ca5eec827bbb6d0f53e7f7cc6ec8a69a49de08f9c559f67fc"
+    },
+    {
+      "path": "assets/scenery/regional-chapel.png",
+      "exists": true,
+      "sha256": "a48afa4c30c0123056dea83c95ef001c49ff448fb98ab4f4202197e00011a449"
+    },
+    {
+      "path": "assets/scenery/roman-well-refined-v1.png",
+      "exists": true,
+      "sha256": "3fe883c51f5ca418c5365abc1c6c2682d7954e73fbea7b8f019553db04cfaa3a"
+    },
+    {
+      "path": "assets/sprites/roman-child-idle-v1.png",
+      "exists": true,
+      "sha256": "b68150d6e1170acacc2f829bf247d09858423e05b304420988bed33e2e5f75e5"
+    },
+    {
+      "path": "assets/sprites/vigia-watchman-idle-v1.png",
+      "exists": true,
+      "sha256": "5c645d6aca357356fe649a394ba9e6325df8b1ad1ba803f36ad43bd51b0bb23c"
+    },
+    {
+      "path": "assets/scenery/final-ledger-table-refined-v1.png",
+      "exists": true,
+      "sha256": "c9c8dbfc35af9874d79187f630da6eb411e09516c9ad3f0ddf4da93892573284"
+    },
+    {
+      "path": "assets/scenery/final-cannon-refined-v1.png",
+      "exists": true,
+      "sha256": "40ecc84ea466bc20aff715af2d337983e9425abfcc51defb76587740d0b32df0"
+    },
+    {
+      "path": "assets/sprites/order-girl-idle-v1.png",
+      "exists": true,
+      "sha256": "8566f804b09565129d7f49352d2139bfa99ade00338e9811cce73aab0a95803e"
+    }
+  ],
+  "items": [
+    {
+      "source_id": "order_halberd",
+      "destination_id": null,
+      "disposition": "requires_effect_and_story_review",
+      "definition": {
+        "name": "Alabarda da Primeira Maré",
+        "slot": "weapon",
+        "price": 620,
+        "stats": {
+          "attack": 28,
+          "break_power": 24,
+          "speed": -2
+        },
+        "role": "Área",
+        "icon": "gear_douro_halberd",
+        "description": "+28 ataque · +24 quebra · −2 iniciativa. Atingir dois inimigos recupera 2 alento, uma vez por turno.",
+        "combat_effect": {
+          "event": "multi_hit",
+          "recovery": {
+            "qi": 2
+          },
+          "cooldown": 0
+        }
+      }
+    },
+    {
+      "source_id": "order_sword",
+      "destination_id": null,
+      "disposition": "requires_effect_and_story_review",
+      "definition": {
+        "name": "Espada da Porta Aberta",
+        "slot": "weapon",
+        "price": 620,
+        "stats": {
+          "attack": 34,
+          "speed": 3
+        },
+        "role": "Flancos",
+        "icon": "gear_estoque_regio",
+        "description": "+34 ataque · +3 iniciativa. Um golpe de flanco recupera 1 alento e dá 1 movimento, uma vez por turno.",
+        "combat_effect": {
+          "event": "flank",
+          "recovery": {
+            "qi": 1
+          },
+          "movement": 1,
+          "cooldown": 0
+        }
+      }
+    },
+    {
+      "source_id": "order_mantle",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Manto da Primeira Maré",
+        "slot": "outfit",
+        "price": 540,
+        "stats": {
+          "hp": 90,
+          "defense": 11,
+          "posture": 20,
+          "speed": -2
+        },
+        "role": "Resistência",
+        "icon": "gear_laurel_doublet",
+        "description": "+90 vida · +11 defesa · +20 postura · −2 iniciativa. Não controla o visual do legado."
+      }
+    },
+    {
+      "source_id": "order_sash",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Traje da Porta Aberta",
+        "slot": "outfit",
+        "price": 540,
+        "stats": {
+          "hp": 55,
+          "defense": 7,
+          "qi": 5,
+          "speed": 2
+        },
+        "role": "Mobilidade",
+        "icon": "gear_school_doublet",
+        "description": "+55 vida · +7 defesa · +5 alento · +2 iniciativa. Não controla o visual do legado."
+      }
+    },
+    {
+      "source_id": "order_seal",
+      "destination_id": null,
+      "disposition": "requires_effect_and_story_review",
+      "definition": {
+        "name": "Selo dos Dois Caminhos",
+        "slot": "accessory",
+        "price": 400,
+        "stats": {
+          "posture": 16,
+          "qi": 3
+        },
+        "role": "Dupla",
+        "icon": "gear_medal",
+        "description": "+16 postura · +3 alento. Ao iniciar o turno junto do parceiro vivo (até 2 casas), recupera 6 vida.",
+        "combat_effect": {
+          "event": "turn_start",
+          "near_ally": true,
+          "recovery": {
+            "hp": 6
+          },
+          "cooldown": 0
+        }
+      }
+    },
+    {
+      "source_id": "order_compass",
+      "destination_id": null,
+      "disposition": "requires_effect_and_story_review",
+      "definition": {
+        "name": "Bússola da Primeira Maré",
+        "slot": "accessory",
+        "price": 400,
+        "stats": {
+          "speed": 2,
+          "break_power": 8
+        },
+        "role": "Ruptura",
+        "icon": "gear_astrolabio_cobre",
+        "description": "+2 iniciativa · +8 quebra. Quebrar postura recupera 1 alento, uma vez por turno.",
+        "combat_effect": {
+          "event": "break",
+          "recovery": {
+            "qi": 1
+          },
+          "cooldown": 0
+        }
+      }
+    },
+    {
+      "source_id": "cargo_halberd",
+      "destination_id": null,
+      "disposition": "requires_effect_and_story_review",
+      "definition": {
+        "name": "Alabarda das amarras",
+        "slot": "weapon",
+        "price": 350,
+        "stats": {
+          "attack": 19,
+          "break_power": 8,
+          "speed": -1
+        },
+        "icon": "gear_douro_halberd",
+        "role": "Reposicionamento",
+        "description": "+19 ataque · +8 quebra · -1 iniciativa. Puxar um inimigo concede 1 movimento e recupera 1 alento, uma vez por turno. Exige deslocamento real.",
+        "combat_effect": {
+          "event": "pull",
+          "movement": 1,
+          "recovery": {
+            "qi": 1
+          },
+          "cooldown": 0
+        }
+      }
+    },
+    {
+      "source_id": "cliff_token",
+      "destination_id": null,
+      "disposition": "requires_effect_and_story_review",
+      "definition": {
+        "name": "Fivela do vigia",
+        "slot": "accessory",
+        "price": 95,
+        "stats": {
+          "speed": 1,
+          "posture": -4
+        },
+        "icon": "gear_seal_flank",
+        "role": "Reposicionamento",
+        "description": "+1 iniciativa · −4 postura. Flanco perfeito: +1 movimento, uma vez por turno próprio.",
+        "combat_effect": {
+          "event": "flank_perfect",
+          "movement": 1,
+          "cooldown": 0
+        }
+      }
+    },
+    {
+      "source_id": "ledger_clasp",
+      "destination_id": null,
+      "disposition": "requires_effect_and_story_review",
+      "definition": {
+        "name": "Fecho dos livros salvos",
+        "slot": "accessory",
+        "price": 170,
+        "stats": {
+          "qi": 2,
+          "speed": -1
+        },
+        "icon": "gear_brass_clasp",
+        "role": "Recuperação",
+        "description": "+2 alento · −1 iniciativa. Respirar: +6 vida e +1 alento extra. Recarga: 1 turno próprio.",
+        "combat_effect": {
+          "event": "breathe",
+          "recovery": {
+            "hp": 6,
+            "qi": 1
+          },
+          "cooldown": 1
+        }
+      }
+    },
+    {
+      "source_id": "pilot_knot",
+      "destination_id": null,
+      "disposition": "requires_effect_and_story_review",
+      "definition": {
+        "name": "Nó dos barqueiros",
+        "slot": "accessory",
+        "price": 240,
+        "stats": {
+          "posture": 8,
+          "attack": -3
+        },
+        "icon": "gear_rope_bracelet",
+        "role": "Parceria",
+        "description": "+8 postura · −3 ataque. Consumir Abertura: +1 alento e +1 movimento. Recarga: 1 turno próprio.",
+        "combat_effect": {
+          "event": "opening_hit",
+          "recovery": {
+            "qi": 1
+          },
+          "movement": 1,
+          "cooldown": 1
+        }
+      }
+    },
+    {
+      "source_id": "storm_tether",
+      "destination_id": null,
+      "disposition": "requires_effect_and_story_review",
+      "definition": {
+        "name": "Amarra da travessia",
+        "slot": "accessory",
+        "price": 340,
+        "stats": {
+          "qi": 3,
+          "speed": -2
+        },
+        "icon": "gear_mafalda_knot",
+        "role": "Formação",
+        "description": "+3 alento · −2 iniciativa. Início do turno: +4 postura se o outro herói vivo estiver até 2 casas.",
+        "combat_effect": {
+          "event": "turn_start",
+          "near_ally": true,
+          "recovery": {
+            "posture": 4
+          },
+          "cooldown": 0
+        }
+      }
+    },
+    {
+      "source_id": "dock_knife",
+      "destination_id": "FERRO:dock_knife",
+      "disposition": "integrated_initial_balance",
+      "definition": {
+        "name": "Espada curta de cordoeiro",
+        "slot": "weapon",
+        "price": 65,
+        "description": "+2 iniciativa · +4 ataque.",
+        "stats": {
+          "speed": 2,
+          "attack": 4
+        },
+        "role": "Iniciativa"
+      }
+    },
+    {
+      "source_id": "oilskin",
+      "destination_id": "FERRO:oilskin",
+      "disposition": "integrated_initial_balance",
+      "definition": {
+        "name": "Capa de oleado",
+        "slot": "outfit",
+        "price": 70,
+        "description": "+26 vida · +6 postura · +1 defesa.",
+        "stats": {
+          "hp": 26,
+          "posture": 6,
+          "defense": 1
+        },
+        "role": "Resistência"
+      }
+    },
+    {
+      "source_id": "rope_bracelet",
+      "destination_id": "FERRO:rope_bracelet",
+      "disposition": "integrated_initial_balance",
+      "definition": {
+        "name": "Pulseira de cordame",
+        "slot": "accessory",
+        "price": 55,
+        "description": "+12 postura · -1 iniciativa.",
+        "stats": {
+          "posture": 12,
+          "speed": -1
+        },
+        "role": "Guarda"
+      }
+    },
+    {
+      "source_id": "practice_blade",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Alabarda de treino lastrada",
+        "slot": "weapon",
+        "price": 120,
+        "description": "+2 ataque · +10 quebra · +12 postura · -1 iniciativa.",
+        "stats": {
+          "attack": 2,
+          "break_power": 10,
+          "posture": 12,
+          "speed": -1
+        },
+        "role": "Controlo"
+      }
+    },
+    {
+      "source_id": "school_doublet",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Gibão de prática",
+        "slot": "outfit",
+        "price": 110,
+        "description": "+5 defesa · +16 postura · -2 iniciativa.",
+        "stats": {
+          "defense": 5,
+          "posture": 16,
+          "speed": -2
+        },
+        "role": "Guarda"
+      }
+    },
+    {
+      "source_id": "balanced_belt",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Cinto de contrapeso",
+        "slot": "accessory",
+        "price": 95,
+        "description": "+8 quebra · -1 alento.",
+        "stats": {
+          "break_power": 8,
+          "qi": -1
+        },
+        "role": "Quebra"
+      }
+    },
+    {
+      "source_id": "river_blade",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Espada da Ribeira",
+        "slot": "weapon",
+        "price": 155,
+        "description": "+14 ataque · -2 iniciativa · -3 quebra.",
+        "stats": {
+          "attack": 14,
+          "speed": -2,
+          "break_power": -3
+        },
+        "role": "Ofensiva"
+      }
+    },
+    {
+      "source_id": "travelling_doublet",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Gibão de jornada",
+        "slot": "outfit",
+        "price": 145,
+        "description": "+40 vida · +4 alento · -1 iniciativa.",
+        "stats": {
+          "hp": 40,
+          "qi": 4,
+          "speed": -1
+        },
+        "role": "Sustento"
+      }
+    },
+    {
+      "source_id": "brass_clasp",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Fecho de latão",
+        "slot": "accessory",
+        "price": 130,
+        "description": "+4 defesa · -4 postura.",
+        "stats": {
+          "defense": 4,
+          "posture": -4
+        },
+        "role": "Defesa"
+      }
+    },
+    {
+      "source_id": "heal",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Infusão de ervas",
+        "slot": "item",
+        "price": 18,
+        "description": "Recupera 30% da vida máxima do alvo (65 a 110). Alcance 2, linha livre; gasta a acção.",
+        "stats": {}
+      }
+    },
+    {
+      "source_id": "qi",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Tónico de alento",
+        "slot": "item",
+        "price": 22,
+        "description": "Recupera 30% do alento máximo do alvo (6 a 10). Alcance 2, linha livre; gasta a acção.",
+        "stats": {}
+      }
+    },
+    {
+      "source_id": "sword",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Espada do cais",
+        "slot": "weapon",
+        "price": 30,
+        "description": "Equilíbrio: dano sem sacrificar quebra ou iniciativa.",
+        "stats": {
+          "attack": 1
+        }
+      }
+    },
+    {
+      "source_id": "halberd",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Alabarda do cais",
+        "slot": "weapon",
+        "price": 30,
+        "description": "Haste de guarda: alcança duas casas e pressiona a postura.",
+        "stats": {
+          "break_power": 1
+        }
+      }
+    },
+    {
+      "source_id": "breaker",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Alabarda de lastro",
+        "slot": "weapon",
+        "price": 85,
+        "description": "+2 ataque · +12 quebra.",
+        "stats": {
+          "attack": 2,
+          "break_power": 12
+        }
+      }
+    },
+    {
+      "source_id": "rapier",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Estoque de bruma",
+        "slot": "weapon",
+        "price": 90,
+        "description": "+7 ataque · +2 iniciativa · -2 quebra.",
+        "stats": {
+          "attack": 7,
+          "speed": 2,
+          "break_power": -2
+        }
+      }
+    },
+    {
+      "source_id": "coat",
+      "destination_id": "FERRO:coat",
+      "disposition": "integrated_initial_balance",
+      "definition": {
+        "name": "Traje do cais",
+        "slot": "outfit",
+        "price": 25,
+        "description": "Equilíbrio: alguma defesa, sem penalizar a iniciativa.",
+        "stats": {
+          "defense": 1
+        }
+      }
+    },
+    {
+      "source_id": "mail",
+      "destination_id": "FERRO:mail",
+      "disposition": "integrated_initial_balance",
+      "definition": {
+        "name": "Gibão reforçado",
+        "slot": "outfit",
+        "price": 80,
+        "description": "+18 vida · +5 defesa · -1 iniciativa.",
+        "stats": {
+          "hp": 18,
+          "defense": 5,
+          "speed": -1
+        }
+      }
+    },
+    {
+      "source_id": "silk",
+      "destination_id": "FERRO:silk",
+      "disposition": "integrated_initial_balance",
+      "definition": {
+        "name": "Faixa de viagem",
+        "slot": "outfit",
+        "price": 75,
+        "description": "+4 alento · +2 iniciativa.",
+        "stats": {
+          "qi": 4,
+          "speed": 2
+        }
+      }
+    },
+    {
+      "source_id": "charm",
+      "destination_id": "FERRO:charm",
+      "disposition": "integrated_initial_balance",
+      "definition": {
+        "name": "Nó de marinheiro",
+        "slot": "accessory",
+        "price": 25,
+        "description": "Firmeza: mais postura para resistir à quebra da guarda.",
+        "stats": {
+          "posture": 4
+        }
+      }
+    },
+    {
+      "source_id": "shell",
+      "destination_id": "FERRO:shell",
+      "disposition": "integrated_initial_balance",
+      "definition": {
+        "name": "Concha do cabo",
+        "slot": "accessory",
+        "price": 60,
+        "description": "+4 alento.",
+        "stats": {
+          "qi": 4
+        }
+      }
+    },
+    {
+      "source_id": "medal",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Medalhão da armada",
+        "slot": "accessory",
+        "price": 70,
+        "description": "+24 vida.",
+        "stats": {
+          "hp": 24
+        }
+      }
+    },
+    {
+      "source_id": "boots",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Fita dos ventos",
+        "slot": "accessory",
+        "price": 100,
+        "description": "Mobilidade: mais uma casa, mas a guarda fica mais frágil.",
+        "stats": {
+          "movement": 1,
+          "posture": -6
+        }
+      }
+    },
+    {
+      "source_id": "crescent",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Espada crescente da maré",
+        "slot": "weapon",
+        "price": 105,
+        "description": "+8 ataque · -4 quebra · +3 iniciativa.",
+        "stats": {
+          "attack": 8,
+          "break_power": -4,
+          "speed": 3
+        },
+        "role": "Flancos"
+      }
+    },
+    {
+      "source_id": "ironwood",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Alabarda de azinho",
+        "slot": "weapon",
+        "price": 95,
+        "description": "+4 ataque · +10 quebra · +8 postura · -2 iniciativa.",
+        "stats": {
+          "attack": 4,
+          "break_power": 10,
+          "posture": 8,
+          "speed": -2
+        },
+        "role": "Quebra"
+      }
+    },
+    {
+      "source_id": "vest_mariner",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Colete de mareante",
+        "slot": "outfit",
+        "price": 90,
+        "description": "+32 vida · +4 defesa · -1 iniciativa.",
+        "stats": {
+          "hp": 32,
+          "defense": 4,
+          "speed": -1
+        },
+        "role": "Sobrevivência"
+      }
+    },
+    {
+      "source_id": "vest_silk",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Casaco de seda azul",
+        "slot": "outfit",
+        "price": 105,
+        "description": "Ritmo: iniciativa e movimento, mas menos defesa.",
+        "stats": {
+          "speed": 2,
+          "movement": 1,
+          "defense": -1
+        },
+        "role": "Iniciativa"
+      }
+    },
+    {
+      "source_id": "ring_tide",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Anel de maré",
+        "slot": "accessory",
+        "price": 85,
+        "description": "+6 alento · -2 postura.",
+        "stats": {
+          "qi": 6,
+          "posture": -2
+        },
+        "role": "Técnicas"
+      }
+    },
+    {
+      "source_id": "seal_flank",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Selo do flanco",
+        "slot": "accessory",
+        "price": 115,
+        "description": "+6 ataque · +2 iniciativa · -5 postura.",
+        "stats": {
+          "attack": 6,
+          "speed": 2,
+          "posture": -5
+        },
+        "role": "Execução"
+      }
+    },
+    {
+      "source_id": "lastro_sabre",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Alabarda do Lastro",
+        "slot": "weapon",
+        "price": 185,
+        "description": "+10 ataque · +14 quebra · -1 iniciativa.",
+        "stats": {
+          "attack": 10,
+          "break_power": 14,
+          "speed": -1
+        },
+        "role": "Pressão"
+      }
+    },
+    {
+      "source_id": "river_halberd",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Alabarda da Ribeira",
+        "slot": "weapon",
+        "price": 260,
+        "description": "+8 ataque · +16 quebra · +10 postura · +3 defesa · -2 iniciativa.",
+        "stats": {
+          "attack": 8,
+          "break_power": 16,
+          "posture": 10,
+          "defense": 3,
+          "speed": -2
+        },
+        "role": "Guarda"
+      }
+    },
+    {
+      "source_id": "gibao_lastro",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Gibão do Lastro",
+        "slot": "outfit",
+        "price": 175,
+        "description": "+40 vida · +6 defesa · +12 postura · -2 iniciativa.",
+        "stats": {
+          "hp": 40,
+          "defense": 6,
+          "posture": 12,
+          "speed": -2
+        },
+        "role": "Guarda"
+      }
+    },
+    {
+      "source_id": "astrolabio_cobre",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Astrolábio de cobre",
+        "slot": "accessory",
+        "price": 165,
+        "description": "+5 alento · +2 iniciativa · -3 postura.",
+        "stats": {
+          "qi": 5,
+          "speed": 2,
+          "posture": -3
+        },
+        "role": "Reserva"
+      }
+    },
+    {
+      "source_id": "estoque_regio",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Estoque régio",
+        "slot": "weapon",
+        "price": 285,
+        "description": "+18 ataque · +3 iniciativa · -3 quebra · -4 postura.",
+        "stats": {
+          "attack": 18,
+          "speed": 3,
+          "break_power": -3,
+          "posture": -4
+        },
+        "role": "Execução"
+      }
+    },
+    {
+      "source_id": "couraça_da_ribeira",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Couraça da Ribeira",
+        "slot": "outfit",
+        "price": 270,
+        "description": "+60 vida · +8 defesa · +16 postura · -2 iniciativa · -1 movimento.",
+        "stats": {
+          "hp": 60,
+          "defense": 8,
+          "posture": 16,
+          "speed": -2,
+          "movement": -1
+        },
+        "role": "Resistência"
+      }
+    },
+    {
+      "source_id": "selo_de_marfil",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Selo de marfim",
+        "slot": "accessory",
+        "price": 250,
+        "description": "+8 ataque · +5 alento · +20 vida · -5 postura.",
+        "stats": {
+          "attack": 8,
+          "qi": 5,
+          "hp": 20,
+          "posture": -5
+        },
+        "role": "Versátil"
+      }
+    },
+    {
+      "source_id": "douro_halberd",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Alabarda do bloqueio",
+        "slot": "weapon",
+        "price": 310,
+        "description": "+16 ataque · +18 quebra · -2 iniciativa.",
+        "stats": {
+          "attack": 16,
+          "break_power": 18,
+          "speed": -2
+        },
+        "role": "Pressão"
+      }
+    },
+    {
+      "source_id": "barge_doublet",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Gibão de barqueiro",
+        "slot": "outfit",
+        "price": 280,
+        "description": "+54 vida · +7 defesa · +14 postura · -1 movimento.",
+        "stats": {
+          "hp": 54,
+          "defense": 7,
+          "posture": 14,
+          "movement": -1
+        },
+        "role": "Resistência"
+      }
+    },
+    {
+      "source_id": "mafalda_knot",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Nó de Mafalda",
+        "slot": "accessory",
+        "price": 260,
+        "description": "+6 alento · +32 vida · +2 iniciativa · -6 postura.",
+        "stats": {
+          "qi": 6,
+          "hp": 32,
+          "speed": 2,
+          "posture": -6
+        },
+        "role": "Versátil"
+      }
+    },
+    {
+      "source_id": "madeira_rapier",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Lâmina de cedro da Madeira",
+        "slot": "weapon",
+        "price": 355,
+        "description": "+22 ataque · +3 iniciativa · -2 postura.",
+        "stats": {
+          "attack": 22,
+          "speed": 3,
+          "posture": -2
+        },
+        "role": "Ritmo"
+      }
+    },
+    {
+      "source_id": "vigia_halberd",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Alabarda dos canais",
+        "slot": "weapon",
+        "price": 370,
+        "description": "+12 ataque · +24 quebra · +14 postura · -2 iniciativa.",
+        "stats": {
+          "attack": 12,
+          "break_power": 24,
+          "posture": 14,
+          "speed": -2
+        },
+        "role": "Controlo"
+      }
+    },
+    {
+      "source_id": "laurel_doublet",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Gibão de loureiro",
+        "slot": "outfit",
+        "price": 345,
+        "description": "+68 vida · +9 defesa · +18 postura · -1 iniciativa · -1 movimento.",
+        "stats": {
+          "hp": 68,
+          "defense": 9,
+          "posture": 18,
+          "speed": -1,
+          "movement": -1
+        },
+        "role": "Sobrevivência"
+      }
+    },
+    {
+      "source_id": "ceuta_halberd",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Alabarda da muralha",
+        "slot": "weapon",
+        "price": 480,
+        "stats": {
+          "attack": 22,
+          "break_power": 22,
+          "speed": -2
+        },
+        "role": "Ruptura",
+        "icon": "gear_douro_halberd",
+        "description": "+22 ataque · +22 quebra · -2 iniciativa."
+      }
+    },
+    {
+      "source_id": "ceuta_sabre",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Lâmina de aço de Ceuta",
+        "slot": "weapon",
+        "price": 480,
+        "stats": {
+          "attack": 28,
+          "speed": 3,
+          "posture": -4
+        },
+        "role": "Execução",
+        "icon": "gear_estoque_regio",
+        "description": "+28 ataque · +3 iniciativa · -4 postura."
+      }
+    },
+    {
+      "source_id": "captain_coat",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Gibão do capitão",
+        "slot": "outfit",
+        "price": 430,
+        "stats": {
+          "hp": 76,
+          "defense": 10,
+          "posture": 16,
+          "speed": -2
+        },
+        "role": "Resistência",
+        "icon": "gear_laurel_doublet",
+        "description": "+76 vida · +10 defesa · +16 postura · -2 iniciativa."
+      }
+    },
+    {
+      "source_id": "compass",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Bússola da travessia",
+        "slot": "accessory",
+        "price": 390,
+        "stats": {
+          "attack": 10,
+          "qi": 7,
+          "posture": -6
+        },
+        "role": "Técnicas",
+        "icon": "gear_astrolabio_cobre",
+        "description": "+10 ataque · +7 alento · -6 postura."
+      }
+    },
+    {
+      "source_id": "douro_sword",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Espada dos barqueiros",
+        "slot": "weapon",
+        "price": 305,
+        "stats": {
+          "attack": 19,
+          "break_power": 5,
+          "speed": -1
+        },
+        "icon": "gear_estoque_regio",
+        "role": "Pressão",
+        "description": "+19 ataque · +5 quebra · -1 iniciativa."
+      }
+    },
+    {
+      "source_id": "river_silk",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Casaco da corrente",
+        "slot": "outfit",
+        "price": 275,
+        "stats": {
+          "hp": 26,
+          "qi": 5,
+          "speed": 3,
+          "posture": -6
+        },
+        "icon": "gear_vest_silk",
+        "role": "Iniciativa",
+        "description": "+26 vida · +5 alento · +3 iniciativa · -6 postura."
+      }
+    },
+    {
+      "source_id": "pilot_seal",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Selo do piloto",
+        "slot": "accessory",
+        "price": 255,
+        "stats": {
+          "attack": 7,
+          "break_power": 9,
+          "qi": -2
+        },
+        "icon": "gear_seal_flank",
+        "role": "Quebra",
+        "description": "+7 ataque · +9 quebra · -2 alento."
+      }
+    },
+    {
+      "source_id": "laurel_charm",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Ramo de loureiro",
+        "slot": "accessory",
+        "price": 320,
+        "stats": {
+          "qi": 7,
+          "posture": 16,
+          "speed": -1
+        },
+        "icon": "gear_ring_tide",
+        "role": "Técnicas",
+        "description": "+7 alento · +16 postura · -1 iniciativa."
+      }
+    },
+    {
+      "source_id": "island_sash",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Faixa dos levadeiros",
+        "slot": "outfit",
+        "price": 335,
+        "stats": {
+          "hp": 36,
+          "qi": 6,
+          "movement": 1,
+          "defense": -2
+        },
+        "icon": "gear_silk",
+        "role": "Mobilidade",
+        "description": "+36 vida · +6 alento · +1 movimento · -2 defesa."
+      }
+    },
+    {
+      "source_id": "channel_weight",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Contrapeso dos canais",
+        "slot": "accessory",
+        "price": 325,
+        "stats": {
+          "attack": 5,
+          "break_power": 14,
+          "speed": -2
+        },
+        "icon": "gear_balanced_belt",
+        "role": "Quebra",
+        "description": "+5 ataque · +14 quebra · -2 iniciativa."
+      }
+    },
+    {
+      "source_id": "ceuta_wrap",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Manto da sentinela",
+        "slot": "outfit",
+        "price": 420,
+        "stats": {
+          "hp": 44,
+          "qi": 8,
+          "speed": 3,
+          "posture": -8
+        },
+        "icon": "gear_vest_silk",
+        "role": "Técnicas",
+        "description": "+44 vida · +8 alento · +3 iniciativa · -8 postura."
+      }
+    },
+    {
+      "source_id": "wall_badge",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Insígnia da muralha",
+        "slot": "accessory",
+        "price": 380,
+        "stats": {
+          "hp": 36,
+          "defense": 4,
+          "posture": 18,
+          "speed": -2
+        },
+        "icon": "gear_medal",
+        "role": "Guarda",
+        "description": "+36 vida · +4 defesa · +18 postura · -2 iniciativa."
+      }
+    },
+    {
+      "source_id": "coast_halberd",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Alabarda da escolta",
+        "slot": "weapon",
+        "price": 500,
+        "stats": {
+          "attack": 17,
+          "break_power": 29,
+          "posture": 14,
+          "speed": -3
+        },
+        "icon": "gear_vigia_halberd",
+        "role": "Controlo",
+        "description": "+17 ataque · +29 quebra · +14 postura · -3 iniciativa."
+      }
+    },
+    {
+      "source_id": "coast_sword",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Espada da caravana",
+        "slot": "weapon",
+        "price": 500,
+        "stats": {
+          "attack": 25,
+          "break_power": 12,
+          "speed": 1
+        },
+        "icon": "gear_river_blade",
+        "role": "Pressão",
+        "description": "+25 ataque · +12 quebra · +1 iniciativa."
+      }
+    },
+    {
+      "source_id": "coast_coat",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Casaco da estrada",
+        "slot": "outfit",
+        "price": 450,
+        "stats": {
+          "hp": 58,
+          "defense": 6,
+          "qi": 6,
+          "movement": 1,
+          "posture": -10
+        },
+        "icon": "gear_travelling_doublet",
+        "role": "Mobilidade",
+        "description": "+58 vida · +6 defesa · +6 alento · +1 movimento · -10 postura."
+      }
+    },
+    {
+      "source_id": "coast_charm",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Amuleto da caravana",
+        "slot": "accessory",
+        "price": 405,
+        "stats": {
+          "hp": 42,
+          "qi": 9,
+          "speed": -1
+        },
+        "icon": "gear_mafalda_knot",
+        "role": "Reserva",
+        "description": "+42 vida · +9 alento · -1 iniciativa."
+      }
+    },
+    {
+      "source_id": "storm_halberd",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Alabarda do temporal",
+        "slot": "weapon",
+        "price": 520,
+        "stats": {
+          "attack": 25,
+          "break_power": 18,
+          "speed": 1,
+          "posture": -10
+        },
+        "icon": "gear_douro_halberd",
+        "role": "Iniciativa",
+        "description": "+25 ataque · +18 quebra · +1 iniciativa · -10 postura."
+      }
+    },
+    {
+      "source_id": "storm_sword",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Estoque do relâmpago",
+        "slot": "weapon",
+        "price": 520,
+        "stats": {
+          "attack": 27,
+          "speed": 5,
+          "break_power": -5,
+          "posture": -6
+        },
+        "icon": "gear_madeira_rapier",
+        "role": "Flancos",
+        "description": "+27 ataque · +5 iniciativa · -5 quebra · -6 postura."
+      }
+    },
+    {
+      "source_id": "storm_coat",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Gibão de abordagem",
+        "slot": "outfit",
+        "price": 460,
+        "stats": {
+          "hp": 64,
+          "defense": 8,
+          "posture": 28,
+          "qi": -3,
+          "speed": -1
+        },
+        "icon": "gear_gibao_lastro",
+        "role": "Guarda",
+        "description": "+64 vida · +8 defesa · +28 postura · -3 alento · -1 iniciativa."
+      }
+    },
+    {
+      "source_id": "storm_knot",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Nó do temporal",
+        "slot": "accessory",
+        "price": 420,
+        "stats": {
+          "break_power": 16,
+          "posture": 20,
+          "speed": -2
+        },
+        "icon": "gear_rope_bracelet",
+        "role": "Ruptura",
+        "description": "+16 quebra · +20 postura · -2 iniciativa."
+      }
+    },
+    {
+      "source_id": "final_halberd",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Alabarda da alvorada",
+        "slot": "weapon",
+        "price": 550,
+        "stats": {
+          "attack": 28,
+          "break_power": 26,
+          "speed": -3,
+          "qi": -3
+        },
+        "icon": "gear_river_halberd",
+        "role": "Ruptura",
+        "description": "+28 ataque · +26 quebra · -3 iniciativa · -3 alento."
+      }
+    },
+    {
+      "source_id": "final_sword",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Lâmina do regresso",
+        "slot": "weapon",
+        "price": 550,
+        "stats": {
+          "attack": 32,
+          "speed": 2,
+          "break_power": -4,
+          "posture": -8
+        },
+        "icon": "gear_estoque_regio",
+        "role": "Execução",
+        "description": "+32 ataque · +2 iniciativa · -4 quebra · -8 postura."
+      }
+    },
+    {
+      "source_id": "final_coat",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Casaco da alvorada",
+        "slot": "outfit",
+        "price": 480,
+        "stats": {
+          "hp": 50,
+          "defense": 7,
+          "qi": 9,
+          "speed": 2,
+          "posture": -6
+        },
+        "icon": "gear_oilskin",
+        "role": "Técnicas",
+        "description": "+50 vida · +7 defesa · +9 alento · +2 iniciativa · -6 postura."
+      }
+    },
+    {
+      "source_id": "final_seal",
+      "destination_id": null,
+      "disposition": "requires_family_balance_and_story_review",
+      "definition": {
+        "name": "Selo do regresso",
+        "slot": "accessory",
+        "price": 440,
+        "stats": {
+          "attack": 14,
+          "break_power": 8,
+          "hp": -24,
+          "posture": -8
+        },
+        "icon": "gear_selo_de_marfil",
+        "role": "Execução",
+        "description": "+14 ataque · +8 quebra · -24 vida · -8 postura."
+      }
+    },
+    {
+      "source_id": "roman_token",
+      "destination_id": null,
+      "disposition": "requires_effect_and_story_review",
+      "definition": {
+        "name": "Laço de São Romão",
+        "slot": "accessory",
+        "price": 290,
+        "stats": {
+          "hp": 30,
+          "posture": 20,
+          "qi": -2
+        },
+        "icon": "gear_rope_bracelet",
+        "role": "Guarda",
+        "description": "+30 vida · +20 postura · -2 alento. Interceptar cobertura remove o próprio Sangramento. Recarga: 1 turno próprio.",
+        "combat_effect": {
+          "event": "cover",
+          "cleanse": true,
+          "cooldown": 1
+        }
+      }
+    },
+    {
+      "source_id": "vigia_lens",
+      "destination_id": null,
+      "disposition": "requires_effect_and_story_review",
+      "definition": {
+        "name": "Lente da Vigia",
+        "slot": "accessory",
+        "price": 360,
+        "stats": {
+          "qi": 8,
+          "speed": 3,
+          "defense": -3
+        },
+        "icon": "gear_astrolabio_cobre",
+        "role": "Iniciativa",
+        "description": "+8 alento · +3 iniciativa · -3 defesa. Consumir Exposto recupera 1 alento. Recarga: 1 turno próprio.",
+        "combat_effect": {
+          "event": "exposed_hit",
+          "recovery": {
+            "qi": 1
+          },
+          "cooldown": 1
+        }
+      }
+    }
+  ],
+  "existing_combat_copies": [
+    {
+      "destination": "scripts/combat/mar_de_ferro/actor_art_catalog.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/actor_motion.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/battle_identity.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/battlefield_art.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/boss_techniques.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/cargo_world.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/coast_world.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/combat_onboarding.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/enemy_attributes.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/enemy_moves.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/madeira_world.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/maritime_motifs.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/mission_catalog.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/order_world.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/passive_feedback.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/progression.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/refuge_world.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/rpg_catalog.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/skill_motion.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/skill_presentation.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/tactical_view.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/tactics.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    },
+    {
+      "destination": "scripts/combat/mar_de_ferro/technique_cutin.gd",
+      "source_exists": true,
+      "identical": false,
+      "same_after_script_path_and_line_end_normalization": true
+    }
+  ]
+}

@@ -4,6 +4,7 @@ const Requests = preload("res://scripts/chapter/local_request_state.gd")
 const Items = preload("res://scripts/chapter/player_items.gd")
 const Marker = preload("res://scripts/chapter/local_request_marker.gd")
 const Errands = preload("res://scripts/chapter/lisbon_errands.gd")
+const District = preload("res://scripts/chapter/lisbon_district.gd")
 const CART_HOME := Vector2(-115,811)
 const CART_FIXED := Vector2(-185,799)
 var visit_ref: WeakRef
@@ -19,16 +20,26 @@ var cursor := -1
 var actions: Array = []
 var conversation := ""
 var feedback := ""
+const Social = preload("res://scripts/city/city_conversations.gd")
+const Optional = preload("res://scripts/chapter/optional_arc.gd")
+
+func cart_home() -> Vector2:
+	return preload("res://scripts/city/lisbon_layout.gd").CART_HOME if is_instance_valid(world) and world.has_meta("continuous_lisbon") else CART_HOME
+func cart_fixed() -> Vector2:
+	return preload("res://scripts/city/lisbon_layout.gd").CART_FIXED if is_instance_valid(world) and world.has_meta("continuous_lisbon") else CART_FIXED
 
 func _init(visit) -> void:
 	visit_ref = weakref(visit)
 	director = visit.director
 
 func apply_world(map) -> void:
+	world = map
+	District.apply_world(map,ChapterProgress)
+	preload("res://scripts/city/work_results.gd").apply(map,ChapterProgress)
 	var vehicle = map.sorted_world.get_node_or_null("CarroDaOficina")
 	if vehicle == null: return
 	var fixed: bool = Requests.stage(ChapterProgress) in ["return","completed"]
-	vehicle.position = CART_FIXED if fixed else CART_HOME
+	vehicle.position = cart_fixed() if fixed else cart_home()
 	# Tilt the illustrated body, leaving its ground footprint stable.
 	for child in vehicle.get_children():
 		if child is Sprite2D: child.rotation = 0.0 if fixed else -0.075
@@ -51,12 +62,19 @@ func install(map) -> void:
 	}
 	for id in specs:
 		var spec: Array = specs[id]
+		if world.has_meta("continuous_lisbon"): spec[2] = preload("res://scripts/city/lisbon_layout.gd").stock_positions()[id]
 		var resident = world.sorted_world.get_node(spec[0])
 		resident.set_physics_process(false); resident.path.clear(); resident.velocity = Vector2.ZERO
 		resident.position = spec[2]; resident.presentation.walking = false; resident.presentation.facing = 0
 		residents[id] = resident
 		_add_marker(id,resident,spec[1])
 	_add_marker("cart",cart,"Carro da oficina")
+	if world.has_meta("continuous_lisbon"):
+		District.install(world)
+		for id in District.TARGETS:
+			var row: Dictionary = District.TARGETS[id]
+			residents[id] = world.sorted_world.get_node(row.node)
+			_add_marker(id,residents[id],row.title)
 	update()
 
 func _add_marker(id: String, node: Node2D, caption: String) -> void:
@@ -65,6 +83,7 @@ func _add_marker(id: String, node: Node2D, caption: String) -> void:
 	node.add_child(mark); markers[id] = mark
 
 func approach(id: String) -> Vector2:
+	if District.TARGETS.has(id): return District.TARGETS[id].approach
 	var node = cart if id == "cart" else residents.get(id)
 	if not is_instance_valid(node): return Vector2.INF
 	var offset := Vector2(0,42)
@@ -98,20 +117,37 @@ func update() -> void:
 		if id=="dock":
 			if Errands.stage(ChapterProgress,Errands.ACCOUNT)=="dock" or Errands.stage(ChapterProgress,Errands.KIT)=="prepare": markers[id].symbol = "!"
 			elif ChapterProgress.flags.get("recovered",false) and Errands.stage(ChapterProgress,Errands.KIT)=="": markers[id].symbol = "?"
+		if id=="workshop" and Requests.stage(ChapterProgress)=="completed": markers[id].symbol="✓"
+		if id=="fisher" and Errands.stage(ChapterProgress,Errands.ACCOUNT)=="completed": markers[id].symbol="✓"
+		if id=="dock" and Errands.stage(ChapterProgress,Errands.KIT)=="completed" and markers[id].symbol!="!": markers[id].symbol="✓"
 		if id=="cart": markers[id].symbol = "⌕"; markers[id].available = Requests.stage(ChapterProgress) not in ["return","completed"]
+		if District.TARGETS.has(id):
+			markers[id].symbol = "?" if id=="keeper" and Errands.stage(ChapterProgress,Errands.BATEL)=="" else "!" if id=="mooring" and Errands.stage(ChapterProgress,Errands.BATEL)=="solve" else "i" if id=="manifest" else "⌕" if id in ["tide","mooring"] else "…"
+
+		if id=="keeper" and Errands.stage(ChapterProgress,Errands.BATEL)=="completed": markers[id].symbol="✓"
 
 func prompt() -> String:
 	var id := focus()
 	if id.is_empty(): return ""
-	return "E / A · "+("examinar o carro" if id=="cart" else "falar com "+markers[id].caption)
+	return interaction_prompt(id)
+
+func interaction_prompt(id: String) -> String:
+	return "E / A · "+("examinar o carro" if id=="cart" else "examinar "+str(markers[id].caption) if id in ["tide","mooring","manifest"] else "falar com "+str(markers[id].caption))
 
 func objective() -> String:
 	return Requests.objective(ChapterProgress)
 
-func interact() -> bool:
-	var id := focus()
+func interact(requested: String = "") -> bool:
+	var id := focus() if requested.is_empty() else requested
+	if not requested.is_empty() and (not markers.has(id) or not near(id)): return false
 	if id.is_empty(): return false
 	conversation = id
+	if world.has_node("CityLife"): world.get_node("CityLife").hold(id)
+	if District.TARGETS.has(id):
+		var row := District.dialog(ChapterProgress,id)
+		if row.is_empty(): return false
+		_save("Observação guardada · "+str(row.speaker))
+		_message(row.speaker,row.text,row.options); return true
 	match id:
 		"workshop": _workshop()
 		"cart": _cart()
@@ -125,15 +161,15 @@ func interact() -> bool:
 
 func _fisher() -> void:
 	match Errands.stage(ChapterProgress,Errands.ACCOUNT):
-		"": _message("Pescadora","A passagem abriu depois do socorro; já consigo levar o peixe. Mas recebi aviso de sete caixas e só cinco chegaram à banca. Antes de cobrar outra entrega, podes conferir no pontão onde ficaram as duas?",[["Conferir o destino das duas caixas","account_accept"],["Agora não","close"]])
-		"dock": _message("Pescadora","Pergunta no pontão pelo registo das sete caixas. Não quero cobrar uma entrega que alguém já fez.")
+		"": _message("Pescadora",("Depois do socorro, já consegui trazer o peixe. " if ChapterProgress.flags.get("patient_helped",false) else "")+"Mandaram-me sete caixas. Aqui tenho cinco. Antes de ir reclamar ao armazém, podes perguntar no pontão onde ficaram as outras duas?",[["Conferir o destino das duas caixas","account_accept"],["Agora não","close"]])
+		"dock": _message("Pescadora","O trabalhador do pontão tem o registo. Se as outras duas já foram entregues, quero saber antes de reclamar.")
 		"kitchen": _message("Pescadora","Duas seguiram para a cozinha? A vizinha ajuda a organizar as porções; confirma com ela antes de fecharmos a conta.")
 		"reconcile": _message("Pescadora","Então, como ficaram as sete caixas?",[["Cinco na banca; duas entregues à cozinha","account_reconcile"],["Faltam duas: pedir outra entrega","account_wrong"],["Conferir mais tarde","close"]])
-		"completed": _message("Pescadora","A conta ficou certa. Já separei a parte da cozinha no registo; ninguém vai pagar duas vezes pela mesma entrega.")
+		"completed": _message("Pescadora","Já escrevi a parte da cozinha numa linha à parte. Hoje, ao menos, não ponho ninguém à procura de peixe que já está na panela.")
 
 func _neighbor() -> void:
 	if Errands.stage(ChapterProgress,Errands.ACCOUNT)=="kitchen":
-		_message("Vizinha","Chegaram duas caixas à cozinha antes do socorro. Fiquei com a conferência: duas aqui, cinco na banca. A pescadora pode fechar a conta.",[["Anotar a entrega e voltar à pescadora","account_kitchen"],["Voltar depois","close"]])
+		_message("Vizinha","Recebi duas, sim. Até assinei. Diz à pescadora que não as perdi; já estão a dar trabalho na cozinha. Com as cinco dela, são as sete.",[["Anotar a entrega e voltar à pescadora","account_kitchen"],["Voltar depois","close"]])
 	elif Errands.stage(ChapterProgress,Errands.ACCOUNT)=="completed": _message("Vizinha","A cozinha recebeu a parte certa, e o pontão deixou de procurar caixas que já tinham chegado. Obrigada por conferir antes de acusar alguém.")
 	else: _say("neighbor_done" if Requests.stage(ChapterProgress) in ["return","completed"] else "neighbor")
 
@@ -146,7 +182,7 @@ func _dock_topics() -> void:
 		elif state=="prepare": options.append(["Mostrar a ligadura e a água da sacola","kit_finish"])
 		else: options.append(["Rever o uso dos suprimentos a bordo","kit_advice"])
 	options.append(["Conversar sobre o trabalho do pontão","dock_work"]); options.append(["Voltar à rua","close"])
-	_message("Trabalhador do pontão","As peças pequenas ficam comigo. Também guardo a conta das entregas; diz o que precisas de conferir.",options)
+	_message("Trabalhador do pontão","Precisas de uma peça, ou vens pelas entregas? Tenho as duas coisas aqui, mas só uma delas cabe no bolso.",options)
 
 func _workshop() -> void:
 	match Requests.stage(ChapterProgress):
@@ -168,10 +204,32 @@ func _say(key: String, options: Array = []) -> void:
 	_open(Requests.data().dialogue[key],options)
 
 func _message(speaker: String,text: String,options: Array = []) -> void:
+	if Social.TITLES.has(conversation):
+		var known:=false
+		for row in ChapterProgress.dialogue_history:
+			if row.speaker==CampaignProfile.speaker_name(speaker) and str(row.text).ends_with(text):known=true;break
+		if known:
+			var brief:=repeat_direction()
+			if not brief.is_empty():text=brief
 	_open([[speaker,text]],options)
 
+func repeat_direction() -> String:
+	if conversation=="fisher":
+		var stage: String=Errands.stage(ChapterProgress,Errands.ACCOUNT)
+		if not stage.is_empty() and stage!="completed":return Errands.DEFINITIONS[Errands.ACCOUNT].objectives[stage]
+	if conversation=="workshop" and Requests.stage(ChapterProgress) not in ["","completed"]:return Requests.objective(ChapterProgress)
+	if conversation=="dock" and Errands.stage(ChapterProgress,Errands.KIT)=="prepare":return "Uma ligadura e uma água, na tua sacola. Mostra-me ambas para conferir a reserva."
+	if conversation=="neighbor" and Errands.stage(ChapterProgress,Errands.ACCOUNT)=="kitchen":return "Duas caixas na cozinha e cinco na banca. Podes anotar a entrega e explicar a conta."
+	return ""
+
 func _open(turns: Array, options: Array = []) -> void:
-	lines = turns.duplicate(true); cursor = -1; actions = options if not options.is_empty() else [["Voltar à rua","close"]]
+	lines = turns.duplicate(true); cursor = -1; actions = options.duplicate(true) if not options.is_empty() else [["Voltar à rua","close"]]
+	if Social.TITLES.has(conversation):
+		var hello := Social.introduction(ChapterProgress,conversation)
+		if not hello.is_empty() and not lines.is_empty():
+			lines[0][1]=hello+"\n\n"+str(lines[0][1]);_save("Conversa guardada · "+str(Social.TITLES[conversation]))
+		actions.insert(maxi(0,actions.size()-1),["Como vão as coisas por aqui?","city_life"])
+		if not Optional.recall(ChapterProgress,conversation).is_empty(): actions.insert(maxi(0,actions.size()-1),["Recordar a floresta com Leonor","forest_memory"])
 	director.phase = "local_dialogue"; director._lock_player(true)
 	director.world.player.presentation.posture = "standing"
 	director.view.show(); director.view.panel.show(); director._clear_options()
@@ -182,6 +240,7 @@ func advance() -> void:
 	if cursor>=lines.size(): return
 	cursor += 1; director._clear_options()
 	director.view.status.text = feedback if not feedback.is_empty() else (Requests.definition().title+" · "+objective() if not Requests.stage(ChapterProgress).is_empty() else "Lisboa · Conversas do cais")
+	if District.TARGETS.has(conversation): director.view.status.text = Errands.DEFINITIONS[Errands.BATEL].title+" · "+str(Errands.DEFINITIONS[Errands.BATEL].objectives.get(Errands.stage(ChapterProgress,Errands.BATEL),"Observa antes de mexer.")) if conversation!="manifest" else "Lisboa · Registo das entregas"
 	director.view.hint.text = "Enter / espaço / A · continuar     Esc / B · voltar à rua     J · pedidos"
 	if cursor<lines.size():
 		director.view.speaker.text = CampaignProfile.speaker_name(lines[cursor][0])
@@ -201,15 +260,36 @@ func choose(action: String) -> void:
 		if option[1]==action: offered = true
 	if not offered: return
 	if action=="close": close(); return
+	if action=="forest_memory":
+		if not near(conversation): return
+		var memory:=Optional.recall(ChapterProgress,conversation)
+		if not memory.is_empty(): _open(memory)
+		return
+	if action=="city_life":
+		if not near(conversation) or not Social.TITLES.has(conversation): return
+		var text := Social.take_reply(ChapterProgress,conversation)
+		_open([[Social.TITLES[conversation],text]])
+		_save("Conversa guardada · "+str(Social.TITLES[conversation]));return
+	if action.begins_with("district_"):
+		if not District.TARGETS.has(conversation) or not near(conversation): return
+		var result := District.choose(ChapterProgress,conversation,action)
+		if result.is_empty(): return
+		_save(result.notice)
+		if action=="district_finish": await _animate_batel()
+		apply_world(world); _message(result.speaker,result.text); return
 	# Every result is checked again at commitment, not merely when a button appears.
 	match action:
 		"account_accept":
 			if not near("fisher") or not Errands.advance(ChapterProgress,Errands.ACCOUNT,"","dock"): return
+			if ChapterProgress.flags.get("lisbon_manifest_read",false):
+				ChapterProgress.local_requests[Errands.ACCOUNT] = "reconcile"
+				_save("Recibos já conferidos · explicar a conta à pescadora")
+				_message("Herói","Já conferi os dois recibos no armazém: cinco caixas chegaram à banca e duas à cozinha. Posso explicar a distribuição sem pedir outra entrega."); return
 			_save("Pedido iniciado · A conta das entregas"); _message("Pescadora","O pontão é junto à carga. Pergunta pelos destinos, não apenas pela quantidade.")
 		"account_dock":
 			if not near("dock") or not Errands.advance(ChapterProgress,Errands.ACCOUNT,"dock","kitchen"): return
 			_save("Registo conferido · duas caixas seguiram para a cozinha")
-			_message("Trabalhador do pontão","Sete descarregadas: cinco para a banca, duas para a cozinha do cais. A vizinha recebeu as duas; confirma com ela, para não depender só da minha conta.")
+			_message("Trabalhador do pontão","Tenho aqui sete. Cinco seguiram para a banca; as outras duas, para a cozinha. A vizinha recebeu-as. Pergunta-lhe, ou vê os recibos na mesa do armazém.")
 		"account_kitchen":
 			if not near("neighbor") or not Errands.advance(ChapterProgress,Errands.ACCOUNT,"kitchen","reconcile"): return
 			_save("Entrega confirmada · volta à pescadora"); _message("Herói","A conta tem dois destinos. Vou explicar antes de pedirem outra carga.")
@@ -260,13 +340,23 @@ func choose(action: String) -> void:
 			_save("Pedido concluído · +12 de ouro · +1 ração")
 			_message("Oficial da oficina","Aqui tens. O carro voltou ao trabalho; eu já não preciso de ocupar a rua com a carga parada.")
 
+func _animate_batel() -> void:
+	director.busy = true; director._clear_options(); director.view.panel.hide()
+	var boat = world.sorted_world.get_node("Batel")
+	var rope = world.sorted_world.get_node(District.TARGETS.mooring.node).get_child(0)
+	rope.released = true; rope.queue_redraw()
+	var tween = world.create_tween()
+	tween.tween_property(boat,"position",preload("res://scripts/city/lisbon_layout.gd").point(Vector2(173,761))+Vector2(-105,55),1.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await tween.finished
+	director.busy = false
+
 func _animate_repair() -> void:
 	director.busy = true; director._clear_options(); director.view.panel.hide()
 	var actor = residents.workshop
 	var workstation: Vector2 = actor.position
 	actor.presentation.walking = true; actor.presentation.facing = 3
 	var tween = director.create_tween()
-	tween.tween_property(actor,"position",CART_HOME+Vector2(42,15),0.65)
+	tween.tween_property(actor,"position",cart_home()+Vector2(42,15),0.65)
 	await tween.finished
 	actor.presentation.walking = false; actor.presentation.posture = "crouched"
 	world.player.presentation.posture = "crouched"
@@ -276,8 +366,8 @@ func _animate_repair() -> void:
 		if child is Sprite2D: child.rotation = 0
 	tween = director.create_tween().set_parallel(true)
 	actor.presentation.walking = true
-	tween.tween_property(cart,"position",CART_FIXED,1.0)
-	tween.tween_property(actor,"position",CART_FIXED+Vector2(42,15),1.0)
+	tween.tween_property(cart,"position",cart_fixed(),1.0)
+	tween.tween_property(actor,"position",cart_fixed()+Vector2(42,15),1.0)
 	await tween.finished
 	tween = director.create_tween()
 	actor.presentation.facing = 1
@@ -287,7 +377,12 @@ func _animate_repair() -> void:
 	world.rebuild_navigation(); director.busy = false
 
 func _save(message: String) -> void:
+	if message.begins_with("Pedido iniciado"):
+		var id: String = {"workshop":Requests.ID,"fisher":Errands.ACCOUNT,"dock":Errands.KIT,"keeper":Errands.BATEL}.get(conversation,"")
+		if not id.is_empty(): preload("res://scripts/chapter/request_guide.gd").track(ChapterProgress,id)
+	ChapterProgress.sync_development()
 	feedback = Items.persist(ChapterProgress,message)
+	if is_instance_valid(world):preload("res://scripts/city/work_results.gd").apply(world,ChapterProgress)
 
 func close() -> void:
 	if director.busy: return

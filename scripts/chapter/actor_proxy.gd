@@ -31,7 +31,10 @@ const NPC_ART = preload("res://scripts/npcs/lisbon_npc_library.gd")
 	set(value):
 		eye_glow = value
 		queue_redraw()
-var walking := false
+var walking := false:
+	set(value):
+		if walking==value:return
+		walking=value;queue_redraw()
 ## Interiors keep only the soft contact shadow; the sun shadow is for outdoor light.
 var has_cast_shadow := true
 ## Gold focus outline (see actor_rim.gd), used when this person can be talked to.
@@ -47,7 +50,10 @@ var outlined := false:
 var _last_visual := ""
 var _last_origin := Vector2.ZERO
 var frame_time := 0.0
-var facing := 0
+var facing := 0:
+	set(value):
+		if facing==value:return
+		facing=value;queue_redraw()
 var seat_support := false
 var seat_lift := 0.0
 var empty_bowl := false
@@ -116,7 +122,9 @@ func _draw() -> void:
 		cloth = Color("a288b6")
 	var eye_offset = Vector2(4 if facing == 3 else -4,-height+7)
 	_last_visual = visual_id; _last_origin = Vector2(0,-seat_lift if posture == "seated" else 0.0)
-	if NPC_ART.draw_actor(self,visual_id,facing,walking,frame_time,posture,1.0,_last_origin,eye_glow):
+	if visual_id=="hero_child" and walking and posture=="standing" and not eye_glow:
+		preload("res://scripts/chapter/childhood_walk_art.gd").draw_actor(self,facing,frame_time,height,Vector2.ZERO)
+	elif NPC_ART.draw_actor(self,visual_id,facing,walking,frame_time,posture,1.0,_last_origin,eye_glow):
 		pass
 	elif identity in ["hero", "hero_child"]:
 		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR

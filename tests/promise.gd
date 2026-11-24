@@ -69,12 +69,14 @@ func run() -> void:
 	escape()
 	for i in range(3):
 		game.advance()
+		while game.busy: await physics_frame
 	check(game.view.body.text == "Viver contigo. Para sempre." and not game.leonor.carries_cup and game.world.get_node("ActorsAndProps/Bench/Cups").visible, "Leonor puts her cup down at the approved beat")
 	for i in range(6):
 		game.advance()
 	check(game.view.body.text == "Então trabalho.", "Promise reaches the child's commitment")
 	game.advance()
 	check(game.busy, "Reserving the instruments starts staged movement")
+	check(not game.view.panel.visible, "Tool staging leaves the action visible")
 	await frames(2)
 	escape()
 	var frozen: Vector2 = game.leonor.position
@@ -85,6 +87,7 @@ func run() -> void:
 		await process_frame
 	check(game.view.body.text == "Esse fica?" and game.world.get_node("ActorsAndProps/ReservedTools").visible, "Both reserved instruments appear before the child's question")
 	check(game.world.get_node("ActorsAndProps/ReturnTools").visible and game.world.get_node("ActorsAndProps/ReturnTools").count == 1, "Returned equipment remains visually separate from the reserved pair")
+	check(not game.leonor.walking and not game.leonor.carries_training_tool and game.leonor.posture == "standing", "Leonor puts the instrument down and stops before replying")
 	var ids: Array[String] = []
 	game.scene_finished.connect(func(id): ids.append(id))
 	for i in range(3):
@@ -96,9 +99,12 @@ func run() -> void:
 	game.advance()
 	check(game.completed and ids == ["C01-M01/S06"], "Promise completes once with its own scene ID")
 	check(game.leonor.position == game.world.get_node("Staging/LeonorExit").position, "Leonor leaves by the authored exit marker")
+	check(not game.framing.subjects.has(game.leonor) and game.framing.subjects.has(game.world.player), "Farewell camera stays with the child instead of following Leonor away")
+	check(game.world.get_meta("intimate_scene_people").has(game.world.get_node("ActorsAndProps/ReservedTools")), "Farewell cutaway keeps tomorrow's instruments visible after Leonor leaves")
 	await capture("res://tests/promise-end-preview.png")
 	game.view.replay_button.pressed.emit()
 	check(not game.completed and game.leonor.posture == "seated" and not game.world.get_node("ActorsAndProps/ReservedTools").visible, "Replay resets actors and equipment")
+	check(game.framing.subjects.has(game.leonor) and not game.leonor.walking, "Replay restores the shared camera and stationary pose")
 	game.queue_free()
 	await frames(2)
 	# Verify direct F6 review with the same name entry, without skipping the main flow.
@@ -111,7 +117,7 @@ func run() -> void:
 	current_scene.confirm()
 	await frames(3)
 	check(current_scene.scene_file_path == "res://scenes/chapter_01/promise.tscn" and current_scene.view.speaker.text == "Dinis", "Name confirmation returns to the requested promise preview")
-	check(root.get_node("CampaignProfile").name_entry_destination == "res://scenes/chapter_01/opening.tscn", "Review destination resets for the next new game")
+	check(root.get_node("CampaignProfile").name_entry_destination == "res://scenes/chapter_01/childhood_home.tscn", "Review destination resets to the playable convent for the next new game")
 	var result = {"checks":checks,"failures":failures,"rendered":DisplayServer.get_name() != "headless"}
 	var file = FileAccess.open("res://tests/promise-report.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(result,"\t"))

@@ -25,4 +25,4 @@ O checkpoint 15 registra a flag booleana `harbor_pause` junto dos dados já exis
 
 `tools/capture_harbor_visit.gd` reproduz a visita através do mapa, entradas de rato e teclado e botões reais. Usa um perfil de demonstração em memória, sem escrever saves do jogador; `--record-visit` acrescenta pausas de leitura para Movie Maker.
 
-[Ver o percurso real — 13 segundos](comerciante-lisboa.mp4) · [Comerciante no cais](comerciante-lisboa.png) · [Loja](comerciante-loja.png) · [Retorno](comerciante-retorno.png) · [Confirmação de embarque](lisboa-embarque.png).
+Gravação de validação de 13 segundos removida na limpeza de temporários · [Comerciante no cais](comerciante-lisboa.png) · [Loja](comerciante-loja.png) · [Retorno](comerciante-retorno.png) · [Confirmação de embarque](lisboa-embarque.png).

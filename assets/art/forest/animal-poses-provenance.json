@@ -1,0 +1,38 @@
+{
+  "tool": "image_gen.imagegen",
+  "mode": "built-in",
+  "date": "2026-10-19",
+  "purpose": "Poses reais para os animais do primeiro arco; preservar identidades e artes originais.",
+  "final_assets": [
+    "assets/art/forest/wolf-poses-v2.png",
+    "assets/art/forest/bear-poses-v3.png",
+    "assets/art/forest/deer-poses-v2.png"
+  ],
+  "normalization": "tools/build_animal_atlas.py; mesma escala por espécie e âncora inferior central; somente metadados de recorte, sem alteração dos PNGs.",
+  "prompts": [
+    {
+      "reference": "assets/art/forest/wolf-v1.png",
+      "output": "assets/art/forest/wolf-poses-v2.png",
+      "transparent_background": true,
+      "prompt": "Edit target: the supplied grey wolf game illustration. Create a production animation sprite sheet of EXACTLY SIX views of THIS SAME wolf in a strict grid of 3 columns by 2 rows, equal cell sizes, transparent background, no text, no cell borders, no ground, no glow. Preserve its face, grey/brown coat, anatomy, illustrated realistic painted style, soft upper-left light, three-quarter camera looking down slightly. EVERY pose faces left and is full-body, fully contained within its own cell with generous transparent margins. Same animal scale in every cell, aligned baseline. Row 1 left to right: neutral standing alert (all feet planted), walking stride A (front left paw forward), walking stride B (front right paw forward). Row 2 left to right: attack windup crouched with head lowered, attack contact snapping/lunging forward mouth open with forepaws reaching, defeated resting on its side on the ground, eyes closed, no blood. The defeated wolf must be an actual side-lying pose, not a rotated standing animal. Separation between animals important for automatic cell extraction. Intended for a small 2D isometric RPG combat sprite."
+    },
+    {
+      "reference": "assets/art/forest/bear-v1.png",
+      "candidate": "bear-poses-v2 (layout rejeitado; preservado em QA)",
+      "transparent_background": true,
+      "prompt": "Edit target: the supplied brown bear illustration for a 2D RPG. Create EXACTLY SIX full-body views of this SAME bear in a strict 3 columns by 2 rows grid, equal cells. Real transparent background with zero scenery, no labels, no glow, no ground, no borders. Preserve its brown fur, face, body proportions, realistic painted style and soft upper-left illumination. Slightly overhead three-quarter camera, all six poses face LEFT. Same world scale and baseline, generous separation and padding. Row 1: 1 calm standing on all fours; 2 walking stride A left forepaw forward; 3 walking stride B right forepaw forward. Row 2: 4 attack windup rising onto hind legs with both front paws raised; 5 forceful leftward claw-swipe contact with one forepaw fully extended, mouth open; 6 defeated bear truly lying on its side, eyes closed, no blood. Actual anatomical pose changes, not rotated duplicates. Every silhouette contained inside its cell. This is a production sprite sheet, not a concept illustration."
+    },
+    {
+      "reference": "bear-poses-v2 (candidate)",
+      "output": "assets/art/forest/bear-poses-v3.png",
+      "transparent_background": true,
+      "prompt": "Correct this sprite-sheet layout only. Keep exactly the same six bear poses, same identity, colors and painting. Output a strict 1536x1024 transparent 3-column by 2-row grid (each cell 512x512). SHRINK EVERY bear uniformly to 75% of its current size so that every bear, including the raised bear and the swiping bear, fits COMPLETELY inside its own 512x512 cell with at least 40 transparent pixels around it. The current raised bear crosses the row boundary and the current swiping bear crosses into the left cell: fix both by shrinking and centering EACH pose, without changing the poses. No body parts may touch or cross ANY cell edge. All left-facing, no extra poses, no text, no borders, NO opaque background. Genuine clean alpha transparency; no glow or painted backdrop."
+    },
+    {
+      "reference": "assets/art/forest/deer-v1.png",
+      "output": "assets/art/forest/deer-poses-v2.png",
+      "transparent_background": true,
+      "prompt": "Edit target: the supplied white roe deer game illustration. Create EXACTLY SIX full-body views of this SAME white deer in a strict 3 columns by 2 rows grid with equal cells, all facing left in the same slightly overhead three-quarter camera. Genuine transparent background, NO scenery, ground, aura, labels, shadows, borders or text. Preserve the delicate white fur, small antlers, dark eyes, anatomy and painted realistic style, soft upper-left light. Same animal scale throughout, generous cell margins and consistent foot baseline. Row 1 left to right: standing alert neutral; standing with ears turned attentively and head slightly toward viewer; head lowered sniffing. Row 2 left to right: walking stride A left front leg forward; walking stride B right front leg forward; bounding away toward left, extended legs. No wounded or dead animal. The deer remains the gentle white animal from the reference. Ensure entire antlers and hooves in each cell."
+    }
+  ]
+}

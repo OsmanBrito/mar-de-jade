@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/chapter/forest_hunt_director.gd" id="director"]
+[node name="AProcuraDoCorcoBranco" type="Node2D"]
+process_mode = 3
+script = ExtResource("director")

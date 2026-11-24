@@ -113,7 +113,7 @@ func run() -> void:
 		saw_covered = saw_covered or curtain.cover.color.a>0.98
 		press(KEY_ENTER); await process_frame
 	check(saw_covered and current_scene.scene_file_path=="res://scenes/chapter_01/plaza.tscn","The map changes under full cover and then reveals the plaza")
-	check(current_scene.event_index==0 and current_scene.view.body.text=="Sai desse lado.","Carry-over Enter presses cannot skip the first plaza line")
+	check(current_scene.event_index==-1 and current_scene.phase=="childhood_explore","Carry-over Enter cannot start Leonor before the free exploration meeting")
 	check(saved_files()==saves_before,"Shelter review leaves all real campaign and navigation saves unchanged")
 	await shot("praca")
 	current_scene.queue_free(); await frames()

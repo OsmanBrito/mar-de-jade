@@ -1,0 +1,73 @@
+{
+  "title": "Firearm technique effects — Freesound",
+  "sources": [
+    {
+      "event": "firearm-basic",
+      "title": "Musket Shot.wav",
+      "author": "mlsulli",
+      "url": "https://freesound.org/people/mlsulli/sounds/234869/",
+      "download_url": "https://cdn.freesound.org/previews/234/234869_3883507-hq.mp3",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_sha256": "40ea0d8457f45c94064ada0f7d6faf1ca2ebaa084ec656f6f2343e58755250fb",
+      "edits": {
+        "trim_leading_silence": true,
+        "speed": 1.0,
+        "max_duration": 1.15,
+        "peak": 0.82,
+        "fade_out_ms": 40
+      }
+    },
+    {
+      "event": "firearm-measured",
+      "title": "musket.wav",
+      "author": "fennelliott",
+      "url": "https://freesound.org/people/fennelliott/sounds/347647/",
+      "download_url": "https://cdn.freesound.org/previews/347/347647_6207707-hq.mp3",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_sha256": "1454effdf8aaef9b59029c2d1588c585353f3ea0cb774eb545efbb45044cff05",
+      "edits": {
+        "trim_leading_silence": true,
+        "speed": 1.0,
+        "max_duration": 0.9,
+        "peak": 0.82,
+        "fade_out_ms": 40
+      }
+    },
+    {
+      "event": "firearm-prepared",
+      "title": "Musket Explosion",
+      "author": "Willlewis",
+      "url": "https://freesound.org/people/Willlewis/sounds/244345/",
+      "download_url": "https://cdn.freesound.org/previews/244/244345_1868310-hq.mp3",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_sha256": "441ff07c6c7d067eb7dfec6fc494bcf1c2b1fb65692285e62d272944eaaef7e0",
+      "edits": {
+        "trim_leading_silence": true,
+        "speed": 0.92,
+        "max_duration": 1.4,
+        "peak": 0.82,
+        "fade_out_ms": 40
+      }
+    },
+    {
+      "event": "firearm-passage",
+      "title": "Musket Shot.wav",
+      "author": "mlsulli",
+      "url": "https://freesound.org/people/mlsulli/sounds/234869/",
+      "download_url": "https://cdn.freesound.org/previews/234/234869_3883507-hq.mp3",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_sha256": "40ea0d8457f45c94064ada0f7d6faf1ca2ebaa084ec656f6f2343e58755250fb",
+      "edits": {
+        "trim_leading_silence": true,
+        "speed": 1.12,
+        "max_duration": 0.65,
+        "peak": 0.82,
+        "fade_out_ms": 40
+      }
+    }
+  ]
+}

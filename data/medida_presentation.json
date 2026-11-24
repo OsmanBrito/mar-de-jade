@@ -1,0 +1,590 @@
+{
+  "version": 1,
+  "profiles": {
+    "ES01": {
+      "name": "Corte de Precisão",
+      "style": "ES",
+      "motion": "precision",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/ES01.png"
+    },
+    "ES06": {
+      "name": "Fio Ininterrupto",
+      "style": "ES",
+      "motion": "finisher",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/ES06-v1.png"
+    },
+    "ES07": {
+      "name": "Ponta Breve",
+      "style": "ES",
+      "motion": "precision",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/ES07.png"
+    },
+    "ES08": {
+      "name": "Corte de Passagem",
+      "style": "ES",
+      "motion": "passage",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "after_impact",
+      "icon": "res://assets/art/skills/portugal/ES08.png"
+    },
+    "ES09": {
+      "name": "Guarda Cruzada",
+      "style": "ES",
+      "motion": "guard",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/ES09.png"
+    },
+    "ES10": {
+      "name": "Finta de Ponta",
+      "style": "ES",
+      "motion": "feint",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/ES10-v1.png"
+    },
+    "ES11": {
+      "name": "Fio de Retirada",
+      "style": "ES",
+      "motion": "disarm",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/ES11-v2.png"
+    },
+    "ES12": {
+      "name": "Corte da Dobradiça",
+      "style": "ES",
+      "motion": "sweep",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/ES12-v1.png"
+    },
+    "ES13": {
+      "name": "Medida Guardada",
+      "style": "ES",
+      "motion": "guard",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/ES13-v1.png"
+    },
+    "ES14": {
+      "name": "Linha de Regresso",
+      "style": "ES",
+      "motion": "retreat",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "after_impact",
+      "icon": "res://assets/art/skills/portugal/ES14-v1.png"
+    },
+    "ES15": {
+      "name": "Promessa de Aço",
+      "style": "ES",
+      "motion": "finisher",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/ES15-v1.png"
+    },
+    "ES56": {
+      "name": "Fio da Última Medida",
+      "style": "ES",
+      "motion": "finisher",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/ES56-v1.png"
+    },
+    "ES57": {
+      "name": "Guarda de Três Faces",
+      "style": "ES",
+      "motion": "guard",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/ES57-v1.png"
+    },
+    "LA01": {
+      "name": "Ponta Sentinela",
+      "style": "LA",
+      "motion": "watch",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/LA01.png"
+    },
+    "LA06": {
+      "name": "Círculo de Haste",
+      "style": "LA",
+      "motion": "sweep",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/LA06-v1.png"
+    },
+    "LA07": {
+      "name": "Ponta de Medida",
+      "style": "LA",
+      "motion": "precision",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/LA07.png"
+    },
+    "LA08": {
+      "name": "Haste de Abrigo",
+      "style": "LA",
+      "motion": "guard",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/LA08.png"
+    },
+    "LA09": {
+      "name": "Ponta e Calcanhar",
+      "style": "LA",
+      "motion": "passage",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "after_impact",
+      "icon": "res://assets/art/skills/portugal/LA09.png"
+    },
+    "LA10": {
+      "name": "Travessa de Haste",
+      "style": "LA",
+      "motion": "push",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/LA10-v1.png"
+    },
+    "LA11": {
+      "name": "Linha de Passagem",
+      "style": "LA",
+      "motion": "watch",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/LA11-v1.png"
+    },
+    "LA12": {
+      "name": "Ponta entre Guardas",
+      "style": "LA",
+      "motion": "pierce",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/LA12-v2.png"
+    },
+    "LA13": {
+      "name": "Haste de Escolta",
+      "style": "LA",
+      "motion": "escort",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "together",
+      "icon": "res://assets/art/skills/portugal/LA13-v1.png"
+    },
+    "LA14": {
+      "name": "Linha sobre o Ombro",
+      "style": "LA",
+      "motion": "projection",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/LA14-v1.png"
+    },
+    "LA15": {
+      "name": "Ponta do Porto Seguro",
+      "style": "LA",
+      "motion": "finisher",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/LA15-v1.png"
+    },
+    "LA56": {
+      "name": "Ponta de Três Medidas",
+      "style": "LA",
+      "motion": "finisher",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/LA56-v1.png"
+    },
+    "LA57": {
+      "name": "Haste de Passagem Inteira",
+      "style": "LA",
+      "motion": "watch",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/LA57-v1.png"
+    },
+    "MC01": {
+      "name": "Golpe de Cunha",
+      "style": "MC",
+      "motion": "cleave",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/MC01.png"
+    },
+    "MC06": {
+      "name": "Queda da Bigorna",
+      "style": "MC",
+      "motion": "cleave",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/MC06-v1.png"
+    },
+    "MC07": {
+      "name": "Talho de Medida",
+      "style": "MC",
+      "motion": "precision",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/MC07.png"
+    },
+    "MC08": {
+      "name": "Guarda de Cabo",
+      "style": "MC",
+      "motion": "guard",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/MC08.png"
+    },
+    "MC09": {
+      "name": "Talho de Passagem",
+      "style": "MC",
+      "motion": "passage",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "after_impact",
+      "icon": "res://assets/art/skills/portugal/MC09.png"
+    },
+    "MC10": {
+      "name": "Cunha de Guarda",
+      "style": "MC",
+      "motion": "disarm",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/MC10-v1.png"
+    },
+    "MC11": {
+      "name": "Talho de Contrapeso",
+      "style": "MC",
+      "motion": "push",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/MC11-v1.png"
+    },
+    "MC12": {
+      "name": "Corte da Trave",
+      "style": "MC",
+      "motion": "sweep",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/MC12-v1.png"
+    },
+    "MC13": {
+      "name": "Peso Reservado",
+      "style": "MC",
+      "motion": "guard",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/MC13-v1.png"
+    },
+    "MC14": {
+      "name": "Talho de Amurada",
+      "style": "MC",
+      "motion": "projection",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/MC14-v1.png"
+    },
+    "MC15": {
+      "name": "Cunha do Compromisso",
+      "style": "MC",
+      "motion": "finisher",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/MC15-v1.png"
+    },
+    "MC56": {
+      "name": "Talho de Compromisso Inteiro",
+      "style": "MC",
+      "motion": "finisher",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/MC56-v1.png"
+    },
+    "MC57": {
+      "name": "Cabo de Quatro Apoios",
+      "style": "MC",
+      "motion": "guard",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/MC57-v1.png"
+    },
+    "PU01": {
+      "name": "Palma de Interrupção",
+      "style": "PU",
+      "motion": "disarm",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/PU01.png"
+    },
+    "PU06": {
+      "name": "Impacto de Centro",
+      "style": "PU",
+      "motion": "finisher",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/PU06-v1.png"
+    },
+    "PU07": {
+      "name": "Punho de Medida",
+      "style": "PU",
+      "motion": "precision",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/PU07.png"
+    },
+    "PU08": {
+      "name": "Palma de Guarda",
+      "style": "PU",
+      "motion": "guard",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/PU08.png"
+    },
+    "PU09": {
+      "name": "Passo de Lado",
+      "style": "PU",
+      "motion": "sidestep",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "after_impact",
+      "icon": "res://assets/art/skills/portugal/PU09.png"
+    },
+    "PU10": {
+      "name": "Ombro de Passagem",
+      "style": "PU",
+      "motion": "passage",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "after_impact",
+      "icon": "res://assets/art/skills/portugal/PU10-v1.png"
+    },
+    "PU11": {
+      "name": "Nó de Punho",
+      "style": "PU",
+      "motion": "disarm",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/PU11-v1.png"
+    },
+    "PU12": {
+      "name": "Palma entre Guardas",
+      "style": "PU",
+      "motion": "pierce",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/PU12-v1.png"
+    },
+    "PU13": {
+      "name": "Corpo de Escolta",
+      "style": "PU",
+      "motion": "escort",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "together",
+      "icon": "res://assets/art/skills/portugal/PU13-v1.png"
+    },
+    "PU14": {
+      "name": "Punho de Duas Margens",
+      "style": "PU",
+      "motion": "sweep",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/PU14-v1.png"
+    },
+    "PU15": {
+      "name": "Passo do Compromisso",
+      "style": "PU",
+      "motion": "approach",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "before_impact",
+      "icon": "res://assets/art/skills/portugal/PU15-v1.png"
+    },
+    "PU56": {
+      "name": "Punho de Três Medidas",
+      "style": "PU",
+      "motion": "finisher",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/PU56-v1.png"
+    },
+    "PU57": {
+      "name": "Passo de Compromisso Inteiro",
+      "style": "PU",
+      "motion": "approach",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "before_impact",
+      "icon": "res://assets/art/skills/portugal/PU57-v1.png"
+    },
+    "FO01": {
+      "name": "Tiro Preparado",
+      "style": "FO",
+      "motion": "aimed",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/FO01.png"
+    },
+    "FO06": {
+      "name": "Foco de Caçada",
+      "style": "FO",
+      "motion": "focus",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/FO06-v1.png"
+    },
+    "FO07": {
+      "name": "Disparo de Medida",
+      "style": "FO",
+      "motion": "precision",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/FO07.png"
+    },
+    "FO08": {
+      "name": "Guarda do Cano",
+      "style": "FO",
+      "motion": "guard",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/FO08.png"
+    },
+    "FO09": {
+      "name": "Tiro de Passagem",
+      "style": "FO",
+      "motion": "passage",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "after_impact",
+      "icon": "res://assets/art/skills/portugal/FO09.png"
+    },
+    "FO10": {
+      "name": "Disparo de Guarda Baixa",
+      "style": "FO",
+      "motion": "disarm",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/FO10-v1.png"
+    },
+    "FO11": {
+      "name": "Tiro de Fim de Avanço",
+      "style": "FO",
+      "motion": "watch",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/FO11-v1.png"
+    },
+    "FO12": {
+      "name": "Disparo de Duas Margens",
+      "style": "FO",
+      "motion": "volley",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/FO12-v1.png"
+    },
+    "FO13": {
+      "name": "Tiro de Escolta",
+      "style": "FO",
+      "motion": "cover_shot",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/FO13-v1.png"
+    },
+    "FO14": {
+      "name": "Disparo de Amurada",
+      "style": "FO",
+      "motion": "cover_shot",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/FO14-v1.png"
+    },
+    "FO15": {
+      "name": "Tiro da Medida Final",
+      "style": "FO",
+      "motion": "finisher",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/FO15-v1.png"
+    },
+    "FO56": {
+      "name": "Tiro de Três Medidas",
+      "style": "FO",
+      "motion": "finisher",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/FO56-v1.png"
+    },
+    "FO57": {
+      "name": "Mira de Duas Passagens",
+      "style": "FO",
+      "motion": "watch",
+      "impact": 0.45,
+      "identity_across_grades": true,
+      "movement_phase": "stationary",
+      "icon": "res://assets/art/skills/portugal/FO57-v1.png"
+    }
+  }
+}

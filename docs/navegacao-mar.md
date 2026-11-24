@@ -14,7 +14,7 @@ O novo `tests/navigation_campaign_entry.gd` aciona o botão real do fim do capí
 
 Validação desta integração: **153 verificações sem falhas** — entrada pela campanha (12), mar em OpenGL (16), áudio e atmosfera em OpenGL (37) e navegação headless (88). As capturas de mar parado, andamento, curva e mar pesado foram geradas novamente nesta cópia.
 
-[Gravação real com áudio — 24,5 segundos](navigation-ocean.mp4): barco parado, aceleração até vela plena, curva e parada até a espuma se dispersar. Captura em 1280×800, 30 fps, estéreo 48 kHz; pico de áudio do MP4 medido em −10,8 dBFS.
+Gravação de validação com áudio (removida na limpeza de temporários): 24,5 segundos: barco parado, aceleração até vela plena, curva e parada até a espuma se dispersar. Captura em 1280×800, 30 fps, estéreo 48 kHz; pico de áudio do MP4 medido em −10,8 dBFS.
 
 ## Ondulação e luz
 

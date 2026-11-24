@@ -1,5 +1,7 @@
 # Ícones de skills — Portugal / C01
 
+Atualização de 19/10/2026: os quatro ícones de arma de fogo agora estão ligados às técnicas executáveis ensinadas por Tomé. [Arte de combate, regras e validação](arma-de-fogo.md). O restante deste documento registra a entrega original dos ícones.
+
 23 ícones PNG com transparência: 20 técnicas do protagonista (quatro por manejo), Defesa Perfeita e duas técnicas de Duarte. IDs/nome das técnicas seguem o catálogo `habilidades-passivas-v2` do corpus narrativo anterior. DP01 é um ID editorial local para Defesa Perfeita, ensinada por Tomé em C01-M04.
 
 [Galeria completa](portugal-skill-icons.png) · [Catálogo de consumo](../data/chapter_01/skill_icons.json) · [Prompts das 16 imagens novas](portugal-skill-generation.json).

@@ -1,0 +1,68 @@
+{
+  "fps": 24,
+  "frames": 384,
+  "duration_seconds": 16.0,
+  "source": "docs/narrativa/C01-portugal-aprovado.md#c01-m03",
+  "beats": [
+    {
+      "frame": 1,
+      "time": 0.0,
+      "label": "Praça / manhã"
+    },
+    {
+      "frame": 43,
+      "time": 1.75,
+      "label": "Leonor entra"
+    },
+    {
+      "frame": 106,
+      "time": 4.375,
+      "label": "Primeira investida"
+    },
+    {
+      "frame": 115,
+      "time": 4.75,
+      "label": "Desvio curto"
+    },
+    {
+      "frame": 165,
+      "time": 6.833333333333333,
+      "label": "Mestre recompõe a guarda"
+    },
+    {
+      "frame": 216,
+      "time": 8.958333333333334,
+      "label": "Segunda técnica"
+    },
+    {
+      "frame": 241,
+      "time": 10.0,
+      "label": "Desarme"
+    },
+    {
+      "frame": 263,
+      "time": 10.916666666666666,
+      "label": "Instrumento toca a pedra"
+    },
+    {
+      "frame": 274,
+      "time": 11.375,
+      "label": "Ponta junto ao peito"
+    },
+    {
+      "frame": 295,
+      "time": 12.25,
+      "label": "Outra vez."
+    },
+    {
+      "frame": 326,
+      "time": 13.541666666666666,
+      "label": "A tua mão."
+    },
+    {
+      "frame": 355,
+      "time": 14.75,
+      "label": "Fim do confronto"
+    }
+  ]
+}

@@ -86,6 +86,8 @@ func run() -> void:
 	root.get_node("CampaignProfile").hero_name = "Inês"
 	root.get_node("ChapterProgress").reset()
 	root.get_node("ChapterProgress").auto_save = false
+	root.get_node("ChapterProgress").flags.order_intro_started = true
+	root.get_node("ChapterProgress").flags.delivery_pending = true
 	game = load("res://scenes/chapter_01/chapter_flow.tscn").instantiate()
 	root.add_child(game)
 	await frames(3)
@@ -98,6 +100,7 @@ func run() -> void:
 			match game.phase:
 				"dialogue","block_end": game.advance()
 				"choice": game.choose(game.choice_event.options[0].id)
+				"delivery_choice": game._deliver(true)
 				"task":
 					var event_before: int = game.event_index
 					game.advance()
@@ -106,20 +109,18 @@ func run() -> void:
 					check(reached,"Real physics route reaches interaction "+game.task_id)
 					if not reached: break
 					await press_interact()
-					check(game.event_index != event_before or game.task_step == 1,"E advances the reachable objective "+game.task_id)
+					check(game.event_index != event_before or game.task_step == 1 or game.phase=="delivery_choice","E advances the reachable objective "+game.task_id)
 				"battle": drive_battle()
+				"order_supply":
+					game.options_box.get_child(0 if not root.get_node("ChapterProgress").flags.get("order_kit_received",false) else game.options_box.get_child_count()-1).pressed.emit()
+				"order_inspection": game.options_box.get_child(0).pressed.emit()
+				"order_offer": game.options_box.get_child(1).pressed.emit()
 				"styles": game.choose_style("ES")
 				"styles_result": game.confirm_style()
 				"roaming":
-					var destination: Vector2 = game.routes.goal
-					if game.routes.area()!=game.routes.goal_area:
-						var next := "square" if game.routes.area() in ["room","cais"] else "cais"
-						if game.routes.area()=="square" and game.routes.goal_area=="room": next = "room"
-						if game.routes.area()=="cais" and game.routes.goal_area=="deck": next = "deck"
-						for exit in game.routes.exits:
-							if exit.to==next: destination = exit.point; break
-					check(await walk_near(destination,45),"Walks to the actual city passage or story meeting")
-					await press_interact()
+					var reached: bool = await load("res://tests/lisbon_walk_driver.gd").new().reach(game)
+					check(reached,"Walks through the continuous city to its story meeting")
+					if not reached: break
 				"rest_confirm": game.routes.rest()
 				"exploration":
 					check(await walk_near(game.harbor.GATE,70),"Walk through Lisbon to Duarte's boarding point")
@@ -138,8 +139,13 @@ func run() -> void:
 	check(root.get_node("ChapterProgress").inventory.has("PT-Q02"),"Bowl packed")
 	check(root.get_node("ChapterProgress").skills.has("DP01"),"Defensive lesson recorded")
 	check(root.get_node("ChapterProgress").choices.has("departure_response") and root.get_node("ChapterProgress").choices.has("promise_response"),"Adult narrative choices recorded")
-	check(battle_modes.size() == 7,"Every encounter kind exercised")
+	check(battle_modes.size() == 4 and not battle_modes.has("adult_basic") and not battle_modes.has("adult_defense") and not battle_modes.has("duarte_support"),"Campaign omits Duarte training while retaining Tomé lessons and Leonor duel")
 	var progress = root.get_node("ChapterProgress")
+	var development = load("res://scripts/chapter/character_development.gd")
+	check(development.member(progress).xp==400 and development.level_of(int(development.member(progress).xp))==4,"The complete main route awards 400 XP and reaches adult level four")
+	check(development.available_points(development.member(progress))==9,"All nine earned attribute points remain available for manual distribution")
+	check(development.level_of(int(development.member(progress,"duarte").xp))==3,"Duarte starts recruitment at his own level without retroactive journey XP")
+	check(progress.flags.get("order_reported",false) and progress.flags.get("order_prepared",false),"New route completes the first Order service and prepares before the quay")
 	check(progress.save_to("res://tests/chapter-fixture.json") == OK,"Chapter save writes checkpoint")
 	var expected: Dictionary = progress.snapshot()
 	progress.reset()

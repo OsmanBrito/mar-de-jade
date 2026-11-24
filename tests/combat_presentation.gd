@@ -54,12 +54,12 @@ func run() -> void:
 		var stream: AudioStreamWAV = audio.stream(event)
 		check(stream!=null and stream.data.size()>2000 and stream.get_length()>0.05,"Complete audible recording: "+event)
 	check(audio.impact_events("ES",false,{"hits":[{"id":0,"damage":0}],"skill":-1},{0:2}).has("parry"),"Perfect block selects the parry recording at impact")
-	check(audio.release_event("FO")=="powder-training" and not audio.impact_events("FO",false,{"hits":[{"id":2,"damage":4}],"skill":0},{}).has("powder-training"),"Firearm report belongs to the muzzle release, not the later target impact")
+	check(audio.release_event("FO")=="firearm-basic" and not audio.impact_events("FO",false,{"hits":[{"id":2,"damage":4}],"skill":0},{}).has("powder-training"),"Firearm report belongs to the muzzle release, not the later target impact")
 	check(audio.impact_events("MC",false,{"hits":[{"id":2,"damage":8,"breaks":true}],"skill":0},{}).has("posture_break"),"Posture-break cue uses the actual simulation result")
 	var art = preload("res://scripts/combat/portugal_actor_art.gd")
-	var complete := art.data().size()==6
-	for entry in art.data().values(): complete = complete and entry.frames.size()==9 and entry.grips.size()==9 and entry.pivots.size()==9
-	check(complete,"All six chapter combat identities have complete illustrated pose sources and anchors")
+	var complete := art.data().size()==7
+	for entry in art.data().values(): complete = complete and entry.frames.size()==9 and entry.get("grips",entry.get("muzzles",[])).size()==9 and entry.pivots.size()==9
+	check(complete,"Six identities and the firearm variant have complete illustrated poses and grip or muzzle anchors")
 	game.free(); await frames(2)
 	print("COMBAT_PRESENTATION_RESULT "+JSON.stringify({"checks":checks,"failures":failures}))
 	quit(0 if failures.is_empty() else 1)

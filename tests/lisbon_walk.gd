@@ -16,11 +16,17 @@ func press() -> void:
 func walk(point: Vector2) -> bool:
 	game.world.walk_to(point)
 	for i in 1800:
-		if game.world.player.position.distance_to(point)<35: return true
+		if game.world.player.position.distance_to(point)<12 and game.world.segment_clear(game.world.player.position,point): return true
 		await physics_frame
 		if game.world.player.destination_path.is_empty(): break
-	return game.world.player.position.distance_to(point)<35
+	return game.world.player.position.distance_to(point)<12 and game.world.segment_clear(game.world.player.position,point)
 func passage(to: String) -> void:
+	if game.routes.continuous() and to in ["square","cais"]:
+		var same_world: int = game.world.get_instance_id()
+		var point := Vector2(-130,350) if to=="square" else Vector2(350,1030)
+		check(await walk(point),"Player walks continuously to district: "+to)
+		check(game.routes.area()==to and game.world.get_instance_id()==same_world,"District crossing retains the same exterior instance: "+to)
+		return
 	for exit in game.routes.exits:
 		if exit.to!=to: continue
 		check(game.world.point_clear(exit.point),"Passage is physically clear: "+to)

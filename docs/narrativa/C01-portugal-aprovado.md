@@ -6,6 +6,8 @@ Prólogo jogável na infância; jornada adulta começa aos 19, ano 0 · Lisboa �
 > Estado: sequência narrativa e diálogos aprovados neste chat; percurso implementado no Godot em apresentação provisória. Ver C01-plano-de-implementacao.md para o estado de validação. O nome e a identidade do mestre visitante continuam por definir, sem alterar a função da cena. A meta histórica de 120 minutos não foi medida e precisa de nova avaliação de ritmo após estas alterações. Não atribuir idade ou patamar à Leonor criança.
 ## C01-M01 — Uma tarefa pequena
 
+**Contexto institucional ampliado pelo usuário em 18/10/2026:** o abrigo é uma casa conventual de acolhimento de órfãos da Ordem de Cristo em Lisboa, ligada ao Convento de Cristo, em Tomar. A herança templária deve aparecer na arquitetura, memória e símbolos; o cotidiano reúne acolhimento, ensino, alimentação, tratamento e serviço. A casa de Lisboa é uma criação da campanha, não uma afirmação de que o monumento histórico de Tomar fica em Lisboa. Tomé é o frei responsável pelo cuidado já mostrado nas cenas. Duarte tem vestuário de serviço com a insígnia da Ordem, coerente com sua nomeação para a escolta; isso não lhe atribui novo posto nem transfere ao protagonista o estatuto de cavaleiro. Preservar as falas e os acontecimentos abaixo, incorporando essa identidade à encenação e à exploração.
+
 **Entrada aprovada posteriormente neste chat:** antes de S01, pedir apenas o nome do protagonista e confirmá-lo. Sem opções de aparência ou atributos. O nome escolhido é usado na apresentação das falas, permanece na fase adulta e não altera os identificadores editoriais “Herói criança”/“Herói” abaixo.
 
 **Gatilho:** abertura, prólogo na infância seguido do presente aos 19. **Objetivo:** aprender movimento, ataque básico e defesa simples com Leonor; conhecer a rotina do abrigo e assumir a entrega adulta. **Saída:** promessa infantil estabelecida, vínculo mostrado por ações e tarefa que leva ao cais. **Falha:** exercícios repetíveis, sem dano grave, morte ou Defesa Perfeita antecipada. **Estado:** origem_resposta=assumir/desculpar continua válido. O prólogo usa instrumentos de treino; não fixa a arma adulta, nível, proficiência nem patamar de Leonor criança.
@@ -146,36 +148,34 @@ Prólogo jogável na infância; jornada adulta começa aos 19, ano 0 · Lisboa �
   **Duarte:** Espero-te no pátio. Não venhas com a história de que o cais mudou de lugar.
 - **Herói [desculpar]:** Se a carroça tivesse chegado a horas…
   **Tomé:** Eu vi-te passar pela carroça e ir sentar-te à sombra. Podes começar a frase de novo.
-  **Herói:** Está bem. Volto para o treino.
+  **Herói:** Está bem. Vou ter com o Duarte.
 
-### S08 — Uma repetição, não outra estreia
-[No pátio, exercício adulto curto com Duarte: confirmar movimento, básico e defesa simples com o corpo/arma provisórios desta etapa. Não repetir toda a explicação infantil nem conceder Defesa Perfeita antes de M04.]
-**Duarte:** O apoio saiu antes do golpe.
-**Herói:** Eu sei.
-**Duarte:** Então não precisas que eu explique. Precisas repetir.
-**Herói [primeiro acerto]:** Assim?
-**Duarte:** Assim.
-**Herói:** Agora vais dizer “outra vez”.
-**Duarte:** Já sabes.
+### S08 — Antes de descer ao cais
+[A entrega terminou. Duarte encontra o herói no pátio da Ordem, sem aula ou combate.]
+**Duarte:** A farinha chegou à cozinha?
+**Herói:** Seca. E longe do peixe.
+**Duarte:** Então ajuda-me com esta correia antes de irmos ao cais.
 [Uma criança do abrigo se aproxima da sacola e tenta apertar uma correia.]
 **Criança:** Está muito apertada?
 **Herói:** Deixa-me fazer o último nó. Depois mostro-te.
-**Duarte:** Ela aprende e eu espero?
+**Duarte:** A sacola vai abrir se levares esse nó assim.
 **Herói:** É um nó.
 [Ele conclui sem prolongar uma desculpa. Um trabalhador chama do cais.]
-**Trabalhador:** Precisamos de mãos. Caiu uma carga!
+**Trabalhador:** A amarra cedeu no cais! Uma viga prendeu o braço de um homem. Precisamos de ajuda!
 **Herói:** Já vamos.
-**Duarte:** Deixa a sacola aqui.
-[Partir para socorro. A familiaridade de Leonor não resolveu por ele a baixa aptidão ou o hábito de adiar.]
+**Duarte:** Deixa a sacola com a criança. Eu seguro a carga; vem abrir a passagem comigo.
+[Os dois seguem para o acidente visível no cais. Não há treino com Duarte nesta sequência.]
 
 ## C01-M02 — Não olhar para baixo
 **Objetivo:** libertar trabalhador, chamar tratamento comum e compartilhar com Leonor uma tarde de trabalho e convivência. **Saída:** verde percebe sofrimento sem curar; relação adulta e projetos de Leonor aparecem antes do duelo. **Falha:** socorro recuperável, sem cura mágica ou morte por ler diálogos. **Informação:** o herói conhece a identidade dela desde criança; o vínculo não nasce deste resgate.
 
 ### S01 — Uma mão livre
+[Aproximação pelo caminho do cais. A câmera mostra o homem preso, a madeira e o ponto de apoio; só então começa a conversa.]
+**Trabalhador:** A viga está em cima do braço dele. Não conseguimos levantá-la sozinhos.
 **Trabalhador ferido:** O braço… não puxes pelo braço.
 **Herói:** Ouvi. Duarte, a madeira primeiro.
 **Duarte:** Eu seguro. Conta comigo, não com a tua pressa.
-**Herói:** Um. Dois… agora.
+**Herói:** Primeiro assento a alavanca. Quando o apoio estiver firme, levantamos os dois.
 [Executar alavanca e retirada. O verde evidencia pulsação sob o ferimento; ele perde o foco por um instante.]
 **Herói:** Há qualquer coisa a apagar-se aqui.
 **Trabalhador:** Se estás a ver sangue, eu também estou.
@@ -224,12 +224,14 @@ Prólogo jogável na infância; jornada adulta começa aos 19, ano 0 · Lisboa �
 [Ela olha a caixa e a põe no lugar indicado.]
 **Leonor:** Isto termina antes do anoitecer.
 **Herói:** Essa era a minha esperança.
+**Leonor:** Ainda não comeste, pois não? A cozinha da Ordem guardou duas porções. Podemos terminar os registos no refeitório.
+**Herói:** Vamos. Depois disto, também me faz falta sentar um pouco.
 [Os dois cumprem tarefas diferentes. Ela poderia partir após dar a ordem, mas permanece para conferir seu cumprimento; ele continua ajudando sem esperar elogio.]
 
 ### S04 — Uma pausa conhecida
-[Depois do atendimento e da conferência, pequeno pátio de serviço. Ele traz água e duas porções da refeição reservada pela cozinha. Não encenar jantar romântico: roupas de trabalho, gente passando e pouco tempo.]
+[Depois do atendimento, os dois regressam à casa da Ordem. Leonor espera no refeitório já existente, e o herói recolhe água e duas porções junto do ajudante da cozinha. A mesa e os bancos fazem parte do convento e permanecem no mapa antes e depois da conversa.]
 **Leonor:** Não pedi.
-**Herói:** A cozinha mandou levar para quem ficou.
+**Herói:** O ajudante guardou as porções para quem ficou no socorro.
 **Leonor:** Tu ficaste.
 **Herói:** Tu também.
 [Ele põe a porção ao alcance dela e se senta a uma distância familiar. Ela demora a deixar o registro; não sorri.]

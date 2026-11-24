@@ -29,6 +29,8 @@ func _ready() -> void:
 		var voyage_note := Label.new(); voyage_note.text = "Retoma o último ponto seguro da viagem Lisboa → Madeira."
 		voyage_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; confirm_button.get_parent().add_child(voyage_note)
 	if FileAccess.file_exists(ChapterProgress.SAVE_PATH):
+		var chapter_snapshot: Variant = JSON.parse_string(FileAccess.get_file_as_string(ChapterProgress.SAVE_PATH))
+		if chapter_snapshot is Dictionary and chapter_snapshot.get("completed",false) and voyage.matches_chapter(chapter_snapshot): return
 		var resume = Button.new()
 		resume.text = "Continuar capítulo guardado"
 		resume.custom_minimum_size.y = 42
@@ -66,7 +68,7 @@ func confirm() -> void:
 		return
 	name_field.text = CampaignProfile.hero_name
 	var destination = CampaignProfile.name_entry_destination
-	CampaignProfile.name_entry_destination = "res://scenes/chapter_01/opening.tscn"
+	CampaignProfile.name_entry_destination = "res://scenes/chapter_01/childhood_home.tscn"
 	get_tree().change_scene_to_file(destination)
 
 func resume_chapter() -> void:
@@ -75,6 +77,9 @@ func resume_chapter() -> void:
 	if result != OK:
 		error_label.text = "Não foi possível carregar o capítulo guardado."
 		return
-	get_tree().change_scene_to_file(ChapterProgress.entry_scene)
+	var launch = preload("res://scripts/navigation/voyage_launch.gd")
+	if ChapterProgress.completed and launch.matches_chapter(ChapterProgress.snapshot()):
+		launch.start(get_tree(),true,true)
+	else: get_tree().change_scene_to_file(ChapterProgress.entry_scene)
 
 

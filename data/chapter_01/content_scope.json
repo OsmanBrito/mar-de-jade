@@ -1,0 +1,439 @@
+{
+  "schema_version": 1,
+  "scope": "C01 Portugal e primeira viagem",
+  "skills": {
+    "DP01": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "DU01": {
+      "owner": "duarte",
+      "status": "implemented",
+      "acquisition": "departure"
+    },
+    "DU02": {
+      "owner": "duarte",
+      "status": "catalog_only",
+      "acquisition": "later_arc"
+    },
+    "ES01": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES07": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "ES08": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES09": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_manual"
+    },
+    "FO01": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "FO07": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "FO08": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "FO09": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "LA01": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA07": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "LA08": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA09": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_manual"
+    },
+    "MC01": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC07": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC08": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "MC09": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_manual"
+    },
+    "PU01": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU07": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "lesson"
+    },
+    "PU08": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU09": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_manual"
+    },
+    "FO10": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_manual"
+    },
+    "ES06": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES10": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES11": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES12": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES13": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES14": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES15": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES56": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "ES57": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA06": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA10": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA11": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA12": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA13": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA14": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA15": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA56": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "LA57": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC06": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC10": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC11": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC12": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC13": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC14": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC15": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC56": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "MC57": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU06": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU10": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU11": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU12": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU13": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU14": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU15": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU56": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "PU57": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO06": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO11": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO12": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO13": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO14": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO15": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO56": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    },
+    "FO57": {
+      "owner": "hero",
+      "status": "implemented",
+      "acquisition": "order_catalogue"
+    }
+  },
+  "passives": {
+    "GE21": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "GE22": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "ES-P11": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "LA-P11": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "MC-P11": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "FO-P11": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "PU-P11": {
+      "owner": "hero",
+      "status": "implemented"
+    },
+    "DU-P09": {
+      "owner": "duarte",
+      "status": "implemented"
+    }
+  },
+  "items": [
+    "PT-W01",
+    "PT-V01",
+    "PT-V02",
+    "PT-V03",
+    "PT-A01",
+    "PT-A02",
+    "PT-W02",
+    "PT-W03",
+    "PT-W04",
+    "PT-W05",
+    "PT-C01",
+    "PT-C02",
+    "PT-C03",
+    "PT-Q01",
+    "PT-Q02",
+    "PT-Q03",
+    "PT-T01",
+    "PT-T02",
+    "PT-T03",
+    "FERRO:dock_knife",
+    "FERRO:coat",
+    "FERRO:oilskin",
+    "FERRO:mail",
+    "FERRO:silk",
+    "FERRO:charm",
+    "FERRO:rope_bracelet",
+    "FERRO:shell"
+  ],
+  "demos": {
+    "status": "practice_only",
+    "ids": [
+      "C01-DEMO-ES-01",
+      "C01-DEMO-ES-02",
+      "C01-DEMO-LA-01",
+      "C01-DEMO-LA-02",
+      "C01-DEMO-MC-01",
+      "C01-DEMO-MC-02",
+      "C01-DEMO-FO-01",
+      "C01-DEMO-FO-02",
+      "C01-DEMO-PU-01",
+      "C01-DEMO-PU-02"
+    ]
+  },
+  "party": {
+    "hero": {
+      "equipment": "personal_inventory",
+      "rewards": "personal_wallet"
+    },
+    "duarte": {
+      "equipment": "fixed_story_kit",
+      "rewards": "shared_inventory",
+      "kit": "Arma e vestuário de Duarte; kit próprio fixo no primeiro arco."
+    },
+    "leonor": {
+      "equipment": "scripted_encounters",
+      "progression": "not_a_persistent_party_member_in_C01"
+    }
+  }
+}

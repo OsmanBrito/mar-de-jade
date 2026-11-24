@@ -22,9 +22,9 @@ func run() -> void:
 		p.style = style; game.practice_resume_index = game.event_index; game.practice_events = game.events.duplicate(true)
 		game._begin_battle("practice"); await frames()
 		var b = game.battle_host.combat
-		check(b.commands(0)==[0,1,2,3],style+" exposes basic and three borrowed techniques")
+		check(b.commands(0)==([0,1,2,3,8] if style=="FO" else [0,1,2,3]),style+" exposes its practice techniques")
 		check(not b.lesson_result().finished,style+" free practice has no automatic reward")
-		check(b.skill_def(0,2).content_id.begins_with("C01-DEMO-") and b.skill_def(0,3).name.begins_with("Exercício"),style+" drills cannot be confused with canonical catalogue techniques")
+		check((b.skill_def(0,2).content_id=="FO01" and b.skill_def(0,3).content_id=="FO09") if style=="FO" else (b.skill_def(0,2).content_id.begins_with("C01-DEMO-") and b.skill_def(0,3).name.begins_with("Exercício")),style+" practice uses the correct catalogue or exercise identities")
 		for skill in [1,2,3]:
 			var pad := InputEventJoypadButton.new(); pad.button_index = JOY_BUTTON_Y; pad.pressed = true
 			game.battle_host._unhandled_input(pad)

@@ -2,6 +2,7 @@ extends CanvasLayer
 ## Shared presentation for staged chapter scenes.
 signal continuation_requested
 signal replay_requested
+signal menu_requested(page: String)
 var caption := "Portugal · Infância\nUm lugar à mesa"
 var speaker: Label
 var body: Label
@@ -15,13 +16,30 @@ var root: Control
 var content_scroll: ScrollContainer
 var content_box: VBoxContainer
 var last_body_text := ""
-var frame: Control
-var portrait: Control
-var last_speaker := "<none>"
-var history: Array[Dictionary] = []
+var history: Array[Dictionary]:
+	get: return ChapterProgress.dialogue_history
 var last_record := ""
 var hint_source := ""
 var rendered_hint := ""
+var status_source := ""
+var rendered_status := ""
+var guide
+var brand: Label
+var exploration_layout := false
+var footer: ColorRect
+var portrait_frame: PanelContainer
+var portrait_image: TextureRect
+var portrait_id := ""
+var frame: Control
+var emblem: Control
+var exploration_back: Panel
+var interaction_back: Panel
+var objective_label: Label
+var interaction_label: Label
+var exploration_objective := ""
+var exploration_prompt := ""
+var independent_exploration_hud := false
+var exploration_actions: HBoxContainer
 const Presentation = preload("res://scripts/ui/presentation.gd")
 
 func _ready() -> void:
@@ -41,14 +59,19 @@ func _ready() -> void:
 	material.shader = shader; material.set_shader_parameter("fade",texture); shade.material = material
 	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	control.add_child(shade)
+	exploration_back = Panel.new(); exploration_back.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	exploration_back.add_theme_stylebox_override("panel",Presentation.panel(Color(.055,.105,.10,.90),Color(.45,.49,.37,.7)))
+	control.add_child(exploration_back); exploration_back.hide()
 	var header = _label("MAR  DE  JADE",17)
+	brand = header
 	header.position = Vector2(52,24)
 	header.add_theme_font_override("font",Presentation.serif())
 	header.add_theme_color_override("font_color",Color("e5c787"))
 	header.add_theme_color_override("font_outline_color",Color(0.02,0.05,0.05,0.8))
 	header.add_theme_constant_override("outline_size",5)
 	control.add_child(header)
-	var emblem := Control.new(); emblem.position = Vector2(26,27); emblem.size = Vector2(18,18)
+	# Jade emblem beside the title, in the same language as the dialogue frame.
+	emblem = Control.new(); emblem.position = Vector2(26,27); emblem.size = Vector2(18,18)
 	emblem.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	emblem.draw.connect(func():
 		var c := Vector2(9,9)
@@ -76,10 +99,18 @@ func _ready() -> void:
 	status.size.x = 800
 	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	control.add_child(status)
+	objective_label = _label("",15); objective_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	objective_label.add_theme_color_override("font_color",Color("ded8bd")); objective_label.hide(); control.add_child(objective_label)
+	interaction_back = Panel.new(); interaction_back.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	interaction_back.add_theme_stylebox_override("panel",Presentation.panel(Color(.055,.105,.10,.94),Color("a99161")))
+	control.add_child(interaction_back); interaction_back.hide()
+	interaction_label = _label("",17); interaction_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	interaction_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; control.add_child(interaction_label); interaction_label.hide()
 	panel = PanelContainer.new()
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
 	panel.position = Vector2(-480,-210)
 	panel.size = Vector2(960,156)
+	# The lacquered frame is drawn by dialogue_frame.gd; the stylebox only casts the shadow.
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0,0,0,0)
 	style.shadow_color = Color(0.0,0.02,0.02,0.45); style.shadow_size = 18; style.shadow_offset = Vector2(0,6)
@@ -93,19 +124,19 @@ func _ready() -> void:
 	for side in [["left",22],["right",30],["top",18],["bottom",16]]:
 		margins.add_theme_constant_override("margin_"+side[0],side[1])
 	panel.add_child(margins)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation",22)
-	margins.add_child(row)
-	portrait = Control.new(); portrait.set_script(preload("res://scripts/ui/speaker_portrait.gd"))
-	portrait.custom_minimum_size = Vector2(118,118)
-	portrait.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(portrait)
 	content_scroll = ScrollContainer.new()
-	content_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	content_scroll.follow_focus = true
-	row.add_child(content_scroll)
+	var dialogue_row := HBoxContainer.new(); dialogue_row.add_theme_constant_override("separation",22); margins.add_child(dialogue_row)
+	portrait_frame = PanelContainer.new(); portrait_frame.custom_minimum_size = Vector2(166,176)
+	var portrait_style := Presentation.panel(Color("0b1d1c"),Presentation.GOLD)
+	portrait_style.set_border_width_all(2); portrait_style.border_color = Color(Presentation.GOLD,0.85)
+	portrait_frame.add_theme_stylebox_override("panel",portrait_style)
+	dialogue_row.add_child(portrait_frame)
+	portrait_image = TextureRect.new(); portrait_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; portrait_image.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	portrait_frame.add_child(portrait_image); portrait_frame.hide()
+	content_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL; dialogue_row.add_child(content_scroll)
 	var box = VBoxContainer.new()
 	content_box = box
 	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -133,7 +164,7 @@ func _ready() -> void:
 	replay_button.pressed.connect(func(): replay_requested.emit())
 	buttons.add_child(replay_button)
 	replay_button.hide()
-	var footer_shade = ColorRect.new()
+	var footer_shade = ColorRect.new(); footer = footer_shade
 	footer_shade.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	footer_shade.offset_top = -42
 	footer_shade.color = Color(0.035,0.075,0.08,0.78)
@@ -143,45 +174,126 @@ func _ready() -> void:
 	hint.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
 	hint.position = Vector2(-520,-26)
 	hint.size.x = 1040
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	control.add_child(hint)
 	control.theme = Presentation.theme()
+	exploration_actions = HBoxContainer.new()
+	exploration_actions.add_theme_constant_override("separation",8)
+	control.add_child(exploration_actions)
+	for entry in [["Caderno","Pedidos"],["Menu","Sistema"]]:
+		var action := Button.new(); action.text = entry[0]
+		action.custom_minimum_size = Vector2(104,42)
+		action.pressed.connect(func(): menu_requested.emit(entry[1]))
+		exploration_actions.add_child(action)
+	exploration_actions.hide()
 	GamePreferences.changed.connect(_preferences_changed)
 	_preferences_changed()
+	guide = preload("res://scripts/chapter/journey_guide.gd").new(); guide.view = self; add_child(guide)
 
 func _preferences_changed() -> void:
 	if not is_instance_valid(body): return
 	body.add_theme_font_size_override("font_size",GamePreferences.font_size(23))
 	speaker.add_theme_font_size_override("font_size",GamePreferences.font_size(22))
 	next_button.add_theme_font_size_override("font_size",GamePreferences.font_size(17))
+	if hint!=null: hint.add_theme_font_size_override("font_size",GamePreferences.font_size(14))
 
 func remember(who: String,words: String) -> void:
-	if who.is_empty() or words.is_empty() or last_record==who+"\n"+words: return
+	if who.is_empty() or words.is_empty(): return
 	last_record = who+"\n"+words
-	history.append({"speaker":who,"text":words})
-	if history.size()>100: history.pop_front()
+	preload("res://scripts/chapter/dialogue_log.gd").remember(ChapterProgress,who,words)
+
+func set_exploration_prompt(objective: String,prompt: String) -> void:
+	exploration_objective = objective; exploration_prompt = prompt
+	# Preserve the status contract used by gameplay and accessibility checks.
+	status.text = prompt if not prompt.is_empty() else objective
 
 func _process(_delta: float) -> void:
 	if hint!=null:
 		if hint.text!=rendered_hint: hint_source = hint.text
 		rendered_hint = GamePreferences.hint_text(hint_source); hint.text = rendered_hint
-	if panel == null or not panel.is_visible_in_tree(): return
+	if panel == null: return
+	if status.text!=rendered_status: status_source = status.text
+	rendered_status = GamePreferences.hint_text(status_source); status.text = rendered_status
+	var window_size := get_viewport().get_visible_rect().size
+	var hint_width := minf(1040,window_size.x-48)
+	hint.offset_left = -hint_width/2; hint.offset_right = hint_width/2
+	var footer_height := maxf(42,hint.get_minimum_size().y+18)
+	footer.offset_top = -footer_height; hint.offset_top = -footer_height+9; hint.offset_bottom = -9
+	var exploring := not panel.visible and not next_button.visible
+	exploration_actions.visible = exploring and not menu_requested.get_connections().is_empty()
+	if exploration_actions.visible:
+		for action in exploration_actions.get_children(): action.add_theme_font_size_override("font_size",GamePreferences.font_size(16))
+		exploration_actions.size = exploration_actions.get_combined_minimum_size()
+		exploration_actions.position = Vector2(window_size.x-exploration_actions.size.x-24,24)
+	if exploring!=exploration_layout:
+		exploration_layout = exploring; brand.visible = not exploring; emblem.visible = not exploring
+		caption_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT if exploring else Control.PRESET_CENTER_TOP)
+		caption_label.offset_left = 28 if exploring else -270
+		caption_label.offset_right = 728 if exploring else 270
+		caption_label.offset_top = 22 if exploring else 24
+		caption_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if exploring else HORIZONTAL_ALIGNMENT_CENTER
+		status.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT if exploring else Control.PRESET_CENTER_TOP)
+		status.offset_left = 28 if exploring else -400
+		status.offset_right = 568 if exploring else 400
+		status.offset_top = 53 if exploring else 78
+		status.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if exploring else HORIZONTAL_ALIGNMENT_CENTER
+		status.max_lines_visible = 3 if exploring else -1
+	if exploring:
+		caption_label.offset_right = minf(728,window_size.x-28)
+		status.offset_right = minf(568,window_size.x-28)
+	else:
+		var status_half := minf(400,(window_size.x-56)*.5)
+		status.offset_left = -status_half; status.offset_right = status_half
+	var city_hud: bool = exploring and not exploration_objective.is_empty() and (guide.enabled or independent_exploration_hud)
+	exploration_back.visible = city_hud; objective_label.visible = city_hud
+	status.visible = not city_hud
+	interaction_back.visible = city_hud and not exploration_prompt.is_empty()
+	interaction_label.visible = interaction_back.visible
+	if city_hud:
+		var hud_width := minf(450,window_size.x-48)
+		caption_label.offset_left = 40; caption_label.offset_top = 29; caption_label.offset_right = hud_width+8
+		caption_label.add_theme_font_size_override("font_size",GamePreferences.font_size(17))
+		caption_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		objective_label.text = GamePreferences.hint_text(exploration_objective)
+		objective_label.add_theme_font_size_override("font_size",GamePreferences.font_size(15))
+		objective_label.position = Vector2(40,caption_label.offset_top+caption_label.get_minimum_size().y+10)
+		objective_label.size = Vector2(hud_width-32,0)
+		exploration_back.position = Vector2(24,18)
+		exploration_back.size = Vector2(hud_width,objective_label.position.y+objective_label.get_minimum_size().y-2)
+		var prompt_width := minf(660,window_size.x-80)
+		interaction_label.text = GamePreferences.hint_text(exploration_prompt)
+		interaction_label.add_theme_font_size_override("font_size",GamePreferences.font_size(17))
+		interaction_label.size = Vector2(prompt_width-32,0)
+		var prompt_height := interaction_label.get_minimum_size().y+24
+		interaction_back.position = Vector2((window_size.x-prompt_width)*.5,window_size.y-footer_height-prompt_height-20)
+		interaction_back.size = Vector2(prompt_width,prompt_height)
+		interaction_label.position = interaction_back.position+Vector2(16,12)
+	else:
+		caption_label.add_theme_font_size_override("font_size",19)
+		caption_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	if not panel.is_visible_in_tree(): return
+	var portraits = preload("res://scripts/chapter/dialogue_portraits.gd")
+	var young := caption_label.text.contains("Infância")
+	var identity: String = portraits.identity(speaker.text,young,CampaignProfile.hero_name)
+	if identity!=portrait_id:
+		portrait_id = identity; portrait_image.texture = portraits.portrait(identity)
+	portrait_frame.visible = portrait_image.texture!=null
 	if body.text!=last_body_text:
 		last_body_text = body.text
 		content_scroll.scroll_vertical = 0
 		# New line: a short fade keeps the change readable without delaying input.
 		body.modulate.a = 0.0
 		create_tween().tween_property(body,"modulate:a",1.0,0.18)
-	if speaker.text!=last_speaker:
-		last_speaker = speaker.text
-		portrait.visible = portrait.show_speaker(speaker.text,CampaignProfile.hero_name,caption_label.text.contains("Infância"))
 	var viewport_size := get_viewport().get_visible_rect().size
 	var width := minf(1000,viewport_size.x-64)
 	panel.offset_left = -width*0.5
 	panel.offset_right = width*0.5
-	var height := clampf(content_box.get_combined_minimum_size().y+38,(156.0 if portrait.visible else 150.0),maxf(170,viewport_size.y-190))
-	panel.offset_bottom = -54
-	panel.offset_top = -54-height
+	var content_height := maxf(content_box.get_combined_minimum_size().y,176 if portrait_frame.visible else 0)
+	var height := clampf(content_height+38,170,maxf(170,viewport_size.y-190))
+	var bottom := maxf(54,footer_height+12)
+	panel.offset_bottom = -bottom
+	panel.offset_top = -bottom-height
 	# Resizing always follows content, including choices and passive equipment.
 	# Scrollbars handle the exceptional long menu without pushing text offscreen.
 	caption_label.offset_left = -minf(300,viewport_size.x*0.25)

@@ -1,12 +1,17 @@
 extends Node2D
+## Nearby interactions remain quiet; the focused one owns the readable cue.
 var highlighted := false
 var available := true
 var symbol := "…"
 var caption := ""
 var clock := 0.0
+var world: Node2D
+var visibility_weight := 0.0
+var icon_height := 92.0
 var outlined_host := false
 
-## The person this marker belongs to gets a gold outline while in focus.
+## The person this marker belongs to gets a gold outline while in focus
+## (an affordance on the character itself rather than another icon).
 func _outline(node: Node,on: bool) -> void:
 	var person = node.get("presentation") if node != null else null
 	if person == null and node != null and "outlined" in node: person = node
@@ -14,17 +19,39 @@ func _outline(node: Node,on: bool) -> void:
 
 func _exit_tree() -> void:
 	if outlined_host: _outline(get_parent(),false)
-
+func _ready() -> void:
+	var parent := get_parent()
+	while parent!=null:
+		if parent.has_method("is_walkable_point"): world = parent; break
+		parent = parent.get_parent()
+	if is_instance_valid(world) and world.has_meta("order_convent"):
+		icon_height = 114.0 if world.get("childhood")==true else 134.0
 func _process(delta: float) -> void:
 	clock += delta
+	var target := 1.0
+	if is_instance_valid(world) and is_instance_valid(world.player):
+		var distance: float = global_position.distance_to(world.player.global_position)
+		target = 1.0-smoothstep(170,400 if symbol=="!" else 280,distance)
+	if highlighted: target = 1.0
+	visibility_weight = lerpf(visibility_weight,target,1-exp(-delta*12))
+	modulate.a = visibility_weight
+	var focus := highlighted and available
+	if focus != outlined_host: _outline(get_parent(),focus); outlined_host = focus
 	queue_redraw()
-
 func _draw() -> void:
-	if not available: return
-	var art = preload("res://scripts/ui/marker_art.gd")
-	var center := Vector2(0,-112+sin(clock*2.0)*2)
-	art.badge(self,center,symbol,highlighted,clock)
+	if not available or visibility_weight<.015: return
+	var center := Vector2(0,-icon_height)
+	var color := Color("efd195") if highlighted else Color("b7c3aa")
+	var radius := 12.0 if highlighted else 7.0
+	draw_circle(center+Vector2(1,2),radius+1,Color(0,.03,.025,.45))
+	draw_circle(center,radius,Color("203a38"))
+	draw_arc(center,radius,0,TAU,28,color,1.5,true)
+	var font := ThemeDB.fallback_font
+	var text := symbol if highlighted or symbol in ["!","?"] else "·"
+	var text_size := 15 if highlighted else 11
+	var width := font.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,text_size).x
+	draw_string(font,center+Vector2(-width/2,5 if highlighted else 4),text,HORIZONTAL_ALIGNMENT_LEFT,-1,text_size,color)
 	if highlighted:
-		art.caption(self,center+Vector2(0,-20),caption)
-	# Outline the person or object this marker belongs to while it is in focus.
-	if highlighted != outlined_host: _outline(get_parent(),highlighted); outlined_host = highlighted
+		draw_set_transform(Vector2(0,-25),0,Vector2(1,.45))
+		draw_arc(Vector2.ZERO,19,0,TAU,32,Color(.94,.82,.57,.7),1.5,true)
+		draw_set_transform(Vector2.ZERO)

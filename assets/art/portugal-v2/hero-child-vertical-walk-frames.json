@@ -1,0 +1,47 @@
+{
+  "source": "res://assets/art/portugal-v2/hero-child-vertical-walk-v1.png",
+  "frame_size": 96,
+  "reference_height": 96,
+  "columns": 4,
+  "rows": 2,
+  "sequence": [
+    0,
+    1,
+    2,
+    3,
+    0,
+    1,
+    2,
+    3
+  ],
+  "mirrored": [
+    false,
+    false,
+    false,
+    false,
+    true,
+    true,
+    true,
+    true
+  ],
+  "rear_sequence": [
+    0,
+    3,
+    1,
+    2,
+    0,
+    3,
+    1,
+    2
+  ],
+  "rear_mirrored": [
+    false,
+    true,
+    true,
+    false,
+    true,
+    false,
+    false,
+    true
+  ]
+}

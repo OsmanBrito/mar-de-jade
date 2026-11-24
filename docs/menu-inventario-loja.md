@@ -32,6 +32,6 @@ Save versão 2 acrescenta moedas, vagas, estoque, pagamentos e recursos atuais. 
 
 `tests/player_inventory.gd`: 55 verificações de transações, proteção, atributos reais, HP/mitigação, migração, rejeição atómica, teclado/controle, fala preservada, acesso contextual e repetição sem recompensas duplicadas, também aprovadas em OpenGL. Com capítulo completo (31), regras (34), estilos (9), passivas (19), encerramento (27), treino infantil (33) e rotas/retomada (15), são **223 verificações distintas aprovadas**. As 250 falas aprovadas e os 23 módulos de referência foram preservados.
 
-Capturas reais: [personagem](menu-personagem.png), [loja](loja-lisboa.png), [inventário](inventario-portugal.png), [equipamento](equipamento-portugal.png) e [passivas](passivas-menu.png). [Vídeo de 10 segundos](menu-loja-portugal.mp4). `tools/capture_player_menu.gd` monta um estado de revisão na cena real sem gravar saves do utilizador; `--record-menu` acrescenta pausas de leitura para Movie Maker.
+Capturas reais: [personagem](menu-personagem.png), [loja](loja-lisboa.png), [inventário](inventario-portugal.png), [equipamento](equipamento-portugal.png) e [passivas](passivas-menu.png). O vídeo de validação de 10 segundos foi removido na limpeza de temporários. `tools/capture_player_menu.gd` monta um estado de revisão na cena real sem gravar saves do utilizador; `--record-menu` acrescenta pausas de leitura para Movie Maker.
 
 Arte, nomes e referências existentes foram conservados. Preços e atributos são o primeiro balanceamento jogável, sujeito à validação manual.
