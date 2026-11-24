@@ -25,17 +25,17 @@ func _draw() -> void:
 	var p := object_position
 	if carrying and hero != null: p = hero.position+Vector2(20,-20)
 	if delivery_active:
-		Art.draw_item(self,"PT-Q01",p,32)
+		# Two flour sacks: carried at the hip, or set down where the task waits.
+		for offset in [Vector2(-9,0),Vector2(9,3)]:
+			Art.draw_world(self,"flour",p+offset,24,Color.WHITE,not carrying)
 		return
 	if map_kind == "cais" and not cargo_freed and not get_parent().has_node("../ChapterStaging"):
-		draw_rect(Rect2(p+Vector2(-15,-24),Vector2(115,12)),Color("765538"))
-		draw_line(p+Vector2(-5,0),p+Vector2(40,-40),Color("c6af83"),4)
+		# Fallen cargo still pinning the worker.
+		Art.draw_world(self,"crates",p+Vector2(45,-2),96)
 	elif map_kind == "cais" and crate_task:
-		draw_rect(Rect2(p-Vector2(15,24),Vector2(30,24)),Color("876442"))
-		draw_line(p-Vector2(13,22),p+Vector2(13,-2),Color("b89a70"),3)
-		draw_line(p+Vector2(13,-22),p+Vector2(-13,-2),Color("b89a70"),3)
+		Art.draw_world(self,"crates",p,54)
 	elif map_kind in ["room","courtyard"]:
-		Art.draw_item(self,"PT-Q01",p,42)
+		Art.draw_world(self,"PT-Q01",p,40,Color.WHITE,map_kind != "room")
 	elif map_kind == "service":
 		if carrying:
 			Dining.draw(self,"bowl",p,22)

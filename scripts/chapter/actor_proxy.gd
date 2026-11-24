@@ -34,6 +34,18 @@ const NPC_ART = preload("res://scripts/npcs/lisbon_npc_library.gd")
 var walking := false
 ## Interiors keep only the soft contact shadow; the sun shadow is for outdoor light.
 var has_cast_shadow := true
+## Gold focus outline (see actor_rim.gd), used when this person can be talked to.
+var outlined := false:
+	set(value):
+		if value == outlined: return
+		outlined = value
+		var rim := get_node_or_null("Rim")
+		if value and rim == null:
+			rim = Node2D.new(); rim.name = "Rim"; rim.set_script(preload("res://scripts/chapter/actor_rim.gd"))
+			rim.host = self; add_child(rim)
+		elif not value and rim != null: rim.queue_free()
+var _last_visual := ""
+var _last_origin := Vector2.ZERO
 var frame_time := 0.0
 var facing := 0
 var seat_support := false
@@ -43,6 +55,12 @@ var tool_angle := 0.45:
 	set(value): tool_angle = value; queue_redraw()
 var cup_lift := 0.0:
 	set(value): cup_lift = value; queue_redraw()
+
+func draw_silhouette(canvas: Node2D,thickness: float) -> void:
+	if _last_visual.is_empty(): return
+	for i in 8:
+		var offset := Vector2.from_angle(i*TAU/8.0)*thickness
+		NPC_ART.draw_actor(canvas,_last_visual,facing,walking,frame_time,posture,1.0,_last_origin+offset)
 
 func _indoors() -> bool:
 	var node := get_parent()
@@ -97,7 +115,8 @@ func _draw() -> void:
 	if identity in ["leonor", "leonor_adult"]:
 		cloth = Color("a288b6")
 	var eye_offset = Vector2(4 if facing == 3 else -4,-height+7)
-	if NPC_ART.draw_actor(self,visual_id,facing,walking,frame_time,posture,1.0,Vector2(0,-seat_lift if posture == "seated" else 0.0),eye_glow):
+	_last_visual = visual_id; _last_origin = Vector2(0,-seat_lift if posture == "seated" else 0.0)
+	if NPC_ART.draw_actor(self,visual_id,facing,walking,frame_time,posture,1.0,_last_origin,eye_glow):
 		pass
 	elif identity in ["hero", "hero_child"]:
 		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR

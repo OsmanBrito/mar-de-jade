@@ -50,6 +50,7 @@ static func install(world: Node2D) -> void:
 		shaft.position = to_world(Vector2(region.end.x,region.position.y))-anchor
 		shaft.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 		var holder := Node2D.new(); holder.position = anchor; holder.add_child(shaft)
+		holder.set_meta("no_cast_shadow",true) # the painted ship already shades its masts
 		world.sorted_world.add_child(holder)
 		_footprint(holder,22.0)
 	for fitting in FITTINGS:
@@ -76,8 +77,8 @@ func _draw() -> void:
 				wake.append(stern+Vector2(150*trail,-58*trail+side*(10+trail*22))*departure_progress)
 			draw_polyline(wake,Color(0.80,0.90,0.86,departure_progress*0.35),2.5,true)
 	for origin in [Vector2(-60,290),Vector2(50,290)]:
-		preload("res://scripts/chapter/story_prop_art.gd").draw_item(self,"PT-T01",origin+Vector2(0,7),48)
-		if origin.x<0: draw_line(origin+Vector2(-13,0),origin+Vector2(12,0),Color("68a3bc"),4,true)
+		# The blue mooring line is the same painted coil, dyed.
+		preload("res://scripts/chapter/story_prop_art.gd").draw_world(self,"PT-T01",origin+Vector2(0,9),44,Color(0.62,0.8,1.0) if origin.x<0 else Color.WHITE)
 	if is_instance_valid(rope_owner) or rope_secured:
 		var end: Vector2 = to_local(rope_owner.global_position)+Vector2(0,-30) if is_instance_valid(rope_owner) else Vector2(-140,330)
 		var curve := PackedVector2Array()

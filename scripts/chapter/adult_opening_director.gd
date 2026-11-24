@@ -109,9 +109,9 @@ func _process(_delta: float) -> void:
 
 func _draw() -> void:
 	if view == null: return
-	preload("res://scripts/chapter/story_prop_art.gd").draw_item(self,"PT-Q01",sack_position,43)
+	preload("res://scripts/chapter/story_prop_art.gd").draw_world(self,"PT-Q01",sack_position,40,Color.WHITE,false)
 	for offset in [Vector2(-15,30),Vector2(20,35)]:
-		preload("res://scripts/chapter/story_prop_art.gd").draw_item(self,"PT-T01",$SackAtDoor.position+offset,28)
+		preload("res://scripts/chapter/story_prop_art.gd").draw_world(self,"PT-T01",$SackAtDoor.position+offset,30,Color.WHITE,false)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if view == null: return

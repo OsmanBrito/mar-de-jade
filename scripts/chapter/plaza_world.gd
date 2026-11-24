@@ -15,6 +15,7 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		var light := "harbor" if has_meta("living_quay") else ("departure" if map_id == "botafogo_departure" else "square")
 		preload("res://scripts/chapter/scene_grade.gd").install(self,light)
+		preload("res://scripts/chapter/prop_shadows.gd").install(self)
 
 func is_walkable_point(point: Vector2) -> bool:
 	if has_meta("departure_deck"):

@@ -33,8 +33,6 @@ func install(world) -> void:
 		var icon := Sprite2D.new(); icon.texture = load("res://assets/art/items/portugal/"+["PT-C01","PT-C02","PT-C03"][i]+".png")
 		icon.position = Vector2((i-1)*23,(i-1)*-5); icon.scale = Vector2.ONE*24.0/icon.texture.get_width()
 		icon.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR; goods.add_child(icon)
-	var sign_label := Label.new(); sign_label.text = "PROVISÕES · LISBOA"; sign_label.position = Vector2(-85,-146)
-	sign_label.size.x = 170; sign_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; merchant.style_label(sign_label,12); stall.add_child(sign_label)
 
 func can_begin() -> bool:
 	if ChapterProgress.flags.get("injured",false) or ChapterProgress.flags.get("embarked",false): return false
