@@ -21,6 +21,14 @@ static func install(map: Node2D) -> void:
 		var house := Scenery.prop(map,row[0],"bruma-v2-"+row[1]+".png",row[2],row[3],Rect2(area.position-row[2],area.size))
 		house.tint = Color("f1eee5")
 		house.set_meta("urban_frontage",true)
+		var look: Array = Urban.FRONTAGE_LOOK.get(row[0],["",false])
+		dress_house(house,row[1],look[0],look[1])
+	for row in Urban.ROW_HOUSES:
+		var area := Urban.footprint(row)
+		var house := Scenery.prop(map,row[0],"bruma-v2-"+row[1]+".png",row[2],row[3],Rect2(area.position-row[2],area.size))
+		house.tint = Color("eeebe1")
+		house.set_meta("row_house",true)
+		dress_house(house,row[1],row[5],row[6])
 	for at in [Vector2(-390,598),Vector2(-185,592)]:
 		Scenery.prop(map,"OliveiraDoQuintal","bruma-v2-tree.png",at,Vector2(154,182))
 	for row in Blocks.WALLS+Urban.WALLS:
@@ -49,6 +57,13 @@ static func install(map: Node2D) -> void:
 	var mast := Node2D.new(); mast.name = "MarcoDoEmbarque"; mast.position = Vector2(1582,1040)
 	mast.set_script(load("res://scripts/city/lisbon_waterfront_marker.gd")); map.sorted_world.add_child(mast)
 	Scenery.body(mast,PackedVector2Array([Vector2(-5,-5),Vector2(5,-5),Vector2(5,5),Vector2(-5,5)]))
+## Lisbon render colour and mirroring for one of the two house paintings.
+static func dress_house(house: Node2D,painting: String,plaster: String,mirror: bool) -> void:
+	if not plaster.is_empty():
+		house.plaster_mode = 1 if painting=="house_limestone" else 2
+		house.plaster = Color(Urban.PLASTER[plaster],0.92)
+	if mirror: house.scale.x = -1
+
 func _draw() -> void:
 	for polygon in Urban.BLOCKS:
 		Ground.surface(self,PackedVector2Array(polygon),Color("aaa48e"))
@@ -68,8 +83,11 @@ func _draw() -> void:
 	draw_set_transform(Vector2.ZERO)
 	# A narrow worn street has actual frontage on both sides. Enclosed yards and
 	# thresholds distinguish land use without adding ornamental road stripes.
-	var street := Geometry2D.offset_polyline(PackedVector2Array(Urban.NEIGHBORHOOD_WALK),53,Geometry2D.JOIN_ROUND,Geometry2D.END_ROUND)
-	for polygon in street: Ground.surface(self,polygon,Color("b9b09a"))
+	# Rua dos Mercadores is a street, not more square: cobbles and a gutter.
+	Ground.street(self,PackedVector2Array(Urban.NEIGHBORHOOD_WALK),106)
+	# Every door gets its own pale threshold between house and street.
+	for row in Urban.FRONTAGES+Urban.ROW_HOUSES:
+		Ground.doorstep(self,row[2],minf(row[4].x*.55,120))
 	Ground.surface(self,PackedVector2Array(Blocks.MARKET_APRON),Color("c8c0aa"))
 	Ground.surface(self,PackedVector2Array(Blocks.PIER_APRON),Color("c6bfaa"))
 	# Worn paving follows actual bends, rather than an arrow painted on the map.

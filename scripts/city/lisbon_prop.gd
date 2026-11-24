@@ -3,6 +3,17 @@ extends Node2D
 var texture: Texture2D
 var size := Vector2.ZERO
 var tint := Color.WHITE
+## Lisbon plaster colour for the two house paintings: 0 none, 1 cream limestone
+## render, 2 teal render. Only the render is recoloured; stone, roof, shutters,
+## door and plants keep the painting's own colours. Alpha is the strength.
+var plaster_mode := 0:
+	set(value): plaster_mode = value; _apply_plaster()
+var plaster := Color(0,0,0,0):
+	set(value): plaster = value; _apply_plaster()
+func _apply_plaster() -> void:
+	if cutaway == null: return
+	cutaway.set_shader_parameter("plaster_mode",plaster_mode)
+	cutaway.set_shader_parameter("plaster",plaster)
 var fade := true
 var rect := Rect2()
 var pixels: Image
@@ -22,14 +33,42 @@ uniform float cover_alpha = 1.0;
 uniform bool clear_scene = false;
 uniform vec2 interest_point = vec2(0.0);
 uniform float interest_strength = 0.0;
+uniform int plaster_mode = 0;
+uniform vec4 plaster : source_color = vec4(0.0);
 void vertex() { object_point = VERTEX; }
 void fragment() {
+    if (plaster_mode > 0 && plaster.a > 0.0) {
+        vec3 c = COLOR.rgb;
+        float hi = max(c.r, max(c.g, c.b)); float lo = min(c.r, min(c.g, c.b));
+        float sat = (hi - lo) / max(hi, 0.0001);
+        float lum = dot(c, vec3(0.299, 0.587, 0.114));
+        // Thresholds are in the linear colour the canvas shader receives.
+        float w;
+        if (plaster_mode == 1) {
+            // Lime render of the limestone house: pale and warm (roof tiles are darker).
+            w = smoothstep(0.45, 0.60, lum) * (1.0 - smoothstep(0.55, 0.72, sat)) * step(c.b, c.r + 0.02);
+        } else {
+            // Teal render: green-blue over red, lighter than the dark painted shutters.
+            // The "teal" render is a sage green: G/R about 1.3 and B/R about 0.8.
+            // Ratios ignore light and shade; ivy (B/R near 0.15) and the near-black
+            // shutters (B/R above 2) fall outside, and so do warm stone and flowers.
+            float gr = c.g / max(c.r, 0.001); float br = c.b / max(c.r, 0.001);
+            float teal = smoothstep(0.98, 1.10, gr) * (1.0 - smoothstep(1.75, 2.1, gr));
+            teal *= smoothstep(0.42, 0.58, br) * (1.0 - smoothstep(1.15, 1.35, br));
+            w = teal * smoothstep(0.03, 0.08, lum);
+        }
+        // Keep the painting's light and texture: scale the new colour by its brightness
+        // relative to the average render of each painting.
+        vec3 recoloured = plaster.rgb * (lum / (plaster_mode == 1 ? 0.72 : 0.44));
+        COLOR.rgb = mix(c, clamp(recoloured, 0.0, 1.0), w * plaster.a);
+    }
     float distance_to_actor = length((object_point-focus_point)*vec2(1.0,0.72));
     float secondary = (1.0-smoothstep(42.0,88.0,length((object_point-interest_point)*vec2(1.0,0.72))))*interest_strength;
     float reveal = clear_scene ? 1.0 : max(1.0-smoothstep(42.0,88.0,distance_to_actor),secondary);
     COLOR.a *= mix(1.0,cover_alpha,reveal);
 }"""
 	cutaway = ShaderMaterial.new(); cutaway.shader = cutaway_shader; material = cutaway
+	_apply_plaster()
 func covers(point: Vector2) -> bool:
 	if rect.size.x<=0 or rect.size.y<=0: return false
 	var local := to_local(point)+Vector2(0,-45)
