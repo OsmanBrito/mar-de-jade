@@ -511,7 +511,7 @@ func _begin_task(event: Dictionary) -> void:
 	if task_id == "knot" and actors.has("Criança"):
 		props.marker = actors["Criança"].position + Vector2(0, 18)
 		props.object_position = props.marker
-	props.marker_active = true; props.marker_label = "E · "+{"lever":"usar a alavanca","fetch_tome":"falar com Tomé","clear_passage":"pegar o caixote","meal":"levar a refeição","pack":"guardar a tigela","blue_rope":"apanhar a amarra","knot":"apertar a correia","recovery_walk":"caminhar"}.get(task_id,"interagir")
+	props.marker_active = true; props.marker_label = "E / A · "+{"lever":"usar a alavanca","fetch_tome":"falar com Tomé","clear_passage":"pegar o caixote","meal":"levar a refeição","pack":"guardar a tigela","blue_rope":"apanhar a amarra","knot":"apertar a correia","recovery_walk":"caminhar"}.get(task_id,"interagir")
 	if task_id=="recovery_water": props.marker_label = "E / A · beber água"
 	if task_id == "fetch_tome": props.marker = actors["Tomé"].position+Vector2(-35,25)
 	if task_id=="delivery":
@@ -567,7 +567,7 @@ func interact_task() -> void:
 	if task_id == "recovery_walk" and world.player.position.distance_to(task_start) < 35: return
 	if task_id == "clear_passage" and task_step == 0:
 		task_step = 1; props.carrying = true; props.marker = _point("destination")
-		props.marker_label = "E · pousar no lado seco"; view.status.text = "Leva o caixote para o lado seco."; return
+		props.marker_label = "E / A · pousar no lado seco"; view.status.text = "Leva o caixote para o lado seco."; return
 	if task_id=="recovery_walk" and task_step==0:
 		task_step = 1; props.marker = Vector2(-30,330)
 		props.marker_label = "E / A · regressar ao apoio"

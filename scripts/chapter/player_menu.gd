@@ -31,6 +31,9 @@ var knowledge_style := "Atual"
 var knowledge_rank := -1
 var mission_category := "Em curso"
 var mission_card_count := 0
+var mission_buttons: Dictionary = {}
+var navigation_scroll: ScrollContainer
+var text_scale_button: Button
 var tab_names := ["Personagem","Evolução","Armas","Inventário","Equipamento","Técnicas","Passivas","Pedidos","Conversas","Loja de Lisboa","Sistema"]
 
 func _ready() -> void:
@@ -54,7 +57,7 @@ func _ready() -> void:
 	resume_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 	resume_button.autowrap_mode = TextServer.AUTOWRAP_OFF
 	content = HBoxContainer.new(); content.size_flags_vertical = Control.SIZE_EXPAND_FILL; content.add_theme_constant_override("separation",16); column.add_child(content)
-	var navigation_scroll := ScrollContainer.new(); navigation_scroll.custom_minimum_size.x = GamePreferences.font_size(160)
+	navigation_scroll = ScrollContainer.new(); navigation_scroll.custom_minimum_size.x = GamePreferences.font_size(160)
 	navigation_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; navigation_scroll.follow_focus = true; content.add_child(navigation_scroll)
 	var navigation := VBoxContainer.new(); navigation.size_flags_horizontal = Control.SIZE_EXPAND_FILL; navigation_scroll.add_child(navigation)
 	for name in tab_names:
@@ -63,8 +66,9 @@ func _ready() -> void:
 		tabs[name] = button(navigation,"Missões" if name=="Pedidos" else name,switch_page.bind(name)); tabs[name].alignment = HORIZONTAL_ALIGNMENT_LEFT
 	for i in tab_names.size():
 		var node: Button = tabs[tab_names[i]]
-		node.focus_neighbor_right = node.get_path_to(tabs[tab_names[(i+1)%tab_names.size()]])
-		node.focus_neighbor_left = node.get_path_to(tabs[tab_names[posmod(i-1,tab_names.size())]])
+		node.focus_neighbor_bottom = node.get_path_to(tabs[tab_names[(i+1)%tab_names.size()]])
+		node.focus_neighbor_top = node.get_path_to(tabs[tab_names[posmod(i-1,tab_names.size())]])
+		node.focus_neighbor_left = node.get_path_to(node)
 	content.add_child(VSeparator.new())
 	var scroll := ScrollContainer.new(); scroll.custom_minimum_size.x = 270; scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; scroll.follow_focus = true; content.add_child(scroll)
 	summary_scroll = scroll
@@ -81,6 +85,35 @@ func _ready() -> void:
 	column.add_child(label("Setas / comando · navegar     Enter / A · escolher     Esc / B · voltar",14,Color("a3bab0")))
 	screen.hide()
 	get_viewport().size_changed.connect(_resize_columns); _resize_columns()
+	GamePreferences.changed.connect(_preferences_changed)
+
+func set_font_size(node: Control, base: int) -> void:
+	node.set_meta("menu_font_base",base)
+	node.add_theme_font_size_override("font_size",GamePreferences.font_size(base))
+
+func _scale_fonts(node: Node) -> void:
+	if node is Control and node.has_meta("menu_font_base"):
+		node.add_theme_font_size_override("font_size",GamePreferences.font_size(int(node.get_meta("menu_font_base"))))
+	for child in node.get_children(): _scale_fonts(child)
+
+func _preferences_changed() -> void:
+	# Resize the existing controls: a preference change must keep keyboard focus.
+	_scale_fonts(screen)
+	navigation_scroll.custom_minimum_size.x = GamePreferences.font_size(160)
+	if is_instance_valid(text_scale_button): text_scale_button.text = "Tamanho de texto · %d%%"%roundi(GamePreferences.text_scale*100)
+	_resize_columns()
+
+func _first_focusable(node: Node) -> Control:
+	if node is Control and node.is_visible_in_tree() and node.focus_mode==Control.FOCUS_ALL and not (node is BaseButton and node.disabled): return node
+	for child in node.get_children():
+		var found := _first_focusable(child)
+		if found!=null: return found
+	return null
+
+func _wire_navigation() -> void:
+	var destination := _first_focusable(listing)
+	if destination==null: destination = _first_focusable(details)
+	for tab in tabs.values(): tab.focus_neighbor_right = tab.get_path_to(destination if destination!=null else tab)
 
 func _resize_columns() -> void:
 	var width := get_viewport().get_visible_rect().size.x
@@ -90,7 +123,7 @@ func _resize_columns() -> void:
 	details_scroll.custom_minimum_size.x = clampf(width*.25,220,360)
 
 func label(value: String, font_size: int = 17, color := Color("e8dfc8")) -> Label:
-	var node := Label.new(); node.text = value; node.add_theme_font_size_override("font_size",GamePreferences.font_size(font_size))
+	var node := Label.new(); node.text = value; set_font_size(node,font_size)
 	node.add_theme_color_override("font_color",color); node.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return node
 
@@ -101,7 +134,7 @@ func paragraph(parent: Control, value: String, color := Color("b4c7bd")) -> Labe
 func button(parent: Control, text: String, callback: Callable) -> Button:
 	var node := Button.new(); node.text = text; node.custom_minimum_size.y = 42
 	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	node.add_theme_font_size_override("font_size",GamePreferences.font_size(17))
+	set_font_size(node,17)
 	node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	node.pressed.connect(callback); parent.add_child(node); return node
 
@@ -125,7 +158,7 @@ func switch_page(value: String) -> void:
 	tabs[page].grab_focus()
 
 func refresh() -> void:
-	clear(summary); clear(listing); clear(details); row_buttons.clear(); action_button = null
+	clear(summary); clear(listing); clear(details); row_buttons.clear(); mission_buttons.clear(); action_button = null
 	var p = ChapterProgress
 	wallet.text = "%d de ouro" % p.coins
 	for name in tabs: tabs[name].modulate = Color("e6cb8d") if name == page else Color.WHITE
@@ -154,60 +187,85 @@ func refresh() -> void:
 		"Sistema": system_page()
 		"Pedidos": requests_page()
 		"Conversas": history_page()
+	_wire_navigation()
 
-func mission_card(title: String, status: String, objective: String, callback: Callable) -> void:
+func mission_card(title: String, status: String, objective: String, callback: Callable, id := "", finished := false) -> void:
 	mission_card_count += 1
+	var tracked: bool = not finished and not id.is_empty() and (ChapterProgress.choices.get("tracked_request","")==id if id!="STORY" else str(ChapterProgress.choices.get("tracked_request","")).is_empty())
+	if tracked and not id.is_empty(): status += " · A ACOMPANHAR"
 	var card := button(listing,title+"\n"+status,func():
-		clear(details); paragraph(details,title,Color("e6cb8d")).add_theme_font_size_override("font_size",24)
-		paragraph(details,status,Color("8cd7b7")); paragraph(details,"Próximo passo",Color("e6cb8d")); paragraph(details,objective)
-		if callback.is_valid(): button(details,"Acompanhar missão",callback))
+		clear(details); set_font_size(paragraph(details,title,Color("e6cb8d")),24)
+		paragraph(details,status,Color("8cd7b7")); paragraph(details,"Resultado" if finished else "Próximo passo",Color("e6cb8d")); paragraph(details,objective)
+		if callback.is_valid():
+			var follow := button(details,"A acompanhar" if tracked else "Retomar missão principal" if id=="STORY" else "Acompanhar missão",callback)
+			follow.disabled = tracked)
 	card.alignment=HORIZONTAL_ALIGNMENT_LEFT; card.custom_minimum_size.y=72
+	if tracked and not id.is_empty(): card.modulate=Color("e6cb8d")
+	if not id.is_empty(): mission_buttons[id]=card
+
+func main_objective() -> String:
+	return director.routes.main_objective() if director.routes.active else preload("res://scripts/chapter/chapter_objectives.gd").current(director)
+
+func track_order(id: String) -> void:
+	ChapterProgress.choices.tracked_request = id
+	refresh_tracking(id)
+	notice.text = "Missão acompanhada. Fecha o caderno para retomar a exploração."
+
+func refresh_tracking(id: String) -> void:
+	refresh()
+	if mission_buttons.has(id):
+		mission_buttons[id].pressed.emit()
+		mission_buttons[id].grab_focus()
 
 func requests_page() -> void:
 	mission_card_count = 0
 	listing.add_child(label("Diário de missões",25,Color("e6cb8d")))
 	var filters := HFlowContainer.new(); listing.add_child(filters)
 	for category in ["Em curso","Concluídas","Arquivo"]:
-		button(filters,("● " if mission_category==category else "")+category,func(): mission_category=category; refresh())
+		var category_button := button(filters,("● " if mission_category==category else "")+category,func(): mission_category=category; refresh())
+		category_button.autowrap_mode = TextServer.AUTOWRAP_OFF
+		category_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	if mission_category=="Arquivo": requests_archive(); return
 	var p=ChapterProgress
 	var order=preload("res://scripts/chapter/order_campaign.gd")
 	var completed := mission_category=="Concluídas"
 	if not completed:
-		mission_card("Compromisso principal","HISTÓRIA",director.routes.goal_label if director.routes.active else preload("res://scripts/chapter/chapter_objectives.gd").current(director),stop_tracking)
+		mission_card("Compromisso principal","HISTÓRIA",main_objective(),stop_tracking,"STORY")
 		if order.ready(p) and not p.flags.get("order_audience_done",false):
-			mission_card("O nome no livro","ORDEM · AUDIÊNCIA","Procura o Grão-Mestre na Sala do Capítulo, pelo corredor norte da secretaria. Apresenta o primeiro serviço.",func(): p.choices.tracked_request="ORDER-AUDIENCE"; refresh())
+			mission_card("O nome no livro","ORDEM · AUDIÊNCIA OPCIONAL","Procura a liderança na Sala do Capítulo, pelo corredor norte da secretaria. Apresenta o primeiro serviço.",track_order.bind("ORDER-AUDIENCE"),"ORDER-AUDIENCE")
 	var stage: String=order.cargo_stage(p)
 	if stage!="" and (stage=="done")==completed:
-		mission_card("A carga da Ordem","CONCLUÍDA" if completed else "ORDEM · INVESTIGAÇÃO · %d / 3 registos"%[[p.flags.get("order_cargo_ledger",false),p.flags.get("order_cargo_manifest",false),p.flags.get("order_cargo_recipient",false)].count(true)],order.objective(p),Callable() if completed else func(): p.choices.tracked_request="ORDER-CARGO"; refresh())
+		mission_card("A carga da Ordem","CONCLUÍDA" if completed else "ORDEM · INVESTIGAÇÃO OPCIONAL · %d / 3 registos"%[[p.flags.get("order_cargo_ledger",false),p.flags.get("order_cargo_manifest",false),p.flags.get("order_cargo_recipient",false)].count(true)],order.objective(p),Callable() if completed else track_order.bind("ORDER-CARGO"),"ORDER-CARGO",completed)
 	var errands=preload("res://scripts/chapter/lisbon_errands.gd")
 	for id in errands.DEFINITIONS:
 		var progress: String=errands.stage(p,id)
 		if progress.is_empty() or (progress=="completed")!=completed: continue
 		var row: Dictionary=errands.DEFINITIONS[id]
-		mission_card(row.title,"CONCLUÍDA" if completed else "LISBOA · PEDIDO",row.objectives[progress],Callable() if completed else track_request.bind(id))
+		mission_card(row.title,"CONCLUÍDA" if completed else "LISBOA · PEDIDO OPCIONAL",row.objectives[progress],Callable() if completed else track_request.bind(id),id,completed)
 	var local=preload("res://scripts/chapter/local_request_state.gd")
 	stage=local.stage(p)
 	if not stage.is_empty() and (stage=="completed")==completed:
-		mission_card(local.definition().title,"CONCLUÍDA" if completed else "LISBOA · PEDIDO",local.objective(p),Callable() if completed else track_request.bind(local.ID))
+		mission_card(local.definition().title,"CONCLUÍDA" if completed else "LISBOA · PEDIDO OPCIONAL",local.objective(p),Callable() if completed else track_request.bind(local.ID),local.ID,completed)
+	var hub=preload("res://scripts/city/order_house_hub.gd")
+	var meal_stage: String=hub.meal_stage(p)
+	if not meal_stage.is_empty() and (meal_stage=="done")==completed:
+		mission_card("A mesa de quem fica","CONCLUÍDA" if completed else "ORDEM · SERVIÇO OPCIONAL",hub.meal_objective(p),Callable() if completed else track_order_meal,"ORDER-MEAL",completed)
 	if completed:
 		for row in order.notes(p):
-			if row.id=="order:cargo" and order.cargo_stage(p)!="done": continue
-			mission_card(row.title,"REGISTO DA ORDEM",row.text,Callable())
+			if row.id=="order:cargo": continue
+			mission_card(row.title,"CONCLUÍDA · ORDEM",row.text,Callable(),row.id,true)
 		if p.flags.get("order_reported",false):
-			for row in preload("res://scripts/chapter/first_order_service.gd").notes(p): mission_card(row.title,"CONCLUÍDA",row.text,Callable())
+			for row in preload("res://scripts/chapter/first_order_service.gd").notes(p): mission_card(row.title,"CONCLUÍDA",row.text,Callable(),row.id,true)
 	else:
 		var house=preload("res://scripts/city/house_life.gd")
 		var young: bool=director.world.get("childhood")==true
 		if house.stage(p,young) not in ["","done"]: mission_card("A água da casa","CASA · PEDIDO OPCIONAL",house.objective(p,young),Callable())
-		if director.routes.active and director.routes.state.kind=="order_help":
-			mission_card("A roda presa","PEDIDO ACOMPANHADO",preload("res://scripts/chapter/first_order_service.gd").help_objective(p),Callable())
-		var hub=preload("res://scripts/city/order_house_hub.gd")
-		if hub.meal_stage(p) not in ["","done"]: mission_card("A mesa de quem fica","ORDEM · SERVIÇO",hub.meal_objective(p),track_order_meal)
+		if director.routes.active and director.routes.state.kind=="order_help" and local.stage(p).is_empty():
+			mission_card("A roda presa","LISBOA · PEDIDO OPCIONAL",preload("res://scripts/chapter/first_order_service.gd").help_objective(p),Callable(),local.ID)
 		for row in preload("res://scripts/chapter/first_order_service.gd").notes(p):
 			if not p.flags.get("order_reported",false): mission_card(row.title,"ORDEM · PRIMEIRO SERVIÇO",row.text,Callable())
 	var house=preload("res://scripts/city/house_life.gd")
-	if completed and house.stage(p,director.world.get("childhood")==true)=="done": mission_card("A água da casa","CONCLUÍDA",house.objective(p,director.world.get("childhood")==true),Callable())
+	if completed and house.stage(p,director.world.get("childhood")==true)=="done": mission_card("A água da casa","CONCLUÍDA",house.objective(p,director.world.get("childhood")==true),Callable(),"HOUSE",true)
 	if completed and mission_card_count==0: paragraph(listing,"Ainda não concluíste pedidos. Os que terminares ficam aqui para recordar.")
 	if not completed and p.choices.has("tracked_request"):
 		var tracked: String = preload("res://scripts/chapter/request_guide.gd").objective(p,p.choices.tracked_request)
@@ -220,11 +278,11 @@ func requests_archive() -> void:
 	var order_campaign=preload("res://scripts/chapter/order_campaign.gd")
 	if order_campaign.ready(ChapterProgress) and not ChapterProgress.flags.get("order_audience_done",false):
 		paragraph(listing,"A Ordem recebe o teu relato",Color("e6cb8d"));paragraph(listing,"A Sala do Capítulo fica pelo corredor norte da secretaria. A liderança pode autorizar os estudos da casa.")
-		button(listing,"Acompanhar · audiência na Sala do Capítulo",func():ChapterProgress.choices.tracked_request="ORDER-AUDIENCE";refresh())
+		button(listing,"Acompanhar · audiência na Sala do Capítulo",track_order.bind("ORDER-AUDIENCE"))
 	for row in order_campaign.notes(ChapterProgress):
 		paragraph(listing,row.title,Color("e6cb8d"));paragraph(listing,row.text)
 	if order_campaign.cargo_stage(ChapterProgress) not in ["","done"]:
-		button(listing,"Acompanhar a carga da Ordem",func():ChapterProgress.choices.tracked_request="ORDER-CARGO";refresh())
+		button(listing,"Acompanhar a carga da Ordem",track_order.bind("ORDER-CARGO"))
 	var hub = preload("res://scripts/city/order_house_hub.gd")
 	if hub.meal_stage(ChapterProgress)!="":
 		listing.add_child(label("Ordem · A mesa de quem fica",23,Color("e6cb8d")))
@@ -246,7 +304,7 @@ func requests_archive() -> void:
 		button(listing,"Retomar missão principal com Duarte · guardar pedido",func():
 			director._menu(); director.routes.arrive_order())
 	listing.add_child(label("Compromisso atual · missão principal",23,Color("e6cb8d")))
-	paragraph(listing,director.routes.goal_label if director.routes.active else preload("res://scripts/chapter/chapter_objectives.gd").current(director))
+	paragraph(listing,main_objective())
 	paragraph(listing,preload("res://scripts/chapter/optional_arc.gd").availability(ChapterProgress))
 	var story:=preload("res://scripts/chapter/adult_arc.gd").notes(ChapterProgress)
 	if not story.is_empty():listing.add_child(label("Acontecimentos conhecidos",22,Color("e6cb8d")))
@@ -412,7 +470,7 @@ func draw_item() -> void:
 	var color := Color(row.rarity_color)
 	var icon := TextureRect.new(); icon.texture = load(row.icon); icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; icon.custom_minimum_size = Vector2(120,100); details.add_child(icon)
-	paragraph(details,row.name,Color("e6cb8d")).add_theme_font_size_override("font_size",24)
+	set_font_size(paragraph(details,row.name,Color("e6cb8d")),24)
 	paragraph(details,"Nv. %d · %s" % [row.rarity_level,row.rarity_name],color)
 	paragraph(details,row.description)
 	if not row.tradeable: paragraph(details,"História / serviço · protegido",Color("e6cb8d"))
@@ -500,10 +558,12 @@ func knowledge_page() -> void:
 	if not passive and knowledge_owner=="hero":
 		var selectors := HBoxContainer.new(); listing.add_child(selectors)
 		var styles := OptionButton.new(); styles.size_flags_horizontal=Control.SIZE_EXPAND_FILL; styles.custom_minimum_size.y=42; styles.fit_to_longest_item=false; selectors.add_child(styles)
+		set_font_size(styles,17)
 		var style_keys: Array=["Atual","Todos","ES","LA","MC","FO","PU"]
 		for key in style_keys: styles.add_item("Arma atual" if key=="Atual" else "Todos os manejos" if key=="Todos" else Items.STYLES[key])
 		styles.select(style_keys.find(knowledge_style)); styles.item_selected.connect(func(index): knowledge_style=style_keys[index]; refresh())
 		var ranks := OptionButton.new(); ranks.size_flags_horizontal=Control.SIZE_EXPAND_FILL; ranks.custom_minimum_size.y=42; ranks.fit_to_longest_item=false; selectors.add_child(ranks)
+		set_font_size(ranks,17)
 		ranks.add_item("Todos os patamares")
 		for title in preload("res://scripts/chapter/order_techniques.gd").RANKS: ranks.add_item(title)
 		ranks.select(knowledge_rank+1); ranks.item_selected.connect(func(index): knowledge_rank=index-1; refresh())
@@ -559,7 +619,7 @@ func show_knowledge(row: Dictionary, passive: bool) -> void:
 	clear(details)
 	var icon := TextureRect.new(); icon.texture=load(row.icon); icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED; icon.custom_minimum_size=Vector2(72,72); details.add_child(icon)
-	paragraph(details,row.name,Color("e6cb8d")).add_theme_font_size_override("font_size",24)
+	set_font_size(paragraph(details,row.name,Color("e6cb8d")),24)
 	paragraph(details,"Raridade · "+row.rarity_name,Color(row.rarity_color))
 	if passive and not ChapterProgress.passives.has(row.id):
 		paragraph(details,"Bloqueada · ainda não conhecida",Color("e6cb8d"))
@@ -662,7 +722,8 @@ func system_page() -> void:
 	var volume := HSlider.new(); volume.name = "ChapterMusicVolume"; volume.min_value = 0; volume.max_value = 100; volume.step = 5
 	volume.value = score.music_level*100; volume.custom_minimum_size = Vector2(240,32); listing.add_child(volume)
 	volume.value_changed.connect(func(value): score.set_level(value/100.0); volume_label.text = "Música do capítulo · %d%%"%roundi(value))
-	var mute := CheckButton.new(); mute.name = "ChapterMusicMute"; mute.text = "Silenciar música"; mute.button_pressed = score.muted; listing.add_child(mute)
+	var mute := CheckButton.new(); mute.name = "ChapterMusicMute"; mute.text = "Silenciar música"; mute.button_pressed = score.muted; set_font_size(mute,17); listing.add_child(mute)
+	mute.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; mute.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	mute.toggled.connect(func(value): score.set_muted(value))
 	for key in ["ambience","effects"]:
 		var audio_label := label("%s · %d%%"%["Ambiente" if key=="ambience" else "Efeitos",roundi(GamePreferences.levels[key]*100)],18)
@@ -674,13 +735,15 @@ func system_page() -> void:
 	listing.add_child(label("Leitura e combate",25,Color("e6cb8d")))
 	for key in ["wide_timing","reduced_fx","fast_combat"]:
 		var toggle := CheckButton.new(); toggle.name = key
+		set_font_size(toggle,17)
+		toggle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; toggle.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		toggle.text = {"wide_timing":"Janela de timing ampliada","reduced_fx":"Reduzir efeitos e movimento","fast_combat":"Animações de combate rápidas"}[key]
 		toggle.button_pressed = GamePreferences.options[key]; listing.add_child(toggle)
 		toggle.toggled.connect(func(value): GamePreferences.set_option(key,value))
-	var scale_button := button(listing,"Tamanho de texto · %d%%"%roundi(GamePreferences.text_scale*100),func():
-		GamePreferences.set_text_scale(1.0 if GamePreferences.text_scale>=1.19 else GamePreferences.text_scale+0.1)
-		refresh())
-	scale_button.tooltip_text = "Alterna 100%, 110% e 120%. Conversas e menus usam rolagem quando necessário."
+	text_scale_button = button(listing,"Tamanho de texto · %d%%"%roundi(GamePreferences.text_scale*100),func():
+		GamePreferences.set_text_scale(1.0 if GamePreferences.text_scale>=1.19 else GamePreferences.text_scale+0.1))
+	text_scale_button.name = "TextScale"
+	text_scale_button.tooltip_text = "Alterna 100%, 110% e 120%. Conversas e menus usam rolagem quando necessário."
 	details.add_child(label("Teclado",24,Color("e6cb8d")))
 	if not GamePreferences.binding_notice.is_empty(): paragraph(details,GamePreferences.binding_notice)
 	for action in GamePreferences.bindings:
@@ -727,7 +790,7 @@ func draw_weapon() -> void:
 	var unarmed:bool=selected==Weapons.UNARMED
 	var row:Dictionary={} if unarmed else Items.items()[selected]
 	var style:String="PU" if unarmed else row.style
-	paragraph(details,"Desarmado" if unarmed else row.name,Color("e6cb8d")).add_theme_font_size_override("font_size",GamePreferences.font_size(23))
+	set_font_size(paragraph(details,"Desarmado" if unarmed else row.name,Color("e6cb8d")),23)
 	paragraph(details,Weapons.TIPS[style])
 	var active:bool=ChapterProgress.style=="PU" and not ChapterProgress.equipment.has("weapon") if unarmed else ChapterProgress.equipment.get("weapon","")==selected
 	var owned:bool=unarmed or int(ChapterProgress.inventory.get(selected,0))>0
@@ -778,7 +841,8 @@ func evolution_page() -> void:
 func track_request(id: String) -> void:
 	if not director.routes.safe_city() and director.phase!="exploration": notice.text = "Retoma este pedido numa pausa segura em Lisboa."; return
 	if preload("res://scripts/chapter/request_guide.gd").track(ChapterProgress,id):
-		notice.text = "Pedido acompanhado. Fecha o caderno e segue a indicação; E / A interage no destino."
+		refresh_tracking(id)
+		notice.text = GamePreferences.hint_text("Pedido acompanhado. Fecha o caderno e segue a indicação; E / A interage no destino.")
 
 func stop_tracking() -> void:
 	ChapterProgress.choices.erase("tracked_request")
@@ -789,4 +853,5 @@ func stop_tracking() -> void:
 func track_order_meal() -> void:
 	if preload("res://scripts/city/order_house_hub.gd").meal_stage(ChapterProgress) not in ["asked","prepared"]:return
 	ChapterProgress.choices.tracked_request="ORDER-MEAL"
+	refresh_tracking("ORDER-MEAL")
 	notice.text="Serviço acompanhado. Fecha o caderno e segue a indicação até à casa da Ordem."

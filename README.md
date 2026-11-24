@@ -1,5 +1,7 @@
 # Mar de Jade — capítulo 1 jogável
 
+**Acabamento de UI/UX do primeiro mapa (28/10):** história e pedido acompanhado permanecem legíveis juntos; caderno e opções acessíveis por rato desde a infância; resultados de missões consistentes; navegação dos menus, leitura ampliada e entrada com continuações revistas. [Auditoria por prioridades, decisões, capturas antes/depois e validação](docs/auditoria-primeiro-mapa-2026-10-28.md).
+
 **Lisboa, revisão integrada (27/10):** promessa e saída adulta com caminhada encenada, conversas dos moradores ligadas aos acontecimentos, pedidos diferenciados, treino livre acompanhado e caderno acessível durante a exploração. [Percurso, interface e validação completa](docs/lisboa-fechamento-jogavel.md).
 
 **Nova abertura da infância (24/10):** uma campanha nova começa pela descoberta do convento como criança, com acolhimento de Tomé, exploração, memórias da Ordem, treino opcional e passagem para Leonor. Cenário e cavaleiro animado criados no Blender, com apresentação pixelada. [Como jogar, fontes e limites desta primeira versão](docs/abertura-infancia-convento.md).

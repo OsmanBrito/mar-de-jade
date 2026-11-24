@@ -31,6 +31,9 @@ func _ready() -> void:
 	var scroll := ScrollContainer.new(); scroll.follow_focus = true; scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; sheet.add_child(scroll)
 	column = VBoxContainer.new(); column.size_flags_horizontal = Control.SIZE_EXPAND_FILL; column.add_theme_constant_override("separation",12); scroll.add_child(column)
 	screen.hide()
+	# The same world controls remain available from the first playable scene.
+	# Unbound review views still hide their buttons in DialogueView.
+	host.view.menu_requested.connect(func(which: String): open("journal" if which=="Pedidos" else "pause"))
 
 func battle_active() -> bool:
 	return host.get("phase")=="battle"
@@ -90,6 +93,7 @@ func refresh() -> void:
 
 func journal() -> void:
 	text(GamePreferences.hint_text("Setas / direcional · percorrer     Esc / B · retomar"))
+	text("História · Objetivo atual",true)
 	var hunt: bool = host.scene_file_path.ends_with("forest_hunt.tscn")
 	if hunt:
 		var stage: int = mini(8,int(host.state.stage))
@@ -100,7 +104,10 @@ func journal() -> void:
 		if not host.scene_file_path.ends_with("plaza.tscn"): objective = {"opening.tscn":"Conversa com Tomé no acolhimento.","training.tscn":"Aprende os fundamentos com Leonor.","promise.tscn":"Partilha a promessa com Leonor."}.get(host.scene_file_path.get_file(),objective)
 		if host.has_method("objective"): objective = host.objective()
 		text("Objetivo · "+objective)
-	if not House.stage(progress,true).is_empty(): text("A água da casa · "+House.objective(progress,true))
+	var service: String = House.stage(progress,true)
+	if not service.is_empty():
+		text("Serviço opcional · Concluído" if service=="done" else "Serviço opcional · Em curso",true)
+		text("A água da casa · "+House.objective(progress,true))
 	text("Lugares conhecidos",true)
 	var found := false
 	for id in preload("res://scripts/chapter/childhood_home_plan.gd").NOTES:

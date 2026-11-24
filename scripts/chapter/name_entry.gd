@@ -3,10 +3,15 @@ extends Control
 @onready var name_field: LineEdit = $Center/Card/Margin/Content/Name
 @onready var confirm_button: Button = $Center/Card/Margin/Content/Confirm
 @onready var error_label: Label = $Center/Card/Margin/Content/Error
+@onready var entry_card: PanelContainer = $Center/Card
+@onready var entry_scroll: ScrollContainer = $Center/Card/Margin
+@onready var entry_content: VBoxContainer = $Center/Card/Margin/Content
 var submitting := false
 
 func _ready() -> void:
 	theme = preload("res://scripts/ui/presentation.gd").theme()
+	GamePreferences.changed.connect(_refresh_reading)
+	_begin_reading.call_deferred()
 	name_field.text_changed.connect(_update_validation)
 	name_field.text_submitted.connect(func(_text): confirm())
 	confirm_button.pressed.connect(confirm)
@@ -45,6 +50,30 @@ func _ready() -> void:
 		if saved is Dictionary and saved.get("journey") is Dictionary and not saved.journey.is_empty():
 			chapter_note.text = "Lisboa · Caminho em andamento\nRetoma o local e o compromisso guardados; segue até à pessoa ou ao destino indicado."
 		chapter_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; confirm_button.get_parent().add_child(chapter_note)
+
+func _refresh_reading() -> void:
+	var sizes := {"Brand":30,"Question":24,"Name":24,"Help":16,"Error":17,"Confirm":22}
+	for child in entry_content.get_children():
+		if child is Label or child is Button or child is LineEdit:
+			child.add_theme_font_size_override("font_size",GamePreferences.font_size(sizes.get(str(child.name),17)))
+
+func _begin_reading() -> void:
+	_refresh_reading()
+	_fit_card()
+	# Initial focus is assigned before containers finish sorting. Let the
+	# first layout settle, then show the title above the already focused name.
+	await get_tree().process_frame
+	entry_scroll.scroll_vertical = 0
+
+func _process(_delta: float) -> void:
+	_fit_card()
+
+func _fit_card() -> void:
+	# Keep the original node paths while allowing both saved continuations to
+	# scroll into view in a short window or with enlarged reading text.
+	var viewport := get_viewport_rect().size
+	var padding := entry_card.get_theme_stylebox("panel").get_minimum_size()
+	entry_card.custom_minimum_size = Vector2(minf(600,viewport.x-48),minf(entry_content.get_combined_minimum_size().y+padding.y,viewport.y-48))
 
 func _update_validation(value: String) -> void:
 	var error = CampaignProfile.name_error(value)
