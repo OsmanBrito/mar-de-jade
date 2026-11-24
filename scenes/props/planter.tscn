@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/map_prop.gd" id="prop_script"]
+[ext_resource type="Script" path="res://scripts/chapter/square_planter_base.gd" id="base_script"]
+[ext_resource type="Texture2D" path="res://assets/art/living-quay/street-props-v1.png" id="street_props"]
+
+[sub_resource type="AtlasTexture" id="shrub_region"]
+atlas = ExtResource("street_props")
+region = Rect2(805, 480, 700, 530)
+
+[node name="Planter" type="Node2D"]
+script = ExtResource("prop_script")
+
+[node name="Base" type="Node2D" parent="."]
+z_index = -1
+script = ExtResource("base_script")
+
+[node name="Body" type="StaticBody2D" parent="."]
+collision_mask = 0
+
+[node name="Footprint" type="CollisionPolygon2D" parent="Body"]
+polygon = PackedVector2Array(-63, 0, 0, -31, 63, 0, 0, 31)
+
+[node name="Shrub" type="Sprite2D" parent="."]
+texture_filter = 4
+position = Vector2(0, -32.4)
+scale = Vector2(0.137, 0.137)
+texture = SubResource("shrub_region")

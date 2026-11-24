@@ -1,15 +1,42 @@
-[gd_scene load_steps=11 format=4]
+[gd_scene load_steps=20 format=4]
 
 [ext_resource type="Script" path="res://scripts/chapter/plaza_world.gd" id="1_gpd2k"]
 [ext_resource type="PackedScene" path="res://scenes/chapter_01/child_player.tscn" id="2_u5ehp"]
 [ext_resource type="TileSet" path="res://data/terrain/ground.tres" id="3_fkhis"]
 [ext_resource type="PackedScene" path="res://scenes/chapter_01/bench.tscn" id="4_5vywc"]
+[ext_resource type="Script" path="res://scripts/chapter/square_facade.gd" id="4_l7aa5"]
 [ext_resource type="Script" path="res://scripts/chapter/bench_proxy.gd" id="5_l7aa5"]
-[ext_resource type="PackedScene" path="res://scenes/props/crates.tscn" id="6_sm6xb"]
+[ext_resource type="Texture2D" path="res://assets/art/living-quay/buildings-v1.png" id="5_sm6xb"]
+[ext_resource type="PackedScene" path="res://scenes/props/cargo.tscn" id="6_sm6xb"]
 [ext_resource type="Script" path="res://scripts/map_prop.gd" id="7_vp2g7"]
-[ext_resource type="PackedScene" path="res://scenes/props/pine.tscn" id="8_vx1tw"]
+[ext_resource type="PackedScene" path="res://scenes/props/olive.tscn" id="8_vx1tw"]
 [ext_resource type="Script" path="res://scripts/chapter/actor_proxy.gd" id="9_rpoyy"]
 [ext_resource type="Script" path="res://scripts/chapter/tutorial_marker.gd" id="10_d38on"]
+[ext_resource type="PackedScene" path="res://scenes/props/planter.tscn" id="12_vp2g7"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vx1tw"]
+atlas = ExtResource("5_sm6xb")
+region = Rect2(50, 0, 510, 540)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rpoyy"]
+atlas = ExtResource("5_sm6xb")
+region = Rect2(15, 540, 730, 550)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d38on"]
+atlas = ExtResource("5_sm6xb")
+region = Rect2(50, 0, 510, 540)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_etauj"]
+atlas = ExtResource("5_sm6xb")
+region = Rect2(815, 500, 550, 610)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d74pt"]
+atlas = ExtResource("5_sm6xb")
+region = Rect2(590, 0, 812, 520)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_thk50"]
+atlas = ExtResource("5_sm6xb")
+region = Rect2(815, 500, 550, 610)
 
 [node name="PracaInfancia" type="Node2D"]
 script = ExtResource("1_gpd2k")
@@ -23,6 +50,93 @@ tile_set = ExtResource("3_fkhis")
 collision_enabled = false
 navigation_enabled = false
 
+[node name="PracaDeLisboa" type="Node2D" parent="."]
+z_index = 1
+y_sort_enabled = true
+
+[node name="RuaNorte" type="Node2D" parent="PracaDeLisboa"]
+position = Vector2(-30, -227)
+script = ExtResource("4_l7aa5")
+edge = "ne"
+along = 129.0
+depth = 129.0
+
+[node name="Pintura" type="Sprite2D" parent="PracaDeLisboa/RuaNorte"]
+texture_filter = 4
+position = Vector2(-136.8, -313.2)
+scale = Vector2(0.6, 0.6)
+texture = SubResource("AtlasTexture_vx1tw")
+centered = false
+flip_h = true
+
+[node name="Oficina" type="Node2D" parent="PracaDeLisboa"]
+position = Vector2(-640, 278)
+script = ExtResource("4_l7aa5")
+along = 239.20000000000002
+depth = 91.0
+
+[node name="Pintura" type="Sprite2D" parent="PracaDeLisboa/Oficina"]
+texture_filter = 4
+position = Vector2(-120.64, -224.63998)
+scale = Vector2(0.52, 0.52)
+texture = SubResource("AtlasTexture_rpoyy")
+centered = false
+
+[node name="Abrigo" type="Node2D" parent="PracaDeLisboa"]
+position = Vector2(-436, 100)
+script = ExtResource("4_l7aa5")
+along = 141.9
+depth = 141.9
+
+[node name="Pintura" type="Sprite2D" parent="PracaDeLisboa/Abrigo"]
+texture_filter = 4
+position = Vector2(-186.12001, -344.52002)
+scale = Vector2(0.66, 0.66)
+texture = SubResource("AtlasTexture_d38on")
+centered = false
+
+[node name="CasaDoCanto" type="Node2D" parent="PracaDeLisboa"]
+position = Vector2(-280, 98)
+script = ExtResource("4_l7aa5")
+along = 186.0
+depth = 99.0
+
+[node name="Pintura" type="Sprite2D" parent="PracaDeLisboa/CasaDoCanto"]
+texture_filter = 4
+position = Vector2(-127.200005, -351)
+scale = Vector2(0.6, 0.6)
+texture = SubResource("AtlasTexture_etauj")
+centered = false
+flip_h = true
+
+[node name="Armazem" type="Node2D" parent="PracaDeLisboa"]
+position = Vector2(178, 47)
+script = ExtResource("4_l7aa5")
+edge = "ne"
+along = 159.5
+depth = 225.50000000000003
+
+[node name="Pintura" type="Sprite2D" parent="PracaDeLisboa/Armazem"]
+texture_filter = 4
+position = Vector2(-214.5, -277.75)
+scale = Vector2(0.55, 0.55)
+texture = SubResource("AtlasTexture_d74pt")
+centered = false
+
+[node name="CasaDaPraca" type="Node2D" parent="PracaDeLisboa"]
+position = Vector2(380, 148)
+script = ExtResource("4_l7aa5")
+edge = "ne"
+along = 186.0
+depth = 99.0
+
+[node name="Pintura" type="Sprite2D" parent="PracaDeLisboa/CasaDaPraca"]
+texture_filter = 4
+position = Vector2(-202.8, -351)
+scale = Vector2(0.6, 0.6)
+texture = SubResource("AtlasTexture_thk50")
+centered = false
+
 [node name="ActorsAndProps" type="Node2D" parent="."]
 z_index = 2
 y_sort_enabled = true
@@ -33,19 +147,16 @@ script = ExtResource("5_l7aa5")
 
 [node name="Obstacle" type="Node2D" parent="ActorsAndProps" instance=ExtResource("6_sm6xb")]
 position = Vector2(-64, 224)
-scale = Vector2(0.2, 0.2)
 script = ExtResource("7_vp2g7")
 object_id = &"praca_infancia/obstacle"
 
 [node name="pine_01" type="Node2D" parent="ActorsAndProps" instance=ExtResource("8_vx1tw")]
 position = Vector2(-350, 300)
-scale = Vector2(0.3, 0.3)
 script = ExtResource("7_vp2g7")
 object_id = &"praca_infancia/pine_01"
 
 [node name="pine_02" type="Node2D" parent="ActorsAndProps" instance=ExtResource("8_vx1tw")]
 position = Vector2(360, 300)
-scale = Vector2(0.3, 0.3)
 script = ExtResource("7_vp2g7")
 object_id = &"praca_infancia/pine_02"
 
@@ -53,7 +164,6 @@ object_id = &"praca_infancia/pine_02"
 position = Vector2(190, 352)
 script = ExtResource("9_rpoyy")
 identity = "leonor"
-posture = "standing"
 
 [node name="Body" type="StaticBody2D" parent="ActorsAndProps/Leonor"]
 collision_mask = 0
@@ -61,20 +171,30 @@ collision_mask = 0
 [node name="Footprint" type="CollisionPolygon2D" parent="ActorsAndProps/Leonor/Body"]
 polygon = PackedVector2Array(10, 0, 8.660254, 5, 4.9999995, 8.6602545, -4.371139e-07, 10, -5.0000005, 8.660254, -8.660254, 5.0000005, -10, -8.742278e-07, -8.660254, -4.9999995, -4.999999, -8.6602545, 1.1924881e-07, -10, 4.999999, -8.6602545, 8.660254, -5.000002)
 
-[node name="Spawn" type="Marker2D" parent="."]
-position = Vector2(88, 359)
-
 [node name="Acompanhante" type="Node2D" parent="ActorsAndProps"]
 position = Vector2(300, 215)
 script = ExtResource("9_rpoyy")
-identity = "hero"
 npc_id = "attendant"
+identity = "hero"
 
 [node name="Body" type="StaticBody2D" parent="ActorsAndProps/Acompanhante"]
 collision_mask = 0
 
 [node name="Footprint" type="CollisionPolygon2D" parent="ActorsAndProps/Acompanhante/Body"]
 polygon = PackedVector2Array(-12, 0, -8, -8, 0, -12, 8, -8, 12, 0, 8, 8, 0, 12, -8, 8)
+
+[node name="CanteiroOeste" type="Node2D" parent="ActorsAndProps" instance=ExtResource("12_vp2g7")]
+position = Vector2(-435, 340)
+script = ExtResource("7_vp2g7")
+object_id = &"praca_infancia/canteirooeste"
+
+[node name="CanteiroLeste" type="Node2D" parent="ActorsAndProps" instance=ExtResource("12_vp2g7")]
+position = Vector2(435, 340)
+script = ExtResource("7_vp2g7")
+object_id = &"praca_infancia/canteiroleste"
+
+[node name="Spawn" type="Marker2D" parent="."]
+position = Vector2(88, 359)
 
 [node name="Staging" type="Node2D" parent="."]
 
