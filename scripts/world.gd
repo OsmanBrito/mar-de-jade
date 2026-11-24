@@ -177,7 +177,8 @@ func _draw() -> void:
 		return
 	# Stone quay retaining walls / wooden pier edges, visible on exposed near edges.
 	var city_ground := get_node_or_null("CityGround") as TileMapLayer
-	for cell in ({} if has_meta("departure_deck") else cells):
+	# Interiors draw their own cut walls instead of platform edges.
+	for cell in ({} if has_meta("departure_deck") or not spec.get("exterior",true) else cells):
 		var pos = terrain.map_to_local(cell)
 		var tile = int(cells[cell])
 		for side in range(2):

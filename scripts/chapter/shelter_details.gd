@@ -1,6 +1,12 @@
 @tool
 extends RefCounted
 ## One room treatment for the prologue, adult opening and recovery scenes.
+const WALL_HEIGHT := 190.0
+const STUB_HEIGHT := 24.0
+const THICK := 15.0
+const DOOR := Vector2(-40,396) # exit to the square, on the front-left wall
+const BACKDROP := preload("res://assets/shaders/shelter_backdrop.gdshader")
+
 static func install(room: Node2D) -> void:
 	if room.has_node("ShelterFloor"): return
 	var finish := ShaderMaterial.new(); finish.shader = preload("res://assets/shaders/shelter_limewash.gdshader")
@@ -13,6 +19,13 @@ static func install(room: Node2D) -> void:
 	for point in floor.polygon: uv.append(Vector2(point.x/310.0+point.y/155.0,point.y/155.0-point.x/310.0)*floor.texture.get_size())
 	floor.uv = uv; floor.color = Color("b3a58c"); floor.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	room.add_child(floor); ground.hide()
+	# Warm darkness around the cutaway instead of the default teal void.
+	var backdrop := ColorRect.new(); backdrop.name = "Fundo"; backdrop.z_index = -19
+	backdrop.position = Vector2(-3000,-2500); backdrop.size = Vector2(6000,5000)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var dusk := ShaderMaterial.new(); dusk.shader = BACKDROP
+	backdrop.material = dusk
+	room.add_child(backdrop); room.move_child(backdrop,0)
 	var dressing := Node2D.new(); dressing.set_script(load("res://scripts/chapter/shelter_dressing.gd"))
 	dressing.name = "TecidosELuz"; room.add_child(dressing)
 	var sorted: Node2D = room.get_node("ActorsAndProps")
@@ -25,7 +38,51 @@ static func draw_walls(canvas: Node2D,ground: TileMapLayer,room_size: Vector2i) 
 	var corner := ground.map_to_local(Vector2i.ZERO)+Vector2(0,-32)
 	var left := ground.map_to_local(Vector2i(0,room_size.y-1))+Vector2(-64,0)
 	var right := ground.map_to_local(Vector2i(room_size.x-1,0))+Vector2(64,0)
-	draw_wall_span(canvas,corner,left,right)
+	var bottom := ground.map_to_local(room_size-Vector2i.ONE)+Vector2(0,32)
+	draw_shell_back(canvas,corner,left,right)
+	draw_wall_span(canvas,corner,left,right,WALL_HEIGHT)
+	draw_shell_front(canvas,left,bottom,right)
+
+## Cut wall tops and end sections make the room read as part of a solid building.
+static func draw_shell_back(canvas: Node2D,corner: Vector2,left: Vector2,right: Vector2) -> void:
+	var lift := Vector2(0,-WALL_HEIGHT)
+	var out_l := Vector2(-THICK,-THICK*0.5) # behind the left (north-west) wall
+	var out_r := Vector2(THICK,-THICK*0.5)  # behind the right (north-east) wall
+	var cap := Color("3d3226")
+	canvas.draw_colored_polygon(PackedVector2Array([left+lift,corner+lift,corner+lift+out_l+out_r,left+lift+out_l]),cap)
+	canvas.draw_colored_polygon(PackedVector2Array([corner+lift,right+lift,right+lift+out_r,corner+lift+out_l+out_r]),cap.lightened(0.06))
+	canvas.draw_polyline(PackedVector2Array([left+lift+out_l,corner+lift+out_l+out_r,right+lift+out_r]),Color("221b14"),2,true)
+	# Section faces where the back walls are cut, continuing below the floor line.
+	var below := Vector2(0,40)
+	canvas.draw_colored_polygon(PackedVector2Array([left+below,left+lift,left+lift+out_l,left+out_l+below]),Color("5b4b38"))
+	canvas.draw_colored_polygon(PackedVector2Array([right+below,right+lift,right+lift+out_r,right+out_r+below]),Color("4a3d2e"))
+
+static func draw_shell_front(canvas: Node2D,left: Vector2,bottom: Vector2,right: Vector2) -> void:
+	var span := bottom.x-left.x
+	var door_t := (DOOR.x-left.x)/span
+	var gap := 44.0/span
+	_front_wall(canvas,left,left.lerp(bottom,door_t-gap),Vector2(-THICK,THICK*0.5),Color("7d6f58"))
+	_front_wall(canvas,left.lerp(bottom,door_t+gap),bottom,Vector2(-THICK,THICK*0.5),Color("7d6f58"))
+	_front_wall(canvas,bottom,right,Vector2(THICK,THICK*0.5),Color("6a5d47"))
+	# Threshold stone and daylight from the open door onto the boards.
+	var a := left.lerp(bottom,door_t-gap); var b := left.lerp(bottom,door_t+gap)
+	var out := Vector2(-THICK,THICK*0.5)
+	canvas.draw_colored_polygon(PackedVector2Array([a,b,b+out,a+out]),Color("9d917a"))
+	var inward := Vector2(1,-0.5)*120
+	canvas.draw_colored_polygon(PackedVector2Array([a,b,b+inward*1.15+Vector2(30,0),a+inward]),Color(1.0,0.86,0.58,0.10))
+	canvas.draw_colored_polygon(PackedVector2Array([a,b,b+inward*0.6+Vector2(15,0),a+inward*0.5]),Color(1.0,0.86,0.58,0.08))
+	for jamb in [a,b]:
+		canvas.draw_colored_polygon(PackedVector2Array([jamb+Vector2(0,-STUB_HEIGHT),jamb+out+Vector2(0,-STUB_HEIGHT),jamb+out+Vector2(0,40),jamb+Vector2(0,40)]),Color("4d3f2f"))
+
+## A low cut wall on a near side: outer face down past the floor, then its top.
+static func _front_wall(canvas: Node2D,a: Vector2,b: Vector2,out: Vector2,face: Color) -> void:
+	var up := Vector2(0,-STUB_HEIGHT); var down := Vector2(0,40)
+	canvas.draw_colored_polygon(PackedVector2Array([a+out+up,b+out+up,b+out+down,a+out+down]),face)
+	# Stone footing where the building meets the street.
+	canvas.draw_colored_polygon(PackedVector2Array([a+out+down-Vector2(0,15),b+out+down-Vector2(0,15),b+out+down,a+out+down]),face.darkened(0.35))
+	canvas.draw_colored_polygon(PackedVector2Array([a+up,b+up,b+out+up,a+out+up]),Color("3d3226"))
+	canvas.draw_line(a+up,b+up,Color("2a221a"),2,true)
+	canvas.draw_line(a+out+up,b+out+up,Color("b9a582"),1.5,true)
 
 static func draw_wall_span(canvas: Node2D,corner: Vector2,left: Vector2,right: Vector2,height: float = 145) -> void:
 	var lift := Vector2(0,-height)
